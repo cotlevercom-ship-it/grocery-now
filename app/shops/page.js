@@ -2,8 +2,9 @@ import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 
 export default async function ShopsPage({ searchParams }) {
-  const areaId = searchParams?.area
-  const areaName = searchParams?.name || 'এলাকা'
+  const params = await searchParams
+  const areaId = params?.area
+  const areaName = params?.name || 'এলাকা'
 
   let shops = []
   try {
