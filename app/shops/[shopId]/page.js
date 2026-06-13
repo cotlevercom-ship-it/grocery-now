@@ -3,7 +3,7 @@ import Link from 'next/link'
 import ProductList from './ProductList'
 
 export default async function ShopPage({ params }) {
-  const shopId = params.shopId
+  const { shopId } = await params
 
   let shop = null
   let categories = []
