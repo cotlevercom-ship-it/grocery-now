@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   let areas = []
   try {
@@ -8,14 +10,12 @@ export default async function Home() {
   } catch (e) {
     console.error(e)
   }
-
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       {/* Topbar */}
       <div style={{ background: '#2e7d32', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ color: 'white', fontSize: '20px', fontWeight: '600' }}>🛒 GroceryNow</div>
       </div>
-
       {/* Hero */}
       <div style={{ background: '#2e7d32', padding: '24px 16px 32px' }}>
         <h1 style={{ color: 'white', fontSize: '22px', fontWeight: '600', marginBottom: '6px' }}>
@@ -25,7 +25,6 @@ export default async function Home() {
           এলাকা সিলেক্ট করুন, কাছের দোকান দেখুন
         </p>
       </div>
-
       {/* Areas */}
       <div style={{ padding: '20px 16px' }}>
         <p style={{ fontSize: '13px', color: '#666', marginBottom: '14px', fontWeight: '500' }}>
