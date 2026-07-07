@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ShopsPage({ searchParams }) {
   const params = await searchParams
   const areaId = params?.area
