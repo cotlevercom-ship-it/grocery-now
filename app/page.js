@@ -5,10 +5,11 @@ export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   let areas = []
+  let errorMessage = null
   try {
     areas = await supabaseFetch('areas?select=*&is_active=eq.true&order=name')
   } catch (e) {
-    console.error(e)
+    errorMessage = e.message
   }
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
@@ -25,6 +26,18 @@ export default async function Home() {
           এলাকা সিলেক্ট করুন, কাছের দোকান দেখুন
         </p>
       </div>
+
+      {/* Debug info - eita পরে সরিয়ে ফেলব */}
+      {errorMessage && (
+        <div style={{ background: '#ffebee', border: '2px solid red', margin: '16px', padding: '12px', borderRadius: '8px' }}>
+          <strong style={{ color: 'red' }}>ERROR:</strong>
+          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px', color: '#333' }}>{errorMessage}</pre>
+        </div>
+      )}
+      <div style={{ background: '#e3f2fd', margin: '16px', padding: '12px', borderRadius: '8px', fontSize: '12px' }}>
+        Debug: areas count = {areas.length} | URL set = {process.env.NEXT_PUBLIC_SUPABASE_URL ? 'YES' : 'NO'} | KEY set = {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'YES' : 'NO'}
+      </div>
+
       {/* Areas */}
       <div style={{ padding: '20px 16px' }}>
         <p style={{ fontSize: '13px', color: '#666', marginBottom: '14px', fontWeight: '500' }}>
