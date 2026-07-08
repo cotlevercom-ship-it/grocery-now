@@ -21,21 +21,18 @@ export default function ShopSection() {
 
   return (
     <div style={{ padding: '20px 16px' }}>
-      <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a1a', marginBottom: '16px' }}>
+      <h2 className="shop-heading" style={{ fontWeight: '700', color: '#1a1a1a', marginBottom: '16px' }}>
         Shop by store
       </h2>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-        gap: '16px'
-      }}>
+      <div className="shop-grid">
         {dummyShops.map((shop) => (
           <div key={shop.id} style={{ cursor: 'pointer' }}>
             <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', marginBottom: '8px' }}>
               <img
                 src={shop.image}
                 alt={shop.name}
-                style={{ width: '100%', height: '110px', objectFit: 'cover', display: 'block' }}
+                className="shop-image"
+                style={{ width: '100%', objectFit: 'cover', display: 'block' }}
               />
               <button
                 onClick={() => toggleFavorite(shop.id)}
