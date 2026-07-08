@@ -48,9 +48,8 @@ export default function Navbar() {
 
   return (
     <>
-      <div style={{
+      <div className="navbar-bar" style={{
         background: 'linear-gradient(135deg, #163a2c 0%, #2d6a4f 100%)',
-        padding: '13px 16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -67,8 +66,8 @@ export default function Navbar() {
             justifyContent: 'center', fontSize: '17px', flexShrink: 0,
           }}>🧺</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px', minWidth: 0 }}>
-            <span style={{
-              color: '#faf7f0', fontSize: '17px', fontWeight: '700',
+            <span className="navbar-logo-text" style={{
+              color: '#faf7f0', fontWeight: '700',
               letterSpacing: '-0.02em', whiteSpace: 'nowrap',
             }}>GroceryNow</span>
             <span style={{
@@ -97,9 +96,8 @@ export default function Navbar() {
           }}
         >
           <span style={{ fontSize: '14px', color: '#f4a300', flexShrink: 0 }}>📍</span>
-          <span style={{
+          <span className="location-pill-text" style={{
             color: '#163a2c',
-            fontSize: '13px',
             fontWeight: '600',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -130,6 +128,8 @@ export default function Navbar() {
               overflowY: 'auto',
               animation: 'slideDown 0.25s ease-out',
               boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+              maxWidth: '480px',
+              margin: '0 auto',
             }}
           >
             <div style={{
