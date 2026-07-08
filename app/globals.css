@@ -27,119 +27,49 @@ input {
 }
 
 .app-container {
-  max-width: 480px;
+  width: 100%;
+  max-width: 1600px;
   margin: 0 auto;
   background: #f5f5f5;
   min-height: 100vh;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-bar {
-  padding: 13px 16px;
+  padding: clamp(12px, 1.4vw, 22px) clamp(16px, 3vw, 56px);
 }
 
 .navbar-logo-text {
-  font-size: 17px;
+  font-size: clamp(17px, 1.3vw, 21px);
 }
 
 .location-pill-text {
-  font-size: 13px;
+  font-size: clamp(13px, 0.9vw, 15px);
 }
 
 .banner-box {
-  height: 150px;
+  height: clamp(150px, 18vw, 360px);
 }
 
 .shop-heading {
-  font-size: 20px;
+  font-size: clamp(20px, 1.6vw, 26px);
 }
 
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 15vw, 230px), 1fr));
+  gap: clamp(14px, 1.4vw, 26px);
 }
 
 .shop-image {
-  height: 110px;
+  height: clamp(110px, 10vw, 175px);
 }
 
 .shops-list-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: clamp(12px, 1.4vw, 22px);
 }
 
 .shops-list-image {
-  height: 110px;
-}
-
-@media (min-width: 768px) {
-  .app-container {
-    max-width: 92%;
-  }
-  .navbar-bar {
-    padding: 18px 36px;
-  }
-  .navbar-logo-text {
-    font-size: 21px;
-  }
-  .location-pill-text {
-    font-size: 14px;
-  }
-  .banner-box {
-    height: 240px;
-  }
-  .shop-heading {
-    font-size: 24px;
-  }
-  .shop-grid {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 20px;
-  }
-  .shop-image {
-    height: 140px;
-  }
-  .shops-list-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-  .shops-list-image {
-    height: 130px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .app-container {
-    max-width: 1400px;
-  }
-  .navbar-bar {
-    padding: 20px 48px;
-  }
-  .banner-box {
-    height: 340px;
-  }
-  .shop-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 24px;
-  }
-  .shop-image {
-    height: 170px;
-  }
-  .shops-list-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  .shops-list-image {
-    height: 150px;
-  }
-}
-
-@media (min-width: 1700px) {
-  .app-container {
-    max-width: 1600px;
-  }
-  .shop-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
+  height: clamp(110px, 10vw, 160px);
 }
