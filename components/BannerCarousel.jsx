@@ -18,8 +18,8 @@ export default function BannerCarousel({ banners }) {
 
   return (
     <div style={{ padding: '14px 16px 4px' }}>
-      <div style={{
-        position: 'relative', width: '100%', height: '150px',
+      <div className="banner-box" style={{
+        position: 'relative', width: '100%',
         borderRadius: '16px', overflow: 'hidden', background: '#e8f5e9',
       }}>
         <div style={{
@@ -32,7 +32,7 @@ export default function BannerCarousel({ banners }) {
               <img
                 src={banner.image_url}
                 alt=""
-                style={{ width: '100%', height: '150px', objectFit: 'cover', display: 'block' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
             )
             return banner.link_url ? (
