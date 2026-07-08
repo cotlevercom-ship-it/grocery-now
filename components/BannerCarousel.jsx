@@ -20,7 +20,7 @@ export default function BannerCarousel({ banners }) {
     <div style={{ padding: '14px 16px 4px' }}>
       <div style={{
         position: 'relative', width: '100%', height: '150px',
-        borderRadius: '16px', overflow: 'hidden', background: '#eee',
+        borderRadius: '16px', overflow: 'hidden', background: '#e8f5e9',
       }}>
         <div style={{
           display: 'flex', width: `${banners.length * 100}%`, height: '100%',
@@ -32,7 +32,7 @@ export default function BannerCarousel({ banners }) {
               <img
                 src={banner.image_url}
                 alt=""
-                style={{ width: '100%', height: '150px', objectFit: 'cover', display: 'block' }}
+                style={{ width: '100%', height: '150px', objectFit: 'contain', display: 'block' }}
               />
             )
             return banner.link_url ? (
@@ -58,7 +58,7 @@ export default function BannerCarousel({ banners }) {
                 onClick={() => setIndex(i)}
                 style={{
                   width: i === index ? '16px' : '6px', height: '6px', borderRadius: '3px',
-                  background: i === index ? '#f4a300' : 'rgba(255,255,255,0.65)',
+                  background: i === index ? '#f4a300' : 'rgba(0,0,0,0.25)',
                   cursor: 'pointer', transition: 'width 0.3s ease',
                 }}
               />
