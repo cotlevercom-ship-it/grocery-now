@@ -64,9 +64,19 @@ input {
   height: 110px;
 }
 
+.shops-list-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.shops-list-image {
+  height: 110px;
+}
+
 @media (min-width: 768px) {
   .app-container {
-    max-width: 900px;
+    max-width: 92%;
   }
   .navbar-bar {
     padding: 18px 36px;
@@ -90,23 +100,46 @@ input {
   .shop-image {
     height: 140px;
   }
+  .shops-list-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .shops-list-image {
+    height: 130px;
+  }
 }
 
 @media (min-width: 1200px) {
   .app-container {
-    max-width: 1200px;
+    max-width: 1400px;
   }
   .navbar-bar {
     padding: 20px 48px;
   }
   .banner-box {
-    height: 320px;
+    height: 340px;
   }
   .shop-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 24px;
   }
   .shop-image {
-    height: 160px;
+    height: 170px;
+  }
+  .shops-list-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .shops-list-image {
+    height: 150px;
+  }
+}
+
+@media (min-width: 1700px) {
+  .app-container {
+    max-width: 1600px;
+  }
+  .shop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 }
