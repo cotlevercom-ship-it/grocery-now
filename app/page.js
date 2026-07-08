@@ -1,5 +1,4 @@
 import { supabaseFetch } from '@/lib/supabase'
-import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import AreaSection from '@/components/AreaSection'
 import ShopSection from '@/components/ShopSection'
@@ -16,7 +15,6 @@ export default async function Home() {
   }
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <Navbar />
       <Hero />
       <AreaSection areas={areas} />
       <ShopSection />
