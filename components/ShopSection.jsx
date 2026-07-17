@@ -1,12 +1,16 @@
-// components/ShopSection.js
 import { supabaseFetch } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ShopSection() {
-  const shops = await supabaseFetch(
-    `shops?is_active=eq.true&order=is_featured.desc,created_at.desc`
-  );
+  let shops = [];
+  try {
+    shops = await supabaseFetch(
+      `shops?is_active=eq.true&order=is_featured.desc,created_at.desc`
+    );
+  } catch (e) {
+    console.error(e);
+  }
 
   if (!shops || shops.length === 0) {
     return (
