@@ -1,53 +1,87 @@
-import { supabaseFetch } from '@/lib/supabase';
+import Link from 'next/link'
+import { supabaseFetch } from '@/lib/supabase'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function ShopSection() {
-  let shops = [];
+  let shops = []
   try {
     shops = await supabaseFetch(
-      `shops?is_active=eq.true&order=is_featured.desc,created_at.desc`
-    );
+      `shops?select=*&is_active=eq.true&order=is_featured.desc,created_at.desc`
+    )
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
 
   if (!shops || shops.length === 0) {
     return (
-      <div className="px-4 py-8 text-center text-gray-500">
-        এই মুহূর্তে কোনো shop পাওয়া যায়নি
+      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
+        <div style={{ fontSize: '40px', marginBottom: '10px' }}>🏪</div>
+        <p>এই মুহূর্তে কোনো দোকান পাওয়া যায়নি</p>
       </div>
-    );
+    )
   }
 
   return (
-    <section className="px-4 py-4">
-      <h2 className="text-lg font-semibold mb-3">সব দোকান</h2>
-      <div className="grid grid-cols-2 gap-3">
+    <section style={{ padding: '28px 16px 8px' }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: '16px'
+      }}>
+        <h2 className="shop-heading" style={{ fontWeight: '700', color: '#163a2c', margin: 0 }}>
+          সব দোকান
+        </h2>
+        <span style={{
+          fontSize: '12px', color: '#2d6a4f', background: '#e8f5e9',
+          padding: '4px 12px', borderRadius: '20px', fontWeight: '500'
+        }}>
+          {shops.length}টি দোকান
+        </span>
+      </div>
+
+      <div className="shop-grid">
         {shops.map((shop) => (
-          <a
-            key={shop.id}
-            href={`/shops/${shop.id}`}
-            className="border rounded-lg overflow-hidden bg-white shadow-sm"
-          >
-            <img
-              src={shop.image_url || '/placeholder-shop.png'}
-              alt={shop.name}
-              className="w-full h-24 object-cover"
-            />
-            <div className="p-2">
-              <p className="font-medium text-sm truncate">{shop.name}</p>
-              <p className="text-xs text-gray-500">{shop.category}</p>
-              <div className="flex items-center gap-1 text-xs mt-1">
-                <span>⭐ {shop.rating || 'নতুন'}</span>
-                <span className="text-gray-400">
-                  · {shop.delivery_time_min}-{shop.delivery_time_max} মিনিট
-                </span>
+          <Link key={shop.id} href={`/shops/${shop.id}`} className="shop-card">
+            <div style={{ position: 'relative' }}>
+              <img
+                src={shop.image_url || '/placeholder-shop.png'}
+                alt={shop.name}
+                className="shop-image"
+                style={{ width: '100%', objectFit: 'cover', display: 'block' }}
+              />
+              {shop.is_featured && (
+                <div style={{
+                  position: 'absolute', top: '8px', left: '8px',
+                  background: '#f4a300', color: '#1a1a1a',
+                  fontSize: '10px', fontWeight: '700', padding: '3px 9px',
+                  borderRadius: '6px'
+                }}>ফিচার্ড</div>
+              )}
+              <div style={{
+                position: 'absolute', bottom: '8px', right: '8px',
+                background: 'rgba(255,255,255,0.92)', borderRadius: '6px',
+                padding: '3px 8px', fontSize: '11px', fontWeight: '600', color: '#1a1a1a'
+              }}>
+                ⭐ {shop.rating || 'নতুন'}
               </div>
             </div>
-          </a>
+            <div style={{ padding: '12px 14px' }}>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
+                {shop.name}
+              </div>
+              <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                {shop.category}
+              </div>
+              <div style={{
+                fontSize: '12px', color: '#2d6a4f', marginTop: '8px',
+                fontWeight: '500'
+              }}>
+                🚴 {shop.delivery_time_min}-{shop.delivery_time_max} মিনিট
+              </div>
+            </div>
+          </Link>
         ))}
       </div>
     </section>
-  );
+  )
 }
