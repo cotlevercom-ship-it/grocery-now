@@ -1,6 +1,27 @@
 'use client'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { getSession, signOut } from '@/lib/supabase'
 
 export default function Navbar() {
+  const [session, setSession] = useState(null)
+
+  useEffect(() => {
+    setSession(getSession())
+    const onAuthChanged = () => setSession(getSession())
+    window.addEventListener('auth-changed', onAuthChanged)
+    window.addEventListener('storage', onAuthChanged)
+    return () => {
+      window.removeEventListener('auth-changed', onAuthChanged)
+      window.removeEventListener('storage', onAuthChanged)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    signOut()
+    setSession(null)
+  }
+
   return (
     <>
       <div className="navbar-bar" style={{
@@ -33,6 +54,22 @@ export default function Navbar() {
             }} />
           </div>
         </div>
+
+        {session ? (
+          <button onClick={handleLogout} style={{
+            background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
+            border: 'none', borderRadius: '8px', padding: '7px 12px',
+            fontSize: '12px', whiteSpace: 'nowrap', cursor: 'pointer'
+          }}>লগআউট</button>
+        ) : (
+          <Link href="/login">
+            <div style={{
+              background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
+              borderRadius: '8px', padding: '7px 12px',
+              fontSize: '12px', whiteSpace: 'nowrap'
+            }}>লগইন</div>
+          </Link>
+        )}
       </div>
 
       <style jsx global>{`
