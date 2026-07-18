@@ -182,7 +182,7 @@ export default function CartPage() {
           <div style={{ fontSize: '16px', fontWeight: '600' }}>৳{subtotal}</div>
         </div>
         <button
-          onClick={() => alert('অর্ডার প্লেসমেন্ট শীঘ্রই আসছে')}
+          onClick={() => router.push('/checkout')}
           style={{
             background: 'white', color: '#2e7d32', padding: '10px 24px',
             borderRadius: '8px', fontSize: '14px', fontWeight: '600'
