@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabaseFetch } from '@/lib/supabase'
+import { supabaseFetch, getSession } from '@/lib/supabase'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -11,6 +11,7 @@ export default function CheckoutPage() {
   const [loaded, setLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [session, setSession] = useState(null)
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -48,6 +49,23 @@ export default function CheckoutPage() {
           setAreaId(area.id)
           setAreaName(area.name)
         }
+
+        // if logged in, prefill from saved profile
+        const currentSession = getSession()
+        setSession(currentSession)
+        if (currentSession?.user?.id) {
+          try {
+            const profiles = await supabaseFetch(`user_profiles?select=*&id=eq.${currentSession.user.id}`)
+            if (profiles && profiles.length > 0) {
+              const profile = profiles[0]
+              if (profile.full_name) setName(profile.full_name)
+              if (profile.phone) setPhone(profile.phone)
+              if (profile.default_address) setAddress(profile.default_address)
+            }
+          } catch (e) {
+            console.error(e)
+          }
+        }
       } catch (e) {
         console.error(e)
       }
@@ -75,10 +93,11 @@ export default function CheckoutPage() {
 
     setSubmitting(true)
     try {
-      // create order
+      // create order (user_id set only when logged in; null means guest order)
       const orderRes = await supabaseFetch('orders', {
         method: 'POST',
         body: JSON.stringify({
+          user_id: session?.user?.id || null,
           shop_id: cartData.shopId,
           area_id: areaId,
           delivery_name: name.trim(),
@@ -97,6 +116,25 @@ export default function CheckoutPage() {
       })
 
       const order = orderRes[0]
+
+      // save/update profile defaults for logged-in users (best-effort, ignore failures)
+      if (session?.user?.id) {
+        try {
+          await supabaseFetch(`user_profiles`, {
+            method: 'POST',
+            headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+            body: JSON.stringify({
+              id: session.user.id,
+              full_name: name.trim(),
+              phone: phone.trim(),
+              default_area_id: areaId,
+              default_address: address.trim(),
+            }),
+          })
+        } catch (e) {
+          console.error(e)
+        }
+      }
 
       // create order items
       const itemsPayload = cartData.items.map(item => ({
@@ -139,6 +177,19 @@ export default function CheckoutPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
+        {!session && (
+          <div style={{
+            margin: '14px 16px 0', padding: '10px 12px', background: '#e8f5e9',
+            borderRadius: '8px', fontSize: '12px', color: '#1b5e20',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px'
+          }}>
+            <span>গেস্ট হিসেবে অর্ডার করছেন</span>
+            <Link href={`/login?next=/checkout`} style={{ color: '#2e7d32', fontWeight: '600', textDecoration: 'underline' }}>
+              লগইন করুন
+            </Link>
+          </div>
+        )}
+
         {/* Delivery info */}
         <div style={{
           background: 'white', margin: '14px 16px', borderRadius: '10px',
