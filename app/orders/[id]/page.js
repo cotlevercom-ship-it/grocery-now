@@ -1,5 +1,6 @@
 import { supabaseFetch } from '@/lib/supabase'
 import Link from 'next/link'
+import CancelOrderButton from './CancelOrderButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,18 +42,28 @@ export default async function OrderPage({ params }) {
     )
   }
 
-  const statusLabels = {
-    pending: 'অর্ডার গৃহীত হয়েছে',
-    confirmed: 'অর্ডার কনফার্ম হয়েছে',
-    processing: 'প্রস্তুত করা হচ্ছে',
-    out_for_delivery: 'ডেলিভারির পথে',
-    delivered: 'ডেলিভারি সম্পন্ন',
-    cancelled: 'অর্ডার বাতিল হয়েছে',
+  // db status -> which timeline step index is "current" (0-based, 6 steps)
+  const statusToStepIndex = {
+    pending: 1,            // order placed (0) is done, waiting for seller (1) is current
+    confirmed: 2,           // seller accepted
+    processing: 3,          // order processing
+    out_for_delivery: 4,    // handed to courier
+    delivered: 5,           // delivered
   }
 
-  const statusSteps = ['pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered']
-  const currentStepIndex = statusSteps.indexOf(order.status)
+  const timelineSteps = [
+    'অর্ডার প্লেস হয়েছে',
+    'সেলার কনফার্মেশনের অপেক্ষায়',
+    'সেলার আপনার অর্ডার গ্রহণ করেছে',
+    'অর্ডার প্রস্তুত করা হচ্ছে',
+    'কুরিয়ারের কাছে হস্তান্তর করা হয়েছে',
+    'ডেলিভারি সম্পন্ন হয়েছে',
+  ]
+
   const isCancelled = order.status === 'cancelled'
+  const currentStepIndex = statusToStepIndex[order.status] ?? 0
+  // customer can cancel only before the seller has accepted (still 'pending')
+  const canCancel = order.status === 'pending'
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
@@ -88,8 +99,8 @@ export default async function OrderPage({ params }) {
             অর্ডার স্ট্যাটাস
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {statusSteps.map((step, i) => (
-              <div key={step} style={{ display: 'flex', gap: '12px' }}>
+            {timelineSteps.map((label, i) => (
+              <div key={label} style={{ display: 'flex', gap: '12px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <div style={{
                     width: '20px', height: '20px', borderRadius: '50%',
@@ -97,7 +108,7 @@ export default async function OrderPage({ params }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '11px', color: 'white', flexShrink: 0
                   }}>{i <= currentStepIndex ? '✓' : ''}</div>
-                  {i < statusSteps.length - 1 && (
+                  {i < timelineSteps.length - 1 && (
                     <div style={{
                       width: '2px', height: '28px',
                       background: i < currentStepIndex ? '#2e7d32' : '#e0e0e0'
@@ -108,11 +119,27 @@ export default async function OrderPage({ params }) {
                   <div style={{
                     fontSize: '13px', fontWeight: i === currentStepIndex ? '600' : '400',
                     color: i <= currentStepIndex ? '#1a1a1a' : '#999'
-                  }}>{statusLabels[step]}</div>
+                  }}>{label}</div>
+                  {/* courier info shows once the parcel has been handed to the courier */}
+                  {i === 4 && currentStepIndex >= 4 && (order.courier_name || order.courier_tracking_id) && (
+                    <div style={{
+                      marginTop: '4px', fontSize: '12px', color: '#555',
+                      background: '#f5f5f5', borderRadius: '6px', padding: '6px 10px'
+                    }}>
+                      {order.courier_name && <div>কুরিয়ার: {order.courier_name}</div>}
+                      {order.courier_tracking_id && <div>ট্র্যাকিং আইডি: {order.courier_tracking_id}</div>}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
+
+          {canCancel && (
+            <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #eee' }}>
+              <CancelOrderButton orderId={order.id} />
+            </div>
+          )}
         </div>
       )}
 
