@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
     <div style={{
@@ -12,7 +14,17 @@ export default function Footer() {
         🧺 GroceryNow
       </div>
       <div>আপনার এলাকার সেরা গ্রোসারি, ঘরে বসেই</div>
-      <div style={{ marginTop: '10px', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>
+
+      <Link href="/seller" style={{
+        display: 'inline-block', marginTop: '16px', color: '#faf7f0',
+        border: '1px solid rgba(255,255,255,0.35)', borderRadius: '20px',
+        padding: '8px 18px', fontSize: '13px', fontWeight: '600',
+        textDecoration: 'none'
+      }}>
+        🏪 Start Your Shop
+      </Link>
+
+      <div style={{ marginTop: '14px', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>
         © ২০২৬ GroceryNow। সর্বস্বত্ব সংরক্ষিত।
       </div>
     </div>
