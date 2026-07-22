@@ -56,7 +56,7 @@ export default function SellerLoginPage() {
 function SellerLoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const nextUrl = searchParams.get('next') || '/seller'
+  const nextUrl = searchParams.get('next') || '/seller/dashboard'
 
   const [mode, setMode] = useState('login') // 'login' | 'signup'
   const [email, setEmail] = useState('')
