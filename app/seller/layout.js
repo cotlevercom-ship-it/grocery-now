@@ -12,14 +12,14 @@ export default function SellerLayout({ children }) {
   const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
-    if (pathname === '/seller/create') {
+    if (pathname === '/seller/create' || pathname === '/seller/login') {
       setChecking(false)
       return
     }
     async function check() {
       const session = getSession()
       if (!session?.user) {
-        router.replace(`/login?next=${pathname}`)
+        router.replace(`/seller/login?next=${pathname}`)
         setChecking(false)
         return
       }
@@ -40,7 +40,7 @@ export default function SellerLayout({ children }) {
     check()
   }, [pathname, router])
 
-  if (pathname === '/seller/create') return children
+  if (pathname === '/seller/create' || pathname === '/seller/login') return children
 
   if (checking) {
     return (
@@ -64,7 +64,7 @@ export default function SellerLayout({ children }) {
 
   const handleLogout = () => {
     signOut()
-    router.replace('/login')
+    router.replace('/seller/login')
   }
 
   return (
