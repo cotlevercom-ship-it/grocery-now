@@ -6,6 +6,7 @@ const emptyForm = {
   name: '',
   category: 'general',
   area_id: '',
+  phone: '',
   description: '',
   image_url: '',
   delivery_time_min: 20,
@@ -32,6 +33,10 @@ export default function AdminShopsPage() {
   const [uploading, setUploading] = useState(false)
 
   const [deletingId, setDeletingId] = useState(null)
+
+  const [searchQuery, setSearchQuery] = useState('')
+  const [areaFilter, setAreaFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
 
   async function loadData() {
     setLoading(true)
@@ -69,6 +74,7 @@ export default function AdminShopsPage() {
       name: shop.name || '',
       category: shop.category || 'general',
       area_id: shop.area_id || '',
+      phone: shop.phone || '',
       description: shop.description || '',
       image_url: shop.image_url || '',
       delivery_time_min: shop.delivery_time_min ?? 20,
@@ -130,6 +136,7 @@ export default function AdminShopsPage() {
         name: form.name.trim(),
         category: form.category.trim() || 'general',
         area_id: form.area_id,
+        phone: form.phone.trim() || null,
         description: form.description.trim() || null,
         image_url: imageUrl || null,
         delivery_time_min: Number(form.delivery_time_min) || 0,
@@ -182,6 +189,16 @@ export default function AdminShopsPage() {
   const labelStyle = {
     fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px', fontWeight: '500'
   }
+
+  const filteredShops = shops.filter(shop => {
+    const matchesSearch = !searchQuery.trim() ||
+      shop.name?.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    const matchesArea = !areaFilter || shop.area_id === areaFilter
+    const matchesStatus = statusFilter === 'all' ||
+      (statusFilter === 'active' && shop.is_active) ||
+      (statusFilter === 'inactive' && !shop.is_active)
+    return matchesSearch && matchesArea && matchesStatus
+  })
 
   return (
     <div>
@@ -255,6 +272,11 @@ export default function AdminShopsPage() {
           </div>
 
           <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>ফোন নাম্বার</label>
+            <input style={inputStyle} value={form.phone} onChange={e => handleFieldChange('phone', e.target.value)} placeholder="যেমন: 01712345678" />
+          </div>
+
+          <div style={{ marginBottom: '14px' }}>
             <label style={labelStyle}>বিবরণ</label>
             <textarea rows={2} style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
               value={form.description} onChange={e => handleFieldChange('description', e.target.value)} />
@@ -308,6 +330,39 @@ export default function AdminShopsPage() {
         </form>
       )}
 
+      {/* Search & filter bar */}
+      {!loading && shops.length > 0 && (
+        <div style={{
+          display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap'
+        }}>
+          <input
+            style={{ ...inputStyle, maxWidth: '240px' }}
+            placeholder="দোকানের নাম দিয়ে খুঁজুন..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+          <select
+            style={{ ...inputStyle, maxWidth: '200px' }}
+            value={areaFilter}
+            onChange={e => setAreaFilter(e.target.value)}
+          >
+            <option value="">সব এলাকা</option>
+            {areas.map(area => (
+              <option key={area.id} value={area.id}>{area.name}</option>
+            ))}
+          </select>
+          <select
+            style={{ ...inputStyle, maxWidth: '160px' }}
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+          >
+            <option value="all">সব স্ট্যাটাস</option>
+            <option value="active">একটিভ</option>
+            <option value="inactive">বন্ধ</option>
+          </select>
+        </div>
+      )}
+
       {/* Shops list */}
       {loading ? (
         <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
@@ -319,14 +374,22 @@ export default function AdminShopsPage() {
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>🏪</div>
           <p>এখনো কোনো দোকান যোগ করা হয়নি</p>
         </div>
+      ) : filteredShops.length === 0 ? (
+        <div style={{
+          textAlign: 'center', padding: '50px 20px', color: '#999',
+          background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0'
+        }}>
+          <div style={{ fontSize: '36px', marginBottom: '10px' }}>🔍</div>
+          <p>কোনো দোকান পাওয়া যায়নি</p>
+        </div>
       ) : (
         <div style={{
           background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', overflow: 'hidden'
         }}>
-          {shops.map((shop, i) => (
+          {filteredShops.map((shop, i) => (
             <div key={shop.id} style={{
               display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px',
-              borderBottom: i < shops.length - 1 ? '1px solid #eee' : 'none'
+              borderBottom: i < filteredShops.length - 1 ? '1px solid #eee' : 'none'
             }}>
               <div style={{
                 width: '48px', height: '48px', borderRadius: '8px', background: '#f5f5f5',
@@ -341,7 +404,7 @@ export default function AdminShopsPage() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{shop.name}</div>
                 <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                  {shop.category} · {shop.areas?.name || 'এলাকা নাই'}
+                  {shop.category} · {shop.areas?.name || 'এলাকা নাই'}{shop.phone ? ` · ${shop.phone}` : ''}
                 </div>
               </div>
 
