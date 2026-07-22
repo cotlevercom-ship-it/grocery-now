@@ -141,6 +141,13 @@ function LoginForm() {
         </div>
       </form>
 
+      <div style={{ padding: '0 16px', marginBottom: '10px' }}>
+        <Link href="/seller/login" style={{
+          display: 'block', textAlign: 'center', color: '#888',
+          padding: '10px', fontSize: '13px'
+        }}>দোকান মালিক? সেলার লগইন →</Link>
+      </div>
+
       <div style={{ padding: '0 16px' }}>
         <Link href={nextUrl} style={{
           display: 'block', textAlign: 'center', background: 'white', color: '#2e7d32',
