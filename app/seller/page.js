@@ -12,16 +12,17 @@ export default function SellerDashboardPage() {
   useEffect(() => {
     async function load() {
       const session = getSession()
-      if (!session?.user) return
+      if (!session?.user) {
+        setLoading(false)
+        return
+      }
       try {
         const shops = await supabaseFetch(`shops?select=*,areas(name)&owner_id=eq.${session.user.id}`)
         const myShop = shops?.[0]
         setShop(myShop || null)
-
         if (myShop) {
           const products = await supabaseFetch(`products?select=id&shop_id=eq.${myShop.id}`)
           setProductCount(products?.length || 0)
-
           const orders = await supabaseFetch(`orders?select=id,status&shop_id=eq.${myShop.id}`)
           setOrderCount(orders?.length || 0)
           setPendingOrderCount((orders || []).filter(o => o.status === 'pending').length)
@@ -65,7 +66,6 @@ export default function SellerDashboardPage() {
           {shop.is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
         </span>
       </div>
-
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         {statCards.map(card => (
           <div key={card.label} style={{
@@ -78,7 +78,6 @@ export default function SellerDashboardPage() {
           </div>
         ))}
       </div>
-
       {shop.description && (
         <div style={{
           marginTop: '24px', background: 'white', borderRadius: '10px',
