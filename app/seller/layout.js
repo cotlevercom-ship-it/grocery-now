@@ -59,6 +59,7 @@ export default function SellerLayout({ children }) {
     { href: '/seller', label: 'ড্যাশবোর্ড', icon: '📊' },
     { href: '/seller/products', label: 'প্রোডাক্ট', icon: '📦' },
     { href: '/seller/orders', label: 'অর্ডার', icon: '🧾' },
+    { href: '/seller/settings', label: 'Settings', icon: '⚙️' },
   ]
 
   const handleLogout = () => {
