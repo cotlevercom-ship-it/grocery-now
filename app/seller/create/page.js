@@ -22,7 +22,7 @@ export default function CreateShopPage() {
     async function init() {
       const session = getSession()
       if (!session?.user) {
-        router.replace('/login?next=/seller/create')
+        router.replace('/seller/login?next=/seller/create')
         return
       }
       try {
