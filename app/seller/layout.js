@@ -1,10 +1,12 @@
-import './globals.css'
+import '../globals.css'
 import Navbar from '@/components/Navbar'
+
 
 export const metadata = {
   title: 'GroceryNow',
   description: 'আপনার এলাকার সেরা গ্রোসারি',
 }
+
 
 export default function RootLayout({ children }) {
   return (
