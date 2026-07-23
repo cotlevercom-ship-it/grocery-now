@@ -7,7 +7,7 @@ import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
 const navItems = [
   { href: '/seller/dashboard', label: 'ড্যাশবোর্ড', icon: '📊' },
   { href: '/seller/products', label: 'প্রোডাক্ট', icon: '📦' },
-  { href: '/seller/orders', label: 'অর্ডার', icon: '🧾' },
+  { href: '/seller/orders', label: 'অর্র', icon: '🧾' },
   { href: '/seller/settings', label: 'সেটিংস', icon: '⚙️' },
 ]
 
@@ -18,6 +18,7 @@ export default function SellerNav({ children }) {
   const [allowed, setAllowed] = useState(false)
   const [shopName, setShopName] = useState('')
   const [sellerEmail, setSellerEmail] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -50,6 +51,10 @@ export default function SellerNav({ children }) {
     return () => { cancelled = true }
   }, [pathname, router])
 
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
+
   const handleLogout = () => {
     signOut()
     router.replace('/seller/login')
@@ -69,13 +74,62 @@ export default function SellerNav({ children }) {
   if (!allowed) return null
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex' }}>
-      <div style={{
-        width: '220px',
-        background: 'linear-gradient(180deg, #163a2c 0%, #2d6a4f 100%)',
-        color: 'white', flexShrink: 0, position: 'sticky', top: 0, height: '100vh',
-        display: 'flex', flexDirection: 'column'
-      }}>
+    <div className="seller-shell" style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex' }}>
+      <style jsx>{`
+        .seller-shell { position: relative; }
+        .sidebar {
+          width: 220px;
+          background: linear-gradient(180deg, #163a2c 0%, #2d6a4f 100%);
+          color: white;
+          flex-shrink: 0;
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+        .overlay { display: none; }
+        .hamburger { display: none; }
+        .main-content { flex: 1; padding: 28px; overflow: auto; }
+
+        @media (max-width: 768px) {
+          .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.2s ease;
+          }
+          .sidebar.open { transform: translateX(0); }
+          .overlay.open {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+          }
+          .hamburger {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #163a2c;
+            color: white;
+            border: none;
+            font-size: 18px;
+            margin-bottom: 16px;
+            cursor: pointer;
+          }
+          .main-content { padding: 16px; }
+        }
+      `}</style>
+
+      <div className={`overlay ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(false)} />
+
+      <div className={`sidebar ${menuOpen ? 'open' : ''}`}>
         <div style={{
           padding: '20px', display: 'flex', alignItems: 'center', gap: '8px',
           borderBottom: '1px solid rgba(255,255,255,0.1)'
@@ -130,7 +184,8 @@ export default function SellerNav({ children }) {
         </div>
       </div>
 
-      <div style={{ flex: 1, padding: '28px', overflow: 'auto' }}>
+      <div className="main-content">
+        <button className="hamburger" onClick={() => setMenuOpen(true)}>☰</button>
         {children}
       </div>
     </div>
