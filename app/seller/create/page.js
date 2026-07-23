@@ -28,7 +28,7 @@ export default function CreateShopPage() {
       try {
         const existing = await supabaseFetch(`shops?select=id&owner_id=eq.${session.user.id}`)
         if (existing && existing.length > 0) {
-          router.replace('/seller')
+          router.replace('/seller/dashboard')
           return
         }
         const areaRows = await supabaseFetch(`areas?select=id,name&is_active=eq.true&order=name`)
@@ -71,12 +71,7 @@ export default function CreateShopPage() {
           is_active: true,
         }),
       })
-      const shop = Array.isArray(rows) ? rows[0] : rows
-      if (shop?.id) {
-        router.push('/seller')
-      } else {
-        router.push('/seller')
-      }
+      router.push('/seller/dashboard')
     } catch (err) {
       console.error(err)
       setError(err.message || 'দোকান তৈরি করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
