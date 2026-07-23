@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getSession, supabaseFetch } from '@/lib/supabase'
+import SellerNav from '@/components/SellerNav'
 
 export default function SellerDashboardPage() {
   const [loading, setLoading] = useState(true)
@@ -36,11 +37,19 @@ export default function SellerDashboardPage() {
   }, [])
 
   if (loading) {
-    return <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+    return (
+      <SellerNav>
+        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+      </SellerNav>
+    )
   }
 
   if (!shop) {
-    return <div style={{ color: '#888', fontSize: '14px' }}>দোকানের তথ্য পাওয়া যায়নি</div>
+    return (
+      <SellerNav>
+        <div style={{ color: '#888', fontSize: '14px' }}>দোকানের তথ্য পাওয়া যায়নি</div>
+      </SellerNav>
+    )
   }
 
   const statCards = [
@@ -50,6 +59,7 @@ export default function SellerDashboardPage() {
   ]
 
   return (
+    <SellerNav>
     <div>
       <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#163a2c', margin: '0 0 6px' }}>
         {shop.name}
@@ -88,5 +98,6 @@ export default function SellerDashboardPage() {
         </div>
       )}
     </div>
+    </SellerNav>
   )
 }
