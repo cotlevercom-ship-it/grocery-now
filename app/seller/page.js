@@ -39,7 +39,7 @@ const packages = [
 export default function SellerLandingPage() {
   return (
     <div>
-      <style jsx>{`
+      <style>{`
         .hero {
           background: linear-gradient(135deg, #163a2c 0%, #2e7d32 100%);
           color: white;
