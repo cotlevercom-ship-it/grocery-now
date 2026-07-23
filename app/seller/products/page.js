@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
+import SellerNav from '@/components/SellerNav'
 
 const emptyCategoryForm = { name: '', sort_order: 0 }
 const emptyProductForm = {
@@ -252,14 +253,23 @@ export default function SellerProductsPage() {
   const categoryName = (id) => categories.find(c => c.id === id)?.name || 'Other'
 
   if (loadingShop) {
-    return <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
+    return (
+      <SellerNav>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
+      </SellerNav>
+    )
   }
 
   if (!shopId) {
-    return <div style={{ color: '#c62828', fontSize: '14px' }}>Could not find your shop.</div>
+    return (
+      <SellerNav>
+        <div style={{ color: '#c62828', fontSize: '14px' }}>Could not find your shop.</div>
+      </SellerNav>
+    )
   }
 
   return (
+    <SellerNav>
     <div>
       <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Products</h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
@@ -497,5 +507,6 @@ export default function SellerProductsPage() {
         </>
       )}
     </div>
+    </SellerNav>
   )
 }
