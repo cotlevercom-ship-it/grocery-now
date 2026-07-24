@@ -18,7 +18,7 @@ export default function SellerDashboardPage() {
         return
       }
       try {
-        const shops = await supabaseFetch(`shops?select=*,areas(name)&owner_id=eq.${session.user.id}`)
+        const shops = await supabaseFetch(`shops?select=*,areas(name),seller_packages(name_bn,max_products)&owner_id=eq.${session.user.id}`)
         const myShop = shops?.[0]
         setShop(myShop || null)
         if (myShop) {
@@ -52,10 +52,18 @@ export default function SellerDashboardPage() {
     )
   }
 
+  const pkg = shop.seller_packages || null
+  const maxProducts = pkg?.max_products ?? null
+
   const statCards = [
-    { label: 'মোট প্রোডাক্ট', value: productCount, icon: '📦', color: '#2e7d32' },
+    {
+      label: 'মোট প্রোডাক্ট',
+      value: maxProducts != null ? `${productCount}/${maxProducts}` : productCount,
+      icon: '📦', color: '#2e7d32'
+    },
     { label: 'মোট অর্ডার', value: orderCount, icon: '🧾', color: '#1565c0' },
     { label: 'অপেক্ষমাণ অর্ডার', value: pendingOrderCount, icon: '⏳', color: '#f4a300' },
+    { label: 'প্যাকেজ', value: pkg?.name_bn || '—', icon: '💎', color: '#8e24aa' },
   ]
 
   return (
