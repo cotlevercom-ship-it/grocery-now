@@ -10,8 +10,8 @@ const COLORS = {
   gold: '#d99a1b',
   goldSoft: '#f4e3c1',
   cream: '#faf8f4',
-  line: 'rgba(255,255,255,0.12)',
-  textMuted: 'rgba(255,255,255,0.68)',
+  line: '#e7e2d8',
+  textMuted: '#6b7b74',
 }
 
 const FacebookIcon = () => (
@@ -65,107 +65,87 @@ export default function Footer() {
 
   return (
     <footer className="site-footer">
-      <div className="footer-pattern" />
-
       <div className="footer-inner">
-        <div className="footer-top">
-          <div className="brand-block">
-            <Link href="/" className="brand-mark">
-              <span className="brand-badge">🧺</span>
-              <span className="brand-name">GroceryNow</span>
-            </Link>
-            <p className="brand-tagline">আপনার এলাকার সেরা গ্রোসারি, ঘরে বসেই।</p>
-            <Link href="/seller" className="cta-btn">দোকান খুলুন →</Link>
+        <div className="brand-row">
+          <div className="brand-mark">
+            <span className="brand-badge">🧺</span>
+            <span className="brand-name">GroceryNow</span>
           </div>
+          <p className="brand-tagline">আপনার এলাকার সেরা গ্রোসারি, ঘরে বসেই।</p>
+        </div>
 
-          <div className="footer-cols">
-            {infoPages.length > 0 && (
-              <div className="footer-col">
-                <div className="col-title">Info</div>
-                {infoPages.map(p => (
-                  <Link key={p.id} href={linkHref(p)} className="footer-link">{p.title}</Link>
-                ))}
-              </div>
-            )}
+        <div className="card-grid">
+          {infoPages.length > 0 && (
+            <div className="footer-card">
+              <div className="card-title">Info</div>
+              {infoPages.map(p => (
+                <Link key={p.id} href={linkHref(p)} className="footer-link">{p.title}</Link>
+              ))}
+            </div>
+          )}
 
-            {partnerPages.length > 0 && (
-              <div className="footer-col">
-                <div className="col-title">Partner With Us</div>
-                {partnerPages.map(p => (
-                  <Link key={p.id} href={linkHref(p)} className="footer-link">{p.title}</Link>
-                ))}
-              </div>
-            )}
+          {partnerPages.length > 0 && (
+            <div className="footer-card">
+              <div className="card-title">Partner With Us</div>
+              {partnerPages.map(p => (
+                <Link key={p.id} href={linkHref(p)} className="footer-link">{p.title}</Link>
+              ))}
+            </div>
+          )}
 
-            {hasSocial && (
-              <div className="footer-col">
-                <div className="col-title">Social</div>
-                <div className="social-row">
-                  {settings.facebook_url && (
-                    <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook">
-                      <FacebookIcon />
-                    </a>
-                  )}
-                  {whatsappHref && (
-                    <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp">
-                      <WhatsAppIcon />
-                    </a>
-                  )}
-                  {settings.contact_email && (
-                    <a href={`mailto:${settings.contact_email}`} className="social-icon" aria-label="Email">
-                      <MailIcon />
-                    </a>
-                  )}
-                </div>
+          {hasSocial && (
+            <div className="footer-card">
+              <div className="card-title">Social</div>
+              <div className="social-row">
+                {settings.facebook_url && (
+                  <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook">
+                    <FacebookIcon />
+                  </a>
+                )}
+                {whatsappHref && (
+                  <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp">
+                    <WhatsAppIcon />
+                  </a>
+                )}
+                {settings.contact_email && (
+                  <a href={`mailto:${settings.contact_email}`} className="social-icon" aria-label="Email">
+                    <MailIcon />
+                  </a>
+                )}
               </div>
-            )}
+            </div>
+          )}
+
+          <div className="footer-card cta-card">
+            <div className="card-title">বিক্রেতা হতে চান?</div>
+            <p className="cta-text">নিজের এলাকায় দোকান খুলে অর্ডার নেওয়া শুরু করুন।</p>
+            <Link href="/seller" className="cta-btn">দোকান খুলুন →</Link>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <span>© ২০২৬ GroceryNow। সর্বস্বত্ব সংরক্ষিত।</span>
+          © ২০২৬ GroceryNow। সর্বস্বত্ব সংরক্ষিত।
         </div>
       </div>
 
       <style jsx>{`
         .site-footer {
-          position: relative;
           background: linear-gradient(160deg, ${COLORS.ink} 0%, ${COLORS.forestMid} 100%);
-          color: ${COLORS.textMuted};
-          overflow: hidden;
           margin-top: 32px;
-        }
-        .footer-pattern {
-          position: absolute;
-          inset: 0;
-          background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
-          background-size: 22px 22px;
-          mask-image: radial-gradient(circle at 15% 10%, black, transparent 70%);
-          pointer-events: none;
+          padding: 40px 20px 24px;
         }
         .footer-inner {
-          position: relative;
-          z-index: 1;
-          max-width: 960px;
+          max-width: 980px;
           margin: 0 auto;
-          padding: 40px 24px 20px;
         }
-        .footer-top {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 40px;
-          justify-content: space-between;
-          padding-bottom: 28px;
-        }
-        .brand-block {
-          flex: 1 1 220px;
-          max-width: 320px;
+        .brand-row {
+          text-align: center;
+          margin-bottom: 28px;
         }
         .brand-mark {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          text-decoration: none;
         }
         .brand-badge {
           width: 32px;
@@ -184,112 +164,99 @@ export default function Footer() {
         }
         .brand-tagline {
           font-size: 13px;
-          line-height: 1.6;
-          margin: 12px 0 18px;
-          color: ${COLORS.textMuted};
+          color: rgba(255,255,255,0.65);
+          margin: 8px 0 0;
         }
-        .cta-btn {
-          display: inline-block;
-          background: ${COLORS.gold};
-          color: ${COLORS.ink};
-          font-size: 13px;
-          font-weight: 700;
-          padding: 9px 18px;
-          border-radius: 999px;
-          text-decoration: none;
-          transition: background 0.15s ease, transform 0.1s ease;
+        .card-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 14px;
         }
-        .cta-btn:hover {
-          background: ${COLORS.goldSoft};
+        .footer-card {
+          background: ${COLORS.cream};
+          border-radius: 14px;
+          padding: 18px 20px;
         }
-        .cta-btn:active {
-          transform: translateY(1px);
-        }
-        .footer-cols {
-          display: flex;
-          gap: 48px;
-          flex-wrap: wrap;
-        }
-        .footer-col {
-          min-width: 130px;
-        }
-        .col-title {
-          color: ${COLORS.cream};
+        .card-title {
+          color: ${COLORS.forest};
           font-weight: 700;
           font-size: 13px;
-          letter-spacing: 0.03em;
-          text-transform: uppercase;
-          margin-bottom: 14px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid ${COLORS.line};
+          margin-bottom: 12px;
         }
         .footer-link {
           display: block;
           font-size: 13px;
           color: ${COLORS.textMuted};
           text-decoration: none;
-          margin-bottom: 10px;
+          margin-bottom: 9px;
           transition: color 0.15s ease;
           width: fit-content;
         }
         .footer-link:hover {
-          color: ${COLORS.goldSoft};
+          color: ${COLORS.forestMid};
         }
         .social-row {
           display: flex;
-          gap: 10px;
+          gap: 8px;
         }
         .social-icon {
           width: 34px;
           height: 34px;
           border-radius: 50%;
+          background: white;
           border: 1px solid ${COLORS.line};
           display: flex;
           align-items: center;
           justify-content: center;
-          color: ${COLORS.cream};
+          color: ${COLORS.forest};
           text-decoration: none;
-          transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+          transition: background 0.15s ease, color 0.15s ease;
         }
         .social-icon:hover {
+          background: ${COLORS.forest};
+          color: ${COLORS.cream};
+        }
+        .cta-card {
           background: ${COLORS.gold};
-          border-color: ${COLORS.gold};
+        }
+        .cta-card .card-title {
           color: ${COLORS.ink};
         }
+        .cta-text {
+          font-size: 12px;
+          color: rgba(15,42,32,0.75);
+          margin: 0 0 14px;
+          line-height: 1.5;
+        }
+        .cta-btn {
+          display: inline-block;
+          background: ${COLORS.ink};
+          color: ${COLORS.cream};
+          font-size: 13px;
+          font-weight: 700;
+          padding: 8px 16px;
+          border-radius: 999px;
+          text-decoration: none;
+          transition: background 0.15s ease;
+        }
+        .cta-btn:hover {
+          background: ${COLORS.forestMid};
+        }
         .footer-bottom {
-          border-top: 1px solid ${COLORS.line};
-          padding-top: 16px;
           text-align: center;
+          margin-top: 24px;
           font-size: 11.5px;
-          color: rgba(255,255,255,0.45);
+          color: rgba(255,255,255,0.5);
         }
 
-        @media (max-width: 640px) {
-          .footer-top {
-            flex-direction: column;
-            gap: 28px;
-            text-align: center;
+        @media (max-width: 760px) {
+          .card-grid {
+            grid-template-columns: 1fr 1fr;
           }
-          .brand-block {
-            max-width: none;
-          }
-          .brand-mark {
-            justify-content: center;
-          }
-          .footer-cols {
-            justify-content: center;
-            gap: 32px;
-            text-align: center;
-          }
-          .col-title {
-            border-bottom: none;
-            padding-bottom: 0;
-          }
-          .footer-link {
-            margin: 0 auto 10px;
-          }
-          .social-row {
-            justify-content: center;
+        }
+        @media (max-width: 480px) {
+          .card-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
