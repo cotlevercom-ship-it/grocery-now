@@ -69,9 +69,11 @@ export default function Footer() {
     columns.push({ title: 'পার্টনার হোন', items: partnerPages.map(p => ({ label: p.title, href: linkHref(p) })) })
   }
   columns.push({
-    title: 'দোকান খুলুন',
+    title: 'বিক্রেতা হতে চান?',
     items: [{ label: 'দোকান খুলুন →', href: '/seller' }],
   })
+
+  const totalCols = columns.length + (hasSocial ? 1 : 0)
 
   function handleScroll() {
     const el = scrollRef.current
@@ -85,7 +87,7 @@ export default function Footer() {
       <div className="footer-inner">
         <div className="col-scroll" ref={scrollRef} onScroll={handleScroll}>
           {columns.map((col, i) => (
-            <div className="footer-card" key={i}>
+            <div className="footer-card" style={totalCols === 1 ? { width: '100%' } : undefined} key={i}>
               <div className="card-title">{col.title}</div>
               {col.items.map((item, j) => (
                 <Link key={j} href={item.href} className="footer-link">{item.label}</Link>
@@ -94,7 +96,7 @@ export default function Footer() {
           ))}
 
           {hasSocial && (
-            <div className="footer-card">
+            <div className="footer-card" style={totalCols === 1 ? { width: '100%' } : undefined}>
               <div className="card-title">যোগাযোগ</div>
               <div className="social-row">
                 {settings.facebook_url && (
@@ -117,11 +119,13 @@ export default function Footer() {
           )}
         </div>
 
-        <div className="dots">
-          {columns.map((_, i) => (
-            <span key={i} className={`dot ${i === activeDot ? 'active' : ''}`} />
-          ))}
-        </div>
+        {totalCols > 1 && (
+          <div className="dots">
+            {columns.map((_, i) => (
+              <span key={i} className={`dot ${i === activeDot ? 'active' : ''}`} />
+            ))}
+          </div>
+        )}
 
         <div className="footer-bottom">
           <div className="brand-row">
