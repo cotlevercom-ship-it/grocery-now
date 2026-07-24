@@ -1,319 +1,296 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { getSession, supabaseFetch } from '@/lib/supabase'
-import SellerNav from '@/components/SellerNav'
+import { supabaseFetch } from '@/lib/supabase'
 
-export default function SellerPackagePage() {
-  const [loading, setLoading] = useState(true)
-  const [shop, setShop] = useState(null)
+const emptyForm = {
+  name_bn: '', price: '0', max_products: '', max_categories: '', max_subcategories: '', features_bn: '', sort_order: '0', is_active: true,
+}
+
+export default function AdminSellerPackagesPage() {
   const [packages, setPackages] = useState([])
-  const [productCount, setProductCount] = useState(0)
-  const [bkashNumber, setBkashNumber] = useState('')
-  const [requests, setRequests] = useState([])
-  const [switchingId, setSwitchingId] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
-  // Payment form state
-  const [payingPkg, setPayingPkg] = useState(null)
-  const [payerNumber, setPayerNumber] = useState('')
-  const [trxId, setTrxId] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
 
-  async function load() {
+  const [deletingId, setDeletingId] = useState(null)
+
+  async function loadPackages() {
     setLoading(true)
     setError('')
-    const session = getSession()
-    if (!session?.user) {
-      setLoading(false)
-      return
-    }
     try {
-      const [shops, pkgs, settings] = await Promise.all([
-        supabaseFetch(`shops?select=*,seller_packages(*)&owner_id=eq.${session.user.id}`),
-        supabaseFetch('seller_packages?select=*&is_active=eq.true&order=sort_order'),
-        supabaseFetch(`app_settings?select=value&key=eq.bkash_number`),
-      ])
-      const myShop = shops?.[0] || null
-      setShop(myShop)
-      setPackages(pkgs || [])
-      setBkashNumber(settings?.[0]?.value || '')
-      if (myShop) {
-        const [products, reqs] = await Promise.all([
-          supabaseFetch(`products?select=id&shop_id=eq.${myShop.id}`),
-          supabaseFetch(`package_payment_requests?select=*&shop_id=eq.${myShop.id}&order=created_at.desc`),
-        ])
-        setProductCount(products?.length || 0)
-        setRequests(reqs || [])
-      }
+      const data = await supabaseFetch('seller_packages?select=*&order=sort_order')
+      setPackages(data || [])
     } catch (e) {
       console.error(e)
-      setError('তথ্য লোড করতে সমস্যা হয়েছে')
+      setError('প্যাকেজ লোড করতে সমস্যা হয়েছে')
     }
     setLoading(false)
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { loadPackages() }, [])
 
-  const pendingRequestFor = (pkgId) =>
-    requests.find(r => r.package_id === pkgId && r.status === 'pending')
-
-  const handleSwitch = async (pkg) => {
-    if (!shop || pkg.id === shop.package_id) return
-    if (pkg.max_products != null && productCount > pkg.max_products) {
-      setError(`এই প্যাকেজে সর্বোচ্চ ${pkg.max_products}টি পণ্য রাখা যায়, কিন্তু আপনার বর্তমানে ${productCount}টি পণ্য আছে। প্যাকেজ পরিবর্তনের আগে কিছু পণ্য মুছে ফেলুন।`)
-      return
-    }
-    // Free package -> switch instantly
-    if (!pkg.price || pkg.price <= 0) {
-      setError('')
-      setSuccess('')
-      setSwitchingId(pkg.id)
-      try {
-        await supabaseFetch(`shops?id=eq.${shop.id}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ package_id: pkg.id }),
-        })
-        setSuccess(`আপনার প্যাকেজ "${pkg.name_bn}"-এ পরিবর্তন হয়েছে`)
-        await load()
-      } catch (e) {
-        console.error(e)
-        setError('প্যাকেজ পরিবর্তন করতে সমস্যা হয়েছে')
-      }
-      setSwitchingId(null)
-      return
-    }
-    // Paid package -> open bKash payment form
-    setError('')
-    setSuccess('')
-    setPayingPkg(pkg)
-    setPayerNumber('')
-    setTrxId('')
+  const openNewForm = () => {
+    setEditingId(null)
+    setForm(emptyForm)
+    setShowForm(true)
   }
 
-  const handleCopyNumber = async () => {
-    try {
-      await navigator.clipboard.writeText(bkashNumber)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (e) {
-      console.error(e)
-    }
+  const openEditForm = (pkg) => {
+    setEditingId(pkg.id)
+    setForm({
+      name_bn: pkg.name_bn || '',
+      price: String(pkg.price ?? '0'),
+      max_products: pkg.max_products == null ? '' : String(pkg.max_products),
+      max_categories: pkg.max_categories == null ? '' : String(pkg.max_categories),
+      max_subcategories: pkg.max_subcategories == null ? '' : String(pkg.max_subcategories),
+      features_bn: (pkg.features_bn || []).join('\n'),
+      sort_order: String(pkg.sort_order ?? '0'),
+      is_active: pkg.is_active !== false,
+    })
+    setShowForm(true)
   }
 
-  const handleSubmitPayment = async (e) => {
+  const closeForm = () => {
+    setShowForm(false)
+    setEditingId(null)
+    setForm(emptyForm)
+  }
+
+  const handleSave = async (e) => {
     e.preventDefault()
-    if (!payerNumber.trim() || !trxId.trim()) {
-      setError('পেয়ার নাম্বার ও Transaction ID দুটোই দিন')
+    setError('')
+    if (!form.name_bn.trim()) {
+      setError('প্যাকেজের নাম দিন')
       return
     }
-    setSubmitting(true)
-    setError('')
+    const payload = {
+      name_bn: form.name_bn.trim(),
+      price: Number(form.price) || 0,
+      max_products: form.max_products.trim() === '' ? null : Number(form.max_products),
+      max_categories: form.max_categories.trim() === '' ? null : Number(form.max_categories),
+      max_subcategories: form.max_subcategories.trim() === '' ? null : Number(form.max_subcategories),
+      features_bn: form.features_bn.split('\n').map(f => f.trim()).filter(Boolean),
+      sort_order: Number(form.sort_order) || 0,
+      is_active: form.is_active,
+    }
+    setSaving(true)
     try {
-      await supabaseFetch('package_payment_requests', {
-        method: 'POST',
-        body: JSON.stringify({
-          shop_id: shop.id,
-          package_id: payingPkg.id,
-          amount: payingPkg.price,
-          payer_number: payerNumber.trim(),
-          trx_id: trxId.trim(),
-        }),
-      })
-      setSuccess('আপনার পেমেন্ট রিকোয়েস্ট জমা হয়েছে। অ্যাডমিন যাচাই করার পর প্যাকেজ চালু হয়ে যাবে।')
-      setPayingPkg(null)
-      await load()
+      if (editingId) {
+        await supabaseFetch(`seller_packages?id=eq.${editingId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload),
+        })
+      } else {
+        await supabaseFetch('seller_packages', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        })
+      }
+      closeForm()
+      await loadPackages()
     } catch (e) {
       console.error(e)
-      setError('রিকোয়েস্ট জমা দিতে সমস্যা হয়েছে')
+      setError('প্যাকেজ সেভ করতে সমস্যা হয়েছে')
     }
-    setSubmitting(false)
+    setSaving(false)
   }
 
-  if (loading) {
-    return (
-      <SellerNav>
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
-      </SellerNav>
-    )
+  const toggleActive = async (pkg) => {
+    try {
+      await supabaseFetch(`seller_packages?id=eq.${pkg.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_active: !pkg.is_active }),
+      })
+      await loadPackages()
+    } catch (e) {
+      console.error(e)
+      setError('স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে')
+    }
   }
 
-  const currentPkg = shop?.seller_packages || null
-  const usagePercent = currentPkg?.max_products
-    ? Math.min(100, Math.round((productCount / currentPkg.max_products) * 100))
-    : null
+  const handleDelete = async (id) => {
+    if (!confirm('এই প্যাকেজটি মুছে ফেলতে চান? কোনো দোকান এই প্যাকেজে থাকলে সমস্যা হতে পারে।')) return
+    setDeletingId(id)
+    try {
+      await supabaseFetch(`seller_packages?id=eq.${id}`, { method: 'DELETE' })
+      await loadPackages()
+    } catch (e) {
+      console.error(e)
+      setError('প্যাকেজ মুছতে সমস্যা হয়েছে। এই প্যাকেজে দোকান থাকলে আগে সেগুলো সরান বা inactive করুন।')
+    }
+    setDeletingId(null)
+  }
 
   const inputStyle = {
     width: '100%', padding: '10px 12px', borderRadius: '8px',
     border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
   }
-  const labelStyle = {
-    fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px', fontWeight: '500'
-  }
+  const labelStyle = { fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }
 
   return (
-    <SellerNav>
-      <div>
-        <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-          সাবস্ক্রিপশন প্যাকেজ
-        </h1>
-        <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-          আপনার দোকানের জন্য একটি প্যাকেজ বেছে নিন। বেশি প্যাকেজে বেশি পণ্য লিস্ট করার সুযোগ পাবেন।
-        </p>
-
-        {error && (
-          <div style={{
-            maxWidth: '700px', marginBottom: '16px', padding: '10px 12px',
-            background: '#ffebee', color: '#c62828', borderRadius: '8px', fontSize: '13px'
-          }}>{error}</div>
-        )}
-        {success && (
-          <div style={{
-            maxWidth: '700px', marginBottom: '16px', padding: '10px 12px',
-            background: '#e8f5e9', color: '#2d6a4f', borderRadius: '8px', fontSize: '13px'
-          }}>{success}</div>
-        )}
-
-        {/* Current usage */}
-        <div style={{
-          background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
-          padding: '18px 22px', marginBottom: '24px', maxWidth: '700px'
-        }}>
-          <div style={{ fontSize: '13px', color: '#888', marginBottom: '6px' }}>বর্তমান প্যাকেজ</div>
-          <div style={{ fontSize: '18px', fontWeight: '700', color: '#163a2c', marginBottom: '10px' }}>
-            {currentPkg ? currentPkg.name_bn : 'নির্ধারিত নেই'}
-          </div>
-          <div style={{ fontSize: '13px', color: '#555', marginBottom: '6px' }}>
-            পণ্য ব্যবহার: {productCount}{currentPkg?.max_products != null ? ` / ${currentPkg.max_products}` : ' / আনলিমিটেড'}
-          </div>
-          {usagePercent != null && (
-            <div style={{ background: '#eee', borderRadius: '6px', height: '8px', overflow: 'hidden' }}>
-              <div style={{
-                width: `${usagePercent}%`, height: '100%',
-                background: usagePercent >= 100 ? '#c62828' : usagePercent >= 80 ? '#f4a300' : '#2e7d32',
-              }} />
-            </div>
-          )}
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+        <div>
+          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
+            সেলার প্যাকেজ
+          </h1>
+          <p style={{ color: '#888', fontSize: '14px' }}>
+            দাম, পণ্যের সীমা ও ফিচার এখান থেকে নিয়ন্ত্রণ করুন।
+          </p>
         </div>
-
-        {/* bKash payment form (shown when a paid package is selected) */}
-        {payingPkg && (
-          <div style={{
-            background: 'white', borderRadius: '12px', border: '2px solid #e2136e',
-            padding: '22px', marginBottom: '24px', maxWidth: '480px'
-          }}>
-            <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-              bKash দিয়ে পেমেন্ট করুন
-            </div>
-            <div style={{ fontSize: '13px', color: '#777', marginBottom: '16px' }}>
-              "{payingPkg.name_bn}" প্যাকেজ — ৳{payingPkg.price}/মাস
-            </div>
-
-            <div style={{
-              background: '#fdf1f6', border: '1px dashed #e2136e', borderRadius: '8px',
-              padding: '14px', marginBottom: '16px'
-            }}>
-              <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>এই bKash নাম্বারে "Send Money" করুন</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ fontSize: '20px', fontWeight: '700', color: '#e2136e', letterSpacing: '0.5px' }}>
-                  {bkashNumber || '—'}
-                </div>
-                <button type="button" onClick={handleCopyNumber} style={{
-                  background: '#e2136e', color: 'white', border: 'none', borderRadius: '6px',
-                  padding: '5px 12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer'
-                }}>{copied ? 'কপি হয়েছে' : 'কপি করুন'}</button>
-              </div>
-              <div style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
-                টাকা পাঠানোর পর নিচে আপনার bKash নাম্বার ও Transaction ID (Trx ID) দিন। অ্যাডমিন যাচাই করার পর প্যাকেজ চালু হয়ে যাবে।
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmitPayment}>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={labelStyle}>আপনার bKash নাম্বার (যেখান থেকে পাঠিয়েছেন)</label>
-                <input style={inputStyle} value={payerNumber} onChange={e => setPayerNumber(e.target.value)} placeholder="যেমন: 01XXXXXXXXX" />
-              </div>
-              <div style={{ marginBottom: '18px' }}>
-                <label style={labelStyle}>Transaction ID (Trx ID)</label>
-                <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="যেমন: 8N7A6XXXXX" />
-              </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button type="submit" disabled={submitting} style={{
-                  background: submitting ? '#f48fb1' : '#e2136e', color: 'white', border: 'none',
-                  borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
-                }}>{submitting ? 'জমা হচ্ছে...' : 'জমা দিন'}</button>
-                <button type="button" onClick={() => setPayingPkg(null)} style={{
-                  background: '#f0f0f0', color: '#555', border: 'none',
-                  borderRadius: '8px', padding: '10px 20px', fontSize: '14px'
-                }}>বাতিল</button>
-              </div>
-            </form>
-          </div>
+        {!showForm && (
+          <button onClick={openNewForm} style={{
+            background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
+            padding: '10px 18px', fontSize: '14px', fontWeight: '600', whiteSpace: 'nowrap'
+          }}>+ নতুন প্যাকেজ</button>
         )}
-
-        {/* Package options */}
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          {packages.map(pkg => {
-            const isCurrent = shop?.package_id === pkg.id
-            const pendingReq = pendingRequestFor(pkg.id)
-            return (
-              <div key={pkg.id} style={{
-                background: 'white', borderRadius: '12px',
-                border: isCurrent ? '2px solid #2d6a4f' : '1px solid #e0e0e0',
-                padding: '22px', minWidth: '240px', flex: '1 1 240px', position: 'relative'
-              }}>
-                {isCurrent && (
-                  <span style={{
-                    position: 'absolute', top: '14px', right: '14px', fontSize: '11px',
-                    fontWeight: '700', color: '#2d6a4f', background: '#e8f5e9',
-                    padding: '3px 10px', borderRadius: '10px'
-                  }}>বর্তমান</span>
-                )}
-                <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-                  {pkg.name_bn}
-                </div>
-                <div style={{ fontSize: '22px', fontWeight: '700', color: '#2e7d32', marginBottom: '14px' }}>
-                  {pkg.price > 0 ? `৳${pkg.price}` : 'ফ্রি'}
-                  {pkg.price > 0 && <span style={{ fontSize: '12px', color: '#999', fontWeight: '400' }}>/মাস</span>}
-                </div>
-                <ul style={{ margin: 0, padding: 0, listStyle: 'none', marginBottom: '18px' }}>
-                  {(pkg.features_bn || []).map((f, i) => (
-                    <li key={i} style={{
-                      fontSize: '13px', color: '#444', marginBottom: '8px',
-                      display: 'flex', alignItems: 'flex-start', gap: '6px'
-                    }}>
-                      <span style={{ color: '#2e7d32' }}>✓</span> {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {pendingReq ? (
-                  <div style={{
-                    textAlign: 'center', padding: '10px', borderRadius: '8px',
-                    background: '#fff3e0', color: '#f4a300', fontSize: '13px', fontWeight: '600'
-                  }}>
-                    যাচাইকরণ চলছে...
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => handleSwitch(pkg)}
-                    disabled={isCurrent || switchingId === pkg.id}
-                    style={{
-                      width: '100%', border: 'none', borderRadius: '8px', padding: '10px',
-                      fontSize: '14px', fontWeight: '600', cursor: isCurrent ? 'default' : 'pointer',
-                      background: isCurrent ? '#f0f0f0' : '#163a2c',
-                      color: isCurrent ? '#999' : 'white',
-                    }}
-                  >
-                    {isCurrent ? 'সক্রিয়' : switchingId === pkg.id ? 'পরিবর্তন হচ্ছে...' : pkg.price > 0 ? 'bKash দিয়ে নিন' : 'এই প্যাকেজ নিন'}
-                  </button>
-                )}
-              </div>
-            )
-          })}
-        </div>
       </div>
-    </SellerNav>
+
+      {error && (
+        <div style={{
+          maxWidth: '560px', margin: '16px 0', padding: '10px 12px',
+          background: '#ffebee', color: '#c62828', borderRadius: '8px', fontSize: '13px'
+        }}>{error}</div>
+      )}
+
+      {showForm && (
+        <form onSubmit={handleSave} style={{
+          background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
+          padding: '20px', marginBottom: '24px', maxWidth: '480px'
+        }}>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '14px' }}>
+            {editingId ? 'প্যাকেজ এডিট করুন' : 'নতুন প্যাকেজ'}
+          </div>
+
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>প্যাকেজের নাম *</label>
+            <input style={inputStyle} value={form.name_bn}
+              onChange={e => setForm({ ...form, name_bn: e.target.value })}
+              placeholder="যেমন: স্ট্যান্ডার্ড" />
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>দাম (৳/মাস, ফ্রি হলে 0)</label>
+              <input style={inputStyle} type="number" value={form.price}
+                onChange={e => setForm({ ...form, price: e.target.value })} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>সর্বোচ্চ পণ্য (ফাঁকা = আনলিমিটেড)</label>
+              <input style={inputStyle} type="number" value={form.max_products}
+                onChange={e => setForm({ ...form, max_products: e.target.value })} />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>সর্বোচ্চ Category (ফাঁকা = আনলিমিটেড)</label>
+              <input style={inputStyle} type="number" value={form.max_categories}
+                onChange={e => setForm({ ...form, max_categories: e.target.value })} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>সর্বোচ্চ Sub-category (ফাঁকা = আনলিমিটেড)</label>
+              <input style={inputStyle} type="number" value={form.max_subcategories}
+                onChange={e => setForm({ ...form, max_subcategories: e.target.value })} />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>ফিচার (প্রতি লাইনে একটি)</label>
+            <textarea style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} rows={4}
+              value={form.features_bn}
+              onChange={e => setForm({ ...form, features_bn: e.target.value })}
+              placeholder={'যেমন:\nআনলিমিটেড পণ্য\nঅগ্রাধিকার সাপোর্ট'} />
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '14px', alignItems: 'center' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>ক্রম (Sort Order)</label>
+              <input style={inputStyle} type="number" value={form.sort_order}
+                onChange={e => setForm({ ...form, sort_order: e.target.value })} />
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444', marginTop: '18px' }}>
+              <input type="checkbox" checked={form.is_active}
+                onChange={e => setForm({ ...form, is_active: e.target.checked })} />
+              সক্রিয়
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" disabled={saving} style={{
+              background: saving ? '#a5d6a7' : '#2e7d32', color: 'white', border: 'none',
+              borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
+            }}>{saving ? 'সেভ হচ্ছে...' : 'সেভ করুন'}</button>
+            <button type="button" onClick={closeForm} style={{
+              background: '#f0f0f0', color: '#555', border: 'none',
+              borderRadius: '8px', padding: '10px 20px', fontSize: '14px'
+            }}>বাতিল</button>
+          </div>
+        </form>
+      )}
+
+      {loading ? (
+        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+      ) : packages.length === 0 ? (
+        <div style={{
+          textAlign: 'center', padding: '50px 20px', color: '#999',
+          background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0'
+        }}>
+          <div style={{ fontSize: '36px', marginBottom: '10px' }}>💳</div>
+          <p>এখনো কোনো প্যাকেজ যোগ করা হয়নি</p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '640px' }}>
+          {packages.map(pkg => (
+            <div key={pkg.id} style={{
+              background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
+              padding: '16px', opacity: pkg.is_active ? 1 : 0.6
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                <div>
+                  <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c' }}>
+                    {pkg.name_bn} {!pkg.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(নিষ্ক্রিয়)</span>}
+                  </div>
+                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#2e7d32', marginTop: '4px' }}>
+                    {pkg.price > 0 ? `৳${pkg.price}/মাস` : 'ফ্রি'}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
+                    পণ্যের সীমা: {pkg.max_products == null ? 'আনলিমিটেড' : pkg.max_products} ·
+                    Category: {pkg.max_categories == null ? 'আনলিমিটেড' : pkg.max_categories} ·
+                    Sub-category: {pkg.max_subcategories == null ? 'আনলিমিটেড' : pkg.max_subcategories} ·
+                    ক্রম: {pkg.sort_order}
+                  </div>
+                  {pkg.features_bn?.length > 0 && (
+                    <ul style={{ margin: '8px 0 0', paddingLeft: '18px' }}>
+                      {pkg.features_bn.map((f, i) => (
+                        <li key={i} style={{ fontSize: '12px', color: '#555' }}>{f}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+                  <button onClick={() => openEditForm(pkg)} style={{
+                    background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                    borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
+                  }}>এডিট</button>
+                  <button onClick={() => toggleActive(pkg)} style={{
+                    background: '#fff3e0', color: '#f4a300', border: 'none',
+                    borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
+                  }}>{pkg.is_active ? 'নিষ্ক্রিয় করুন' : 'সক্রিয় করুন'}</button>
+                  <button onClick={() => handleDelete(pkg.id)} disabled={deletingId === pkg.id} style={{
+                    background: '#ffebee', color: '#c62828', border: 'none',
+                    borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
+                  }}>{deletingId === pkg.id ? 'মুছছে...' : 'মুছুন'}</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
