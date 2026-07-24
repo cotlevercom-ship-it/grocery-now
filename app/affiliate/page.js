@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { supabaseFetch } from '@/lib/supabase'
+import { supabaseFetch, hashPin } from '@/lib/supabase'
 
 const COLORS = {
   ink: '#0f2a20',
@@ -26,6 +26,7 @@ function generateCode(name) {
 export default function AffiliatePage() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [pin, setPin] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [result, setResult] = useState(null) // { referral_code }
@@ -52,11 +53,29 @@ export default function AffiliatePage() {
       setError('নাম এবং ফোন নাম্বার দিন')
       return
     }
+    if (!/^\d{4}$/.test(pin)) {
+      setError('৪ ডিজিটের PIN দিন (শুধু সংখ্যা)')
+      return
+    }
     setSubmitting(true)
     try {
+      const pinHash = await hashPin(pin)
       const existing = await supabaseFetch(`affiliates?select=*&phone=eq.${encodeURIComponent(phone.trim())}`)
       if (existing && existing.length > 0) {
-        setResult(existing[0])
+        const aff = existing[0]
+        if (!aff.pin_hash) {
+          // backward-compatible: no pin set yet, set it now
+          const updated = await supabaseFetch(`affiliates?id=eq.${aff.id}`, {
+            method: 'PATCH', body: JSON.stringify({ pin_hash: pinHash }),
+          })
+          setResult(Array.isArray(updated) ? updated[0] : aff)
+        } else if (aff.pin_hash !== pinHash) {
+          setError('এই ফোন নাম্বারে ভিন্ন PIN সেট করা আছে')
+          setSubmitting(false)
+          return
+        } else {
+          setResult(aff)
+        }
         setSubmitting(false)
         return
       }
@@ -67,7 +86,7 @@ export default function AffiliatePage() {
           const code = generateCode(name)
           const rows = await supabaseFetch('affiliates', {
             method: 'POST',
-            body: JSON.stringify({ name: name.trim(), phone: phone.trim(), referral_code: code }),
+            body: JSON.stringify({ name: name.trim(), phone: phone.trim(), referral_code: code, pin_hash: pinHash }),
           })
           created = Array.isArray(rows) ? rows[0] : rows
         } catch (err) {
@@ -121,6 +140,17 @@ export default function AffiliatePage() {
                   <label>ফোন নাম্বার</label>
                   <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="01XXXXXXXXX" />
                 </div>
+                <div className="field">
+                  <label>৪ ডিজিট PIN (ড্যাশবোর্ডে লগইনের জন্য)</label>
+                  <input
+                    value={pin}
+                    onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    placeholder="যেমন: 1234"
+                    inputMode="numeric"
+                    maxLength={4}
+                    type="password"
+                  />
+                </div>
                 {error && <div className="alert">{error}</div>}
                 <button type="submit" className="submit-btn" disabled={submitting}>
                   {submitting ? 'অপেক্ষা করুন...' : 'রেফারেল লিংক নিন'}
@@ -140,8 +170,9 @@ export default function AffiliatePage() {
                 </button>
               </div>
               <div className="note">
-                লিংকটি সংরক্ষণ করে রাখুন — পরবর্তীতে এই পেজে আবার আপনার নাম্বার (<b>{result.phone}</b>) দিয়ে এলে একই লিংক ফিরে পাবেন।
+                লিংকটি সংরক্ষণ করে রাখুন — পরবর্তীতে এই পেজে আবার আপনার নাম্বার ও PIN দিয়ে এলে একই লিংক ফিরে পাবেন।
               </div>
+              <Link href="/affiliate/dashboard" className="dashboard-link">আমার ইনকাম ড্যাশবোর্ড দেখুন →</Link>
             </div>
           )}
           <Link href="/" className="back-link">← হোমে ফিরে যান</Link>
@@ -372,6 +403,14 @@ export default function AffiliatePage() {
           font-size: 13px;
           color: ${COLORS.textMuted};
           margin-top: 22px;
+        }
+        .dashboard-link {
+          display: block;
+          text-align: center;
+          font-size: 13px;
+          font-weight: 700;
+          color: ${COLORS.forestMid};
+          margin-top: 16px;
         }
 
         @media (max-width: 860px) {
