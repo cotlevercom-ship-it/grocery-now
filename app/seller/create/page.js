@@ -274,7 +274,7 @@ function CreateShopForm() {
             <div style={{ fontSize: '13px', fontWeight: '700', color: '#e2136e', marginBottom: '8px' }}>
               bKash পেমেন্ট তথ্য
             </div>
-            <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>এই bKash নাম্বারে "Send Money" করুন</div>
+            <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>এই bKash নাম্বারে "Payment" করুন (Send Money নয়)</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{ fontSize: '18px', fontWeight: '700', color: '#e2136e', letterSpacing: '0.5px' }}>
                 {bkashNumber || '—'}
