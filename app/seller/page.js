@@ -13,25 +13,18 @@ const steps = [
 
 const packages = [
   {
-    name: 'ফ্রি',
+    name: 'বেসিক',
     price: '৳০',
     period: '/মাস',
-    features: ['২০টি পর্যন্ত প্রোডাক্ট', 'বেসিক ড্যাশবোর্ড', 'ইমেইল সাপোর্ট'],
+    features: ['১৫টি পর্যন্ত প্রোডাক্ট', 'অর্ডার ম্যানেজমেন্ট', 'বেসিক দোকান প্রোফাইল'],
     highlight: false,
-  },
-  {
-    name: 'বেসিক',
-    price: '৳৪৯৯',
-    period: '/মাস',
-    features: ['১০০টি পর্যন্ত প্রোডাক্ট', 'অর্ডার অ্যানালিটিক্স', 'অগ্রাধিকার সাপোর্ট', 'প্রোমো ব্যানার'],
-    highlight: true,
   },
   {
     name: 'প্রিমিয়াম',
-    price: '৳৯৯৯',
+    price: '৳৪৯৯',
     period: '/মাস',
-    features: ['আনলিমিটেড প্রোডাক্ট', 'অ্যাডভান্সড অ্যানালিটিক্স', '২৪/৭ সাপোর্ট', 'হোমপেজে ফিচার্ড'],
-    highlight: false,
+    features: ['আনলিমিটেড প্রোডাক্ট লিস্ট', 'অর্ডার ম্যানেজমেন্ট', 'ফিচার্ড দোকান হওয়ার সুযোগ', 'অগ্রাধিকার সাপোর্ট'],
+    highlight: true,
   },
 ]
 
@@ -243,7 +236,7 @@ export default function SellerLandingPage() {
           .hero { padding: 76px 20px 88px; }
           .cta { width: auto; }
           .section { padding: 64px 20px; }
-          .package-grid { grid-template-columns: repeat(3, 1fr); }
+          .package-grid { grid-template-columns: repeat(2, 1fr); max-width: 640px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .cta { transition: none; }
