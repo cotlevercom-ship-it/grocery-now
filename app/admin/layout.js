@@ -62,6 +62,7 @@ export default function AdminLayout({ children }) {
     { href: '/admin/orders', label: 'অর্ডার', icon: '🧾' },
     { href: '/admin/areas', label: 'এলাকা', icon: '📍' },
     { href: '/admin/banners', label: 'ব্যানার', icon: '🖼️' },
+    { href: '/admin/package-requests', label: 'পেমেন্ট রিকোয়েস্ট', icon: '💳' },
   ]
 
   const handleLogout = () => {
