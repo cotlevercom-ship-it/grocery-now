@@ -63,12 +63,10 @@ function SellerLoginForm() {
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setNotice('')
 
     if (!email.trim() || !password.trim()) {
       setError('ইমেইল এবং পাসওয়ার্ড দিন')
@@ -82,13 +80,7 @@ function SellerLoginForm() {
     setSubmitting(true)
     try {
       if (mode === 'signup') {
-        const data = await signUp(email.trim(), password)
-        if (!data.access_token) {
-          setNotice('অ্যাকাউন্ট তৈরি হয়েছে। ইমেইল ভেরিফাই করার প্রয়োজন হলে, ভেরিফাই করে আবার লগইন করুন।')
-          setMode('login')
-          setSubmitting(false)
-          return
-        }
+        await signUp(email.trim(), password)
         router.push('/seller/create')
       } else {
         await signIn(email.trim(), password)
@@ -104,7 +96,6 @@ function SellerLoginForm() {
   const switchMode = (next) => {
     setMode(next)
     setError('')
-    setNotice('')
   }
 
   return (
@@ -193,7 +184,6 @@ function SellerLoginForm() {
               </div>
 
               {error && <div className="alert alert-error">{error}</div>}
-              {notice && <div className="alert alert-notice">{notice}</div>}
 
               <button type="submit" className="submit-btn" disabled={submitting}>
                 {submitting
@@ -421,10 +411,6 @@ function SellerLoginForm() {
         .alert-error {
           background: #fdeceb;
           color: #b3261e;
-        }
-        .alert-notice {
-          background: #e9f5ee;
-          color: #1b5e20;
         }
         .submit-btn {
           width: 100%;
