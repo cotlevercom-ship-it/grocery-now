@@ -1,10 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 
-export default function CreateShopPage() {
+function CreateShopForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planParam = searchParams.get('plan')
@@ -17,17 +17,15 @@ export default function CreateShopPage() {
   const [name, setName] = useState('')
   const [areaId, setAreaId] = useState('')
 
-  // Package selection
   const [packages, setPackages] = useState([])
   const [selectedPkgId, setSelectedPkgId] = useState('')
   const [bkashNumber, setBkashNumber] = useState('')
 
-  // Payment fields (shown inline when a paid package is selected)
   const [payerNumber, setPayerNumber] = useState('')
   const [trxId, setTrxId] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const [step, setStep] = useState('form') // 'form' | 'done'
+  const [step, setStep] = useState('form')
 
   useEffect(() => {
     async function init() {
@@ -120,7 +118,6 @@ export default function CreateShopPage() {
           delivery_charge: 20,
           min_order_amount: 0,
           package_id: selectedPkgId || null,
-          // Paid package: shop stays hidden until admin verifies the bKash payment
           is_active: !isPaidPkg,
         }),
       })
@@ -144,7 +141,7 @@ export default function CreateShopPage() {
       }
     } catch (err) {
       console.error(err)
-      setError(err.message || 'দোকান তৈরি করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError(err.message || 'দোকান তৈরি করতে সমস্যা হয়েছে, আবার চেষ্ট করুন')
       setSubmitting(false)
     }
   }
@@ -166,7 +163,6 @@ export default function CreateShopPage() {
   }
   const labelStyle = { fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }
 
-  // ---- Step: done (only reached after a paid package + payment request submitted) ----
   if (step === 'done') {
     return (
       <div style={{
@@ -178,7 +174,7 @@ export default function CreateShopPage() {
           দোকান তৈরি ও পেমেন্ট রিকোয়েস্ট জমা হয়েছে
         </div>
         <div style={{ fontSize: '14px', color: '#666', marginBottom: '24px', maxWidth: '340px' }}>
-          অ্যাডমিন আপনার Transaction ID যাচাই করার পর আপনার দোকান ক্রেতাদের কাছে দৃশ্যমান হবে।
+          অ্যাডমিন আপনার Transaction ID যাচাই করার পর আপনার দোকান ক্রেতাদের কাছে দৃশ্যমান হব।
         </div>
         <button onClick={() => router.push('/seller/dashboard')} style={{
           background: '#2e7d32', color: 'white', border: 'none', borderRadius: '10px',
@@ -188,10 +184,8 @@ export default function CreateShopPage() {
     )
   }
 
-  // ---- Step: form (single step — includes payment fields inline if a paid package is picked) ----
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      {/* Topbar */}
       <div style={{
         background: '#2e7d32', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
@@ -320,9 +314,24 @@ export default function CreateShopPage() {
             color: 'white', padding: '12px', borderRadius: '10px', fontSize: '14px',
             fontWeight: '600', border: 'none'
           }}>
-          {submitting ? 'তৈরি হচ্ছে...' : isPaidPkg ? 'দোকান তৈরি করুন ও পেমেন্ট জমা দিন' : 'দোকান তৈরি করুন'}
+          {submitting ? 'তৈরি হচ্...' : isPaidPkg ? 'দোকান তৈরি করুন ও পেমেন্ট জমা দন' : 'দোকান তৈরি করুন'}
         </button>
       </form>
     </div>
+  )
+}
+
+export default function CreateShopPage() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        minHeight: '100vh', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', color: '#888', fontSize: '14px'
+      }}>
+        লোড হচ্ছে...
+      </div>
+    }>
+      <CreateShopForm />
+    </Suspense>
   )
 }
