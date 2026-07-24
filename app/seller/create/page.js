@@ -12,23 +12,19 @@ export default function CreateShopPage() {
 
   const [areas, setAreas] = useState([])
   const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
   const [areaId, setAreaId] = useState('')
-  const [category, setCategory] = useState('general')
-  const [deliveryCharge, setDeliveryCharge] = useState('20')
-  const [minOrderAmount, setMinOrderAmount] = useState('0')
 
   // Package selection
   const [packages, setPackages] = useState([])
   const [selectedPkgId, setSelectedPkgId] = useState('')
   const [bkashNumber, setBkashNumber] = useState('')
 
-  // Payment step (shown after shop is created with a paid package)
-  const [step, setStep] = useState('form') // 'form' | 'payment' | 'done'
-  const [createdShopId, setCreatedShopId] = useState(null)
+  // Payment fields (shown inline when a paid package is selected)
   const [payerNumber, setPayerNumber] = useState('')
   const [trxId, setTrxId] = useState('')
   const [copied, setCopied] = useState(false)
+
+  const [step, setStep] = useState('form') // 'form' | 'done'
 
   useEffect(() => {
     async function init() {
@@ -65,6 +61,16 @@ export default function CreateShopPage() {
   const selectedPkg = packages.find(p => p.id === selectedPkgId) || null
   const isPaidPkg = selectedPkg && selectedPkg.price > 0
 
+  const handleCopyNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(bkashNumber)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -81,6 +87,10 @@ export default function CreateShopPage() {
       setError('একটি প্যাকেজ বেছে নিন')
       return
     }
+    if (isPaidPkg && (!payerNumber.trim() || !trxId.trim())) {
+      setError('bKash নাম্বার ও Transaction ID দুটোই দিন')
+      return
+    }
 
     setSubmitting(true)
     try {
@@ -90,12 +100,12 @@ export default function CreateShopPage() {
         headers: { Prefer: 'return=representation' },
         body: JSON.stringify({
           name: name.trim(),
-          description: description.trim() || null,
+          description: null,
           area_id: areaId,
           owner_id: session.user.id,
-          category: category.trim() || 'general',
-          delivery_charge: Number(deliveryCharge) || 0,
-          min_order_amount: Number(minOrderAmount) || 0,
+          category: 'general',
+          delivery_charge: 20,
+          min_order_amount: 0,
           package_id: selectedPkgId || null,
           // Paid package: shop stays hidden until admin verifies the bKash payment
           is_active: !isPaidPkg,
@@ -104,8 +114,17 @@ export default function CreateShopPage() {
 
       if (isPaidPkg) {
         const shop = Array.isArray(rows) ? rows[0] : rows
-        setCreatedShopId(shop?.id || null)
-        setStep('payment')
+        await supabaseFetch('package_payment_requests', {
+          method: 'POST',
+          body: JSON.stringify({
+            shop_id: shop?.id || null,
+            package_id: selectedPkgId,
+            amount: selectedPkg.price,
+            payer_number: payerNumber.trim(),
+            trx_id: trxId.trim(),
+          }),
+        })
+        setStep('done')
         setSubmitting(false)
       } else {
         router.push('/seller/dashboard')
@@ -115,43 +134,6 @@ export default function CreateShopPage() {
       setError(err.message || 'দোকান তৈরি করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
       setSubmitting(false)
     }
-  }
-
-  const handleCopyNumber = async () => {
-    try {
-      await navigator.clipboard.writeText(bkashNumber)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const handleSubmitPayment = async (e) => {
-    e.preventDefault()
-    if (!payerNumber.trim() || !trxId.trim()) {
-      setError('পেয়ার নাম্বার ও Transaction ID দুটোই দিন')
-      return
-    }
-    setSubmitting(true)
-    setError('')
-    try {
-      await supabaseFetch('package_payment_requests', {
-        method: 'POST',
-        body: JSON.stringify({
-          shop_id: createdShopId,
-          package_id: selectedPkgId,
-          amount: selectedPkg.price,
-          payer_number: payerNumber.trim(),
-          trx_id: trxId.trim(),
-        }),
-      })
-      setStep('done')
-    } catch (e) {
-      console.error(e)
-      setError('রিকোয়েস্ট জমা দিতে সমস্যা হয়েছে')
-    }
-    setSubmitting(false)
   }
 
   if (checking) {
@@ -171,76 +153,7 @@ export default function CreateShopPage() {
   }
   const labelStyle = { fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }
 
-  // ---- Step: payment (after shop created with a paid package) ----
-  if (step === 'payment') {
-    return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-        <div style={{
-          background: '#2e7d32', padding: '14px 16px',
-          display: 'flex', alignItems: 'center', gap: '12px'
-        }}>
-          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
-            bKash পেমেন্ট সম্পন্ন করুন
-          </div>
-        </div>
-
-        <div style={{
-          background: 'white', margin: '16px', borderRadius: '12px',
-          border: '2px solid #e2136e', padding: '22px'
-        }}>
-          <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-            "{selectedPkg.name_bn}" প্যাকেজ — ৳{selectedPkg.price}/মাস
-          </div>
-          <div style={{ fontSize: '13px', color: '#777', marginBottom: '16px' }}>
-            দোকান তৈরি হয়েছে। পেমেন্ট যাচাই হওয়ার পর এটি ক্রেতাদের কাছে দৃশ্যমান হবে।
-          </div>
-
-          <div style={{
-            background: '#fdf1f6', border: '1px dashed #e2136e', borderRadius: '8px',
-            padding: '14px', marginBottom: '16px'
-          }}>
-            <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>এই bKash নাম্বারে "Send Money" করুন</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ fontSize: '20px', fontWeight: '700', color: '#e2136e', letterSpacing: '0.5px' }}>
-                {bkashNumber || '—'}
-              </div>
-              <button type="button" onClick={handleCopyNumber} style={{
-                background: '#e2136e', color: 'white', border: 'none', borderRadius: '6px',
-                padding: '5px 12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer'
-              }}>{copied ? 'কপি হয়েছে' : 'কপি করুন'}</button>
-            </div>
-            <div style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
-              টাকা পাঠানোর পর নিচে আপনার bKash নাম্বার ও Transaction ID (Trx ID) দিন। অ্যাডমিন যাচাই করার পর দোকান চালু হয়ে যাবে।
-            </div>
-          </div>
-
-          {error && (
-            <div style={{
-              marginBottom: '16px', padding: '10px 12px',
-              background: '#ffebee', color: '#c62828', borderRadius: '8px', fontSize: '13px'
-            }}>{error}</div>
-          )}
-
-          <form onSubmit={handleSubmitPayment}>
-            <div style={{ marginBottom: '12px' }}>
-              <label style={labelStyle}>আপনার bKash নাম্বার (যেখান থেকে পাঠিয়েছেন)</label>
-              <input style={inputStyle} value={payerNumber} onChange={e => setPayerNumber(e.target.value)} placeholder="যেমন: 01XXXXXXXXX" />
-            </div>
-            <div style={{ marginBottom: '18px' }}>
-              <label style={labelStyle}>Transaction ID (Trx ID)</label>
-              <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="যেমন: 8N7A6XXXXX" />
-            </div>
-            <button type="submit" disabled={submitting} style={{
-              width: '100%', background: submitting ? '#f48fb1' : '#e2136e', color: 'white',
-              border: 'none', borderRadius: '10px', padding: '12px', fontSize: '14px', fontWeight: '600'
-            }}>{submitting ? 'জমা হচ্ছে...' : 'পেমেন্ট রিকোয়েস্ট জমা দিন'}</button>
-          </form>
-        </div>
-      </div>
-    )
-  }
-
-  // ---- Step: done ----
+  // ---- Step: done (only reached after a paid package + payment request submitted) ----
   if (step === 'done') {
     return (
       <div style={{
@@ -249,7 +162,7 @@ export default function CreateShopPage() {
       }}>
         <div style={{ fontSize: '44px', marginBottom: '14px' }}>✅</div>
         <div style={{ fontSize: '17px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>
-          পেমেন্ট রিকোয়েস্ট জমা হয়েছে
+          দোকান তৈরি ও পেমেন্ট রিকোয়েস্ট জমা হয়েছে
         </div>
         <div style={{ fontSize: '14px', color: '#666', marginBottom: '24px', maxWidth: '340px' }}>
           অ্যাডমিন আপনার Transaction ID যাচাই করার পর আপনার দোকান ক্রেতাদের কাছে দৃশ্যমান হবে।
@@ -262,7 +175,7 @@ export default function CreateShopPage() {
     )
   }
 
-  // ---- Step: form ----
+  // ---- Step: form (single step — includes payment fields inline if a paid package is picked) ----
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       {/* Topbar */}
@@ -293,18 +206,7 @@ export default function CreateShopPage() {
           />
         </div>
 
-        <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>বিবরণ</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="আপনার দোকান সম্পর্কে সংক্ষেপে লিখুন"
-            rows={3}
-            style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '14px' }}>
+        <div style={{ marginBottom: '18px' }}>
           <label style={labelStyle}>এলাকা *</label>
           <select
             value={areaId}
@@ -316,38 +218,6 @@ export default function CreateShopPage() {
               <option key={area.id} value={area.id}>{area.name}</option>
             ))}
           </select>
-        </div>
-
-        <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>ক্যাটাগরি</label>
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            placeholder="যেমন: মুদি দোকান, ফার্মেসি"
-            style={inputStyle}
-          />
-        </div>
-
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '18px' }}>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>ডেলিভারি চার্জ (৳)</label>
-            <input
-              type="number"
-              value={deliveryCharge}
-              onChange={(e) => setDeliveryCharge(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>ন্যূনতম অর্ডার (৳)</label>
-            <input
-              type="number"
-              value={minOrderAmount}
-              onChange={(e) => setMinOrderAmount(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
         </div>
 
         {packages.length > 0 && (
@@ -386,11 +256,39 @@ export default function CreateShopPage() {
                 )
               })}
             </div>
-            {isPaidPkg && (
-              <div style={{ fontSize: '12px', color: '#f4a300', marginTop: '10px' }}>
-                পেইড প্যাকেজ বেছে নিলে দোকান তৈরির পর bKash পেমেন্ট সম্পন্ন করতে হবে। অ্যাডমিন যাচাই করার আগ পর্যন্ত দোকানটি ক্রেতাদের কাছে দেখা যাবে না।
+          </div>
+        )}
+
+        {isPaidPkg && (
+          <div style={{
+            background: '#fdf1f6', border: '1px dashed #e2136e', borderRadius: '8px',
+            padding: '14px', marginBottom: '18px'
+          }}>
+            <div style={{ fontSize: '13px', fontWeight: '700', color: '#e2136e', marginBottom: '8px' }}>
+              bKash পেমেন্ট তথ্য
+            </div>
+            <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>এই bKash নাম্বারে "Send Money" করুন</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <div style={{ fontSize: '18px', fontWeight: '700', color: '#e2136e', letterSpacing: '0.5px' }}>
+                {bkashNumber || '—'}
               </div>
-            )}
+              <button type="button" onClick={handleCopyNumber} style={{
+                background: '#e2136e', color: 'white', border: 'none', borderRadius: '6px',
+                padding: '5px 12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer'
+              }}>{copied ? 'কপি হয়েছে' : 'কপি করুন'}</button>
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={labelStyle}>আপনার bKash নাম্বার (যেখান থেকে পাঠিয়েছেন)</label>
+              <input style={inputStyle} value={payerNumber} onChange={e => setPayerNumber(e.target.value)} placeholder="যেমন: 01XXXXXXXXX" />
+            </div>
+            <div>
+              <label style={labelStyle}>Transaction ID (Trx ID)</label>
+              <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="যেমন: 8N7A6XXXXX" />
+            </div>
+            <div style={{ fontSize: '12px', color: '#f4a300', marginTop: '10px' }}>
+              অ্যাডমিন যাচাই করার আগ পর্যন্ত দোকানটি ক্রেতাদের কাছে দেখা যাবে না।
+            </div>
           </div>
         )}
 
@@ -409,7 +307,7 @@ export default function CreateShopPage() {
             color: 'white', padding: '12px', borderRadius: '10px', fontSize: '14px',
             fontWeight: '600', border: 'none'
           }}>
-          {submitting ? 'তৈরি হচ্ছে...' : isPaidPkg ? 'দোকান তৈরি করুন ও পেমেন্ট করুন' : 'দোকান তৈরি করুন'}
+          {submitting ? 'তৈরি হচ্ছে...' : isPaidPkg ? 'দোকান তৈরি করুন ও পেমেন্ট জমা দিন' : 'দোকান তৈরি করুন'}
         </button>
       </form>
     </div>
