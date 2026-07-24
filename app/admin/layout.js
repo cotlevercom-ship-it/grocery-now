@@ -64,6 +64,8 @@ export default function AdminLayout({ children }) {
     { href: '/admin/banners', label: 'ব্যানার', icon: '🖼️' },
     { href: '/admin/package-requests', label: 'পেমেন্ট রিকোয়েস্ট', icon: '💳' },
     { href: '/admin/seller-packages', label: 'সেলার প্যাকেজ', icon: '🏷️' },
+    { href: '/admin/pages', label: 'পেজ ম্যানেজমেন্ট', icon: '📄' },
+    { href: '/admin/settings', label: 'সেটিংস', icon: '⚙️' },
   ]
 
   const handleLogout = () => {
