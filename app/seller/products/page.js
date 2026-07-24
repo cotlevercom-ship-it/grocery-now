@@ -19,6 +19,8 @@ const emptyProductForm = {
 export default function SellerProductsPage() {
   const [shopId, setShopId] = useState('')
   const [loadingShop, setLoadingShop] = useState(true)
+  const [maxProducts, setMaxProducts] = useState(null) // null = unlimited
+  const [packageName, setPackageName] = useState('')
 
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
@@ -49,8 +51,12 @@ export default function SellerProductsPage() {
       try {
         const session = getSession()
         if (session?.user) {
-          const shops = await supabaseFetch(`shops?select=id&owner_id=eq.${session.user.id}`)
-          if (shops && shops.length > 0) setShopId(shops[0].id)
+          const shops = await supabaseFetch(`shops?select=id,seller_packages(name_bn,max_products)&owner_id=eq.${session.user.id}`)
+          if (shops && shops.length > 0) {
+            setShopId(shops[0].id)
+            setMaxProducts(shops[0].seller_packages?.max_products ?? null)
+            setPackageName(shops[0].seller_packages?.name_bn || '')
+          }
         }
       } catch (e) {
         console.error(e)
@@ -140,7 +146,13 @@ export default function SellerProductsPage() {
   }
 
   // ---------- Product handlers ----------
+  const atProductLimit = maxProducts != null && products.length >= maxProducts
+
   const openAddProduct = () => {
+    if (atProductLimit) {
+      setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxProducts}টি পণ্য যোগ করা যায়। আরও পণ্য যোগ করতে প্যাকেজ আপগ্রেড করুন।`)
+      return
+    }
     setEditingProductId(null)
     setProductForm(emptyProductForm)
     setImageFile(null)
@@ -189,6 +201,10 @@ export default function SellerProductsPage() {
     }
     if (!productForm.price) {
       setError('Please enter a price')
+      return
+    }
+    if (!editingProductId && maxProducts != null && products.length >= maxProducts) {
+      setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxProducts}টি পণ্য যোগ করা যায়। আরও পণ্য যোগ করতে প্যাকেজ আপগ্রেড করুন।`)
       return
     }
     setSavingProduct(true)
@@ -350,11 +366,21 @@ export default function SellerProductsPage() {
           {/* ---------- Products section ---------- */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>Products</div>
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>Products</div>
+                {maxProducts != null && (
+                  <div style={{ fontSize: '12px', color: atProductLimit ? '#c62828' : '#888', marginTop: '2px' }}>
+                    {products.length} / {maxProducts} used ({packageName} package)
+                    {atProductLimit && (
+                      <a href="/seller/package" style={{ color: '#2d6a4f', fontWeight: '600', marginLeft: '6px' }}>Upgrade →</a>
+                    )}
+                  </div>
+                )}
+              </div>
               {!showProductForm && (
                 <button onClick={openAddProduct} style={{
-                  background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
-                  padding: '10px 18px', fontSize: '14px', fontWeight: '600'
+                  background: atProductLimit ? '#ccc' : '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
+                  padding: '10px 18px', fontSize: '14px', fontWeight: '600', cursor: atProductLimit ? 'not-allowed' : 'pointer'
                 }}>+ Add Product</button>
               )}
             </div>
