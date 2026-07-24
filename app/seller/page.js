@@ -250,7 +250,7 @@ export default function SellerLandingPage() {
             আপনার দোকান নিয়ে আসুন <em>অনলাইনে</em>
           </h1>
           <p>GroceryNow-তে যুক্ত হয়ে আপনার এলাকার হাজারো ক্রেতার কাছে সরাসরি প্রোডাক্ট পৌঁছে দিন</p>
-          <Link href="/seller/create" className="cta">বিক্রেতা হিসেবে শুরু করুন</Link>
+          <Link href="/seller/create?plan=free" className="cta">বিক্রেতা হিসেবে শুরু করুন</Link>
           <Link href="/seller/login" className="login-link">আগে থেকে অ্যাকাউন্ট আছে? লগইন করুন</Link>
         </div>
       </section>
@@ -292,7 +292,7 @@ export default function SellerLandingPage() {
                 <ul className="package-features">
                   {p.features.map(feat => <li key={feat}>{feat}</li>)}
                 </ul>
-                <Link href="/seller/create" className={`package-btn ${p.highlight ? 'highlight' : 'plain'}`}>
+                <Link href={`/seller/create?plan=${p.highlight ? 'premium' : 'free'}`} className={`package-btn ${p.highlight ? 'highlight' : 'plain'}`}>
                   শুরু করুন
                 </Link>
               </div>
