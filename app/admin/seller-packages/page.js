@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
 const emptyForm = {
-  name_bn: '', price: '0', max_products: '', features_bn: '', sort_order: '0', is_active: true,
+  name_bn: '', price: '0', max_products: '', max_categories: '', max_subcategories: '', features_bn: '', sort_order: '0', is_active: true,
 }
 
 export default function AdminSellerPackagesPage() {
@@ -45,6 +45,8 @@ export default function AdminSellerPackagesPage() {
       name_bn: pkg.name_bn || '',
       price: String(pkg.price ?? '0'),
       max_products: pkg.max_products == null ? '' : String(pkg.max_products),
+      max_categories: pkg.max_categories == null ? '' : String(pkg.max_categories),
+      max_subcategories: pkg.max_subcategories == null ? '' : String(pkg.max_subcategories),
       features_bn: (pkg.features_bn || []).join('\n'),
       sort_order: String(pkg.sort_order ?? '0'),
       is_active: pkg.is_active !== false,
@@ -69,6 +71,8 @@ export default function AdminSellerPackagesPage() {
       name_bn: form.name_bn.trim(),
       price: Number(form.price) || 0,
       max_products: form.max_products.trim() === '' ? null : Number(form.max_products),
+      max_categories: form.max_categories.trim() === '' ? null : Number(form.max_categories),
+      max_subcategories: form.max_subcategories.trim() === '' ? null : Number(form.max_subcategories),
       features_bn: form.features_bn.split('\n').map(f => f.trim()).filter(Boolean),
       sort_order: Number(form.sort_order) || 0,
       is_active: form.is_active,
@@ -182,6 +186,19 @@ export default function AdminSellerPackagesPage() {
             </div>
           </div>
 
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>সর্বোচ্চ Category (ফাঁকা = আনলিমিটেড)</label>
+              <input style={inputStyle} type="number" value={form.max_categories}
+                onChange={e => setForm({ ...form, max_categories: e.target.value })} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>সর্বোচ্চ Sub-category (ফাঁকা = আনলিমিটেড)</label>
+              <input style={inputStyle} type="number" value={form.max_subcategories}
+                onChange={e => setForm({ ...form, max_subcategories: e.target.value })} />
+            </div>
+          </div>
+
           <div style={{ marginBottom: '14px' }}>
             <label style={labelStyle}>ফিচার (প্রতি লাইনে একটি)</label>
             <textarea style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} rows={4}
@@ -242,7 +259,10 @@ export default function AdminSellerPackagesPage() {
                     {pkg.price > 0 ? `৳${pkg.price}/মাস` : 'ফ্রি'}
                   </div>
                   <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
-                    পণ্যের সীমা: {pkg.max_products == null ? 'আনলিমিটেড' : pkg.max_products} · ক্রম: {pkg.sort_order}
+                    পণ্যের সীমা: {pkg.max_products == null ? 'আনলিমিটেড' : pkg.max_products} ·
+                    Category: {pkg.max_categories == null ? 'আনলিমিটেড' : pkg.max_categories} ·
+                    Sub-category: {pkg.max_subcategories == null ? 'আনলিমিটেড' : pkg.max_subcategories} ·
+                    ক্রম: {pkg.sort_order}
                   </div>
                   {pkg.features_bn?.length > 0 && (
                     <ul style={{ margin: '8px 0 0', paddingLeft: '18px' }}>
@@ -273,4 +293,4 @@ export default function AdminSellerPackagesPage() {
       )}
     </div>
   )
-}
+}s
