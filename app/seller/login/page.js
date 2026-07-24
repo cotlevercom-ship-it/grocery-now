@@ -57,6 +57,7 @@ function SellerLoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const nextUrl = searchParams.get('next') || '/seller/dashboard'
+  const refCode = searchParams.get('ref') || ''
 
   const [mode, setMode] = useState('login') // 'login' | 'signup'
   const [email, setEmail] = useState('')
@@ -81,7 +82,7 @@ function SellerLoginForm() {
     try {
       if (mode === 'signup') {
         await signUp(email.trim(), password)
-        router.push('/seller/create')
+        router.push(refCode ? `/seller/create?ref=${encodeURIComponent(refCode)}` : '/seller/create')
       } else {
         await signIn(email.trim(), password)
         router.push(nextUrl)
