@@ -1,11 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 
 export default function CreateShopPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const planParam = searchParams.get('plan')
+
   const [checking, setChecking] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -47,8 +50,18 @@ export default function CreateShopPage() {
         setAreas(areaRows || [])
         setPackages(pkgRows || [])
         setBkashNumber(settings?.[0]?.value || '')
-        const freePkg = (pkgRows || []).find(p => !p.price || p.price <= 0)
-        setSelectedPkgId(freePkg ? freePkg.id : (pkgRows?.[0]?.id || ''))
+
+        const pkgList = pkgRows || []
+        let initialPkg = null
+        if (planParam === 'premium') {
+          initialPkg = pkgList.find(p => p.price > 0)
+        } else if (planParam === 'free') {
+          initialPkg = pkgList.find(p => !p.price || p.price <= 0)
+        }
+        if (!initialPkg) {
+          initialPkg = pkgList.find(p => !p.price || p.price <= 0) || pkgList[0]
+        }
+        setSelectedPkgId(initialPkg ? initialPkg.id : '')
       } catch (e) {
         console.error(e)
         setError('তথ্য লোড করতে সমস্যা হয়েছে, পেজ রিফ্রেশ করুন')
@@ -56,7 +69,7 @@ export default function CreateShopPage() {
       setChecking(false)
     }
     init()
-  }, [router])
+  }, [router, planParam])
 
   const selectedPkg = packages.find(p => p.id === selectedPkgId) || null
   const isPaidPkg = selectedPkg && selectedPkg.price > 0
