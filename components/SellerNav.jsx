@@ -8,6 +8,7 @@ const navItems = [
   { href: '/seller/dashboard', label: 'ড্যাশবোর্ড', icon: '📊' },
   { href: '/seller/products', label: 'প্রোডাক্ট', icon: '📦' },
   { href: '/seller/orders', label: 'অর্র', icon: '🧾' },
+  { href: '/seller/package', label: 'প্যাকেজ', icon: '💎' },
   { href: '/seller/settings', label: 'সেটিংস', icon: '⚙️' },
 ]
 
