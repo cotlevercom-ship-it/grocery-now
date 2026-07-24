@@ -36,7 +36,7 @@ export default function AdminPackageRequestsPage() {
       })
       await supabaseFetch(`shops?id=eq.${req.shop_id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ package_id: req.package_id }),
+        body: JSON.stringify({ package_id: req.package_id, is_active: true }),
       })
       await loadData()
     } catch (e) {
