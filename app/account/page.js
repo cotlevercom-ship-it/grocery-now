@@ -87,11 +87,15 @@ export default function AccountPage() {
         background: '#2e7d32', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
-        <Link href="/">
-          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
-        </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>আমার একাউন্ট</div>
+        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link href="/">
+            <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+          </Link>
+          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>আমার একাউন্ট</div>
+        </div>
       </div>
+
+      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto' }}>
 
       {/* Profile card */}
       <div style={{
@@ -169,6 +173,8 @@ export default function AccountPage() {
           color: '#c62828', padding: '12px', borderRadius: '10px', fontSize: '14px',
           fontWeight: '600', border: '1px solid #ffcdd2', cursor: 'pointer'
         }}>লগআউট</button>
+      </div>
+
       </div>
     </div>
   )
