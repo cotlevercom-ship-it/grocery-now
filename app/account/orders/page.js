@@ -72,11 +72,15 @@ export default function OrdersHistoryPage() {
         background: '#2e7d32', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
-        <Link href="/account">
-          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
-        </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>আমার অর্ডারসমূহ</div>
+        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link href="/account">
+            <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+          </Link>
+          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>আমার অর্ডারসমূহ</div>
+        </div>
       </div>
+
+      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto' }}>
 
       <div style={{
         background: 'white', margin: '16px 16px 14px', borderRadius: '10px',
@@ -120,6 +124,8 @@ export default function OrdersHistoryPage() {
             )
           })
         )}
+      </div>
+
       </div>
     </div>
   )
