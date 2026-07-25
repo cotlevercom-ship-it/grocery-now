@@ -10,7 +10,6 @@ export default function ProfilePage() {
   const [userId, setUserId] = useState(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [address, setAddress] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
@@ -30,7 +29,6 @@ export default function ProfilePage() {
         if (profile) {
           setName(profile.full_name || '')
           setPhone(profile.phone || '')
-          setAddress(profile.default_address || '')
         }
       } catch (e) {
         console.error(e)
@@ -59,7 +57,6 @@ export default function ProfilePage() {
           id: userId,
           full_name: name.trim(),
           phone: phone.trim(),
-          default_address: address.trim() || null,
         }),
       })
       setSaved(true)
@@ -127,24 +124,20 @@ export default function ProfilePage() {
               }}
             />
           </div>
+        </div>
 
-          <div>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>ডিফল্ট ঠিকানা</label>
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="বাড়ি/ফ্ল্যাট নম্বর, রোড, এলাকার নাম"
-              rows={3}
-              style={{
-                width: '100%', padding: '10px 12px', borderRadius: '8px',
-                border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
-                resize: 'none', fontFamily: 'inherit'
-              }}
-            />
-            <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
-              পরের বার চেকআউটে এই ঠিকানা অটো-ফিল হবে
+        <div style={{ margin: '0 16px 14px' }}>
+          <Link href="/account/addresses" style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px',
+            padding: '14px 16px', textDecoration: 'none'
+          }}>
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>ডেলিভারি ঠিকানা</div>
+              <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>ঠিকানা যোগ বা এডিট করতে এখানে যান</div>
             </div>
-          </div>
+            <span style={{ color: '#2e7d32', fontSize: '16px' }}>›</span>
+          </Link>
         </div>
 
         {error && (
