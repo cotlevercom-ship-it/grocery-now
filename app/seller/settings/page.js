@@ -23,6 +23,8 @@ export default function SellerSettingsPage() {
     delivery_charge: 0,
     min_order_amount: 0,
     is_active: true,
+    pickup_available: false,
+    pickup_address: '',
   })
 
   const [imageFile, setImageFile] = useState(null)
@@ -54,6 +56,8 @@ export default function SellerSettingsPage() {
             delivery_charge: shop.delivery_charge ?? 0,
             min_order_amount: shop.min_order_amount ?? 0,
             is_active: !!shop.is_active,
+            pickup_available: !!shop.pickup_available,
+            pickup_address: shop.pickup_address || '',
           })
           setImagePreview(shop.image_url || '')
         }
@@ -90,6 +94,10 @@ export default function SellerSettingsPage() {
       setError('Please select an area')
       return
     }
+    if (form.pickup_available && !form.pickup_address.trim()) {
+      setError('Please enter a pickup address')
+      return
+    }
 
     setSaving(true)
     try {
@@ -112,6 +120,8 @@ export default function SellerSettingsPage() {
         delivery_charge: Number(form.delivery_charge) || 0,
         min_order_amount: Number(form.min_order_amount) || 0,
         is_active: !!form.is_active,
+        pickup_available: !!form.pickup_available,
+        pickup_address: form.pickup_available ? (form.pickup_address.trim() || null) : null,
       }
 
       await supabaseFetch(`shops?id=eq.${shopId}`, {
@@ -269,7 +279,7 @@ export default function SellerSettingsPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
           <div>
             <label style={labelStyle}>Delivery Charge (৳)</label>
             <input type="number" style={inputStyle} value={form.delivery_charge} onChange={e => handleFieldChange('delivery_charge', e.target.value)} />
@@ -279,6 +289,49 @@ export default function SellerSettingsPage() {
             <input type="number" style={inputStyle} value={form.min_order_amount} onChange={e => handleFieldChange('min_order_amount', e.target.value)} />
           </div>
         </div>
+
+        {/* Pickup option */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 14px', borderRadius: '8px', marginBottom: form.pickup_available ? '12px' : '20px',
+          background: '#f5f5f5', border: '1px solid #e0e0e0'
+        }}>
+          <div>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
+              Store Pickup Available
+            </div>
+            <div style={{ fontSize: '12px', color: '#777', marginTop: '2px' }}>
+              Let customers pick up their order from your store (no delivery charge)
+            </div>
+          </div>
+          <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', flexShrink: 0 }}>
+            <input
+              type="checkbox"
+              checked={form.pickup_available}
+              onChange={e => handleFieldChange('pickup_available', e.target.checked)}
+              style={{ opacity: 0, width: 0, height: 0 }}
+            />
+            <span style={{
+              position: 'absolute', cursor: 'pointer', inset: 0,
+              background: form.pickup_available ? '#2d6a4f' : '#ccc',
+              borderRadius: '24px', transition: '0.2s'
+            }}>
+              <span style={{
+                position: 'absolute', height: '18px', width: '18px', left: form.pickup_available ? '23px' : '3px',
+                bottom: '3px', background: 'white', borderRadius: '50%', transition: '0.2s'
+              }} />
+            </span>
+          </label>
+        </div>
+
+        {form.pickup_available && (
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>Pickup Address *</label>
+            <textarea rows={2} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
+              value={form.pickup_address} onChange={e => handleFieldChange('pickup_address', e.target.value)}
+              placeholder="Full address customers should visit to pick up their order" />
+          </div>
+        )}
 
         <button type="submit" disabled={saving} style={{
           background: saving ? '#a5d6a7' : '#163a2c', color: 'white', border: 'none',
