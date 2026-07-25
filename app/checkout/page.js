@@ -19,6 +19,7 @@ export default function CheckoutPage() {
   const [areaId, setAreaId] = useState(null)
   const [areaName, setAreaName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cod')
+  const [deliveryMethod, setDeliveryMethod] = useState('delivery') // 'delivery' | 'pickup'
   const [note, setNote] = useState('')
 
   useEffect(() => {
@@ -79,14 +80,14 @@ export default function CheckoutPage() {
   }
 
   const subtotal = cartData.items.reduce((a, b) => a + b.qty * b.price, 0)
-  const deliveryCharge = shop?.delivery_charge || 0
+  const deliveryCharge = deliveryMethod === 'pickup' ? 0 : (shop?.delivery_charge || 0)
   const total = subtotal + deliveryCharge
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    if (!name.trim() || !phone.trim() || !address.trim()) {
+    if (!name.trim() || !phone.trim() || (deliveryMethod === 'delivery' && !address.trim())) {
       setError('নাম, ফোন নম্বর এবং ঠিকানা অবশ্যই দিতে হবে')
       return
     }
@@ -102,7 +103,8 @@ export default function CheckoutPage() {
           area_id: areaId,
           delivery_name: name.trim(),
           delivery_phone: phone.trim(),
-          delivery_address: address.trim(),
+          delivery_address: deliveryMethod === 'pickup' ? (shop?.pickup_address || null) : address.trim(),
+          delivery_method: deliveryMethod,
           subtotal: subtotal,
           delivery_charge: deliveryCharge,
           discount: 0,
@@ -118,7 +120,7 @@ export default function CheckoutPage() {
       const order = orderRes[0]
 
       // save/update profile defaults for logged-in users (best-effort, ignore failures)
-      if (session?.user?.id) {
+      if (session?.user?.id && deliveryMethod === 'delivery') {
         try {
           await supabaseFetch(`user_profiles`, {
             method: 'POST',
@@ -190,13 +192,51 @@ export default function CheckoutPage() {
           </div>
         )}
 
+        {/* Delivery method */}
+        {shop?.pickup_available && (
+          <div style={{
+            background: 'white', margin: '14px 16px', borderRadius: '10px',
+            border: '1px solid #e0e0e0', padding: '16px'
+          }}>
+            <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
+              ডেলিভারি পদ্ধতি
+            </div>
+            <label style={{
+              display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+              border: `1px solid ${deliveryMethod === 'delivery' ? '#2e7d32' : '#ddd'}`,
+              borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
+            }}>
+              <input
+                type="radio"
+                name="deliveryMethod"
+                checked={deliveryMethod === 'delivery'}
+                onChange={() => setDeliveryMethod('delivery')}
+              />
+              <span style={{ fontSize: '14px' }}>হোম ডেলিভারি</span>
+            </label>
+            <label style={{
+              display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+              border: `1px solid ${deliveryMethod === 'pickup' ? '#2e7d32' : '#ddd'}`,
+              borderRadius: '8px', cursor: 'pointer'
+            }}>
+              <input
+                type="radio"
+                name="deliveryMethod"
+                checked={deliveryMethod === 'pickup'}
+                onChange={() => setDeliveryMethod('pickup')}
+              />
+              <span style={{ fontSize: '14px' }}>স্টোর থেকে পিকআপ (ডেলিভারি চার্জ নেই)</span>
+            </label>
+          </div>
+        )}
+
         {/* Delivery info */}
         <div style={{
           background: 'white', margin: '14px 16px', borderRadius: '10px',
           border: '1px solid #e0e0e0', padding: '16px'
         }}>
           <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-            ডেলিভারি তথ্য
+            {deliveryMethod === 'pickup' ? 'পিকআপকারীর তথ্য' : 'ডেলিভারি তথ্য'}
           </div>
 
           <div style={{ marginBottom: '12px' }}>
@@ -227,30 +267,42 @@ export default function CheckoutPage() {
             />
           </div>
 
-          {areaName && (
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>এলাকা</label>
+          {deliveryMethod === 'pickup' ? (
+            <div>
+              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>পিকআপ ঠিকানা</label>
               <div style={{
                 padding: '10px 12px', borderRadius: '8px', background: '#f5f5f5',
                 fontSize: '14px', color: '#333'
-              }}>{areaName}</div>
+              }}>{shop?.pickup_address || 'দোকানের ঠিকানা শীঘ্রই জানানো হবে'}</div>
             </div>
-          )}
+          ) : (
+            <>
+              {areaName && (
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>এলাকা</label>
+                  <div style={{
+                    padding: '10px 12px', borderRadius: '8px', background: '#f5f5f5',
+                    fontSize: '14px', color: '#333'
+                  }}>{areaName}</div>
+                </div>
+              )}
 
-          <div>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>বিস্তারিত ঠিকানা *</label>
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="বাড়ি/ফ্ল্যাট নম্বর, রোড, এলাকার নাম"
-              rows={3}
-              style={{
-                width: '100%', padding: '10px 12px', borderRadius: '8px',
-                border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
-                resize: 'none', fontFamily: 'inherit'
-              }}
-            />
-          </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>বিস্তারিত ঠিকানা *</label>
+                <textarea
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="বাড়ি/ফ্ল্যাট নম্বর, রোড, এলাকার নাম"
+                  rows={3}
+                  style={{
+                    width: '100%', padding: '10px 12px', borderRadius: '8px',
+                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
+                    resize: 'none', fontFamily: 'inherit'
+                  }}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Payment method */}
