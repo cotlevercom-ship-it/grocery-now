@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { getSession, supabaseFetch } from '@/lib/supabase'
+import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
 
 const STATUS_LABELS = {
   pending: 'অপেক্ষমান',
@@ -28,6 +28,11 @@ export default function AccountPage() {
   const [profile, setProfile] = useState(null)
   const [orders, setOrders] = useState([])
   const [shopNames, setShopNames] = useState({})
+
+  const handleLogout = () => {
+    signOut()
+    router.push('/')
+  }
 
   useEffect(() => {
     async function init() {
@@ -155,8 +160,15 @@ export default function AccountPage() {
       <div style={{ padding: '0 16px' }}>
         <Link href="/shops" style={{
           display: 'block', textAlign: 'center', background: '#2e7d32', color: 'white',
-          padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: '600'
+          padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: '600',
+          marginBottom: '10px'
         }}>কেনাকাটা করুন</Link>
+
+        <button onClick={handleLogout} style={{
+          display: 'block', width: '100%', textAlign: 'center', background: 'white',
+          color: '#c62828', padding: '12px', borderRadius: '10px', fontSize: '14px',
+          fontWeight: '600', border: '1px solid #ffcdd2', cursor: 'pointer'
+        }}>লগআউট</button>
       </div>
     </div>
   )
