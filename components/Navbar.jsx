@@ -1,229 +1,175 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
+import Link from 'next/link'
+import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
 
-export default function Navbar() {
+const STATUS_LABELS = {
+  pending: 'অপেক্ষমান',
+  confirmed: 'কনফার্ম হয়েছে',
+  processing: 'প্রস্তুত করা হচ্ছে',
+  out_for_delivery: 'ডেলিভারিতে আছে',
+  delivered: 'ডেলিভারি সম্পন্ন',
+  cancelled: 'বাতিল হয়েছে',
+}
+
+const STATUS_COLORS = {
+  pending: { bg: '#fff3e0', text: '#e65100' },
+  confirmed: { bg: '#e3f2fd', text: '#1565c0' },
+  processing: { bg: '#e3f2fd', text: '#1565c0' },
+  out_for_delivery: { bg: '#f3e5f5', text: '#6a1b9a' },
+  delivered: { bg: '#e8f5e9', text: '#2e7d32' },
+  cancelled: { bg: '#ffebee', text: '#c62828' },
+}
+
+export default function AccountPage() {
   const router = useRouter()
-  const [session, setSession] = useState(null)
-  const [areas, setAreas] = useState([])
-  const [selectedArea, setSelectedArea] = useState(null)
-  const [areaOpen, setAreaOpen] = useState(false)
-  const areaRef = useRef(null)
-
-  useEffect(() => {
-    setSession(getSession())
-    const onAuthChanged = () => setSession(getSession())
-    window.addEventListener('auth-changed', onAuthChanged)
-    window.addEventListener('storage', onAuthChanged)
-    return () => {
-      window.removeEventListener('auth-changed', onAuthChanged)
-      window.removeEventListener('storage', onAuthChanged)
-    }
-  }, [])
-
-  useEffect(() => {
-    async function loadAreas() {
-      try {
-        const data = await supabaseFetch(`areas?select=*&order=name`)
-        setAreas(data || [])
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    loadAreas()
-
-    try {
-      const saved = localStorage.getItem('selected_area')
-      if (saved) setSelectedArea(JSON.parse(saved))
-    } catch (e) {}
-  }, [])
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (areaRef.current && !areaRef.current.contains(e.target)) {
-        setAreaOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  const [loaded, setLoaded] = useState(false)
+  const [profile, setProfile] = useState(null)
+  const [orders, setOrders] = useState([])
+  const [shopNames, setShopNames] = useState({})
 
   const handleLogout = () => {
     signOut()
-    setSession(null)
+    router.push('/')
   }
 
-  function handleAreaSelect(area) {
-    setSelectedArea(area)
-    setAreaOpen(false)
-    try {
-      localStorage.setItem('selected_area', JSON.stringify(area))
-    } catch (e) {}
-    router.push(`/shops?area=${area.id}&name=${encodeURIComponent(area.name)}`)
-  }
+  useEffect(() => {
+    async function init() {
+      const session = getSession()
+      if (!session?.user?.id) {
+        router.replace('/login?next=/account')
+        return
+      }
 
-  const customerName = session?.user?.email ? session.user.email.split('@')[0] : ''
+      try {
+        const profiles = await supabaseFetch(`user_profiles?select=*&id=eq.${session.user.id}`)
+        setProfile(profiles?.[0] || { id: session.user.id, full_name: '', phone: '', default_address: '' })
+      } catch (e) {
+        console.error(e)
+        setProfile({ id: session.user.id, full_name: '', phone: '', default_address: '' })
+      }
+
+      try {
+        const recentOrders = await supabaseFetch(
+          `orders?select=*&user_id=eq.${session.user.id}&order=created_at.desc&limit=5`
+        )
+        setOrders(recentOrders || [])
+
+        const shopIds = [...new Set((recentOrders || []).map(o => o.shop_id).filter(Boolean))]
+        if (shopIds.length > 0) {
+          const shops = await supabaseFetch(`shops?select=id,name&id=in.(${shopIds.join(',')})`)
+          const map = {}
+          ;(shops || []).forEach(s => { map[s.id] = s.name })
+          setShopNames(map)
+        }
+      } catch (e) {
+        console.error(e)
+      }
+
+      setLoaded(true)
+    }
+    init()
+  }, [router])
+
+  if (!loaded) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
+      </div>
+    )
+  }
 
   return (
-    <>
-      <div className="navbar-bar" style={{
-        background: 'linear-gradient(135deg, #163a2c 0%, #2d6a4f 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '8px',
-        position: 'sticky',
-        top: 0,
-        zIndex: 40,
-        padding: '10px 12px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
+      {/* Topbar */}
+      <div style={{
+        background: '#2e7d32', padding: '14px 16px',
+        display: 'flex', alignItems: 'center', gap: '12px'
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
-          <div style={{
-            width: '28px', height: '28px', borderRadius: '8px',
-            background: '#f4a300', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '15px', flexShrink: 0,
-          }}>🧺</div>
-          <span className="navbar-logo-text" style={{
-            color: '#faf7f0', fontWeight: '700', fontSize: '15px',
-            letterSpacing: '-0.02em', whiteSpace: 'nowrap',
-          }}>GroceryNow</span>
-          <span style={{
-            width: '5px', height: '5px', borderRadius: '50%',
-            background: '#7ee787', flexShrink: 0,
-            animation: 'dotPulse 2s ease-in-out infinite',
-          }} />
+        <Link href="/">
+          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
+        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>আমার একাউন্ট</div>
+      </div>
 
-        {areas.length > 0 && (
-          <div ref={areaRef} style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center' }}>
-            <button
-              onClick={() => setAreaOpen(o => !o)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '4px',
-                background: 'rgba(255,255,255,0.12)', border: 'none',
-                borderRadius: '8px', padding: '6px 10px', cursor: 'pointer',
-                color: '#faf7f0', fontSize: '12px', fontWeight: '600',
-                maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden',
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {selectedArea ? selectedArea.name : 'এলাকা'}
-              </span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            {areaOpen && (
-              <div style={{
-                position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
-                width: 'max(260px, 80vw)', maxWidth: '340px',
-                background: 'white', borderRadius: '10px', padding: '12px',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.18)', zIndex: 50,
-                display: 'flex', flexWrap: 'wrap', gap: '8px',
-                maxHeight: '260px', overflowY: 'auto',
-              }}>
-                {areas.map(area => {
-                  const isSelected = selectedArea?.id === area.id
-                  return (
-                    <button
-                      key={area.id}
-                      onClick={() => handleAreaSelect(area)}
-                      style={{
-                        flexShrink: 0,
-                        padding: '7px 14px',
-                        borderRadius: '20px',
-                        border: isSelected ? '1.5px solid #163a2c' : '1.5px solid #e0ddd3',
-                        background: isSelected ? '#163a2c' : '#fff',
-                        color: isSelected ? '#fff' : '#333',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        whiteSpace: 'nowrap',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {area.name}
-                    </button>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-          {session && (
-            <span style={{
-              color: '#dcebe0', fontSize: '11px', fontWeight: '600',
-              whiteSpace: 'nowrap', maxWidth: '60px', overflow: 'hidden', textOverflow: 'ellipsis',
-              display: 'none',
-            }} className="navbar-name">
-              {customerName}
-            </span>
-          )}
-          {session && (
-            <Link href="/account" style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-              borderRadius: '8px', padding: '6px 10px',
-              fontSize: '12px', whiteSpace: 'nowrap', textDecoration: 'none'
-            }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              <span className="navbar-account-text">একাউন্ট</span>
-            </Link>
-          )}
-          {session ? (
-            <button onClick={handleLogout} style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-              border: 'none', borderRadius: '8px', padding: '6px 10px',
-              fontSize: '12px', whiteSpace: 'nowrap', cursor: 'pointer'
-            }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-              <span className="navbar-logout-text">লগআউট</span>
-            </button>
-          ) : (
-            <Link href="/login">
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '4px',
-                background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-                borderRadius: '8px', padding: '6px 10px',
-                fontSize: '12px', whiteSpace: 'nowrap'
-              }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                লগইন
-              </div>
-            </Link>
-          )}
+      {/* Profile card */}
+      <div style={{
+        background: 'white', margin: '16px 16px 14px', borderRadius: '10px',
+        border: '1px solid #e0e0e0', padding: '16px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>প্রোফাইল</div>
+          <Link href="/account/profile" style={{ fontSize: '12px', color: '#2e7d32', fontWeight: '600' }}>এডিট করুন</Link>
+        </div>
+        <div style={{ fontSize: '14px', color: '#333', marginBottom: '4px' }}>
+          {profile?.full_name || <span style={{ color: '#999' }}>নাম যোগ করা হয়নি</span>}
+        </div>
+        <div style={{ fontSize: '13px', color: '#666', marginBottom: '4px' }}>
+          {profile?.phone || <span style={{ color: '#999' }}>ফোন নম্বর যোগ করা হয়নি</span>}
+        </div>
+        <div style={{ fontSize: '13px', color: '#666' }}>
+          {profile?.default_address || <span style={{ color: '#999' }}>কোনো ঠিকানা সেভ করা নেই</span>}
         </div>
       </div>
 
-      <style jsx global>{`
-        @keyframes dotPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.85); }
-        }
-        @media (min-width: 400px) {
-          .navbar-name { display: inline-block !important; }
-        }
-      `}</style>
-    </>
+      {/* Orders card */}
+      <div style={{
+        background: 'white', margin: '0 16px 14px', borderRadius: '10px',
+        border: '1px solid #e0e0e0', padding: '16px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>সাম্প্রতিক অর্ডার</div>
+          <Link href="/account/orders" style={{ fontSize: '12px', color: '#2e7d32', fontWeight: '600' }}>সব দেখুন</Link>
+        </div>
+
+        {orders.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '24px 0', color: '#999', fontSize: '13px' }}>
+            এখনো কোনো অর্ডার করা হয়নি
+          </div>
+        ) : (
+          orders.map(order => {
+            const colors = STATUS_COLORS[order.status] || STATUS_COLORS.pending
+            return (
+              <Link key={order.id} href={`/orders/${order.id}`} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '10px 0', borderBottom: '1px solid #f0f0f0'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>
+                      {shopNames[order.shop_id] || 'দোকান'}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>
+                      {new Date(order.created_at).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' })} · ৳{order.total}
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize: '11px', fontWeight: '600', padding: '4px 10px', borderRadius: '20px',
+                    background: colors.bg, color: colors.text, whiteSpace: 'nowrap'
+                  }}>
+                    {STATUS_LABELS[order.status] || order.status}
+                  </div>
+                </div>
+              </Link>
+            )
+          })
+        )}
+      </div>
+
+      <div style={{ padding: '0 16px' }}>
+        <Link href="/shops" style={{
+          display: 'block', textAlign: 'center', background: '#2e7d32', color: 'white',
+          padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: '600',
+          marginBottom: '10px'
+        }}>কেনাকাটা করুন</Link>
+
+        <button onClick={handleLogout} style={{
+          display: 'block', width: '100%', textAlign: 'center', background: 'white',
+          color: '#c62828', padding: '12px', borderRadius: '10px', fontSize: '14px',
+          fontWeight: '600', border: '1px solid #ffcdd2', cursor: 'pointer'
+        }}>লগআউট</button>
+      </div>
+    </div>
   )
 }
