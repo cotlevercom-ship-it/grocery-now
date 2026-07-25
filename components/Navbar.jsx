@@ -168,6 +168,20 @@ export default function Navbar() {
               {customerName}
             </span>
           )}
+          {session && (
+            <Link href="/account" style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
+              borderRadius: '8px', padding: '6px 10px',
+              fontSize: '12px', whiteSpace: 'nowrap', textDecoration: 'none'
+            }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span className="navbar-account-text">একাউন্ট</span>
+            </Link>
+          )}
           {session ? (
             <button onClick={handleLogout} style={{
               display: 'flex', alignItems: 'center', gap: '4px',
