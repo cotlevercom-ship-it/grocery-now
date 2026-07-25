@@ -22,6 +22,10 @@ export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState('delivery') // 'delivery' | 'pickup'
   const [note, setNote] = useState('')
 
+  const [savedAddresses, setSavedAddresses] = useState([])
+  const [selectedAddressId, setSelectedAddressId] = useState('new') // address id, or 'new'
+  const [saveNewAddress, setSaveNewAddress] = useState(true)
+
   useEffect(() => {
     async function init() {
       try {
@@ -61,7 +65,19 @@ export default function CheckoutPage() {
               const profile = profiles[0]
               if (profile.full_name) setName(profile.full_name)
               if (profile.phone) setPhone(profile.phone)
-              if (profile.default_address) setAddress(profile.default_address)
+            }
+          } catch (e) {
+            console.error(e)
+          }
+
+          try {
+            const addrRows = await supabaseFetch(
+              `user_addresses?select=*&user_id=eq.${currentSession.user.id}&order=is_default.desc,created_at.desc`
+            )
+            setSavedAddresses(addrRows || [])
+            const defaultAddr = (addrRows || []).find(a => a.is_default) || (addrRows || [])[0]
+            if (defaultAddr) {
+              setSelectedAddressId(defaultAddr.id)
             }
           } catch (e) {
             console.error(e)
@@ -83,11 +99,18 @@ export default function CheckoutPage() {
   const deliveryCharge = deliveryMethod === 'pickup' ? 0 : (shop?.delivery_charge || 0)
   const total = subtotal + deliveryCharge
 
+  const usingSavedAddress = deliveryMethod === 'delivery' && selectedAddressId !== 'new'
+  const selectedAddress = usingSavedAddress ? savedAddresses.find(a => a.id === selectedAddressId) : null
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    if (!name.trim() || !phone.trim() || (deliveryMethod === 'delivery' && !address.trim())) {
+    const deliveryAddressText = deliveryMethod === 'pickup'
+      ? (shop?.pickup_address || '')
+      : (usingSavedAddress ? (selectedAddress?.address || '') : address.trim())
+
+    if (!name.trim() || !phone.trim() || (deliveryMethod === 'delivery' && !deliveryAddressText.trim())) {
       setError('নাম, ফোন নম্বর এবং ঠিকানা অবশ্যই দিতে হবে')
       return
     }
@@ -103,7 +126,7 @@ export default function CheckoutPage() {
           area_id: areaId,
           delivery_name: name.trim(),
           delivery_phone: phone.trim(),
-          delivery_address: deliveryMethod === 'pickup' ? (shop?.pickup_address || null) : address.trim(),
+          delivery_address: deliveryMethod === 'pickup' ? (shop?.pickup_address || null) : deliveryAddressText,
           delivery_method: deliveryMethod,
           subtotal: subtotal,
           delivery_charge: deliveryCharge,
@@ -119,8 +142,8 @@ export default function CheckoutPage() {
 
       const order = orderRes[0]
 
-      // save/update profile defaults for logged-in users (best-effort, ignore failures)
-      if (session?.user?.id && deliveryMethod === 'delivery') {
+      // save/update profile name+phone for logged-in users (best-effort, ignore failures)
+      if (session?.user?.id) {
         try {
           await supabaseFetch(`user_profiles`, {
             method: 'POST',
@@ -130,7 +153,22 @@ export default function CheckoutPage() {
               full_name: name.trim(),
               phone: phone.trim(),
               default_area_id: areaId,
-              default_address: address.trim(),
+            }),
+          })
+        } catch (e) {
+          console.error(e)
+        }
+      }
+
+      // save a freshly-typed address to the address book (best-effort, ignore failures)
+      if (session?.user?.id && deliveryMethod === 'delivery' && !usingSavedAddress && saveNewAddress && address.trim()) {
+        try {
+          await supabaseFetch('user_addresses', {
+            method: 'POST',
+            body: JSON.stringify({
+              user_id: session.user.id,
+              address: address.trim(),
+              is_default: savedAddresses.length === 0,
             }),
           })
         } catch (e) {
@@ -287,20 +325,70 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              <div>
-                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>বিস্তারিত ঠিকানা *</label>
-                <textarea
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="বাড়ি/ফ্ল্যাট নম্বর, রোড, এলাকার নাম"
-                  rows={3}
-                  style={{
-                    width: '100%', padding: '10px 12px', borderRadius: '8px',
-                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
-                    resize: 'none', fontFamily: 'inherit'
-                  }}
-                />
-              </div>
+              {session?.user?.id && savedAddresses.length > 0 && (
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>ডেলিভারি ঠিকানা *</label>
+                  {savedAddresses.map(addr => (
+                    <label key={addr.id} style={{
+                      display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px',
+                      border: `1px solid ${selectedAddressId === addr.id ? '#2e7d32' : '#ddd'}`,
+                      borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
+                    }}>
+                      <input
+                        type="radio"
+                        name="savedAddress"
+                        checked={selectedAddressId === addr.id}
+                        onChange={() => setSelectedAddressId(addr.id)}
+                        style={{ marginTop: '3px' }}
+                      />
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>{addr.label || 'ঠিকানা'}</div>
+                        <div style={{ fontSize: '13px', color: '#555', marginTop: '2px' }}>{addr.address}</div>
+                      </div>
+                    </label>
+                  ))}
+                  <label style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+                    border: `1px solid ${selectedAddressId === 'new' ? '#2e7d32' : '#ddd'}`,
+                    borderRadius: '8px', cursor: 'pointer'
+                  }}>
+                    <input
+                      type="radio"
+                      name="savedAddress"
+                      checked={selectedAddressId === 'new'}
+                      onChange={() => setSelectedAddressId('new')}
+                    />
+                    <span style={{ fontSize: '14px' }}>+ নতুন ঠিকানা ব্যবহার করুন</span>
+                  </label>
+                </div>
+              )}
+
+              {selectedAddressId === 'new' && (
+                <div>
+                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>বিস্তারিত ঠিকানা *</label>
+                  <textarea
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="বাড়ি/ফ্ল্যাট নম্বর, রোড, এলাকার নাম"
+                    rows={3}
+                    style={{
+                      width: '100%', padding: '10px 12px', borderRadius: '8px',
+                      border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
+                      resize: 'none', fontFamily: 'inherit'
+                    }}
+                  />
+                  {session?.user?.id && (
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', fontSize: '12px', color: '#666', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={saveNewAddress}
+                        onChange={(e) => setSaveNewAddress(e.target.checked)}
+                      />
+                      এই ঠিকানা পরের বারের জন্য সেভ করে রাখো
+                    </label>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
