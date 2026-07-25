@@ -85,11 +85,15 @@ export default function ProfilePage() {
         background: '#2e7d32', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
-        <Link href="/account">
-          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
-        </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>প্রোফাইল এডিট</div>
+        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link href="/account">
+            <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+          </Link>
+          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>প্রোফাইল এডিট</div>
+        </div>
       </div>
+
+      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto' }}>
 
       <form onSubmit={handleSubmit}>
         <div style={{
@@ -170,6 +174,8 @@ export default function ProfilePage() {
           </button>
         </div>
       </form>
+
+      </div>
     </div>
   )
 }
