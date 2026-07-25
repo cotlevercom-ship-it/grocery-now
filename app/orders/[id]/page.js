@@ -196,12 +196,26 @@ export default async function OrderPage({ params }) {
         background: 'white', margin: '0 16px 14px', borderRadius: '10px',
         border: '1px solid #e0e0e0', padding: '16px'
       }}>
-        <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '10px', color: '#1a1a1a' }}>
-          ডেলিভারি তথ্য
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
+            {order.delivery_method === 'pickup' ? 'পিকআপ তথ্য' : 'ডেলিভারি তথ্য'}
+          </div>
+          {order.delivery_method === 'pickup' && (
+            <div style={{
+              fontSize: '11px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px',
+              background: '#e3f2fd', color: '#1565c0'
+            }}>স্টোর পিকআপ</div>
+          )}
         </div>
         <div style={{ fontSize: '13px', color: '#555', marginBottom: '4px' }}>{order.delivery_name}</div>
         <div style={{ fontSize: '13px', color: '#555', marginBottom: '4px' }}>{order.delivery_phone}</div>
-        <div style={{ fontSize: '13px', color: '#555' }}>{order.delivery_address}</div>
+        {order.delivery_method === 'pickup' ? (
+          <div style={{ fontSize: '13px', color: '#555' }}>
+            <span style={{ color: '#888' }}>ঠিকানা থেকে সংগ্রহ করুন: </span>{order.delivery_address}
+          </div>
+        ) : (
+          <div style={{ fontSize: '13px', color: '#555' }}>{order.delivery_address}</div>
+        )}
         {order.note && (
           <div style={{ fontSize: '12px', color: '#888', marginTop: '8px', fontStyle: 'italic' }}>
             নোট: {order.note}
