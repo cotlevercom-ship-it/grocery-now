@@ -45,19 +45,6 @@ export default function Navbar() {
           }} />
         </Link>
 
-        <Link href="/shops" style={{
-          display: 'flex', alignItems: 'center', gap: '4px',
-          background: 'rgba(255,255,255,0.12)', border: 'none',
-          borderRadius: '8px', padding: '6px 10px', cursor: 'pointer',
-          color: '#ff3b30', fontSize: '12px', fontWeight: '600',
-          textDecoration: 'none', whiteSpace: 'nowrap',
-        }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v4a2 2 0 002 2M9 21a1 1 0 100-2 1 1 0 000 2zM20 21a1 1 0 100-2 1 1 0 000 2z" />
-          </svg>
-          <span>সব দোকান</span>
-        </Link>
-
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           {session ? (
             <Link href="/account" style={{
@@ -72,7 +59,7 @@ export default function Navbar() {
                 <circle cx="12" cy="7" r="4" />
               </svg>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {customerName || 'একাউন্ট'}
+                {customerName || 'Account'}
               </span>
             </Link>
           ) : (
@@ -87,7 +74,7 @@ export default function Navbar() {
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
-                লগইন
+                Login
               </div>
             </Link>
           )}
