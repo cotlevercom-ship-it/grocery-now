@@ -77,20 +77,10 @@ function LoginForm() {
         </Link>
       </div>
 
-      {/* Logo */}
-      <div style={{ marginTop: '18px', marginBottom: '28px', textAlign: 'center' }}>
-        <div style={{
-          width: '56px', height: '56px', borderRadius: '16px', background: '#f4a300',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px',
-          margin: '0 auto 10px', boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
-        }}>🧺</div>
-        <div style={{ color: 'white', fontWeight: '700', fontSize: '18px', letterSpacing: '-0.02em' }}>Cot Lever</div>
-      </div>
-
       {/* Card */}
       <div style={{
         width: '100%', maxWidth: '420px', background: 'white', borderRadius: '16px',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.12)', padding: '28px 24px'
+        boxShadow: '0 10px 30px rgba(0,0,0,0.12)', padding: '28px 24px', marginTop: '32px'
       }}>
         <div style={{ marginBottom: '20px' }}>
           <div style={{ fontSize: '19px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px' }}>
