@@ -13,13 +13,34 @@ const STATUS_LABELS = {
   cancelled: 'বাতিল হয়েছে',
 }
 
-const STATUS_COLORS = {
-  pending: { bg: '#fff3e0', text: '#e65100' },
-  confirmed: { bg: '#e3f2fd', text: '#1565c0' },
-  processing: { bg: '#e3f2fd', text: '#1565c0' },
-  out_for_delivery: { bg: '#f3e5f5', text: '#6a1b9a' },
-  delivered: { bg: '#e8f5e9', text: '#2e7d32' },
-  cancelled: { bg: '#ffebee', text: '#c62828' },
+const STATUS_STAMP = {
+  pending: '#c17a1f',
+  confirmed: '#1f5aa6',
+  processing: '#1f5aa6',
+  out_for_delivery: '#6a3fa0',
+  delivered: '#1f4a37',
+  cancelled: '#a6402b',
+}
+
+function StatusStamp({ status }) {
+  const color = STATUS_STAMP[status] || STATUS_STAMP.pending
+  const label = STATUS_LABELS[status] || status
+  return (
+    <div style={{
+      position: 'relative', flexShrink: 0, transform: 'rotate(-7deg)',
+      width: '62px', height: '62px', borderRadius: '50%',
+      border: `2px solid ${color}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '4px'
+    }}>
+      <div style={{
+        position: 'absolute', inset: '3px', borderRadius: '50%', border: `1px dashed ${color}`, opacity: 0.6
+      }} />
+      <div style={{
+        fontSize: '9.5px', fontWeight: '800', color, textAlign: 'center', lineHeight: 1.15,
+        letterSpacing: '0.01em', padding: '0 3px'
+      }}>{label}</div>
+    </div>
+  )
 }
 
 export default function OrdersHistoryPage() {
@@ -59,72 +80,73 @@ export default function OrdersHistoryPage() {
 
   if (!loaded) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
       </div>
     )
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
       {/* Topbar */}
-      <div style={{
-        background: '#2e7d32', padding: '14px 16px',
-        display: 'flex', alignItems: 'center', gap: '12px'
-      }}>
+      <div style={{ background: '#12261c', padding: '16px' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/account">
-            <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+            <div style={{ color: 'white', fontSize: '21px', lineHeight: 1 }}>←</div>
           </Link>
-          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>আমার অর্ডারসমূহ</div>
+          <div>
+            <div style={{ color: 'white', fontSize: '15.5px', fontWeight: '700' }}>আমার অর্ডারসমূহ</div>
+            <div style={{ color: 'rgba(244,163,0,0.9)', fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>
+              {orders.length}টি রশিদ
+            </div>
+          </div>
         </div>
       </div>
 
-      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto' }}>
+      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 16px 0' }}>
 
-      <div style={{
-        background: 'white', margin: '16px 16px 14px', borderRadius: '10px',
-        border: '1px solid #e0e0e0', padding: orders.length === 0 ? '16px' : '4px 16px'
-      }}>
         {orders.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
-            <div style={{ fontSize: '40px', marginBottom: '10px' }}>🛒</div>
-            <div style={{ fontSize: '13px', marginBottom: '16px' }}>এখনো কোনো অর্ডার করা হয়নি</div>
+          <div style={{
+            background: '#fffdf8', borderRadius: '4px', border: '1px dashed #e6ded0',
+            padding: '44px 16px', textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '38px', marginBottom: '12px' }}>🧺</div>
+            <div style={{ fontSize: '13px', color: '#9a9182', marginBottom: '18px' }}>এখনো কোনো অর্ডার করা হয়নি</div>
             <Link href="/shops" style={{
-              display: 'inline-block', background: '#2e7d32', color: 'white',
-              padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600'
+              display: 'inline-block', background: '#1f4a37', color: 'white',
+              padding: '11px 26px', borderRadius: '4px', fontSize: '13.5px', fontWeight: '700'
             }}>কেনাকাটা শুরু করুন</Link>
           </div>
         ) : (
-          orders.map(order => {
-            const colors = STATUS_COLORS[order.status] || STATUS_COLORS.pending
-            return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {orders.map(order => (
               <Link key={order.id} href={`/orders/${order.id}`} style={{ textDecoration: 'none' }}>
                 <div style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '14px 0', borderBottom: '1px solid #f0f0f0'
+                  background: '#fffdf8', borderRadius: '4px', border: '1px solid #e6ded0',
+                  boxShadow: '0 1px 3px rgba(22,58,44,0.05)', padding: '16px',
+                  display: 'flex', alignItems: 'center', gap: '14px'
                 }}>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '14.5px', fontWeight: '700', color: '#1a1a1a' }}>
                       {shopNames[order.shop_id] || 'দোকান'}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>
-                      অর্ডার #{order.id.slice(0, 8)} · {new Date(order.created_at).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    <div style={{
+                      fontSize: '11px', color: '#9a9182', marginTop: '4px',
+                      fontFamily: '"Courier New", monospace'
+                    }}>
+                      #{order.id.slice(0, 8).toUpperCase()} · {new Date(order.created_at).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
-                    <div style={{ fontSize: '12px', color: '#555', marginTop: '2px' }}>৳{order.total}</div>
+                    <div style={{
+                      fontSize: '16px', color: '#f4a300', fontWeight: '700', marginTop: '8px',
+                      fontFamily: '"Courier New", monospace'
+                    }}>৳{order.total}</div>
                   </div>
-                  <div style={{
-                    fontSize: '11px', fontWeight: '600', padding: '4px 10px', borderRadius: '20px',
-                    background: colors.bg, color: colors.text, whiteSpace: 'nowrap'
-                  }}>
-                    {STATUS_LABELS[order.status] || order.status}
-                  </div>
+                  <StatusStamp status={order.status} />
                 </div>
               </Link>
-            )
-          })
+            ))}
+          </div>
         )}
-      </div>
 
       </div>
     </div>
