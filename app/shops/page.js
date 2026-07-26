@@ -3,15 +3,11 @@ import { supabaseFetch } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ShopsPage({ searchParams }) {
-  const params = await searchParams
-  const areaId = params?.area
-  const areaName = params?.name || 'এলাকা'
-
+export default async function ShopsPage() {
   let shops = []
   try {
     shops = await supabaseFetch(
-      `shops?select=*&area_id=eq.${areaId}&is_active=eq.true&order=is_featured.desc,name`
+      `shops?select=*&is_active=eq.true&order=is_featured.desc,name`
     )
   } catch (e) {
     console.error(e)
@@ -28,30 +24,16 @@ export default async function ShopsPage({ searchParams }) {
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
         <div style={{ color: '#faf7f0', fontSize: '16px', fontWeight: '600', flex: 1 }}>
-          {areaName}-এর দোকান
+          সব দোকান
         </div>
       </div>
-
-      {/* Area pill */}
-      <Link href="/">
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '6px',
-          background: 'white', borderRadius: '20px', padding: '8px 14px',
-          margin: '16px 16px 0', border: '1px solid #e0e0e0', cursor: 'pointer',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
-        }}>
-          <span style={{ fontSize: '14px' }}>📍</span>
-          <span style={{ fontSize: '13px', color: '#163a2c', fontWeight: '600' }}>{areaName}</span>
-          <span style={{ fontSize: '12px', color: '#f4a300', fontWeight: '600', marginLeft: '4px' }}>পরিবর্তন</span>
-        </div>
-      </Link>
 
       {/* Shop list */}
       <div style={{ padding: '20px 16px' }}>
         {shops.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>🏪</div>
-            <p>এই এলাকায় এখনো কোনো দোকান নেই</p>
+            <p>এখনো কোনো দোকান নেই</p>
           </div>
         ) : (
           <div className="shop-grid">
@@ -84,6 +66,11 @@ export default async function ShopsPage({ searchParams }) {
                   <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
                     {shop.name}
                   </div>
+                  {shop.location && (
+                    <div style={{ fontSize: '11.5px', color: '#2d6a4f', marginTop: '2px', fontWeight: '500' }}>
+                      📍 {shop.location}
+                    </div>
+                  )}
                   {shop.description && (
                     <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
                       {shop.description}
