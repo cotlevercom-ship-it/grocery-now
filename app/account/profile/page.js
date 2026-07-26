@@ -69,106 +69,122 @@ export default function ProfilePage() {
 
   if (!loaded) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
       </div>
     )
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
       {/* Topbar */}
-      <div style={{
-        background: '#2e7d32', padding: '14px 16px',
-        display: 'flex', alignItems: 'center', gap: '12px'
-      }}>
+      <div style={{ background: '#12261c', padding: '16px' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/account">
-            <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+            <div style={{ color: 'white', fontSize: '21px', lineHeight: 1 }}>←</div>
           </Link>
-          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>প্রোফাইল এডিট</div>
+          <div>
+            <div style={{ color: 'white', fontSize: '15.5px', fontWeight: '700' }}>পাসবই তথ্য হালনাগাদ</div>
+            <div style={{ color: 'rgba(244,163,0,0.9)', fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>প্রোফাইল এন্ট্রি</div>
+          </div>
         </div>
       </div>
 
       <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto' }}>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{
-          background: 'white', margin: '16px 16px 14px', borderRadius: '10px',
-          border: '1px solid #e0e0e0', padding: '16px'
-        }}>
-          <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>নাম *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="আপনার নাম লিখুন"
-              style={{
-                width: '100%', padding: '10px 12px', borderRadius: '8px',
-                border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>ফোন নম্বর *</label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="০১৭XXXXXXXX"
-              style={{
-                width: '100%', padding: '10px 12px', borderRadius: '8px',
-                border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
-              }}
-            />
-          </div>
-        </div>
-
-        <div style={{ margin: '0 16px 14px' }}>
-          <Link href="/account/addresses" style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px',
-            padding: '14px 16px', textDecoration: 'none'
+        <form onSubmit={handleSubmit}>
+          <div style={{
+            background: '#fffdf8', margin: '18px 16px 14px', borderRadius: '4px',
+            border: '1px solid #e6ded0', padding: '22px 18px 6px'
           }}>
-            <div>
-              <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>ডেলিভারি ঠিকানা</div>
-              <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>ঠিকানা যোগ বা এডিট করতে এখানে যান</div>
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>নাম *</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="আপনার নাম লিখুন"
+                className="ledger-input"
+              />
             </div>
-            <span style={{ color: '#2e7d32', fontSize: '16px' }}>›</span>
-          </Link>
-        </div>
 
-        {error && (
-          <div style={{
-            margin: '0 16px 14px', padding: '10px 12px', background: '#ffebee',
-            color: '#c62828', borderRadius: '8px', fontSize: '13px'
-          }}>{error}</div>
-        )}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>ফোন নম্বর *</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="০১৭XXXXXXXX"
+                className="ledger-input"
+                style={{ fontFamily: '"Courier New", monospace' }}
+              />
+            </div>
+          </div>
 
-        {saved && (
-          <div style={{
-            margin: '0 16px 14px', padding: '10px 12px', background: '#e8f5e9',
-            color: '#2e7d32', borderRadius: '8px', fontSize: '13px'
-          }}>প্রোফাইল সেভ হয়েছে</div>
-        )}
-
-        <div style={{ padding: '0 16px' }}>
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{
-              width: '100%', background: submitting ? '#a5d6a7' : '#2e7d32', color: 'white',
-              padding: '14px', borderRadius: '10px', fontSize: '15px', fontWeight: '600',
-              border: 'none'
+          <div style={{ margin: '0 16px 14px' }}>
+            <Link href="/account/addresses" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: '#fffdf8', border: '1px dashed #e6ded0', borderRadius: '4px',
+              padding: '14px 16px', textDecoration: 'none'
             }}>
-            {submitting ? 'সেভ হচ্ছে...' : 'সেভ করুন'}
-          </button>
-        </div>
-      </form>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>ডেলিভারি ঠিকানা</div>
+                <div style={{ fontSize: '11px', color: '#9a9182', marginTop: '2px' }}>ঠিকানা যোগ বা এডিট করতে এখানে যান</div>
+              </div>
+              <span style={{ color: '#2d6a4f', fontSize: '15px' }}>›</span>
+            </Link>
+          </div>
+
+          {error && (
+            <div style={{
+              margin: '0 16px 14px', padding: '11px 13px', background: '#fbe9e4',
+              color: '#a6402b', borderRadius: '4px', fontSize: '13px', borderLeft: '3px solid #a6402b'
+            }}>{error}</div>
+          )}
+
+          {saved && (
+            <div style={{
+              margin: '0 16px 14px', padding: '11px 13px', background: '#e8f0ea',
+              color: '#1f4a37', borderRadius: '4px', fontSize: '13px', borderLeft: '3px solid #2d6a4f'
+            }}>✓ প্রোফাইল সেভ হয়েছে</div>
+          )}
+
+          <div style={{ padding: '0 16px' }}>
+            <button
+              type="submit"
+              disabled={submitting}
+              style={{
+                width: '100%', background: submitting ? '#8fae9d' : '#1f4a37', color: 'white',
+                padding: '14px', borderRadius: '4px', fontSize: '14.5px', fontWeight: '700',
+                border: '1px solid rgba(255,255,255,0.15)', letterSpacing: '0.02em'
+              }}>
+              {submitting ? 'সেভ হচ্ছে...' : 'সেভ করুন'}
+            </button>
+          </div>
+        </form>
 
       </div>
+
+      <style jsx>{`
+        .ledger-input {
+          width: 100%;
+          padding: 2px 2px 8px;
+          border: none;
+          border-bottom: 1.5px solid #d9cfb8;
+          font-size: 15px;
+          background: transparent;
+          box-sizing: border-box;
+          transition: border-color 0.15s;
+          color: #1a1a1a;
+        }
+        .ledger-input:focus {
+          outline: none;
+          border-bottom: 1.5px solid #f4a300;
+        }
+        .ledger-input::placeholder {
+          color: #c3baa7;
+        }
+      `}</style>
     </div>
   )
 }
