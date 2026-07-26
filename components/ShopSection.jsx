@@ -17,7 +17,7 @@ export default async function ShopSection() {
     return (
       <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
         <div style={{ fontSize: '40px', marginBottom: '10px' }}>🏪</div>
-        <p>এই মুহূর্তে কোনো দোকান পাওয়া যায়নি</p>
+        <p>No shops available right now</p>
       </div>
     )
   }
@@ -29,13 +29,13 @@ export default async function ShopSection() {
         marginBottom: '16px'
       }}>
         <h2 className="shop-heading" style={{ fontWeight: '700', color: '#163a2c', margin: 0 }}>
-          সব দোকান
+          All Shops
         </h2>
         <span style={{
           fontSize: '12px', color: '#2d6a4f', background: '#e8f5e9',
           padding: '4px 12px', borderRadius: '20px', fontWeight: '500'
         }}>
-          {shops.length}টি দোকান
+          {shops.length} shops
         </span>
       </div>
 
@@ -55,14 +55,14 @@ export default async function ShopSection() {
                   background: '#f4a300', color: '#1a1a1a',
                   fontSize: '10px', fontWeight: '700', padding: '3px 9px',
                   borderRadius: '6px'
-                }}>ফিচার্ড</div>
+                }}>Featured</div>
               )}
               <div style={{
                 position: 'absolute', bottom: '8px', right: '8px',
                 background: 'rgba(255,255,255,0.92)', borderRadius: '6px',
                 padding: '3px 8px', fontSize: '11px', fontWeight: '600', color: '#1a1a1a'
               }}>
-                ⭐ {shop.rating || 'নতুন'}
+                ⭐ {shop.rating || 'New'}
               </div>
             </div>
             <div style={{ padding: '12px 14px' }}>
@@ -76,7 +76,7 @@ export default async function ShopSection() {
                 fontSize: '12px', color: '#2d6a4f', marginTop: '8px',
                 fontWeight: '500'
               }}>
-                🚴 {shop.delivery_time_min}-{shop.delivery_time_max} মিনিট
+                🚴 {shop.delivery_time_min}-{shop.delivery_time_max} min
               </div>
             </div>
           </Link>
