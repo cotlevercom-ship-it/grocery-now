@@ -39,7 +39,7 @@ export default function SellerDashboardPage() {
   if (loading) {
     return (
       <SellerNav>
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       </SellerNav>
     )
   }
@@ -47,7 +47,7 @@ export default function SellerDashboardPage() {
   if (!shop) {
     return (
       <SellerNav>
-        <div style={{ color: '#888', fontSize: '14px' }}>দোকানের তথ্য পাওয়া যায়নি</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Shop information not found</div>
       </SellerNav>
     )
   }
@@ -57,13 +57,13 @@ export default function SellerDashboardPage() {
 
   const statCards = [
     {
-      label: 'মোট প্রোডাক্ট',
+      label: 'Total Products',
       value: maxProducts != null ? `${productCount}/${maxProducts}` : productCount,
       icon: '📦', color: '#2e7d32'
     },
-    { label: 'মোট অর্ডার', value: orderCount, icon: '🧾', color: '#1565c0' },
-    { label: 'অপেক্ষমাণ অর্ডার', value: pendingOrderCount, icon: '⏳', color: '#f4a300' },
-    { label: 'প্যাকেজ', value: pkg?.name_bn || '—', icon: '💎', color: '#8e24aa' },
+    { label: 'Total Orders', value: orderCount, icon: '🧾', color: '#1565c0' },
+    { label: 'Pending Orders', value: pendingOrderCount, icon: '⏳', color: '#f4a300' },
+    { label: 'Package', value: pkg?.name_bn || '—', icon: '💎', color: '#8e24aa' },
   ]
 
   return (
@@ -81,7 +81,7 @@ export default function SellerDashboardPage() {
           background: shop.is_active ? '#e8f5e9' : '#ffebee',
           color: shop.is_active ? '#2e7d32' : '#c62828'
         }}>
-          {shop.is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+          {shop.is_active ? 'Active' : 'Inactive'}
         </span>
       </div>
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
@@ -101,7 +101,7 @@ export default function SellerDashboardPage() {
           marginTop: '24px', background: 'white', borderRadius: '10px',
           border: '1px solid #e0e0e0', padding: '16px 20px'
         }}>
-          <div style={{ fontSize: '12px', color: '#888', marginBottom: '6px' }}>বিবরণ</div>
+          <div style={{ fontSize: '12px', color: '#888', marginBottom: '6px' }}>Description</div>
           <div style={{ fontSize: '14px', color: '#333' }}>{shop.description}</div>
         </div>
       )}
