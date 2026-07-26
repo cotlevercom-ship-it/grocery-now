@@ -49,7 +49,7 @@ export default function SellerPackagePage() {
       }
     } catch (e) {
       console.error(e)
-      setError('তথ্য লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load data')
     }
     setLoading(false)
   }
@@ -62,7 +62,7 @@ export default function SellerPackagePage() {
   const handleSwitch = async (pkg) => {
     if (!shop || pkg.id === shop.package_id) return
     if (pkg.max_products != null && productCount > pkg.max_products) {
-      setError(`এই প্যাকেজে সর্বোচ্চ ${pkg.max_products}টি পণ্য রাখা যায়, কিন্তু আপনার বর্তমানে ${productCount}টি পণ্য আছে। প্যাকেজ পরিবর্তনের আগে কিছু পণ্য মুছে ফেলুন।`)
+      setError(`This package allows a maximum of ${pkg.max_products} products, but you currently have ${productCount}. Please remove some products before switching.`)
       return
     }
     // Free package -> switch instantly
@@ -75,11 +75,11 @@ export default function SellerPackagePage() {
           method: 'PATCH',
           body: JSON.stringify({ package_id: pkg.id }),
         })
-        setSuccess(`আপনার প্যাকেজ "${pkg.name_bn}"-এ পরিবর্তন হয়েছে`)
+        setSuccess(`Your package has been switched to "${pkg.name_bn}"`)
         await load()
       } catch (e) {
         console.error(e)
-        setError('প্যাকেজ পরিবর্তন করতে সমস্যা হয়েছে')
+        setError('Failed to switch package')
       }
       setSwitchingId(null)
       return
@@ -105,7 +105,7 @@ export default function SellerPackagePage() {
   const handleSubmitPayment = async (e) => {
     e.preventDefault()
     if (!payerNumber.trim() || !trxId.trim()) {
-      setError('পেয়ার নাম্বার ও Transaction ID দুটোই দিন')
+      setError('Please enter both payer number and Transaction ID')
       return
     }
     setSubmitting(true)
@@ -121,12 +121,12 @@ export default function SellerPackagePage() {
           trx_id: trxId.trim(),
         }),
       })
-      setSuccess('আপনার পেমেন্ট রিকোয়েস্ট জমা হয়েছে। অ্যাডমিন যাচাই করার পর প্যাকেজ চালু হয়ে যাবে।')
+      setSuccess('Your payment request has been submitted. Your package will activate once the admin verifies it.')
       setPayingPkg(null)
       await load()
     } catch (e) {
       console.error(e)
-      setError('রিকোয়েস্ট জমা দিতে সমস্যা হয়েছে')
+      setError('Failed to submit request')
     }
     setSubmitting(false)
   }
@@ -134,7 +134,7 @@ export default function SellerPackagePage() {
   if (loading) {
     return (
       <SellerNav>
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       </SellerNav>
     )
   }
@@ -156,10 +156,10 @@ export default function SellerPackagePage() {
     <SellerNav>
       <div>
         <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-          সাবস্ক্রিপশন প্যাকেজ
+          Subscription Package
         </h1>
         <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-          আপনার দোকানের জন্য একটি প্যাকেজ বেছে নিন। বেশি প্যাকেজে বেশি পণ্য লিস্ট করার সুযোগ পাবেন।
+          Choose a package for your shop. Higher packages let you list more products.
         </p>
 
         {error && (
@@ -180,12 +180,12 @@ export default function SellerPackagePage() {
           background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
           padding: '18px 22px', marginBottom: '24px', maxWidth: '700px'
         }}>
-          <div style={{ fontSize: '13px', color: '#888', marginBottom: '6px' }}>বর্তমান প্যাকেজ</div>
+          <div style={{ fontSize: '13px', color: '#888', marginBottom: '6px' }}>Current Package</div>
           <div style={{ fontSize: '18px', fontWeight: '700', color: '#163a2c', marginBottom: '10px' }}>
-            {currentPkg ? currentPkg.name_bn : 'নির্ধারিত নেই'}
+            {currentPkg ? currentPkg.name_bn : 'Not set'}
           </div>
           <div style={{ fontSize: '13px', color: '#555', marginBottom: '6px' }}>
-            পণ্য ব্যবহার: {productCount}{currentPkg?.max_products != null ? ` / ${currentPkg.max_products}` : ' / আনলিমিটেড'}
+            Product usage: {productCount}{currentPkg?.max_products != null ? ` / ${currentPkg.max_products}` : ' / Unlimited'}
           </div>
           {usagePercent != null && (
             <div style={{ background: '#eee', borderRadius: '6px', height: '8px', overflow: 'hidden' }}>
@@ -204,17 +204,17 @@ export default function SellerPackagePage() {
             padding: '22px', marginBottom: '24px', maxWidth: '480px'
           }}>
             <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-              bKash দিয়ে পেমেন্ট করুন
+              Pay with bKash
             </div>
             <div style={{ fontSize: '13px', color: '#777', marginBottom: '16px' }}>
-              "{payingPkg.name_bn}" প্যাকেজ — ৳{payingPkg.price}/মাস
+              "{payingPkg.name_bn}" package — ৳{payingPkg.price}/month
             </div>
 
             <div style={{
               background: '#fdf1f6', border: '1px dashed #e2136e', borderRadius: '8px',
               padding: '14px', marginBottom: '16px'
             }}>
-              <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>এই bKash নাম্বারে "Send Money" করুন</div>
+              <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Send "Payment" to this bKash number</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{ fontSize: '20px', fontWeight: '700', color: '#e2136e', letterSpacing: '0.5px' }}>
                   {bkashNumber || '—'}
@@ -222,31 +222,31 @@ export default function SellerPackagePage() {
                 <button type="button" onClick={handleCopyNumber} style={{
                   background: '#e2136e', color: 'white', border: 'none', borderRadius: '6px',
                   padding: '5px 12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer'
-                }}>{copied ? 'কপি হয়েছে' : 'কপি করুন'}</button>
+                }}>{copied ? 'Copied' : 'Copy'}</button>
               </div>
               <div style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
-                টাকা পাঠানোর পর নিচে আপনার bKash নাম্বার ও Transaction ID (Trx ID) দিন। অ্যাডমিন যাচাই করার পর প্যাকেজ চালু হয়ে যাবে।
+                After sending payment, enter your bKash number and Transaction ID (Trx ID) below. Your package will activate once the admin verifies it.
               </div>
             </div>
 
             <form onSubmit={handleSubmitPayment}>
               <div style={{ marginBottom: '12px' }}>
-                <label style={labelStyle}>আপনার bKash নাম্বার (যেখান থেকে পাঠিয়েছেন)</label>
-                <input style={inputStyle} value={payerNumber} onChange={e => setPayerNumber(e.target.value)} placeholder="যেমন: 01XXXXXXXXX" />
+                <label style={labelStyle}>Your bKash number (the one you sent from)</label>
+                <input style={inputStyle} value={payerNumber} onChange={e => setPayerNumber(e.target.value)} placeholder="e.g. 01XXXXXXXXX" />
               </div>
               <div style={{ marginBottom: '18px' }}>
                 <label style={labelStyle}>Transaction ID (Trx ID)</label>
-                <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="যেমন: 8N7A6XXXXX" />
+                <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="e.g. 8N7A6XXXXX" />
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button type="submit" disabled={submitting} style={{
                   background: submitting ? '#f48fb1' : '#e2136e', color: 'white', border: 'none',
                   borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
-                }}>{submitting ? 'জমা হচ্ছে...' : 'জমা দিন'}</button>
+                }}>{submitting ? 'Submitting...' : 'Submit'}</button>
                 <button type="button" onClick={() => setPayingPkg(null)} style={{
                   background: '#f0f0f0', color: '#555', border: 'none',
                   borderRadius: '8px', padding: '10px 20px', fontSize: '14px'
-                }}>বাতিল</button>
+                }}>Cancel</button>
               </div>
             </form>
           </div>
@@ -268,14 +268,14 @@ export default function SellerPackagePage() {
                     position: 'absolute', top: '14px', right: '14px', fontSize: '11px',
                     fontWeight: '700', color: '#2d6a4f', background: '#e8f5e9',
                     padding: '3px 10px', borderRadius: '10px'
-                  }}>বর্তমান</span>
+                  }}>Current</span>
                 )}
                 <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
                   {pkg.name_bn}
                 </div>
                 <div style={{ fontSize: '22px', fontWeight: '700', color: '#2e7d32', marginBottom: '14px' }}>
-                  {pkg.price > 0 ? `৳${pkg.price}` : 'ফ্রি'}
-                  {pkg.price > 0 && <span style={{ fontSize: '12px', color: '#999', fontWeight: '400' }}>/মাস</span>}
+                  {pkg.price > 0 ? `৳${pkg.price}` : 'Free'}
+                  {pkg.price > 0 && <span style={{ fontSize: '12px', color: '#999', fontWeight: '400' }}>/month</span>}
                 </div>
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none', marginBottom: '18px' }}>
                   {(pkg.features_bn || []).map((f, i) => (
@@ -293,7 +293,7 @@ export default function SellerPackagePage() {
                     textAlign: 'center', padding: '10px', borderRadius: '8px',
                     background: '#fff3e0', color: '#f4a300', fontSize: '13px', fontWeight: '600'
                   }}>
-                    যাচাইকরণ চলছে...
+                    Verification in progress...
                   </div>
                 ) : (
                   <button
@@ -306,7 +306,7 @@ export default function SellerPackagePage() {
                       color: isCurrent ? '#999' : 'white',
                     }}
                   >
-                    {isCurrent ? 'সক্রিয়' : switchingId === pkg.id ? 'পরিবর্তন হচ্ছে...' : pkg.price > 0 ? 'bKash দিয়ে নিন' : 'এই প্যাকেজ নিন'}
+                    {isCurrent ? 'Active' : switchingId === pkg.id ? 'Switching...' : pkg.price > 0 ? 'Pay with bKash' : 'Choose this Package'}
                   </button>
                 )}
               </div>
