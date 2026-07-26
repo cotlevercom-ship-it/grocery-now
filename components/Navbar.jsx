@@ -37,12 +37,13 @@ export default function Navbar() {
           <div style={{
             width: '28px', height: '28px', borderRadius: '8px',
             background: '#f4a300', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '15px', flexShrink: 0,
-          }}>🧺</div>
+            justifyContent: 'center', fontSize: '16px', fontWeight: '800',
+            color: '#163a2c', flexShrink: 0,
+          }}>C</div>
           <span className="navbar-logo-text" style={{
             color: '#faf7f0', fontWeight: '700', fontSize: '15px',
             letterSpacing: '-0.02em', whiteSpace: 'nowrap',
-          }}>GroceryNow</span>
+          }}>Cotlever</span>
           <span style={{
             width: '5px', height: '5px', borderRadius: '50%',
             background: '#7ee787', flexShrink: 0,
