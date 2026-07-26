@@ -4,6 +4,17 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
 
+function ZigzagEdge({ fill }) {
+  return (
+    <svg viewBox="0 0 320 14" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: '14px' }}>
+      <path
+        d="M0,0 L20,14 L40,0 L60,14 L80,0 L100,14 L120,0 L140,14 L160,0 L180,14 L200,0 L220,14 L240,0 L260,14 L280,0 L300,14 L320,0 L320,14 L0,14 Z"
+        fill={fill}
+      />
+    </svg>
+  )
+}
+
 export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
@@ -56,7 +67,7 @@ export default function AccountPage() {
 
   if (!loaded) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
       </div>
     )
@@ -64,100 +75,102 @@ export default function AccountPage() {
 
   const initial = (profile?.full_name || '?').trim().charAt(0).toUpperCase()
 
+  const rows = [
+    {
+      href: '/account/profile',
+      icon: '👤',
+      title: 'প্রোফাইল এডিট করুন',
+      subtitle: 'নাম ও ফোন নম্বর',
+      tag: null,
+    },
+    {
+      href: '/account/addresses',
+      icon: '📍',
+      title: 'আমার ঠিকানা',
+      subtitle: addressCount > 0 ? `${addressCount}টি সেভ করা ঠিকানা` : 'কোনো ঠিকানা সেভ করা নেই',
+      tag: addressCount > 0 ? String(addressCount) : null,
+    },
+    {
+      href: '/account/orders',
+      icon: '🧾',
+      title: 'অর্ডার হিস্টোরি',
+      subtitle: `${orderCount}টি অর্ডার${ongoingCount > 0 ? ` · ${ongoingCount}টি চলমান` : ''}`,
+      tag: ongoingCount > 0 ? `${ongoingCount} চলমান` : (orderCount > 0 ? String(orderCount) : null),
+    },
+  ]
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
-      {/* Hero header */}
-      <div style={{
-        background: 'linear-gradient(160deg, #163a2c 0%, #2d6a4f 100%)',
-        padding: '18px 16px 24px'
-      }}>
-        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto' }}>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.85)', fontSize: '14px', textDecoration: 'none', marginBottom: '18px' }}>
-            <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> হোমে ফিরুন
+    <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
+      {/* Passbook cover */}
+      <div style={{ background: 'linear-gradient(155deg, #12261c 0%, #1f4a37 60%, #2d6a4f 100%)' }}>
+        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', textDecoration: 'none', marginBottom: '20px' }}>
+            <span style={{ fontSize: '17px', lineHeight: 1 }}>←</span> হোমে ফিরুন
           </Link>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '18px' }}>
+            <span style={{ fontSize: '13px', letterSpacing: '0.04em', color: 'rgba(244,163,0,0.9)', fontWeight: '700' }}>🧺 GROCERYNOW</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginLeft: '8px' }}>আমার পাসবই</span>
+          </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{
-              width: '52px', height: '52px', borderRadius: '50%', background: '#f4a300',
+              width: '54px', height: '54px', borderRadius: '50%', background: '#f4a300',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '22px', fontWeight: '700', color: 'white', flexShrink: 0
+              fontSize: '22px', fontWeight: '700', color: '#12261c', flexShrink: 0,
+              border: '2px solid rgba(255,255,255,0.25)'
             }}>{initial}</div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ color: 'white', fontSize: '17px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: 'white', fontSize: '18px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {profile?.full_name || 'অতিথি ব্যবহারকারী'}
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '13px', marginTop: '2px' }}>
+              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', marginTop: '2px', fontFamily: '"Courier New", monospace' }}>
                 {profile?.phone || 'ফোন নম্বর যোগ করা হয়নি'}
               </div>
             </div>
           </div>
         </div>
+        <ZigzagEdge fill="#f5f5f0" />
       </div>
 
-      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
+      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 16px 0' }}>
 
-        {/* Edit profile */}
-        <Link href="/account/profile" style={{ textDecoration: 'none' }}>
-          <div style={{
-            background: 'white', borderRadius: '12px', border: '1px solid #e0e0e0',
-            padding: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px'
-          }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '9px', background: '#f5f5f5',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', flexShrink: 0
-            }}>👤</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>প্রোফাইল এডিট করুন</div>
-              <div style={{ fontSize: '12px', color: '#999', marginTop: '1px' }}>নাম ও ফোন নম্বর</div>
-            </div>
-            <span style={{ color: '#ccc', fontSize: '16px' }}>›</span>
-          </div>
-        </Link>
-
-        {/* Address book */}
-        <Link href="/account/addresses" style={{ textDecoration: 'none' }}>
-          <div style={{
-            background: 'white', borderRadius: '12px', border: '1px solid #e0e0e0',
-            padding: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px'
-          }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '9px', background: '#f5f5f5',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', flexShrink: 0
-            }}>📍</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>আমার ঠিকানা</div>
-              <div style={{ fontSize: '12px', color: '#999', marginTop: '1px' }}>
-                {addressCount > 0 ? `${addressCount}টি সেভ করা ঠিকানা` : 'কোনো ঠিকানা সেভ করা নেই'}
+        {/* Ledger entries */}
+        <div style={{
+          background: '#fffdf8', borderRadius: '4px', border: '1px solid #e6ded0',
+          boxShadow: '0 1px 3px rgba(22,58,44,0.05)', overflow: 'hidden', marginBottom: '18px'
+        }}>
+          {rows.map((row, i) => (
+            <Link key={row.href} href={row.href} style={{ textDecoration: 'none' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '13px', padding: '15px 16px',
+                borderBottom: i < rows.length - 1 ? '1px dashed #e6ded0' : 'none'
+              }}>
+                <div style={{
+                  width: '34px', height: '34px', borderRadius: '8px', background: '#f2ede0',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0
+                }}>{row.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{row.title}</div>
+                  <div style={{ fontSize: '11.5px', color: '#9a9182', marginTop: '2px' }}>{row.subtitle}</div>
+                </div>
+                {row.tag && (
+                  <div style={{
+                    fontSize: '10.5px', fontWeight: '700', color: '#2d6a4f', background: '#e8f0ea',
+                    padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap'
+                  }}>{row.tag}</div>
+                )}
+                <span style={{ color: '#cabfa9', fontSize: '15px' }}>›</span>
               </div>
-            </div>
-            <span style={{ color: '#ccc', fontSize: '16px' }}>›</span>
-          </div>
-        </Link>
-
-        {/* Order history */}
-        <Link href="/account/orders" style={{ textDecoration: 'none' }}>
-          <div style={{
-            background: 'white', borderRadius: '12px', border: '1px solid #e0e0e0',
-            padding: '14px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px'
-          }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '9px', background: '#f5f5f5',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', flexShrink: 0
-            }}>🧾</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>অর্ডার হিস্টোরি</div>
-              <div style={{ fontSize: '12px', color: '#999', marginTop: '1px' }}>
-                {orderCount}টি অর্ডার{ongoingCount > 0 ? ` · ${ongoingCount}টি চলমান` : ''}
-              </div>
-            </div>
-            <span style={{ color: '#ccc', fontSize: '16px' }}>›</span>
-          </div>
-        </Link>
+            </Link>
+          ))}
+        </div>
 
         <button onClick={handleLogout} style={{
-          display: 'block', width: '100%', textAlign: 'center', background: 'white',
-          color: '#c62828', padding: '13px', borderRadius: '12px', fontSize: '14px',
-          fontWeight: '700', border: '1px solid #ffcdd2', cursor: 'pointer'
+          display: 'block', width: '100%', textAlign: 'center', background: 'transparent',
+          color: '#a6402b', padding: '13px', borderRadius: '4px', fontSize: '13.5px',
+          fontWeight: '700', border: '1.5px dashed #d9a793', cursor: 'pointer',
+          letterSpacing: '0.02em'
         }}>লগআউট</button>
       </div>
     </div>
