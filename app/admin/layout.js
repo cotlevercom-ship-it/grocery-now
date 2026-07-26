@@ -53,7 +53,7 @@ export default function AdminLayout({ children }) {
         minHeight: '100vh', display: 'flex', alignItems: 'center',
         justifyContent: 'center', color: '#888', fontSize: '14px'
       }}>
-        লোড হচ্ছে...
+        Loading...
       </div>
     )
   }
@@ -61,16 +61,16 @@ export default function AdminLayout({ children }) {
   if (!isAdmin) return null
 
   const navItems = [
-    { href: '/admin', label: 'ড্যাশবোর্ড', icon: '📊' },
-    { href: '/admin/shops', label: 'দোকান', icon: '🏪' },
-    { href: '/admin/products', label: 'প্রোডাক্ট', icon: '📦' },
-    { href: '/admin/orders', label: 'অর্ডার', icon: '🧾' },
-    { href: '/admin/banners', label: 'ব্যানার', icon: '🖼️' },
-    { href: '/admin/package-requests', label: 'পেমেন্ট রিকোয়েস্ট', icon: '💳' },
-    { href: '/admin/seller-packages', label: 'সেলার প্যাকেজ', icon: '🏷️' },
-    { href: '/admin/affiliates', label: 'অ্যাফিলিয়েট', icon: '🤝' },
-    { href: '/admin/pages', label: 'পেজ ম্যানেজমেন্ট', icon: '📄' },
-    { href: '/admin/settings', label: 'সেটিংস', icon: '⚙️' },
+    { href: '/admin', label: 'Dashboard', icon: '📊' },
+    { href: '/admin/shops', label: 'Shops', icon: '🏪' },
+    { href: '/admin/products', label: 'Products', icon: '📦' },
+    { href: '/admin/orders', label: 'Orders', icon: '🧾' },
+    { href: '/admin/banners', label: 'Banners', icon: '🖼️' },
+    { href: '/admin/package-requests', label: 'Payment Requests', icon: '💳' },
+    { href: '/admin/seller-packages', label: 'Seller Packages', icon: '🏷️' },
+    { href: '/admin/affiliates', label: 'Affiliates', icon: '🤝' },
+    { href: '/admin/pages', label: 'Page Management', icon: '📄' },
+    { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
   ]
 
   const handleLogout = () => {
@@ -82,12 +82,12 @@ export default function AdminLayout({ children }) {
     <div className="admin-shell">
       {/* mobile top bar */}
       <div className="admin-topbar">
-        <button className="hamburger-btn" onClick={() => setNavOpen(true)} aria-label="মেনু খুলুন">
+        <button className="hamburger-btn" onClick={() => setNavOpen(true)} aria-label="Open menu">
           <span /><span /><span />
         </button>
         <div className="topbar-brand">
           <span style={{ fontSize: '18px' }}>🧺</span>
-          <span style={{ fontWeight: 700, fontSize: '14px' }}>GroceryNow Admin</span>
+          <span style={{ fontWeight: 700, fontSize: '14px' }}>Cot Lever Admin</span>
         </div>
       </div>
 
@@ -97,9 +97,9 @@ export default function AdminLayout({ children }) {
         <div className="sidebar-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '20px' }}>🧺</span>
-            <span style={{ fontWeight: '700', fontSize: '15px' }}>GroceryNow Admin</span>
+            <span style={{ fontWeight: '700', fontSize: '15px' }}>Cot Lever Admin</span>
           </div>
-          <button className="close-btn" onClick={() => setNavOpen(false)} aria-label="বন্ধ করুন">✕</button>
+          <button className="close-btn" onClick={() => setNavOpen(false)} aria-label="Close menu">✕</button>
         </div>
         <nav style={{ flex: 1, padding: '10px 0', overflowY: 'auto' }}>
           {navItems.map(item => {
@@ -129,7 +129,7 @@ export default function AdminLayout({ children }) {
           <button onClick={handleLogout} style={{
             width: '100%', background: 'rgba(255,255,255,0.1)', color: 'white',
             border: 'none', borderRadius: '8px', padding: '8px', fontSize: '13px', cursor: 'pointer'
-          }}>লগআউট</button>
+          }}>Logout</button>
         </div>
       </div>
 
