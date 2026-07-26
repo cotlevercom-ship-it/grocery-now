@@ -38,7 +38,7 @@ export default function SellerLandingPage() {
         .hero {
           background: var(--ink);
           color: white;
-          padding: 48px 20px 0;
+          padding: 48px 20px 56px;
         }
         .hero-inner { max-width: 560px; margin: 0 auto; text-align: center; }
         .brand {
@@ -87,44 +87,6 @@ export default function SellerLandingPage() {
           text-underline-offset: 3px;
         }
         .login-link:focus-visible { outline: 2px solid white; outline-offset: 2px; }
-
-        /* Ticker — signature element */
-        .ticker-wrap {
-          margin-top: 40px;
-          border-top: 1px solid rgba(255,255,255,0.12);
-          overflow: hidden;
-          background: #000;
-        }
-        .ticker-track {
-          display: flex;
-          width: max-content;
-          animation: scroll-left 22s linear infinite;
-        }
-        .ticker-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 12px 28px;
-          font-size: 12px;
-          font-weight: 600;
-          color: rgba(255,255,255,0.75);
-          white-space: nowrap;
-          border-right: 1px solid rgba(255,255,255,0.1);
-        }
-        .ticker-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: var(--red);
-          animation: pulse 1.6s ease-in-out infinite;
-          flex-shrink: 0;
-        }
-        @keyframes scroll-left {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
 
         /* Sections */
         .section { padding: 48px 16px; }
@@ -237,7 +199,7 @@ export default function SellerLandingPage() {
         .footer-copy { margin-top: 10px; font-size: 12px; color: #a0a0a0; }
 
         @media (min-width: 640px) {
-          .hero { padding: 72px 20px 0; }
+          .hero { padding: 72px 20px 80px; }
           .cta { width: auto; }
           .cta-band .cta { width: auto; }
           .section { padding: 64px 20px; }
@@ -245,8 +207,6 @@ export default function SellerLandingPage() {
         }
         @media (prefers-reduced-motion: reduce) {
           .cta { transition: none; }
-          .ticker-track { animation: none; }
-          .ticker-dot { animation: none; }
         }
       `}</style>
 
@@ -259,20 +219,6 @@ export default function SellerLandingPage() {
           <p>Reach buyers directly across Bangladesh and worldwide — no commission, ever. Just a simple monthly plan.</p>
           <Link href="/seller/create" className="cta">Start Selling</Link>
           <Link href="/seller/login" className="login-link">Already have an account? Log in</Link>
-        </div>
-        <div className="ticker-wrap">
-          <div className="ticker-track">
-            {[...Array(2)].map((_, i) => (
-              <div key={i} style={{ display: 'flex' }}>
-                {['Dhaka', 'Chattogram', 'Sylhet', 'Khulna', 'Rajshahi', 'Barishal'].map(city => (
-                  <div key={city + i} className="ticker-item">
-                    <span className="ticker-dot" />
-                    New order — {city}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
