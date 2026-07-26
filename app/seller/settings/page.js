@@ -10,11 +10,10 @@ export default function SellerSettingsPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const [areas, setAreas] = useState([])
   const [form, setForm] = useState({
     name: '',
     category: '',
-    area_id: '',
+    location: '',
     phone: '',
     description: '',
     image_url: '',
@@ -36,18 +35,14 @@ export default function SellerSettingsPage() {
       const session = getSession()
       if (!session?.user) return
       try {
-        const [shops, areaRows] = await Promise.all([
-          supabaseFetch(`shops?select=*&owner_id=eq.${session.user.id}`),
-          supabaseFetch('areas?select=id,name&is_active=eq.true&order=name'),
-        ])
-        setAreas(areaRows || [])
+        const shops = await supabaseFetch(`shops?select=*&owner_id=eq.${session.user.id}`)
         const shop = shops?.[0]
         if (shop) {
           setShopId(shop.id)
           setForm({
             name: shop.name || '',
             category: shop.category || '',
-            area_id: shop.area_id || '',
+            location: shop.location || '',
             phone: shop.phone || '',
             description: shop.description || '',
             image_url: shop.image_url || '',
@@ -90,10 +85,6 @@ export default function SellerSettingsPage() {
       setError('Please enter a shop name')
       return
     }
-    if (!form.area_id) {
-      setError('Please select an area')
-      return
-    }
     if (form.pickup_available && !form.pickup_address.trim()) {
       setError('Please enter a pickup address')
       return
@@ -111,7 +102,7 @@ export default function SellerSettingsPage() {
       const payload = {
         name: form.name.trim(),
         category: form.category.trim() || 'general',
-        area_id: form.area_id,
+        location: form.location.trim() || null,
         phone: form.phone.trim() || null,
         description: form.description.trim() || null,
         image_url: imageUrl || null,
@@ -248,13 +239,8 @@ export default function SellerSettingsPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
           <div>
-            <label style={labelStyle}>Area *</label>
-            <select style={inputStyle} value={form.area_id} onChange={e => handleFieldChange('area_id', e.target.value)}>
-              <option value="">Select an area</option>
-              {areas.map(area => (
-                <option key={area.id} value={area.id}>{area.name}</option>
-              ))}
-            </select>
+            <label style={labelStyle}>Location / City (optional)</label>
+            <input style={inputStyle} value={form.location} onChange={e => handleFieldChange('location', e.target.value)} placeholder="e.g. Dhaka, Chittagong, or any city/country" />
           </div>
           <div>
             <label style={labelStyle}>Phone Number</label>
