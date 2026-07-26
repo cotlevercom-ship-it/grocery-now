@@ -102,11 +102,11 @@ export default function SellerProductsPage() {
 
   const openAddCat = (parentId = null) => {
     if (!parentId && atCategoryLimit) {
-      setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxCategories}টি Category যোগ করা যায়। আরও Category যোগ করতে প্যাকেজ আপগ্রেড করুন।`)
+      setError(`Your "${packageName}" package allows a maximum of ${maxCategories} categories. Upgrade your package to add more.`)
       return
     }
     if (parentId && atSubcategoryLimit) {
-      setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxSubcategories}টি Sub-category যোগ করা যায়। আরও Sub-category যোগ করতে প্যাকেজ আপগ্রেড করুন।`)
+      setError(`Your "${packageName}" package allows a maximum of ${maxSubcategories} sub-categories. Upgrade your package to add more.`)
       return
     }
     setEditingCatId(null)
@@ -128,11 +128,11 @@ export default function SellerProductsPage() {
     if (!catForm.name.trim()) return
     if (!editingCatId) {
       if (!catForm.parent_id && atCategoryLimit) {
-        setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxCategories}টি Category যোগ করা যায়।`)
+        setError(`Your "${packageName}" package allows a maximum of ${maxCategories} categories.`)
         return
       }
       if (catForm.parent_id && atSubcategoryLimit) {
-        setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxSubcategories}টি Sub-category যোগ করা যায়।`)
+        setError(`Your "${packageName}" package allows a maximum of ${maxSubcategories} sub-categories.`)
         return
       }
     }
@@ -180,7 +180,7 @@ export default function SellerProductsPage() {
 
   const openAddProduct = () => {
     if (atProductLimit) {
-      setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxProducts}টি পণ্য যোগ করা যায়। আরও পণ্য যোগ করতে প্যাকেজ আপগ্রেড করুন।`)
+      setError(`Your "${packageName}" package allows a maximum of ${maxProducts} products. Upgrade your package to add more.`)
       return
     }
     setEditingProductId(null)
@@ -234,7 +234,7 @@ export default function SellerProductsPage() {
       return
     }
     if (!editingProductId && maxProducts != null && products.length >= maxProducts) {
-      setError(`আপনার "${packageName}" প্যাকেজে সর্বোচ্চ ${maxProducts}টি পণ্য যোগ করা যায়। আরও পণ্য যোগ করতে প্যাকেজ আপগ্রেড করুন।`)
+      setError(`Your "${packageName}" package allows a maximum of ${maxProducts} products. Upgrade your package to add more.`)
       return
     }
     setSavingProduct(true)
