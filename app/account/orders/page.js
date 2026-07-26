@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 
 const STATUS_LABELS = {
-  pending: 'অপেক্ষমান',
-  confirmed: 'কনফার্ম হয়েছে',
-  processing: 'প্রস্তুত করা হচ্ছে',
-  out_for_delivery: 'ডেলিভারিতে আছে',
-  delivered: 'ডেলিভারি সম্পন্ন',
-  cancelled: 'বাতিল হয়েছে',
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  processing: 'Processing',
+  out_for_delivery: 'Out for Delivery',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
 }
 
 const STATUS_STAMP = {
@@ -81,7 +81,7 @@ export default function OrdersHistoryPage() {
   if (!loaded) {
     return (
       <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#999', fontSize: '14px' }}>Loading...</div>
       </div>
     )
   }
@@ -89,15 +89,15 @@ export default function OrdersHistoryPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
       {/* Topbar */}
-      <div style={{ background: '#12261c', padding: '16px' }}>
+      <div style={{ background: '#0a0a0a', padding: '16px' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/account">
             <div style={{ color: 'white', fontSize: '21px', lineHeight: 1 }}>←</div>
           </Link>
           <div>
-            <div style={{ color: 'white', fontSize: '15.5px', fontWeight: '700' }}>আমার অর্ডারসমূহ</div>
-            <div style={{ color: 'rgba(244,163,0,0.9)', fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>
-              {orders.length}টি রশিদ
+            <div style={{ color: 'white', fontSize: '15.5px', fontWeight: '700' }}>My Orders</div>
+            <div style={{ color: 'rgba(220,38,38,0.9)', fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>
+              {orders.length} receipt{orders.length !== 1 ? 's' : ''}
             </div>
           </div>
         </div>
@@ -111,11 +111,11 @@ export default function OrdersHistoryPage() {
             padding: '44px 16px', textAlign: 'center'
           }}>
             <div style={{ fontSize: '38px', marginBottom: '12px' }}>🧺</div>
-            <div style={{ fontSize: '13px', color: '#9a9182', marginBottom: '18px' }}>এখনো কোনো অর্ডার করা হয়নি</div>
+            <div style={{ fontSize: '13px', color: '#9a9182', marginBottom: '18px' }}>No orders yet</div>
             <Link href="/shops" style={{
-              display: 'inline-block', background: '#1f4a37', color: 'white',
+              display: 'inline-block', background: '#0a0a0a', color: 'white',
               padding: '11px 26px', borderRadius: '4px', fontSize: '13.5px', fontWeight: '700'
-            }}>কেনাকাটা শুরু করুন</Link>
+            }}>Start Shopping</Link>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -128,16 +128,16 @@ export default function OrdersHistoryPage() {
                 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '14.5px', fontWeight: '700', color: '#1a1a1a' }}>
-                      {shopNames[order.shop_id] || 'দোকান'}
+                      {shopNames[order.shop_id] || 'Shop'}
                     </div>
                     <div style={{
                       fontSize: '11px', color: '#9a9182', marginTop: '4px',
                       fontFamily: '"Courier New", monospace'
                     }}>
-                      #{order.id.slice(0, 8).toUpperCase()} · {new Date(order.created_at).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      #{order.id.slice(0, 8).toUpperCase()} · {new Date(order.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
                     <div style={{
-                      fontSize: '16px', color: '#f4a300', fontWeight: '700', marginTop: '8px',
+                      fontSize: '16px', color: '#dc2626', fontWeight: '700', marginTop: '8px',
                       fontFamily: '"Courier New", monospace'
                     }}>৳{order.total}</div>
                   </div>
