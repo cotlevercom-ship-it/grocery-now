@@ -1,16 +1,10 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { getSession, supabaseFetch } from '@/lib/supabase'
+import { getSession } from '@/lib/supabase'
 
 export default function Navbar() {
-  const router = useRouter()
   const [session, setSession] = useState(null)
-  const [areas, setAreas] = useState([])
-  const [selectedArea, setSelectedArea] = useState(null)
-  const [areaOpen, setAreaOpen] = useState(false)
-  const areaRef = useRef(null)
 
   useEffect(() => {
     setSession(getSession())
@@ -22,42 +16,6 @@ export default function Navbar() {
       window.removeEventListener('storage', onAuthChanged)
     }
   }, [])
-
-  useEffect(() => {
-    async function loadAreas() {
-      try {
-        const data = await supabaseFetch(`areas?select=*&order=name`)
-        setAreas(data || [])
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    loadAreas()
-
-    try {
-      const saved = localStorage.getItem('selected_area')
-      if (saved) setSelectedArea(JSON.parse(saved))
-    } catch (e) {}
-  }, [])
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (areaRef.current && !areaRef.current.contains(e.target)) {
-        setAreaOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  function handleAreaSelect(area) {
-    setSelectedArea(area)
-    setAreaOpen(false)
-    try {
-      localStorage.setItem('selected_area', JSON.stringify(area))
-    } catch (e) {}
-    router.push(`/shops?area=${area.id}&name=${encodeURIComponent(area.name)}`)
-  }
 
   const customerName = session?.user?.email ? session.user.email.split('@')[0] : ''
 
@@ -92,66 +50,18 @@ export default function Navbar() {
           }} />
         </Link>
 
-        {areas.length > 0 && (
-          <div ref={areaRef} style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center' }}>
-            <button
-              onClick={() => setAreaOpen(o => !o)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '4px',
-                background: 'rgba(255,255,255,0.12)', border: 'none',
-                borderRadius: '8px', padding: '6px 10px', cursor: 'pointer',
-                color: '#faf7f0', fontSize: '12px', fontWeight: '600',
-                maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden',
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {selectedArea ? selectedArea.name : 'এলাকা'}
-              </span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            {areaOpen && (
-              <div style={{
-                position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
-                width: 'max(260px, 80vw)', maxWidth: '340px',
-                background: 'white', borderRadius: '10px', padding: '12px',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.18)', zIndex: 50,
-                display: 'flex', flexWrap: 'wrap', gap: '8px',
-                maxHeight: '260px', overflowY: 'auto',
-              }}>
-                {areas.map(area => {
-                  const isSelected = selectedArea?.id === area.id
-                  return (
-                    <button
-                      key={area.id}
-                      onClick={() => handleAreaSelect(area)}
-                      style={{
-                        flexShrink: 0,
-                        padding: '7px 14px',
-                        borderRadius: '20px',
-                        border: isSelected ? '1.5px solid #163a2c' : '1.5px solid #e0ddd3',
-                        background: isSelected ? '#163a2c' : '#fff',
-                        color: isSelected ? '#fff' : '#333',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        whiteSpace: 'nowrap',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {area.name}
-                    </button>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
+        <Link href="/shops" style={{
+          display: 'flex', alignItems: 'center', gap: '4px',
+          background: 'rgba(255,255,255,0.12)', border: 'none',
+          borderRadius: '8px', padding: '6px 10px', cursor: 'pointer',
+          color: '#faf7f0', fontSize: '12px', fontWeight: '600',
+          textDecoration: 'none', whiteSpace: 'nowrap',
+        }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v4a2 2 0 002 2M9 21a1 1 0 100-2 1 1 0 000 2zM20 21a1 1 0 100-2 1 1 0 000 2z" />
+          </svg>
+          <span>সব দোকান</span>
+        </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           {session ? (
