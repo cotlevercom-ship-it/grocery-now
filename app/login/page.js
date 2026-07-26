@@ -41,15 +41,18 @@ function LoginForm() {
     setSubmitting(true)
     try {
       if (mode === 'signup') {
-        const data = await signUp(email.trim(), password)
-        if (!data.access_token) {
-          // Email confirmation may be required depending on project settings
-          setNotice('Account created. If email verification is required, please verify and log in again.')
-          setMode('login')
-          setSubmitting(false)
-          return
+        await signUp(email.trim(), password)
+        // Send email OTP and require verification before continuing
+        try {
+          await fetch('/api/otp/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), purpose: 'signup' }),
+          })
+        } catch (otpErr) {
+          console.error('otp send failed', otpErr)
         }
-        router.push(nextUrl)
+        router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=signup&next=${encodeURIComponent(nextUrl)}`)
       } else {
         await signIn(email.trim(), password)
         router.push(nextUrl)
@@ -104,7 +107,14 @@ function LoginForm() {
           </div>
 
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <label style={{ fontSize: '12px', color: '#666', fontWeight: '600' }}>Password</label>
+              {mode === 'login' && (
+                <Link href="/forgot-password" style={{ fontSize: '12px', color: '#666', textDecoration: 'underline' }}>
+                  Forgot password?
+                </Link>
+              )}
+            </div>
             <input
               type="password"
               value={password}
