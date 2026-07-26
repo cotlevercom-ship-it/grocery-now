@@ -5,19 +5,6 @@ export const metadata = {
   description: 'Bring your shop online with Cot Lever',
 }
 
-const steps = [
-  { n: '01', title: 'Open an account', desc: 'Complete registration in a few minutes with your shop name, location, and details' },
-  { n: '02', title: 'Add products', desc: 'List products with prices, photos, and stock from your own dashboard' },
-  { n: '03', title: 'Start receiving orders', desc: 'Buyers find your shop, and orders come in real time' },
-]
-
-const highlights = [
-  { label: 'Zero', title: 'No Commission', desc: 'Keep everything you earn — subscription only, never a cut of your sales' },
-  { label: 'All', title: 'Nationwide & Global', desc: 'Sell to buyers anywhere in Bangladesh, or across the world' },
-  { label: 'Live', title: 'Real-Time Orders', desc: 'Every order lands on your dashboard the moment it\'s placed' },
-  { label: 'Easy', title: 'Simple Dashboard', desc: 'Manage products, stock, and orders from one clean screen' },
-]
-
 const packages = [
   { name: 'Basic', price: '৳0', period: '/month', features: ['Up to 15 products', 'Order management', 'Basic shop profile'], highlight: false },
   { name: 'Premium', price: '৳499', period: '/month', features: ['Unlimited product listings', 'Order management', 'Chance to be a featured shop', 'Priority support'], highlight: true },
@@ -141,7 +128,6 @@ export default function SellerLandingPage() {
 
         /* Sections */
         .section { padding: 48px 16px; }
-        .section-dark { background: var(--ink); color: white; }
         .section-head { text-align: center; max-width: 460px; margin: 0 auto 32px; }
         .section-title {
           font-size: clamp(20px, 5vw, 26px);
@@ -150,48 +136,6 @@ export default function SellerLandingPage() {
           margin: 0 0 8px;
         }
         .section-sub { font-size: 14px; color: var(--muted); margin: 0; }
-        .section-dark .section-sub { color: rgba(255,255,255,0.55); }
-
-        /* Highlights grid */
-        .highlight-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 16px;
-          max-width: 640px;
-          margin: 0 auto;
-        }
-        .highlight-card {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 12px;
-          padding: 22px 20px;
-          display: flex;
-          gap: 16px;
-          align-items: flex-start;
-        }
-        .highlight-label {
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--red);
-          border: 1.5px solid var(--red);
-          border-radius: 999px;
-          padding: 4px 12px;
-          flex-shrink: 0;
-        }
-        .highlight-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px; }
-        .highlight-desc { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; }
-
-        /* Steps */
-        .steps { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
-        .step { display: flex; gap: 16px; align-items: flex-start; }
-        .step-n {
-          font-size: 13px; font-weight: 700; color: var(--red);
-          border: 1.5px solid var(--red); border-radius: 999px;
-          width: 32px; height: 32px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .step-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
-        .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 480px; }
 
         /* Packages */
         .package-grid {
@@ -297,7 +241,6 @@ export default function SellerLandingPage() {
           .cta { width: auto; }
           .cta-band .cta { width: auto; }
           .section { padding: 64px 20px; }
-          .highlight-grid { grid-template-columns: repeat(2, 1fr); }
           .package-grid { grid-template-columns: repeat(2, 1fr); max-width: 600px; }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -330,42 +273,6 @@ export default function SellerLandingPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="section section-dark">
-        <div className="section-head">
-          <h2 className="section-title">Why Sell With Cot Lever</h2>
-          <p className="section-sub">Built for sellers who want to grow without giving up their margin</p>
-        </div>
-        <div className="highlight-grid">
-          {highlights.map(h => (
-            <div key={h.title} className="highlight-card">
-              <span className="highlight-label">{h.label}</span>
-              <div>
-                <div className="highlight-title">{h.title}</div>
-                <div className="highlight-desc">{h.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="section-head">
-          <h2 className="section-title">How to Get Started</h2>
-          <p className="section-sub">Three steps, from opening your shop to your first order</p>
-        </div>
-        <div className="steps">
-          {steps.map(s => (
-            <div key={s.title} className="step">
-              <div className="step-n">{s.n}</div>
-              <div>
-                <div className="step-title">{s.title}</div>
-                <div className="step-desc">{s.desc}</div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
