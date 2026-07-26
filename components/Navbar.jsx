@@ -30,16 +30,16 @@ export default function Navbar() {
         position: 'sticky',
         top: 0,
         zIndex: 40,
-        padding: '10px 12px',
+        padding: '14px 16px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
           <span className="navbar-logo-text" style={{
-            color: '#ffffff', fontWeight: '700', fontSize: '16px',
+            color: '#ffffff', fontWeight: '800', fontSize: '22px',
             letterSpacing: '-0.02em', whiteSpace: 'nowrap',
           }}>Cot Lever</span>
           <span style={{
-            width: '5px', height: '5px', borderRadius: '50%',
+            width: '7px', height: '7px', borderRadius: '50%',
             background: '#ff3b30', flexShrink: 0,
             animation: 'dotPulse 2s ease-in-out infinite',
           }} />
@@ -50,11 +50,11 @@ export default function Navbar() {
             <Link href="/account" style={{
               display: 'flex', alignItems: 'center', gap: '4px',
               background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-              borderRadius: '8px', padding: '6px 10px',
-              fontSize: '12px', whiteSpace: 'nowrap', textDecoration: 'none',
-              maxWidth: '110px', overflow: 'hidden'
+              borderRadius: '8px', padding: '7px 12px',
+              fontSize: '13px', whiteSpace: 'nowrap', textDecoration: 'none',
+              maxWidth: '120px', overflow: 'hidden'
             }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
@@ -67,10 +67,10 @@ export default function Navbar() {
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '4px',
                 background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-                borderRadius: '8px', padding: '6px 10px',
-                fontSize: '12px', whiteSpace: 'nowrap'
+                borderRadius: '8px', padding: '7px 12px',
+                fontSize: '13px', whiteSpace: 'nowrap'
               }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
