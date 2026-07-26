@@ -131,19 +131,19 @@ function LoginForm() {
             type="submit"
             disabled={submitting}
             style={{
-              width: '100%', marginTop: '18px', background: submitting ? '#a5d6a7' : '#2e7d32',
+              width: '100%', marginTop: '18px', background: submitting ? '#555555' : '#000000',
               color: 'white', padding: '13px', borderRadius: '10px', fontSize: '15px',
               fontWeight: '700', border: 'none', cursor: submitting ? 'default' : 'pointer',
-              boxShadow: submitting ? 'none' : '0 4px 12px rgba(46,125,50,0.28)'
+              boxShadow: submitting ? 'none' : '0 4px 12px rgba(0,0,0,0.28)'
             }}>
             {submitting ? 'Please wait...' : (mode === 'login' ? 'Log In' : 'Create Account')}
           </button>
 
           <div style={{ textAlign: 'center', marginTop: '18px', fontSize: '13px', color: '#666' }}>
             {mode === 'login' ? (
-              <>Don't have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice('') }} style={{ color: '#2e7d32', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
+              <>Don't have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice('') }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
             ) : (
-              <>Already have an account? <button type="button" onClick={() => { setMode('login'); setError(''); setNotice('') }} style={{ color: '#2e7d32', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Log In</button></>
+              <>Already have an account? <button type="button" onClick={() => { setMode('login'); setError(''); setNotice('') }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Log In</button></>
             )}
           </div>
         </form>
@@ -170,7 +170,7 @@ function LoginForm() {
         }
         .login-input:focus {
           outline: none;
-          border-color: #2e7d32;
+          border-color: #000000;
           background: white;
         }
       `}</style>
