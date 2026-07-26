@@ -17,7 +17,7 @@ const COLORS = {
 
 const trustPoints = [
   {
-    label: 'সহজ প্রোডাক্ট ও অর্ডার ম্যানেজমেন্ট',
+    label: 'Easy product & order management',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path d="M4 7L12 3L20 7V17L12 21L4 17V7Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -27,7 +27,7 @@ const trustPoints = [
     ),
   },
   {
-    label: 'কয়েক মিনিটেই দোকান খুলে অর্ডার নেওয়া শুরু',
+    label: 'Open your shop and start taking orders in minutes',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path d="M13 2L4 14H11L10 22L20 9H13L13 2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -35,7 +35,7 @@ const trustPoints = [
     ),
   },
   {
-    label: 'নিরাপদ পেমেন্ট ও তথ্য সুরক্ষা',
+    label: 'Secure payments & data protection',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path d="M12 2L20 5V11C20 16 16.5 20 12 22C7.5 20 4 16 4 11V5L12 2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -70,11 +70,11 @@ function SellerLoginForm() {
     setError('')
 
     if (!email.trim() || !password.trim()) {
-      setError('ইমেইল এবং পাসওয়ার্ড দিন')
+      setError('Please enter email and password')
       return
     }
     if (password.length < 6) {
-      setError('পাসওয়ার্ড কমপক্ষে ৬ ক্যারেক্টার হতে হবে')
+      setError('Password must be at least 6 characters')
       return
     }
 
@@ -89,7 +89,7 @@ function SellerLoginForm() {
       }
     } catch (err) {
       console.error(err)
-      setError(err.message || 'কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError(err.message || 'Something went wrong, please try again')
       setSubmitting(false)
     }
   }
@@ -106,14 +106,14 @@ function SellerLoginForm() {
         <div className="brand-panel-pattern" />
         <div className="brand-panel-inner">
           <Link href="/" className="brand-mark">
-            <span className="brand-mark-badge">G</span>
-            <span className="brand-mark-text">GroceryNow</span>
+            <span className="brand-mark-badge">C</span>
+            <span className="brand-mark-text">Cot Lever</span>
           </Link>
 
           <div className="brand-panel-copy">
-            <span className="brand-eyebrow">সেলার পোর্টাল</span>
-            <h1>আপনার দোকান,<br />হাজারো কাস্টমারের দরজায়</h1>
-            <p>GroceryNow-তে যোগ দিন, নিজের এলাকার কাস্টমারদের কাছে সরাসরি পৌঁছে যান।</p>
+            <span className="brand-eyebrow">Seller Portal</span>
+            <h1>Your Shop,<br />At Thousands of Doorsteps</h1>
+            <p>Join Cot Lever — sell across Bangladesh and worldwide, no commission, subscription-based plans only.</p>
           </div>
 
           <ul className="trust-list">
@@ -130,12 +130,12 @@ function SellerLoginForm() {
       {/* Form panel */}
       <div className="form-panel">
         <div className="form-panel-inner">
-          <Link href="/" className="mobile-back">← হোমে ফিরে যান</Link>
+          <Link href="/" className="mobile-back">← Back to Home</Link>
 
           <div className="form-card">
             <div className="form-heading">
-              <h2>{mode === 'login' ? 'সেলার লগইন' : 'সেলার অ্যাকাউন্ট তৈরি করুন'}</h2>
-              <p>{mode === 'login' ? 'আপনার দোকান ম্যানেজ করতে লগইন করুন' : 'কয়েক ধাপেই আপনার দোকান খুলুন'}</p>
+              <h2>{mode === 'login' ? 'Seller Login' : 'Create Seller Account'}</h2>
+              <p>{mode === 'login' ? 'Log in to manage your shop' : 'Open your shop in just a few steps'}</p>
             </div>
 
             <div className="mode-switch" role="tablist">
@@ -146,7 +146,7 @@ function SellerLoginForm() {
                 className={mode === 'login' ? 'active' : ''}
                 onClick={() => switchMode('login')}
               >
-                লগইন
+                Log In
               </button>
               <button
                 type="button"
@@ -155,13 +155,13 @@ function SellerLoginForm() {
                 className={mode === 'signup' ? 'active' : ''}
                 onClick={() => switchMode('signup')}
               >
-                সাইনআপ
+                Sign Up
               </button>
             </div>
 
             <form onSubmit={handleSubmit}>
               <div className="field">
-                <label htmlFor="seller-email">ইমেইল</label>
+                <label htmlFor="seller-email">Email</label>
                 <input
                   id="seller-email"
                   type="email"
@@ -173,13 +173,13 @@ function SellerLoginForm() {
               </div>
 
               <div className="field">
-                <label htmlFor="seller-password">পাসওয়ার্ড</label>
+                <label htmlFor="seller-password">Password</label>
                 <input
                   id="seller-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="কমপক্ষে ৬ ক্যারেক্টার"
+                  placeholder="At least 6 characters"
                   autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 />
               </div>
@@ -188,21 +188,21 @@ function SellerLoginForm() {
 
               <button type="submit" className="submit-btn" disabled={submitting}>
                 {submitting
-                  ? 'অপেক্ষা করুন...'
-                  : mode === 'login' ? 'লগইন করুন' : 'সেলার অ্যাকাউন্ট তৈরি করুন'}
+                  ? 'Please wait...'
+                  : mode === 'login' ? 'Log In' : 'Create Seller Account'}
               </button>
             </form>
 
             <div className="form-footnote">
               {mode === 'login' ? (
-                <>দোকান নাই এখনো? <button type="button" onClick={() => switchMode('signup')}>সাইনআপ করুন</button></>
+                <>Don't have a shop yet? <button type="button" onClick={() => switchMode('signup')}>Sign Up</button></>
               ) : (
-                <>আগে থেকে অ্যাকাউন্ট আছে? <button type="button" onClick={() => switchMode('login')}>লগইন করুন</button></>
+                <>Already have an account? <button type="button" onClick={() => switchMode('login')}>Log In</button></>
               )}
             </div>
           </div>
 
-          <Link href="/login" className="customer-link">কাস্টমার হিসেবে লগইন করতে চান? →</Link>
+          <Link href="/login" className="customer-link">Want to log in as a customer? →</Link>
         </div>
       </div>
 
