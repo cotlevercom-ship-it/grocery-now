@@ -60,7 +60,7 @@ function CreateShopForm() {
         setSelectedPkgId(initialPkg ? initialPkg.id : '')
       } catch (e) {
         console.error(e)
-        setError('তথ্য লোড করতে সমস্যা হয়েছে, পেজ রিফ্রেশ করুন')
+        setError('Failed to load data, please refresh the page')
       }
       setChecking(false)
     }
@@ -85,15 +85,15 @@ function CreateShopForm() {
     setError('')
 
     if (!name.trim()) {
-      setError('দোকানের নাম দিন')
+      setError('Please enter shop name')
       return
     }
     if (packages.length > 0 && !selectedPkgId) {
-      setError('একটি প্যাকেজ বেছে নিন')
+      setError('Please select a package')
       return
     }
     if (isPaidPkg && (!payerNumber.trim() || !trxId.trim())) {
-      setError('bKash নাম্বার ও Transaction ID দুটোই দিন')
+      setError('Please enter both bKash number and Transaction ID')
       return
     }
 
@@ -140,7 +140,7 @@ function CreateShopForm() {
       }
     } catch (err) {
       console.error(err)
-      setError(err.message || 'দোকান তৈরি করতে সমস্যা হয়েছে, আবার চেষ্ট করুন')
+      setError(err.message || 'Failed to create shop, please try again')
       setSubmitting(false)
     }
   }
@@ -151,7 +151,7 @@ function CreateShopForm() {
         minHeight: '100vh', display: 'flex', alignItems: 'center',
         justifyContent: 'center', color: '#888', fontSize: '14px'
       }}>
-        লোড হচ্ছে...
+        Loading...
       </div>
     )
   }
@@ -170,15 +170,15 @@ function CreateShopForm() {
       }}>
         <div style={{ fontSize: '44px', marginBottom: '14px' }}>✅</div>
         <div style={{ fontSize: '17px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>
-          দোকান তৈরি ও পেমেন্ট রিকোয়েস্ট জমা হয়েছে
+          Shop created and payment request submitted
         </div>
         <div style={{ fontSize: '14px', color: '#666', marginBottom: '24px', maxWidth: '340px' }}>
-          অ্যাডমিন আপনার Transaction ID যাচাই করার পর আপনার দোকান ক্রেতাদের কাছে দৃশ্যমান হব।
+          Your shop will be visible to buyers once the admin verifies your Transaction ID.
         </div>
         <button onClick={() => router.push('/seller/dashboard')} style={{
           background: '#2e7d32', color: 'white', border: 'none', borderRadius: '10px',
           padding: '12px 24px', fontSize: '14px', fontWeight: '600'
-        }}>ড্যাশবোর্ডে যান</button>
+        }}>Go to Dashboard</button>
       </div>
     )
   }
@@ -193,7 +193,7 @@ function CreateShopForm() {
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
         <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
-          আপনার দোকান খুলুন
+          Open Your Shop
         </div>
       </div>
 
@@ -202,23 +202,23 @@ function CreateShopForm() {
         border: '1px solid #e0e0e0', padding: '20px'
       }}>
         <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>দোকানের নাম *</label>
+          <label style={labelStyle}>Shop Name *</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="যেমন: রহিম স্টোর"
+            placeholder="e.g. Rahim Store"
             style={inputStyle}
           />
         </div>
 
         <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>ঠিকানা / শহর (ঐচ্ছিক)</label>
+          <label style={labelStyle}>Address / City (optional)</label>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="যেমন: ঢাকা, চট্টগ্রাম বা যেকোনো শহর/দেশ"
+            placeholder="e.g. Dhaka, Chattogram, or any city/country"
             style={inputStyle}
           />
         </div>
@@ -226,7 +226,7 @@ function CreateShopForm() {
         {packages.length > 0 && (
           <div style={{ marginBottom: '18px' }}>
             <label style={{ ...labelStyle, fontSize: '13px', fontWeight: '600', color: '#163a2c', marginBottom: '10px' }}>
-              প্যাকেজ বেছে নিন *
+              Select a Package *
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {packages.map(pkg => {
@@ -253,7 +253,7 @@ function CreateShopForm() {
                       )}
                     </div>
                     <div style={{ fontSize: '15px', fontWeight: '700', color: '#2e7d32', whiteSpace: 'nowrap' }}>
-                      {pkg.price > 0 ? `৳${pkg.price}/মাস` : 'ফ্রি'}
+                      {pkg.price > 0 ? `৳${pkg.price}/month` : 'Free'}
                     </div>
                   </div>
                 )
@@ -268,9 +268,9 @@ function CreateShopForm() {
             padding: '14px', marginBottom: '18px'
           }}>
             <div style={{ fontSize: '13px', fontWeight: '700', color: '#e2136e', marginBottom: '8px' }}>
-              bKash পেমেন্ট তথ্য
+              bKash Payment Info
             </div>
-            <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>এই bKash নাম্বারে "Payment" করুন </div>
+            <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Send "Payment" to this bKash number</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{ fontSize: '18px', fontWeight: '700', color: '#e2136e', letterSpacing: '0.5px' }}>
                 {bkashNumber || '—'}
@@ -278,19 +278,19 @@ function CreateShopForm() {
               <button type="button" onClick={handleCopyNumber} style={{
                 background: '#e2136e', color: 'white', border: 'none', borderRadius: '6px',
                 padding: '5px 12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer'
-              }}>{copied ? 'কপি হয়েছে' : 'কপি করুন'}</button>
+              }}>{copied ? 'Copied' : 'Copy'}</button>
             </div>
 
             <div style={{ marginBottom: '10px' }}>
-              <label style={labelStyle}>আপনার bKash নাম্বার (যেখান থেকে পাঠিয়েছেন)</label>
-              <input style={inputStyle} value={payerNumber} onChange={e => setPayerNumber(e.target.value)} placeholder="যেমন: 01XXXXXXXXX" />
+              <label style={labelStyle}>Your bKash number (the one you sent from)</label>
+              <input style={inputStyle} value={payerNumber} onChange={e => setPayerNumber(e.target.value)} placeholder="e.g. 01XXXXXXXXX" />
             </div>
             <div>
               <label style={labelStyle}>Transaction ID (Trx ID)</label>
-              <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="যেমন: 8N7A6XXXXX" />
+              <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="e.g. 8N7A6XXXXX" />
             </div>
             <div style={{ fontSize: '12px', color: '#f4a300', marginTop: '10px' }}>
-              অ্যাডমিন যাচাই করার আগ পর্যন্ত দোকানটি ক্রেতাদের কাছে দেখা যাবে না।
+              Your shop won't be visible to buyers until the admin verifies this payment.
             </div>
           </div>
         )}
@@ -310,7 +310,7 @@ function CreateShopForm() {
             color: 'white', padding: '12px', borderRadius: '10px', fontSize: '14px',
             fontWeight: '600', border: 'none'
           }}>
-          {submitting ? 'তৈরি হচ্...' : isPaidPkg ? 'দোকান তৈরি করুন ও পেমেন্ট জমা দন' : 'দোকান তৈরি করুন'}
+          {submitting ? 'Creating...' : isPaidPkg ? 'Create Shop & Submit Payment' : 'Create Shop'}
         </button>
       </form>
     </div>
@@ -324,7 +324,7 @@ export default function CreateShopPage() {
         minHeight: '100vh', display: 'flex', alignItems: 'center',
         justifyContent: 'center', color: '#888', fontSize: '14px'
       }}>
-        লোড হচ্ছে...
+        Loading...
       </div>
     }>
       <CreateShopForm />
