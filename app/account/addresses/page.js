@@ -67,7 +67,7 @@ export default function AddressesPage() {
     e.preventDefault()
     setError('')
     if (!address.trim()) {
-      setError('ঠিকানা লিখুন')
+      setError('Please enter an address')
       return
     }
     setSaving(true)
@@ -99,7 +99,7 @@ export default function AddressesPage() {
       resetForm()
     } catch (err) {
       console.error(err)
-      setError('সেভ করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError('Failed to save, please try again')
     }
     setSaving(false)
   }
@@ -132,7 +132,7 @@ export default function AddressesPage() {
   if (!loaded) {
     return (
       <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#999', fontSize: '14px' }}>Loading...</div>
       </div>
     )
   }
@@ -141,14 +141,14 @@ export default function AddressesPage() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
       {/* Topbar */}
       <div style={{
-        background: '#2e7d32', padding: '14px 16px',
+        background: '#0a0a0a', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/account">
             <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
           </Link>
-          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>আমার ঠিকানা</div>
+          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>My Addresses</div>
         </div>
       </div>
 
@@ -162,7 +162,7 @@ export default function AddressesPage() {
               padding: '28px 16px', textAlign: 'center', color: '#999'
             }}>
               <div style={{ fontSize: '32px', marginBottom: '8px' }}>📍</div>
-              <div style={{ fontSize: '13px' }}>কোনো ঠিকানা সেভ করা নেই</div>
+              <div style={{ fontSize: '13px' }}>No address saved</div>
             </div>
           )}
 
@@ -174,12 +174,12 @@ export default function AddressesPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>{addr.label || 'ঠিকানা'}</span>
+                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>{addr.label || 'Address'}</span>
                     {addr.is_default && (
                       <span style={{
                         fontSize: '10px', fontWeight: '600', padding: '2px 8px', borderRadius: '20px',
-                        background: '#e8f5e9', color: '#2e7d32'
-                      }}>ডিফল্ট</span>
+                        background: '#fde8e8', color: '#b91c1c'
+                      }}>Default</span>
                     )}
                   </div>
                   <div style={{ fontSize: '13px', color: '#555', lineHeight: 1.4 }}>{addr.address}</div>
@@ -189,18 +189,18 @@ export default function AddressesPage() {
               <div style={{ display: 'flex', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #f0f0f0' }}>
                 {!addr.is_default && (
                   <button onClick={() => handleSetDefault(addr.id)} style={{
-                    fontSize: '12px', color: '#2e7d32', background: 'none', border: 'none',
+                    fontSize: '12px', color: '#b91c1c', background: 'none', border: 'none',
                     fontWeight: '600', cursor: 'pointer', padding: 0
-                  }}>ডিফল্ট করুন</button>
+                  }}>Set as Default</button>
                 )}
                 <button onClick={() => openEditForm(addr)} style={{
                   fontSize: '12px', color: '#555', background: 'none', border: 'none',
                   fontWeight: '600', cursor: 'pointer', padding: 0
-                }}>এডিট</button>
+                }}>Edit</button>
                 <button onClick={() => handleDelete(addr.id)} style={{
                   fontSize: '12px', color: '#c62828', background: 'none', border: 'none',
                   fontWeight: '600', cursor: 'pointer', padding: 0
-                }}>মুছুন</button>
+                }}>Delete</button>
               </div>
             </div>
           ))}
@@ -209,9 +209,9 @@ export default function AddressesPage() {
         {!showForm && (
           <div style={{ padding: '0 16px' }}>
             <button onClick={openAddForm} style={{
-              width: '100%', background: 'white', color: '#2e7d32', border: '1px dashed #2e7d32',
+              width: '100%', background: 'white', color: '#b91c1c', border: '1px dashed #b91c1c',
               borderRadius: '10px', padding: '12px', fontSize: '14px', fontWeight: '600', cursor: 'pointer'
-            }}>+ নতুন ঠিকানা যোগ করুন</button>
+            }}>+ Add New Address</button>
           </div>
         )}
 
@@ -221,16 +221,16 @@ export default function AddressesPage() {
               background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', padding: '16px'
             }}>
               <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-                {editingId ? 'ঠিকানা এডিট করুন' : 'নতুন ঠিকানা'}
+                {editingId ? 'Edit Address' : 'New Address'}
               </div>
 
               <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>লেবেল (ঐচ্ছিক)</label>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Label (optional)</label>
                 <input
                   type="text"
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
-                  placeholder="যেমন: বাসা, অফিস"
+                  placeholder="e.g. Home, Office"
                   style={{
                     width: '100%', padding: '10px 12px', borderRadius: '8px',
                     border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
@@ -239,11 +239,11 @@ export default function AddressesPage() {
               </div>
 
               <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>বিস্তারিত ঠিকানা *</label>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Full Address *</label>
                 <textarea
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="বাড়ি/ফ্ল্যাট নম্বর, রোড, এলাকার নাম"
+                  placeholder="House/flat number, road, area name"
                   rows={3}
                   style={{
                     width: '100%', padding: '10px 12px', borderRadius: '8px',
@@ -254,12 +254,12 @@ export default function AddressesPage() {
               </div>
 
               <div style={{ marginBottom: '4px' }}>
-                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>ফোন নম্বর (ঐচ্ছিক)</label>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Phone Number (optional)</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="এই ঠিকানার জন্য আলাদা নম্বর হলে"
+                  placeholder="If different for this address"
                   style={{
                     width: '100%', padding: '10px 12px', borderRadius: '8px',
                     border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
@@ -276,13 +276,13 @@ export default function AddressesPage() {
 
               <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
                 <button type="submit" disabled={saving} style={{
-                  flex: 1, background: saving ? '#a5d6a7' : '#2e7d32', color: 'white',
+                  flex: 1, background: saving ? '#999' : '#0a0a0a', color: 'white',
                   padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: '600', border: 'none'
-                }}>{saving ? 'সেভ হচ্ছে...' : 'সেভ করুন'}</button>
+                }}>{saving ? 'Saving...' : 'Save'}</button>
                 <button type="button" onClick={() => { setShowForm(false); resetForm() }} style={{
                   flex: 1, background: 'white', color: '#555', border: '1px solid #ddd',
                   padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: '600'
-                }}>বাতিল</button>
+                }}>Cancel</button>
               </div>
             </div>
           </form>
