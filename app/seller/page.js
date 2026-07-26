@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { supabaseFetch } from '@/lib/supabase'
 
 export const metadata = {
   title: 'Become a Seller — Cot Lever',
@@ -12,7 +13,19 @@ const faqs = [
   { q: 'Can I offer store pickup instead of delivery?', a: 'Yes. You can enable store pickup with your own address from your seller settings, in addition to or instead of home delivery.' },
 ]
 
-export default function SellerLandingPage() {
+async function getPackages() {
+  try {
+    const data = await supabaseFetch('seller_packages?select=*&is_active=eq.true&order=sort_order')
+    return data || []
+  } catch (e) {
+    console.error(e)
+    return []
+  }
+}
+
+export default async function SellerLandingPage() {
+  const packages = await getPackages()
+
   return (
     <div className="seller-landing">
       <style>{`
@@ -49,27 +62,33 @@ export default function SellerLandingPage() {
         .section-title { font-size: clamp(20px, 5vw, 26px); font-weight: 700; letter-spacing: -0.01em; margin: 0 0 8px; }
         .section-sub { font-size: 14px; color: var(--muted); margin: 0; }
 
-        .price-card {
-          background: white; border: 1.5px solid var(--red); border-radius: 14px;
-          padding: 32px 26px; max-width: 380px; margin: 0 auto; text-align: center;
+        .package-grid {
+          display: grid; grid-template-columns: 1fr; gap: 16px;
+          max-width: 860px; margin: 0 auto;
         }
-        .price-badge {
+        .package-card {
+          background: white; border-radius: 14px; border: 1px solid var(--line);
+          padding: 28px 24px; text-align: center;
+        }
+        .package-card.highlight { border: 1.5px solid var(--red); }
+        .badge {
           display: inline-block; background: var(--red); color: white; font-size: 10px;
           font-weight: 700; letter-spacing: 0.03em; padding: 3px 10px; border-radius: 4px; margin-bottom: 14px;
         }
-        .price-row { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin-bottom: 22px; }
-        .price-amount { font-size: 36px; font-weight: 700; color: var(--ink); }
-        .price-period { font-size: 14px; color: var(--muted); }
-        .price-features { list-style: none; padding: 20px 0 0; margin: 0 0 24px; border-top: 1px solid var(--line); text-align: left; }
-        .price-features li { font-size: 13px; color: var(--text); margin-top: 10px; padding-left: 20px; position: relative; }
-        .price-features li::before { content: '✓'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
-        .price-btn {
-          display: block; text-align: center; padding: 13px; border-radius: 999px;
+        .package-name { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+        .package-price-row { margin: 8px 0 22px; display: flex; align-items: baseline; justify-content: center; gap: 5px; }
+        .package-price { font-size: 32px; font-weight: 700; color: var(--ink); }
+        .package-period { font-size: 13px; color: var(--muted); }
+        .package-features { list-style: none; padding: 18px 0 0; margin: 0 0 22px; border-top: 1px solid var(--line); text-align: left; }
+        .package-features li { font-size: 13px; color: var(--text); margin-top: 10px; padding-left: 20px; position: relative; }
+        .package-features li::before { content: '✓'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+        .package-btn {
+          display: block; text-align: center; padding: 12px; border-radius: 999px;
           text-decoration: none; font-weight: 700; font-size: 14px;
           background: var(--red); color: white; transition: background 0.15s ease;
         }
-        .price-btn:hover { background: var(--red-dark); }
-        .price-btn:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+        .package-btn:hover { background: var(--red-dark); }
+        .package-btn:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 
         .faq-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         .faq-item { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 4px 18px; }
@@ -93,6 +112,7 @@ export default function SellerLandingPage() {
           .cta { width: auto; }
           .cta-band .cta { width: auto; }
           .section { padding: 64px 20px; }
+          .package-grid { grid-template-columns: repeat(${Math.min(packages.length, 2)}, 1fr); max-width: ${packages.length > 1 ? '600px' : '380px'}; }
         }
         @media (prefers-reduced-motion: reduce) { .cta { transition: none; } }
       `}</style>
@@ -111,22 +131,26 @@ export default function SellerLandingPage() {
 
       <section className="section" id="pricing" style={{ background: 'white' }}>
         <div className="section-head">
-          <h2 className="section-title">Simple Pricing</h2>
-          <p className="section-sub">One plan, everything you need to sell</p>
+          <h2 className="section-title">Choose a Package</h2>
+          <p className="section-sub">Pick the plan that fits your shop</p>
         </div>
-        <div className="price-card">
-          <div className="price-badge">Seller Plan</div>
-          <div className="price-row">
-            <span className="price-amount">৳499</span>
-            <span className="price-period">/month</span>
-          </div>
-          <ul className="price-features">
-            <li>Unlimited product listings</li>
-            <li>Order management</li>
-            <li>Chance to be a featured shop</li>
-            <li>Priority support</li>
-          </ul>
-          <Link href="/seller/create?plan=premium" className="price-btn">Get Started</Link>
+        <div className="package-grid">
+          {packages.map((p, i) => (
+            <div key={p.id} className={`package-card ${i === packages.length - 1 && packages.length > 1 ? 'highlight' : ''}`}>
+              {i === packages.length - 1 && packages.length > 1 && <div className="badge">Most Popular</div>}
+              <div className="package-name">{p.name_bn}</div>
+              <div className="package-price-row">
+                <span className="package-price">{p.price > 0 ? `৳${p.price}` : 'Free'}</span>
+                {p.price > 0 && <span className="package-period">/month</span>}
+              </div>
+              {p.features_bn?.length > 0 && (
+                <ul className="package-features">
+                  {p.features_bn.map((f, idx) => <li key={idx}>{f}</li>)}
+                </ul>
+              )}
+              <Link href={`/seller/create?pkg=${p.id}`} className="package-btn">Get Started</Link>
+            </div>
+          ))}
         </div>
       </section>
 
