@@ -14,9 +14,8 @@ function CreateShopForm() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  const [areas, setAreas] = useState([])
   const [name, setName] = useState('')
-  const [areaId, setAreaId] = useState('')
+  const [location, setLocation] = useState('')
 
   const [packages, setPackages] = useState([])
   const [selectedPkgId, setSelectedPkgId] = useState('')
@@ -41,12 +40,10 @@ function CreateShopForm() {
           router.replace('/seller/dashboard')
           return
         }
-        const [areaRows, pkgRows, settings] = await Promise.all([
-          supabaseFetch(`areas?select=id,name&is_active=eq.true&order=name`),
+        const [pkgRows, settings] = await Promise.all([
           supabaseFetch(`seller_packages?select=*&is_active=eq.true&order=sort_order`),
           supabaseFetch(`app_settings?select=value&key=eq.bkash_number`),
         ])
-        setAreas(areaRows || [])
         setPackages(pkgRows || [])
         setBkashNumber(settings?.[0]?.value || '')
 
@@ -91,10 +88,6 @@ function CreateShopForm() {
       setError('দোকানের নাম দিন')
       return
     }
-    if (!areaId) {
-      setError('এলাকা বেছে নিন')
-      return
-    }
     if (packages.length > 0 && !selectedPkgId) {
       setError('একটি প্যাকেজ বেছে নিন')
       return
@@ -113,7 +106,7 @@ function CreateShopForm() {
         body: JSON.stringify({
           name: name.trim(),
           description: null,
-          area_id: areaId,
+          location: location.trim() || null,
           owner_id: session.user.id,
           category: 'general',
           delivery_charge: 20,
@@ -220,17 +213,14 @@ function CreateShopForm() {
         </div>
 
         <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>এলাকা *</label>
-          <select
-            value={areaId}
-            onChange={(e) => setAreaId(e.target.value)}
-            style={{ ...inputStyle, background: 'white' }}
-          >
-            <option value="">এলাকা বেছে নিন</option>
-            {areas.map(area => (
-              <option key={area.id} value={area.id}>{area.name}</option>
-            ))}
-          </select>
+          <label style={labelStyle}>ঠিকানা / শহর (ঐচ্ছিক)</label>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="যেমন: ঢাকা, চট্টগ্রাম বা যেকোনো শহর/দেশ"
+            style={inputStyle}
+          />
         </div>
 
         {packages.length > 0 && (
