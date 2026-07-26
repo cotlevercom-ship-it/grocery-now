@@ -30,11 +30,11 @@ function LoginForm() {
     setNotice('')
 
     if (!email.trim() || !password.trim()) {
-      setError('ইমেইল এবং পাসওয়ার্ড দিন')
+      setError('Please enter email and password')
       return
     }
     if (password.length < 6) {
-      setError('পাসওয়ার্ড কমপক্ষে ৬ ক্যারেক্টার হতে হবে')
+      setError('Password must be at least 6 characters')
       return
     }
 
@@ -44,7 +44,7 @@ function LoginForm() {
         const data = await signUp(email.trim(), password)
         if (!data.access_token) {
           // Email confirmation may be required depending on project settings
-          setNotice('অ্যাকাউন্ট তৈরি হয়েছে। ইমেইল ভেরিফাই করার প্রয়োজন হলে, ভেরিফাই করে আবার লগইন করুন।')
+          setNotice('Account created. If email verification is required, please verify and log in again.')
           setMode('login')
           setSubmitting(false)
           return
@@ -56,7 +56,7 @@ function LoginForm() {
       }
     } catch (err) {
       console.error(err)
-      setError(err.message || 'কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError(err.message || 'Something went wrong, please try again')
       setSubmitting(false)
     }
   }
@@ -73,7 +73,7 @@ function LoginForm() {
       {/* Back link */}
       <div style={{ width: '100%', maxWidth: '420px', padding: '18px 0 0' }}>
         <Link href="/" style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> হোমে ফিরুন
+          <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> Back to Home
         </Link>
       </div>
 
@@ -84,7 +84,7 @@ function LoginForm() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px',
           margin: '0 auto 10px', boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
         }}>🧺</div>
-        <div style={{ color: 'white', fontWeight: '700', fontSize: '18px', letterSpacing: '-0.02em' }}>GroceryNow</div>
+        <div style={{ color: 'white', fontWeight: '700', fontSize: '18px', letterSpacing: '-0.02em' }}>Cot Lever</div>
       </div>
 
       {/* Card */}
@@ -94,16 +94,16 @@ function LoginForm() {
       }}>
         <div style={{ marginBottom: '20px' }}>
           <div style={{ fontSize: '19px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px' }}>
-            {mode === 'login' ? 'লগইন করুন' : 'অ্যাকাউন্ট তৈরি করুন'}
+            {mode === 'login' ? 'Log In' : 'Create Account'}
           </div>
           <div style={{ fontSize: '13px', color: '#888' }}>
-            {mode === 'login' ? 'আবার স্বাগতম! চালিয়ে যেতে লগইন করুন' : 'কেনাকাটা শুরু করতে একাউন্ট বানান'}
+            {mode === 'login' ? 'Welcome back! Log in to continue' : 'Create an account to start shopping'}
           </div>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>ইমেইল</label>
+            <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Email</label>
             <input
               type="email"
               value={email}
@@ -114,12 +114,12 @@ function LoginForm() {
           </div>
 
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>পাসওয়ার্ড</label>
+            <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="কমপক্ষে ৬ ক্যারেক্টার"
+              placeholder="At least 6 characters"
               className="login-input"
             />
           </div>
@@ -146,14 +146,14 @@ function LoginForm() {
               fontWeight: '700', border: 'none', cursor: submitting ? 'default' : 'pointer',
               boxShadow: submitting ? 'none' : '0 4px 12px rgba(46,125,50,0.28)'
             }}>
-            {submitting ? 'অপেক্ষা করুন...' : (mode === 'login' ? 'লগইন করুন' : 'অ্যাকাউন্ট তৈরি করুন')}
+            {submitting ? 'Please wait...' : (mode === 'login' ? 'Log In' : 'Create Account')}
           </button>
 
           <div style={{ textAlign: 'center', marginTop: '18px', fontSize: '13px', color: '#666' }}>
             {mode === 'login' ? (
-              <>অ্যাকাউন্ট নাই? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice('') }} style={{ color: '#2e7d32', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>সাইনআপ করুন</button></>
+              <>Don't have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice('') }} style={{ color: '#2e7d32', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
             ) : (
-              <>আগে থেকে অ্যাকাউন্ট আছে? <button type="button" onClick={() => { setMode('login'); setError(''); setNotice('') }} style={{ color: '#2e7d32', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>লগইন করুন</button></>
+              <>Already have an account? <button type="button" onClick={() => { setMode('login'); setError(''); setNotice('') }} style={{ color: '#2e7d32', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Log In</button></>
             )}
           </div>
         </form>
@@ -164,7 +164,7 @@ function LoginForm() {
         <Link href="/seller/login" style={{
           display: 'block', textAlign: 'center', color: '#666',
           padding: '10px', fontSize: '13px', textDecoration: 'none'
-        }}>দোকান মালিক? সেলার লগইন →</Link>
+        }}>Own a shop? Seller Login →</Link>
       </div>
 
       <style jsx>{`
