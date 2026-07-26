@@ -44,7 +44,7 @@ export default function ProfilePage() {
     setSaved(false)
 
     if (!name.trim() || !phone.trim()) {
-      setError('নাম এবং ফোন নম্বর অবশ্যই দিতে হবে')
+      setError('Name and phone number are required')
       return
     }
 
@@ -62,7 +62,7 @@ export default function ProfilePage() {
       setSaved(true)
     } catch (err) {
       console.error(err)
-      setError('সেভ করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError('Failed to save, please try again')
     }
     setSubmitting(false)
   }
@@ -70,7 +70,7 @@ export default function ProfilePage() {
   if (!loaded) {
     return (
       <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#999', fontSize: '14px' }}>Loading...</div>
       </div>
     )
   }
@@ -78,14 +78,14 @@ export default function ProfilePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
       {/* Topbar */}
-      <div style={{ background: '#12261c', padding: '16px' }}>
+      <div style={{ background: '#0a0a0a', padding: '16px' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/account">
             <div style={{ color: 'white', fontSize: '21px', lineHeight: 1 }}>←</div>
           </Link>
           <div>
-            <div style={{ color: 'white', fontSize: '15.5px', fontWeight: '700' }}>পাসবই তথ্য হালনাগাদ</div>
-            <div style={{ color: 'rgba(244,163,0,0.9)', fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>প্রোফাইল এন্ট্রি</div>
+            <div style={{ color: 'white', fontSize: '15.5px', fontWeight: '700' }}>Update Passbook Info</div>
+            <div style={{ color: 'rgba(220,38,38,0.9)', fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>Profile Entry</div>
           </div>
         </div>
       </div>
@@ -98,23 +98,23 @@ export default function ProfilePage() {
             border: '1px solid #e6ded0', padding: '22px 18px 6px'
           }}>
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>নাম *</label>
+              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>Name *</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="আপনার নাম লিখুন"
+                placeholder="Enter your name"
                 className="ledger-input"
               />
             </div>
 
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>ফোন নম্বর *</label>
+              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>Phone Number *</label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="০১৭XXXXXXXX"
+                placeholder="01XXXXXXXXX"
                 className="ledger-input"
                 style={{ fontFamily: '"Courier New", monospace' }}
               />
@@ -128,10 +128,10 @@ export default function ProfilePage() {
               padding: '14px 16px', textDecoration: 'none'
             }}>
               <div>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>ডেলিভারি ঠিকানা</div>
-                <div style={{ fontSize: '11px', color: '#9a9182', marginTop: '2px' }}>ঠিকানা যোগ বা এডিট করতে এখানে যান</div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>Delivery Address</div>
+                <div style={{ fontSize: '11px', color: '#9a9182', marginTop: '2px' }}>Go here to add or edit addresses</div>
               </div>
-              <span style={{ color: '#2d6a4f', fontSize: '15px' }}>›</span>
+              <span style={{ color: '#b91c1c', fontSize: '15px' }}>›</span>
             </Link>
           </div>
 
@@ -144,9 +144,9 @@ export default function ProfilePage() {
 
           {saved && (
             <div style={{
-              margin: '0 16px 14px', padding: '11px 13px', background: '#e8f0ea',
-              color: '#1f4a37', borderRadius: '4px', fontSize: '13px', borderLeft: '3px solid #2d6a4f'
-            }}>✓ প্রোফাইল সেভ হয়েছে</div>
+              margin: '0 16px 14px', padding: '11px 13px', background: '#fde8e8',
+              color: '#7a1414', borderRadius: '4px', fontSize: '13px', borderLeft: '3px solid #dc2626'
+            }}>✓ Profile saved</div>
           )}
 
           <div style={{ padding: '0 16px' }}>
@@ -154,11 +154,11 @@ export default function ProfilePage() {
               type="submit"
               disabled={submitting}
               style={{
-                width: '100%', background: submitting ? '#8fae9d' : '#1f4a37', color: 'white',
+                width: '100%', background: submitting ? '#999' : '#0a0a0a', color: 'white',
                 padding: '14px', borderRadius: '4px', fontSize: '14.5px', fontWeight: '700',
                 border: '1px solid rgba(255,255,255,0.15)', letterSpacing: '0.02em'
               }}>
-              {submitting ? 'সেভ হচ্ছে...' : 'সেভ করুন'}
+              {submitting ? 'Saving...' : 'Save'}
             </button>
           </div>
         </form>
@@ -179,7 +179,7 @@ export default function ProfilePage() {
         }
         .ledger-input:focus {
           outline: none;
-          border-bottom: 1.5px solid #f4a300;
+          border-bottom: 1.5px solid #dc2626;
         }
         .ledger-input::placeholder {
           color: #c3baa7;
