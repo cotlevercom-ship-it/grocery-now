@@ -64,7 +64,7 @@ function LoginForm() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #163a2c 0%, #f5f5f5 260px)',
+      background: 'linear-gradient(180deg, #000000 0%, #f5f5f5 260px)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
