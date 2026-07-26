@@ -1,29 +1,29 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'বিক্রেতা হন — GroceryNow',
-  description: 'আপনার দোকান অনলাইনে নিয়ে আসুন GroceryNow এর সাথে',
+  title: 'Become a Seller — Cot Lever',
+  description: 'Bring your shop online with Cot Lever',
 }
 
 const steps = [
-  { title: 'অ্যাকাউন্ট খুলুন', desc: 'দোকানের নাম, এলাকা ও তথ্য দিয়ে কয়েক মিনিটে রেজিস্ট্রেশন সম্পন্ন করুন' },
-  { title: 'প্রোডাক্ট যোগ করুন', desc: 'নিজের ড্যাশবোর্ড থেকে দাম, ছবি ও স্টক দিয়ে প্রোডাক্ট তালিকাভুক্ত করুন' },
-  { title: 'অর্ডার পেতে শুরু করুন', desc: 'এলাকার ক্রেতারা আপনার দোকান খুঁজে পাবে, অর্ডার আসবে রিয়েল-টাইমে' },
+  { title: 'Open an account', desc: 'Complete registration in a few minutes with your shop name, location, and details' },
+  { title: 'Add products', desc: 'List products with prices, photos, and stock from your own dashboard' },
+  { title: 'Start receiving orders', desc: 'Buyers will find your shop, and orders will come in real time' },
 ]
 
 const packages = [
   {
-    name: 'বেসিক',
-    price: '৳০',
-    period: '/মাস',
-    features: ['১৫টি পর্যন্ত প্রোডাক্ট', 'অর্ডার ম্যানেজমেন্ট', 'বেসিক দোকান প্রোফাইল'],
+    name: 'Basic',
+    price: '৳0',
+    period: '/month',
+    features: ['Up to 15 products', 'Order management', 'Basic shop profile'],
     highlight: false,
   },
   {
-    name: 'প্রিমিয়াম',
-    price: '৳৪৯৯',
-    period: '/মাস',
-    features: ['আনলিমিটেড প্রোডাক্ট লিস্ট', 'অর্ডার ম্যানেজমেন্ট', 'ফিচার্ড দোকান হওয়ার সুযোগ', 'অগ্রাধিকার সাপোর্ট'],
+    name: 'Premium',
+    price: '৳499',
+    period: '/month',
+    features: ['Unlimited product listings', 'Order management', 'Chance to be a featured shop', 'Priority support'],
     highlight: true,
   },
 ]
@@ -197,17 +197,17 @@ export default function SellerLandingPage() {
 
       <section className="hero">
         <div className="hero-inner">
-          <div className="brand">GroceryNow বিক্রেতা প্রোগ্রাম</div>
-          <h1>আপনার দোকান নিয়ে আসুন অনলাইনে</h1>
-          <p>GroceryNow-তে যুক্ত হয়ে আপনার এলাকার হাজারো ক্রেতার কাছে সরাসরি প্রোডাক্ট পৌঁছে দিন</p>
-          <Link href="/seller/login" className="login-link">আগে থেকে অ্যাকাউন্ট আছে? লগইন করুন</Link>
+          <div className="brand">Cot Lever Seller Program</div>
+          <h1>Bring Your Shop Online</h1>
+          <p>Join Cot Lever and reach thousands of buyers directly — sell across Bangladesh and worldwide, no commission, subscription-based plans only</p>
+          <Link href="/seller/login" className="login-link">Already have an account? Log in</Link>
         </div>
       </section>
 
       <section className="section">
         <div className="section-head">
-          <h2 className="section-title">কীভাবে শুরু করবেন</h2>
-          <p className="section-sub">তিনটা ধাপ, দোকান খোলা থেকে প্রথম অর্ডার পর্যন্ত</p>
+          <h2 className="section-title">How to Get Started</h2>
+          <p className="section-sub">Three steps, from opening your shop to your first order</p>
         </div>
         <div className="steps">
           {steps.map(s => (
@@ -224,13 +224,13 @@ export default function SellerLandingPage() {
 
       <section className="section section-soft">
         <div className="section-head">
-          <h2 className="section-title">প্যাকেজ বেছে নিন</h2>
-          <p className="section-sub">দোকানের আকার অনুযায়ী প্ল্যান বদলাতে পারবেন যেকোনো সময়</p>
+          <h2 className="section-title">Choose a Package</h2>
+          <p className="section-sub">Switch plans anytime to match the size of your shop</p>
         </div>
         <div className="package-grid">
           {packages.map(p => (
             <div key={p.name} className={`package-card ${p.highlight ? 'highlight' : ''}`}>
-              {p.highlight && <div className="badge">সবচেয়ে জনপ্রিয়</div>}
+              {p.highlight && <div className="badge">Most Popular</div>}
               <div className="package-name">{p.name}</div>
               <div className="package-price-row">
                 <span className="package-price">{p.price}</span>
@@ -240,7 +240,7 @@ export default function SellerLandingPage() {
                 {p.features.map(feat => <li key={feat}>{feat}</li>)}
               </ul>
               <Link href={`/seller/create?plan=${p.highlight ? 'premium' : 'free'}`} className={`package-btn ${p.highlight ? 'highlight' : 'plain'}`}>
-                শুরু করুন
+                Get Started
               </Link>
             </div>
           ))}
@@ -248,9 +248,9 @@ export default function SellerLandingPage() {
       </section>
 
       <footer>
-        <div className="footer-title">GroceryNow</div>
-        <div>আপনার এলাকার সেরা গ্রোসারি প্ল্যাটফর্ম</div>
-        <div className="footer-copy">© 2026 GroceryNow. সর্বস্বত্ব সংরক্ষিত।</div>
+        <div className="footer-title">Cot Lever</div>
+        <div>The best grocery platform in your area</div>
+        <div className="footer-copy">© 2026 Cot Lever. All rights reserved.</div>
       </footer>
     </div>
   )
