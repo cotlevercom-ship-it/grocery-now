@@ -5,11 +5,11 @@ import Link from 'next/link'
 import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
 
 const navItems = [
-  { href: '/seller/dashboard', label: 'ড্যাশবোর্ড', icon: '📊' },
-  { href: '/seller/products', label: 'প্রোডাক্ট', icon: '📦' },
-  { href: '/seller/orders', label: 'অর্র', icon: '🧾' },
-  { href: '/seller/package', label: 'প্যাকেজ', icon: '💎' },
-  { href: '/seller/settings', label: 'সেটিংস', icon: '⚙️' },
+  { href: '/seller/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/seller/products', label: 'Products', icon: '📦' },
+  { href: '/seller/orders', label: 'Orders', icon: '🧾' },
+  { href: '/seller/package', label: 'Package', icon: '💎' },
+  { href: '/seller/settings', label: 'Settings', icon: '⚙️' },
 ]
 
 export default function SellerNav({ children }) {
@@ -67,7 +67,7 @@ export default function SellerNav({ children }) {
         minHeight: '100vh', display: 'flex', alignItems: 'center',
         justifyContent: 'center', color: '#888', fontSize: '14px'
       }}>
-        লোড হচ্ছে...
+        Loading...
       </div>
     )
   }
@@ -137,8 +137,8 @@ export default function SellerNav({ children }) {
         }}>
           <span style={{ fontSize: '20px' }}>🧺</span>
           <div>
-            <div style={{ fontWeight: '700', fontSize: '14px' }}>GroceryNow</div>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>বিক্রেতা প্যানেল</div>
+            <div style={{ fontWeight: '700', fontSize: '14px' }}>Cot Lever</div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Seller Panel</div>
           </div>
         </div>
 
@@ -181,7 +181,7 @@ export default function SellerNav({ children }) {
           <button onClick={handleLogout} style={{
             width: '100%', background: 'rgba(255,255,255,0.1)', color: 'white',
             border: 'none', borderRadius: '8px', padding: '8px', fontSize: '13px', cursor: 'pointer'
-          }}>লগআউট</button>
+          }}>Logout</button>
         </div>
       </div>
 
