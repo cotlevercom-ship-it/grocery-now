@@ -68,7 +68,7 @@ export default function AccountPage() {
   if (!loaded) {
     return (
       <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#999', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#999', fontSize: '14px' }}>Loading...</div>
       </div>
     )
   }
@@ -79,53 +79,53 @@ export default function AccountPage() {
     {
       href: '/account/profile',
       icon: '👤',
-      title: 'প্রোফাইল এডিট করুন',
-      subtitle: 'নাম ও ফোন নম্বর',
+      title: 'Edit Profile',
+      subtitle: 'Name and phone number',
       tag: null,
     },
     {
       href: '/account/addresses',
       icon: '📍',
-      title: 'আমার ঠিকানা',
-      subtitle: addressCount > 0 ? `${addressCount}টি সেভ করা ঠিকানা` : 'কোনো ঠিকানা সেভ করা নেই',
+      title: 'My Addresses',
+      subtitle: addressCount > 0 ? `${addressCount} saved address${addressCount > 1 ? 'es' : ''}` : 'No address saved',
       tag: addressCount > 0 ? String(addressCount) : null,
     },
     {
       href: '/account/orders',
       icon: '🧾',
-      title: 'অর্ডার হিস্টোরি',
-      subtitle: `${orderCount}টি অর্ডার${ongoingCount > 0 ? ` · ${ongoingCount}টি চলমান` : ''}`,
-      tag: ongoingCount > 0 ? `${ongoingCount} চলমান` : (orderCount > 0 ? String(orderCount) : null),
+      title: 'Order History',
+      subtitle: `${orderCount} order${orderCount !== 1 ? 's' : ''}${ongoingCount > 0 ? ` · ${ongoingCount} ongoing` : ''}`,
+      tag: ongoingCount > 0 ? `${ongoingCount} ongoing` : (orderCount > 0 ? String(orderCount) : null),
     },
   ]
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
       {/* Passbook cover */}
-      <div style={{ background: 'linear-gradient(155deg, #12261c 0%, #1f4a37 60%, #2d6a4f 100%)' }}>
+      <div style={{ background: 'linear-gradient(155deg, #0a0a0a 0%, #1a1a1a 60%, #262626 100%)' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', textDecoration: 'none', marginBottom: '20px' }}>
-            <span style={{ fontSize: '17px', lineHeight: 1 }}>←</span> হোমে ফিরুন
+            <span style={{ fontSize: '17px', lineHeight: 1 }}>←</span> Back to Home
           </Link>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '18px' }}>
-            <span style={{ fontSize: '13px', letterSpacing: '0.04em', color: 'rgba(244,163,0,0.9)', fontWeight: '700' }}>🧺 GROCERYNOW</span>
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginLeft: '8px' }}>আমার পাসবই</span>
+            <span style={{ fontSize: '13px', letterSpacing: '0.04em', color: 'rgba(220,38,38,0.9)', fontWeight: '700' }}>COT LEVER</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginLeft: '8px' }}>My Passbook</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{
-              width: '54px', height: '54px', borderRadius: '50%', background: '#f4a300',
+              width: '54px', height: '54px', borderRadius: '50%', background: '#dc2626',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '22px', fontWeight: '700', color: '#12261c', flexShrink: 0,
+              fontSize: '22px', fontWeight: '700', color: 'white', flexShrink: 0,
               border: '2px solid rgba(255,255,255,0.25)'
             }}>{initial}</div>
             <div style={{ minWidth: 0 }}>
               <div style={{ color: 'white', fontSize: '18px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {profile?.full_name || 'অতিথি ব্যবহারকারী'}
+                {profile?.full_name || 'Guest User'}
               </div>
               <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', marginTop: '2px', fontFamily: '"Courier New", monospace' }}>
-                {profile?.phone || 'ফোন নম্বর যোগ করা হয়নি'}
+                {profile?.phone || 'No phone number added'}
               </div>
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function AccountPage() {
                 </div>
                 {row.tag && (
                   <div style={{
-                    fontSize: '10.5px', fontWeight: '700', color: '#2d6a4f', background: '#e8f0ea',
+                    fontSize: '10.5px', fontWeight: '700', color: '#b91c1c', background: '#fde8e8',
                     padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap'
                   }}>{row.tag}</div>
                 )}
@@ -171,7 +171,7 @@ export default function AccountPage() {
           color: '#a6402b', padding: '13px', borderRadius: '4px', fontSize: '13.5px',
           fontWeight: '700', border: '1.5px dashed #d9a793', cursor: 'pointer',
           letterSpacing: '0.02em'
-        }}>লগআউট</button>
+        }}>Log Out</button>
       </div>
     </div>
   )
