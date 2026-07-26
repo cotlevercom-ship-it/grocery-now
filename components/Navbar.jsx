@@ -22,7 +22,7 @@ export default function Navbar() {
   return (
     <>
       <div className="navbar-bar" style={{
-        background: 'linear-gradient(135deg, #163a2c 0%, #2d6a4f 100%)',
+        background: '#000000',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -34,16 +34,10 @@ export default function Navbar() {
         boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
-          <div style={{
-            width: '28px', height: '28px', borderRadius: '8px',
-            background: '#f4a300', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '16px', fontWeight: '800',
-            color: '#163a2c', flexShrink: 0,
-          }}>C</div>
           <span className="navbar-logo-text" style={{
-            color: '#faf7f0', fontWeight: '700', fontSize: '15px',
+            color: '#ffffff', fontWeight: '700', fontSize: '16px',
             letterSpacing: '-0.02em', whiteSpace: 'nowrap',
-          }}>Cotlever</span>
+          }}>Cot Lever</span>
           <span style={{
             width: '5px', height: '5px', borderRadius: '50%',
             background: '#7ee787', flexShrink: 0,
@@ -55,7 +49,7 @@ export default function Navbar() {
           display: 'flex', alignItems: 'center', gap: '4px',
           background: 'rgba(255,255,255,0.12)', border: 'none',
           borderRadius: '8px', padding: '6px 10px', cursor: 'pointer',
-          color: '#faf7f0', fontSize: '12px', fontWeight: '600',
+          color: '#ff3b30', fontSize: '12px', fontWeight: '600',
           textDecoration: 'none', whiteSpace: 'nowrap',
         }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
