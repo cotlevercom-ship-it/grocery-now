@@ -40,7 +40,7 @@ export default function Navbar() {
           }}>Cot Lever</span>
           <span style={{
             width: '5px', height: '5px', borderRadius: '50%',
-            background: '#7ee787', flexShrink: 0,
+            background: '#ff3b30', flexShrink: 0,
             animation: 'dotPulse 2s ease-in-out infinite',
           }} />
         </Link>
