@@ -5,7 +5,7 @@ import { supabaseFetch, uploadImage } from '@/lib/supabase'
 const emptyForm = {
   name: '',
   category: 'general',
-  area_id: '',
+  location: '',
   phone: '',
   description: '',
   image_url: '',
@@ -20,7 +20,6 @@ const emptyForm = {
 
 export default function AdminShopsPage() {
   const [shops, setShops] = useState([])
-  const [areas, setAreas] = useState([])
   const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -37,20 +36,17 @@ export default function AdminShopsPage() {
   const [deletingId, setDeletingId] = useState(null)
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [areaFilter, setAreaFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 
   async function loadData() {
     setLoading(true)
     setError('')
     try {
-      const [shopsData, areasData, packagesData] = await Promise.all([
-        supabaseFetch('shops?select=*,areas(name),seller_packages(name_bn)&order=created_at.desc'),
-        supabaseFetch('areas?select=*&order=name'),
+      const [shopsData, packagesData] = await Promise.all([
+        supabaseFetch('shops?select=*,seller_packages(name_bn)&order=created_at.desc'),
         supabaseFetch('seller_packages?select=*&order=sort_order'),
       ])
       setShops(shopsData || [])
-      setAreas(areasData || [])
       setPackages(packagesData || [])
     } catch (e) {
       console.error(e)
@@ -77,7 +73,7 @@ export default function AdminShopsPage() {
     setForm({
       name: shop.name || '',
       category: shop.category || 'general',
-      area_id: shop.area_id || '',
+      location: shop.location || '',
       phone: shop.phone || '',
       description: shop.description || '',
       image_url: shop.image_url || '',
@@ -122,11 +118,6 @@ export default function AdminShopsPage() {
       setError('দোকানের নাম দিন')
       return
     }
-    if (!form.area_id) {
-      setError('এলাকা নির্বাচন করুন')
-      return
-    }
-
     setSubmitting(true)
     try {
       let imageUrl = form.image_url
@@ -140,7 +131,7 @@ export default function AdminShopsPage() {
       const payload = {
         name: form.name.trim(),
         category: form.category.trim() || 'general',
-        area_id: form.area_id,
+        location: form.location.trim() || null,
         phone: form.phone.trim() || null,
         description: form.description.trim() || null,
         image_url: imageUrl || null,
@@ -199,11 +190,10 @@ export default function AdminShopsPage() {
   const filteredShops = shops.filter(shop => {
     const matchesSearch = !searchQuery.trim() ||
       shop.name?.toLowerCase().includes(searchQuery.trim().toLowerCase())
-    const matchesArea = !areaFilter || shop.area_id === areaFilter
     const matchesStatus = statusFilter === 'all' ||
       (statusFilter === 'active' && shop.is_active) ||
       (statusFilter === 'inactive' && !shop.is_active)
-    return matchesSearch && matchesArea && matchesStatus
+    return matchesSearch && matchesStatus
   })
 
   return (
@@ -268,13 +258,8 @@ export default function AdminShopsPage() {
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>এলাকা *</label>
-            <select style={inputStyle} value={form.area_id} onChange={e => handleFieldChange('area_id', e.target.value)}>
-              <option value="">নির্বাচন করুন</option>
-              {areas.map(area => (
-                <option key={area.id} value={area.id}>{area.name}</option>
-              ))}
-            </select>
+            <label style={labelStyle}>ঠিকানা / শহর</label>
+            <input style={inputStyle} value={form.location} onChange={e => handleFieldChange('location', e.target.value)} placeholder="যেমন: ঢাকা, চট্টগ্রাম বা যেকোনো শহর/দেশ" />
           </div>
 
           <div style={{ marginBottom: '14px' }}>
@@ -360,16 +345,6 @@ export default function AdminShopsPage() {
             onChange={e => setSearchQuery(e.target.value)}
           />
           <select
-            style={{ ...inputStyle, maxWidth: '200px' }}
-            value={areaFilter}
-            onChange={e => setAreaFilter(e.target.value)}
-          >
-            <option value="">সব এলাকা</option>
-            {areas.map(area => (
-              <option key={area.id} value={area.id}>{area.name}</option>
-            ))}
-          </select>
-          <select
             style={{ ...inputStyle, maxWidth: '160px' }}
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
@@ -422,7 +397,7 @@ export default function AdminShopsPage() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{shop.name}</div>
                 <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                  {shop.category} · {shop.areas?.name || 'এলাকা নাই'}{shop.phone ? ` · ${shop.phone}` : ''}
+                  {shop.category}{shop.location ? ` · ${shop.location}` : ''}{shop.phone ? ` · ${shop.phone}` : ''}
                 </div>
               </div>
 
