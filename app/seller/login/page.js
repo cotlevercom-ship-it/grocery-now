@@ -82,7 +82,17 @@ function SellerLoginForm() {
     try {
       if (mode === 'signup') {
         await signUp(email.trim(), password)
-        router.push(refCode ? `/seller/create?ref=${encodeURIComponent(refCode)}` : '/seller/create')
+        try {
+          await fetch('/api/otp/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), purpose: 'signup' }),
+          })
+        } catch (otpErr) {
+          console.error('otp send failed', otpErr)
+        }
+        const nextAfterVerify = refCode ? `/seller/create?ref=${encodeURIComponent(refCode)}` : '/seller/create'
+        router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=signup&next=${encodeURIComponent(nextAfterVerify)}`)
       } else {
         await signIn(email.trim(), password)
         router.push(nextUrl)
@@ -173,7 +183,14 @@ function SellerLoginForm() {
               </div>
 
               <div className="field">
-                <label htmlFor="seller-password">Password</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label htmlFor="seller-password" style={{ marginBottom: 0 }}>Password</label>
+                  {mode === 'login' && (
+                    <Link href="/forgot-password" style={{ fontSize: '12px', color: COLORS.textMuted, textDecoration: 'underline' }}>
+                      Forgot password?
+                    </Link>
+                  )}
+                </div>
                 <input
                   id="seller-password"
                   type="password"
