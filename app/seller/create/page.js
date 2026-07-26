@@ -8,6 +8,7 @@ function CreateShopForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planParam = searchParams.get('plan')
+  const pkgParam = searchParams.get('pkg')
   const refCode = searchParams.get('ref') || ''
 
   const [checking, setChecking] = useState(true)
@@ -49,7 +50,9 @@ function CreateShopForm() {
 
         const pkgList = pkgRows || []
         let initialPkg = null
-        if (planParam === 'premium') {
+        if (pkgParam) {
+          initialPkg = pkgList.find(p => p.id === pkgParam)
+        } else if (planParam === 'premium') {
           initialPkg = pkgList.find(p => p.price > 0)
         } else if (planParam === 'free') {
           initialPkg = pkgList.find(p => !p.price || p.price <= 0)
@@ -65,7 +68,7 @@ function CreateShopForm() {
       setChecking(false)
     }
     init()
-  }, [router, planParam])
+  }, [router, planParam, pkgParam])
 
   const selectedPkg = packages.find(p => p.id === selectedPkgId) || null
   const isPaidPkg = selectedPkg && selectedPkg.price > 0
