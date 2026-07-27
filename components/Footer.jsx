@@ -63,14 +63,14 @@ export default function Footer() {
 
   const columns = []
   if (infoPages.length > 0) {
-    columns.push({ title: 'GROCERYNOW সম্পর্কে', items: infoPages.map(p => ({ label: p.title, href: linkHref(p) })) })
+    columns.push({ title: 'About Cot Lever', items: infoPages.map(p => ({ label: p.title, href: linkHref(p) })) })
   }
   if (partnerPages.length > 0) {
-    columns.push({ title: 'পার্টনার হোন', items: partnerPages.map(p => ({ label: p.title, href: linkHref(p) })) })
+    columns.push({ title: 'Partner With Us', items: partnerPages.map(p => ({ label: p.title, href: linkHref(p) })) })
   }
   columns.push({
-    title: 'বিক্রেতা হতে চান?',
-    items: [{ label: 'দোকান খুলুন →', href: '/seller' }],
+    title: 'Want to Sell?',
+    items: [{ label: 'Open a Store →', href: '/seller' }],
   })
 
   const totalCols = columns.length + (hasSocial ? 1 : 0)
@@ -89,15 +89,24 @@ export default function Footer() {
           {columns.map((col, i) => (
             <div className="footer-card" style={totalCols === 1 ? { width: '100%' } : undefined} key={i}>
               <div className="card-title">{col.title}</div>
-              {col.items.map((item, j) => (
-                <Link key={j} href={item.href} className="footer-link">{item.label}</Link>
-              ))}
+              <div className="link-list">
+                {col.items.map((item, j) => (
+                  <Link
+                    key={j}
+                    href={item.href}
+                    className="footer-link"
+                    style={{ display: 'block', width: '100%', marginBottom: '14px' }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           ))}
 
           {hasSocial && (
             <div className="footer-card" style={totalCols === 1 ? { width: '100%' } : undefined}>
-              <div className="card-title">যোগাযোগ</div>
+              <div className="card-title">Contact</div>
               <div className="social-row">
                 {settings.facebook_url && (
                   <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook">
@@ -129,12 +138,12 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <div className="brand-row">
-            <span className="brand-badge">🧺</span>
-            <span className="brand-name">GROCERYNOW</span>
+            <span className="brand-badge">🛒</span>
+            <span className="brand-name">COT LEVER</span>
           </div>
           <div className="bottom-text">
-            <span>© ২০২৬ <span className="gold-text">GroceryNow</span> — সর্বস্বত্ব সংরক্ষিত।</span>
-            <span className="pay-line">bKash · ক্যাশ অন ডেলিভারি</span>
+            <span>© 2026 <span className="gold-text">Cot Lever</span> — All rights reserved.</span>
+            <span className="pay-line">bKash · Cash on Delivery</span>
           </div>
         </div>
       </div>
@@ -178,6 +187,10 @@ export default function Footer() {
           font-size: 12px;
           letter-spacing: 0.3px;
           margin-bottom: 14px;
+        }
+        .link-list {
+          display: flex;
+          flex-direction: column;
         }
         .footer-link {
           display: block;
