@@ -148,7 +148,7 @@ export default async function SellerLandingPage() {
                   {p.features_bn.map((f, idx) => <li key={idx}>{f}</li>)}
                 </ul>
               )}
-              <Link href={`/seller/create?pkg=${p.id}`} className="package-btn">Get Started</Link>
+              <Link href={`/seller/login?mode=signup&pkg=${p.id}`} className="package-btn">Get Started</Link>
             </div>
           ))}
         </div>
