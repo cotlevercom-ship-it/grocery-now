@@ -9,7 +9,7 @@ const COLORS = {
   forestMid: '#2a2a2a',
   gold: '#dc2626',
   goldSoft: '#f8d7d5',
-  cream: '#faf8f4',
+  cream: '#0a0a0a',
   line: '#e7e2d8',
   textMuted: '#6b7b74',
 }
@@ -106,11 +106,7 @@ export default function AffiliatePage() {
       <div className="brand-panel">
         <div className="brand-panel-pattern" />
         <div className="brand-panel-inner">
-          <Link href="/" className="brand-mark">
-            <span className="brand-mark-text">Cot Lever</span>
-          </Link>
           <div className="brand-panel-copy">
-            <span className="brand-eyebrow">Affiliate Program</span>
             <h1>Bring in new sellers,<br />earn a bonus</h1>
             <p>Earn a fixed bonus whenever someone opens a new store using your link and it becomes active.</p>
           </div>
@@ -359,7 +355,7 @@ export default function AffiliatePage() {
           background: #a9c2b7;
         }
         .code-box {
-          background: ${COLORS.cream};
+          background: #faf8f4;
           border: 1px dashed ${COLORS.gold};
           border-radius: 10px;
           padding: 14px;
