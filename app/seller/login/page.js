@@ -4,6 +4,13 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, signUp, signOut, setAccountType, verifyAccountType } from '@/lib/supabase'
 
+// Supabase Auth requires a longer password than a 4-digit PIN, so the PIN is
+// deterministically padded into one under the hood. The seller never sees
+// or types anything but their 4-digit PIN.
+function pinToPassword(pin) {
+  return `sl${pin}pin`
+}
+
 const COLORS = {
   ink: '#0a0a0a',
   forest: '#0a0a0a',
@@ -31,7 +38,7 @@ function SellerLoginForm() {
 
   const [mode, setMode] = useState('login') // 'login' | 'signup'
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [pin, setPin] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -39,17 +46,18 @@ function SellerLoginForm() {
     e.preventDefault()
     setError('')
 
-    if (!email.trim() || !password.trim()) {
-      setError('Please enter email and password')
+    if (!email.trim() || !pin.trim()) {
+      setError('Please enter email and PIN')
       return
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (!/^\d{4}$/.test(pin)) {
+      setError('PIN must be exactly 4 digits')
       return
     }
 
     setSubmitting(true)
     try {
+      const password = pinToPassword(pin)
       if (mode === 'signup') {
         await signUp(email.trim(), password)
         await setAccountType('seller')
@@ -65,7 +73,45 @@ function SellerLoginForm() {
         const nextAfterVerify = refCode ? `/seller/create?ref=${encodeURIComponent(refCode)}` : '/seller/create'
         router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=signup&next=${encodeURIComponent(nextAfterVerify)}`)
       } else {
-        await signIn(email.trim(), password)
+        // Check whether this email is temporarily locked out first
+        const checkRes = await fetch('/api/login-attempts/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim() }),
+        })
+        const checkData = await checkRes.json()
+        if (checkData.locked) {
+          const minutes = Math.ceil(checkData.retryAfterSeconds / 60)
+          setError(`Too many failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`)
+          setSubmitting(false)
+          return
+        }
+
+        try {
+          await signIn(email.trim(), password)
+        } catch (signInErr) {
+          const recordRes = await fetch('/api/login-attempts/record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), success: false }),
+          })
+          const recordData = await recordRes.json()
+          if (recordData.locked) {
+            const minutes = Math.ceil(recordData.retryAfterSeconds / 60)
+            setError(`Too many failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`)
+          } else {
+            setError(`Incorrect email or PIN. ${recordData.attemptsRemaining} attempt${recordData.attemptsRemaining === 1 ? '' : 's'} remaining.`)
+          }
+          setSubmitting(false)
+          return
+        }
+
+        fetch('/api/login-attempts/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), success: true }),
+        }).catch(() => {})
+
         const ok = await verifyAccountType('seller')
         if (!ok) {
           signOut()
@@ -77,7 +123,7 @@ function SellerLoginForm() {
       }
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Something went wrong, please try again')
+      setError('Incorrect email or PIN, please try again')
       setSubmitting(false)
     }
   }
@@ -141,21 +187,16 @@ function SellerLoginForm() {
             </div>
 
             <div className="field">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label htmlFor="seller-password" style={{ marginBottom: 0 }}>Password</label>
-                {mode === 'login' && (
-                  <Link href="/forgot-password" style={{ fontSize: '12px', color: COLORS.textMuted, textDecoration: 'underline' }}>
-                    Forgot password?
-                  </Link>
-                )}
-              </div>
+              <label htmlFor="seller-pin">4-digit PIN</label>
               <input
-                id="seller-password"
+                id="seller-pin"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 6 characters"
-                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                inputMode="numeric"
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                placeholder="e.g. 1234"
+                maxLength={4}
+                autoComplete="off"
               />
             </div>
 
