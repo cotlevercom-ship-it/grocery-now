@@ -50,11 +50,11 @@ export default function AffiliatePage() {
     e.preventDefault()
     setError('')
     if (!name.trim() || !phone.trim()) {
-      setError('নাম এবং ফোন নাম্বার দিন')
+      setError('Please enter your name and phone number')
       return
     }
     if (!/^\d{4}$/.test(pin)) {
-      setError('৪ ডিজিটের PIN দিন (শুধু সংখ্যা)')
+      setError('Enter a 4-digit PIN (numbers only)')
       return
     }
     setSubmitting(true)
@@ -70,7 +70,7 @@ export default function AffiliatePage() {
           })
           setResult(Array.isArray(updated) ? updated[0] : aff)
         } else if (aff.pin_hash !== pinHash) {
-          setError('এই ফোন নাম্বারে ভিন্ন PIN সেট করা আছে')
+          setError('A different PIN is already set for this phone number')
           setSubmitting(false)
           return
         } else {
@@ -96,7 +96,7 @@ export default function AffiliatePage() {
       setResult(created)
     } catch (err) {
       console.error(err)
-      setError('রেজিস্ট্রেশন করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError('Registration failed, please try again')
     }
     setSubmitting(false)
   }
@@ -108,17 +108,17 @@ export default function AffiliatePage() {
         <div className="brand-panel-inner">
           <Link href="/" className="brand-mark">
             <span className="brand-mark-badge">🧺</span>
-            <span className="brand-mark-text">GroceryNow</span>
+            <span className="brand-mark-text">Cot Lever</span>
           </Link>
           <div className="brand-panel-copy">
-            <span className="brand-eyebrow">অ্যাফিলিয়েট প্রোগ্রাম</span>
-            <h1>নতুন সেলার নিয়ে আসুন,<br />বোনাস আয় করুন</h1>
-            <p>আপনার লিংক দিয়ে কেউ নতুন দোকান খুলে অ্যাক্টিভ হলেই আপনি একটি ফিক্সড বোনাস পাবেন।</p>
+            <span className="brand-eyebrow">Affiliate Program</span>
+            <h1>Bring in new sellers,<br />earn a bonus</h1>
+            <p>Earn a fixed bonus whenever someone opens a new store using your link and it becomes active.</p>
           </div>
           <ul className="how-list">
-            <li><span className="how-num">১</span><span>নিচের ফর্মে রেজিস্টার করে নিজের রেফারেল লিংক নিন</span></li>
-            <li><span className="how-num">২</span><span>বন্ধু, পরিচিত দোকানদারদের সাথে লিংকটি শেয়ার করুন</span></li>
-            <li><span className="how-num">৩</span><span>তাদের দোকান অ্যাক্টিভ হলেই বোনাস আপনার নামে জমা হবে</span></li>
+            <li><span className="how-num">1</span><span>Register in the form below to get your referral link</span></li>
+            <li><span className="how-num">2</span><span>Share the link with friends and shop owners you know</span></li>
+            <li><span className="how-num">3</span><span>Once their store becomes active, the bonus is credited to you</span></li>
           </ul>
         </div>
       </div>
@@ -128,24 +128,24 @@ export default function AffiliatePage() {
           {!result ? (
             <div className="form-card">
               <div className="form-heading">
-                <h2>অ্যাফিলিয়েট হিসেবে যোগ দিন</h2>
-                <p>নাম ও ফোন নাম্বার দিন, সাথে সাথে আপনার লিংক তৈরি হবে</p>
+                <h2>Join as an Affiliate</h2>
+                <p>Enter your name and phone number to get your link instantly</p>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="field">
-                  <label>নাম</label>
-                  <input value={name} onChange={e => setName(e.target.value)} placeholder="আপনার নাম" />
+                  <label>Name</label>
+                  <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" />
                 </div>
                 <div className="field">
-                  <label>ফোন নাম্বার</label>
+                  <label>Phone Number</label>
                   <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="01XXXXXXXXX" />
                 </div>
                 <div className="field">
-                  <label>৪ ডিজিট PIN (ড্যাশবোর্ডে লগইনের জন্য)</label>
+                  <label>4-digit PIN (for dashboard login)</label>
                   <input
                     value={pin}
                     onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    placeholder="যেমন: 1234"
+                    placeholder="e.g. 1234"
                     inputMode="numeric"
                     maxLength={4}
                     type="password"
@@ -153,29 +153,29 @@ export default function AffiliatePage() {
                 </div>
                 {error && <div className="alert">{error}</div>}
                 <button type="submit" className="submit-btn" disabled={submitting}>
-                  {submitting ? 'অপেক্ষা করুন...' : 'রেফারেল লিংক নিন'}
+                  {submitting ? 'Please wait...' : 'Get Referral Link'}
                 </button>
               </form>
             </div>
           ) : (
             <div className="form-card">
               <div className="form-heading">
-                <h2>স্বাগতম, {result.name}!</h2>
-                <p>এই লিংকটি শেয়ার করুন — নতুন সেলার এখান থেকে দোকান খুললে বোনাস পাবেন</p>
+                <h2>Welcome, {result.name}!</h2>
+                <p>Share this link — you'll earn a bonus when a new seller opens a store through it</p>
               </div>
               <div className="code-box">
                 <div className="code-text">{referralLink}</div>
                 <button type="button" onClick={handleCopy} className="copy-btn">
-                  {copied ? 'কপি হয়েছে ✓' : 'কপি করুন'}
+                  {copied ? 'Copied ✓' : 'Copy'}
                 </button>
               </div>
               <div className="note">
-                লিংকটি সংরক্ষণ করে রাখুন — পরবর্তীতে এই পেজে আবার আপনার নাম্বার ও PIN দিয়ে এলে একই লিংক ফিরে পাবেন।
+                Save this link — if you return to this page later with your number and PIN, you'll get the same link back.
               </div>
-              <Link href="/affiliate/dashboard" className="dashboard-link">আমার ইনকাম ড্যাশবোর্ড দেখুন →</Link>
+              <Link href="/affiliate/dashboard" className="dashboard-link">View My Earnings Dashboard →</Link>
             </div>
           )}
-          <Link href="/" className="back-link">← হোমে ফিরে যান</Link>
+          <Link href="/" className="back-link">← Back to Home</Link>
         </div>
       </div>
 
