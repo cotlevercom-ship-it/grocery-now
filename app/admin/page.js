@@ -1,158 +1,335 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 
-const statusLabels = {
-  pending: 'New',
-  confirmed: 'Confirmed',
-  processing: 'Processing',
-  out_for_delivery: 'Out for Delivery',
-  delivered: 'Delivered',
-  cancelled: 'Cancelled',
+const emptyForm = {
+  section: 'info', title: '', slug: '', content: '',
+  link_type: 'page', external_url: '', sort_order: '0', is_active: true,
 }
 
-function isSameDay(a, b) {
-  return a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
+function slugify(text) {
+  return text.trim().toLowerCase()
+    .replace(/[^a-z0-9\u0980-\u09FF\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
 }
 
-export default function AdminDashboard() {
+export default function AdminPagesPage() {
+  const [pages, setPages] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [orders, setOrders] = useState([])
-  const [shopCount, setShopCount] = useState(0)
-  const [productCount, setProductCount] = useState(0)
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true)
-      setError('')
-      try {
-        const [ordersData, shopsData, productsData] = await Promise.all([
-          supabaseFetch('orders?select=id,status,total,created_at,shops(name)&order=created_at.desc'),
-          supabaseFetch('shops?select=id'),
-          supabaseFetch('products?select=id'),
-        ])
-        setOrders(ordersData || [])
-        setShopCount((shopsData || []).length)
-        setProductCount((productsData || []).length)
-      } catch (e) {
-        console.error(e)
-        setError('Failed to load data')
-      }
-      setLoading(false)
+  const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [slugTouched, setSlugTouched] = useState(false)
+
+  const [deletingId, setDeletingId] = useState(null)
+
+  async function loadPages() {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await supabaseFetch('site_pages?select=*&order=section,sort_order')
+      setPages(data || [])
+    } catch (e) {
+      console.error(e)
+      setError('Failed to load pages')
     }
-    load()
-  }, [])
+    setLoading(false)
+  }
 
-  const today = new Date()
-  const todayOrders = orders.filter(o => isSameDay(new Date(o.created_at), today))
-  const pendingOrders = orders.filter(o => o.status === 'pending')
-  const deliveredOrders = orders.filter(o => o.status === 'delivered')
-  const cancelledOrders = orders.filter(o => o.status === 'cancelled')
+  useEffect(() => { loadPages() }, [])
 
-  const totalSales = deliveredOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0)
-  const todaySales = todayOrders
-    .filter(o => o.status === 'delivered')
-    .reduce((sum, o) => sum + (Number(o.total) || 0), 0)
+  const openNewForm = () => {
+    setEditingId(null)
+    setForm(emptyForm)
+    setSlugTouched(false)
+    setShowForm(true)
+  }
 
-  const cards = [
-    { label: 'Total Orders', value: orders.length, icon: '🧾', color: '#163a2c' },
-    { label: "Today's Orders", value: todayOrders.length, icon: '📅', color: '#1565c0' },
-    { label: 'New / Pending Orders', value: pendingOrders.length, icon: '⏳', color: '#f4a300' },
-    { label: 'Total Sales (Delivered)', value: `৳${totalSales.toLocaleString('en-US')}`, icon: '💰', color: '#2d6a4f' },
-    { label: "Today's Sales", value: `৳${todaySales.toLocaleString('en-US')}`, icon: '📈', color: '#00695c' },
-    { label: 'Cancelled Orders', value: cancelledOrders.length, icon: '✕', color: '#c62828' },
-    { label: 'Total Shops', value: shopCount, icon: '🏪', color: '#5e35b1' },
-    { label: 'Total Products', value: productCount, icon: '📦', color: '#6d4c41' },
-  ]
+  const openEditForm = (p) => {
+    setEditingId(p.id)
+    setForm({
+      section: p.section || 'info',
+      title: p.title || '',
+      slug: p.slug || '',
+      content: p.content || '',
+      link_type: p.link_type || 'page',
+      external_url: p.external_url || '',
+      sort_order: String(p.sort_order ?? '0'),
+      is_active: p.is_active !== false,
+    })
+    setSlugTouched(true)
+    setShowForm(true)
+  }
 
-  const recentOrders = orders.slice(0, 6)
+  const closeForm = () => {
+    setShowForm(false)
+    setEditingId(null)
+    setForm(emptyForm)
+    setSlugTouched(false)
+  }
+
+  const handleTitleChange = (value) => {
+    setForm(f => ({
+      ...f,
+      title: value,
+      slug: slugTouched ? f.slug : slugify(value),
+    }))
+  }
+
+  const handleSave = async (e) => {
+    e.preventDefault()
+    setError('')
+    if (!form.title.trim()) {
+      setError('Please enter a title')
+      return
+    }
+    if (form.link_type === 'page' && !form.slug.trim()) {
+      setError('Please enter a slug (for the URL)')
+      return
+    }
+    if (form.link_type === 'external' && !form.external_url.trim()) {
+      setError('Please enter an External URL')
+      return
+    }
+    setSaving(true)
+    try {
+      const payload = {
+        section: form.section,
+        title: form.title.trim(),
+        slug: form.link_type === 'page' ? slugify(form.slug) : null,
+        content: form.link_type === 'page' ? form.content : null,
+        link_type: form.link_type,
+        external_url: form.link_type === 'external' ? form.external_url.trim() : null,
+        sort_order: Number(form.sort_order) || 0,
+        is_active: form.is_active,
+      }
+      if (editingId) {
+        await supabaseFetch(`site_pages?id=eq.${editingId}`, {
+          method: 'PATCH', body: JSON.stringify(payload),
+        })
+      } else {
+        await supabaseFetch('site_pages', {
+          method: 'POST', body: JSON.stringify(payload),
+        })
+      }
+      closeForm()
+      await loadPages()
+    } catch (e) {
+      console.error(e)
+      setError('Failed to save. Check that the slug is unique.')
+    }
+    setSaving(false)
+  }
+
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this page?')) return
+    setDeletingId(id)
+    try {
+      await supabaseFetch(`site_pages?id=eq.${id}`, { method: 'DELETE' })
+      await loadPages()
+    } catch (e) {
+      console.error(e)
+      setError('Failed to delete')
+    }
+    setDeletingId(null)
+  }
+
+  const toggleActive = async (p) => {
+    try {
+      await supabaseFetch(`site_pages?id=eq.${p.id}`, {
+        method: 'PATCH', body: JSON.stringify({ is_active: !p.is_active }),
+      })
+      await loadPages()
+    } catch (e) {
+      console.error(e)
+      setError('Failed to change status')
+    }
+  }
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', borderRadius: '8px',
+    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+  }
+  const labelStyle = { fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }
+  const sectionLabel = { info: 'Info', partner: 'Partner With Us' }
+
+  const infoPages = pages.filter(p => p.section === 'info')
+  const partnerPages = pages.filter(p => p.section === 'partner')
+
+  const renderList = (list) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {list.map(p => (
+        <div key={p.id} style={{
+          background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
+          padding: '14px 16px', opacity: p.is_active ? 1 : 0.6,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px'
+        }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: '14px', fontWeight: '700', color: '#163a2c' }}>
+              {p.title} {!p.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(Inactive)</span>}
+            </div>
+            <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
+              {p.link_type === 'external'
+                ? `External → ${p.external_url}`
+                : `/page/${p.slug}`} · Order: {p.sort_order}
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+            <button onClick={() => openEditForm(p)} style={{
+              background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+              borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
+            }}>Edit</button>
+            <button onClick={() => toggleActive(p)} style={{
+              background: '#fff3e0', color: '#f4a300', border: 'none',
+              borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
+            }}>{p.is_active ? 'Deactivate' : 'Activate'}</button>
+            <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id} style={{
+              background: '#ffebee', color: '#c62828', border: 'none',
+              borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
+            }}>{deletingId === p.id ? 'Deleting...' : 'Delete'}</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <div>
-      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>
-        Dashboard
-      </h1>
-      <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        Overview of shops, orders, and sales.
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+        <div>
+          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
+            Page Management
+          </h1>
+          <p style={{ color: '#888', fontSize: '14px' }}>
+            Manage the links/pages for the Footer's Info and Partner With Us sections here.
+          </p>
+        </div>
+        {!showForm && (
+          <button onClick={openNewForm} style={{
+            background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
+            padding: '10px 18px', fontSize: '14px', fontWeight: '600', whiteSpace: 'nowrap'
+          }}>+ New Page</button>
+        )}
+      </div>
 
       {error && (
         <div style={{
-          maxWidth: '600px', marginBottom: '16px', padding: '10px 12px',
+          maxWidth: '600px', margin: '16px 0', padding: '10px 12px',
           background: '#ffebee', color: '#c62828', borderRadius: '8px', fontSize: '13px'
         }}>{error}</div>
+      )}
+
+      {showForm && (
+        <form onSubmit={handleSave} style={{
+          background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
+          padding: '20px', marginBottom: '24px', maxWidth: '560px'
+        }}>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '14px' }}>
+            {editingId ? 'Edit Page' : 'New Page'}
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Section</label>
+              <select style={{ ...inputStyle, background: 'white' }} value={form.section}
+                onChange={e => setForm({ ...form, section: e.target.value })}>
+                <option value="info">Info</option>
+                <option value="partner">Partner With Us</option>
+              </select>
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Type</label>
+              <select style={{ ...inputStyle, background: 'white' }} value={form.link_type}
+                onChange={e => setForm({ ...form, link_type: e.target.value })}>
+                <option value="page">Custom Content Page</option>
+                <option value="external">External Link (goes to another page)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>Title (shown in the link) *</label>
+            <input style={inputStyle} value={form.title}
+              onChange={e => handleTitleChange(e.target.value)}
+              placeholder="e.g. About Us" />
+          </div>
+
+          {form.link_type === 'page' ? (
+            <>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={labelStyle}>Slug (URL: /page/xxx) *</label>
+                <input style={inputStyle} value={form.slug}
+                  onChange={e => { setSlugTouched(true); setForm({ ...form, slug: e.target.value }) }}
+                  placeholder="about-us" />
+              </div>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={labelStyle}>Content</label>
+                <textarea style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} rows={6}
+                  value={form.content}
+                  onChange={e => setForm({ ...form, content: e.target.value })}
+                  placeholder="Enter the page content here..." />
+              </div>
+            </>
+          ) : (
+            <div style={{ marginBottom: '14px' }}>
+              <label style={labelStyle}>External URL *</label>
+              <input style={inputStyle} value={form.external_url}
+                onChange={e => setForm({ ...form, external_url: e.target.value })}
+                placeholder="/seller/login or https://..." />
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '14px', alignItems: 'center' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Order (Sort Order)</label>
+              <input style={inputStyle} type="number" value={form.sort_order}
+                onChange={e => setForm({ ...form, sort_order: e.target.value })} />
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444', marginTop: '18px' }}>
+              <input type="checkbox" checked={form.is_active}
+                onChange={e => setForm({ ...form, is_active: e.target.checked })} />
+              Active
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" disabled={saving} style={{
+              background: saving ? '#a5d6a7' : '#2e7d32', color: 'white', border: 'none',
+              borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
+            }}>{saving ? 'Saving...' : 'Save'}</button>
+            <button type="button" onClick={closeForm} style={{
+              background: '#f0f0f0', color: '#555', border: 'none',
+              borderRadius: '8px', padding: '10px 20px', fontSize: '14px'
+            }}>Cancel</button>
+          </div>
+        </form>
       )}
 
       {loading ? (
         <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       ) : (
-        <>
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-            gap: '14px', marginBottom: '28px'
-          }}>
-            {cards.map(card => (
-              <div key={card.label} style={{
-                background: 'white', borderRadius: '12px', border: '1px solid #e0e0e0',
-                padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px'
-              }}>
-                <div style={{
-                  width: '36px', height: '36px', borderRadius: '10px',
-                  background: `${card.color}1a`, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: '18px'
-                }}>{card.icon}</div>
-                <div style={{ fontSize: '20px', fontWeight: '700', color: card.color }}>
-                  {card.value}
-                </div>
-                <div style={{ fontSize: '12px', color: '#888' }}>{card.label}</div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{
-            background: 'white', borderRadius: '12px', border: '1px solid #e0e0e0', overflow: 'hidden'
-          }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '14px 16px', borderBottom: '1px solid #eee'
-            }}>
-              <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c' }}>Recent Orders</div>
-              <Link href="/admin/orders" style={{ fontSize: '13px', color: '#2d6a4f', fontWeight: '600' }}>
-                View all →
-              </Link>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', maxWidth: '680px' }}>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '10px' }}>
+              {sectionLabel.info}
             </div>
-
-            {recentOrders.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#999' }}>
-                No orders found
-              </div>
-            ) : (
-              <div>
-                {recentOrders.map(order => (
-                  <div key={order.id} style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '12px 16px', borderBottom: '1px solid #f2f2f2', fontSize: '13px'
-                  }}>
-                    <div style={{ color: '#555' }}>
-                      #{order.id.slice(0, 8)} · {order.shops?.name || 'No shop'}
-                    </div>
-                    <div style={{ color: '#888' }}>
-                      {new Date(order.created_at).toLocaleDateString('en-US')}
-                    </div>
-                    <div style={{ fontWeight: '700', color: '#2e7d32' }}>৳{order.total}</div>
-                    <div style={{ fontSize: '11px', fontWeight: '600', color: '#666' }}>
-                      {statusLabels[order.status] || order.status}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            {infoPages.length === 0 ? (
+              <div style={{ color: '#999', fontSize: '13px' }}>No pages</div>
+            ) : renderList(infoPages)}
           </div>
-        </>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '10px' }}>
+              {sectionLabel.partner}
+            </div>
+            {partnerPages.length === 0 ? (
+              <div style={{ color: '#999', fontSize: '13px' }}>No pages</div>
+            ) : renderList(partnerPages)}
+          </div>
+        </div>
       )}
     </div>
   )
