@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { supabaseFetch, hashPin } from '@/lib/supabase'
+import { hashPin } from '@/lib/supabase'
 
 const COLORS = {
   ink: '#000000',
@@ -12,15 +12,6 @@ const COLORS = {
   cream: '#000000',
   line: '#e7e2d8',
   textMuted: '#6b7b74',
-}
-
-function generateCode(name) {
-  const base = (name || '')
-    .replace(/[^a-zA-Z0-9]/g, '')
-    .slice(0, 4)
-    .toUpperCase() || 'AFF'
-  const rand = Math.random().toString(36).slice(2, 6).toUpperCase()
-  return `${base}${rand}`
 }
 
 export default function AffiliatePage() {
@@ -60,40 +51,18 @@ export default function AffiliatePage() {
     setSubmitting(true)
     try {
       const pinHash = await hashPin(pin)
-      const existing = await supabaseFetch(`affiliates?select=*&phone=eq.${encodeURIComponent(phone.trim())}`)
-      if (existing && existing.length > 0) {
-        const aff = existing[0]
-        if (!aff.pin_hash) {
-          // backward-compatible: no pin set yet, set it now
-          const updated = await supabaseFetch(`affiliates?id=eq.${aff.id}`, {
-            method: 'PATCH', body: JSON.stringify({ pin_hash: pinHash }),
-          })
-          setResult(Array.isArray(updated) ? updated[0] : aff)
-        } else if (aff.pin_hash !== pinHash) {
-          setError('A different PIN is already set for this phone number')
-          setSubmitting(false)
-          return
-        } else {
-          setResult(aff)
-        }
+      const res = await fetch('/api/affiliate/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), phone: phone.trim(), pinHash }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'Registration failed, please try again')
         setSubmitting(false)
         return
       }
-
-      let created = null
-      for (let attempt = 0; attempt < 3 && !created; attempt++) {
-        try {
-          const code = generateCode(name)
-          const rows = await supabaseFetch('affiliates', {
-            method: 'POST',
-            body: JSON.stringify({ name: name.trim(), phone: phone.trim(), referral_code: code, pin_hash: pinHash }),
-          })
-          created = Array.isArray(rows) ? rows[0] : rows
-        } catch (err) {
-          if (attempt === 2) throw err
-        }
-      }
-      setResult(created)
+      setResult(data)
     } catch (err) {
       console.error(err)
       setError('Registration failed, please try again')
