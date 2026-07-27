@@ -42,7 +42,7 @@ export default function AdminAffiliatesPage() {
   // Approve a withdrawal request: mark it paid, then flip every referral
   // bundled into it to paid as well.
   const handleApproveWithdrawal = async (wd) => {
-    if (!confirm(`Mark ৳${wd.total_amount} as paid for "${wd.affiliates?.name}"? (bKash: ${wd.bkash_number})`)) return
+    if (!confirm(`Mark ৳${wd.amount} as paid for "${wd.affiliates?.name}"? (bKash: ${wd.bkash_number})`)) return
     setProcessingId(`wd-${wd.id}`)
     try {
       await supabaseFetch(`withdrawal_requests?id=eq.${wd.id}`, {
@@ -218,7 +218,7 @@ export default function AdminAffiliatesPage() {
                 bKash: <b>{wd.bkash_number}</b>
               </div>
               <div style={{ fontSize: '14px', fontWeight: '700', color: '#163a2c', minWidth: '70px' }}>
-                ৳{wd.total_amount}
+                ৳{wd.amount}
               </div>
               <div style={{ fontSize: '12px', color: '#999' }}>
                 {new Date(wd.created_at).toLocaleDateString('en-GB')}
