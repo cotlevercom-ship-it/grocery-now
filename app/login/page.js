@@ -2,7 +2,7 @@
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn, signUp } from '@/lib/supabase'
+import { signIn, signUp, signOut, setAccountType, verifyAccountType } from '@/lib/supabase'
 
 export default function LoginPage() {
   return (
@@ -42,6 +42,7 @@ function LoginForm() {
     try {
       if (mode === 'signup') {
         await signUp(email.trim(), password)
+        await setAccountType('customer')
         // Send email OTP and require verification before continuing
         try {
           await fetch('/api/otp/send', {
@@ -55,6 +56,13 @@ function LoginForm() {
         router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=signup&next=${encodeURIComponent(nextUrl)}`)
       } else {
         await signIn(email.trim(), password)
+        const ok = await verifyAccountType('customer')
+        if (!ok) {
+          signOut()
+          setError('This email is registered as a seller account. Please use the seller login instead.')
+          setSubmitting(false)
+          return
+        }
         router.push(nextUrl)
       }
     } catch (err) {
