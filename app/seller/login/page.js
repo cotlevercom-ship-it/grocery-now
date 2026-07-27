@@ -35,8 +35,9 @@ function SellerLoginForm() {
   const searchParams = useSearchParams()
   const nextUrl = searchParams.get('next') || '/seller/dashboard'
   const refCode = searchParams.get('ref') || ''
+  const pkgParam = searchParams.get('pkg') || ''
 
-  const [mode, setMode] = useState('login') // 'login' | 'signup'
+  const [mode, setMode] = useState(searchParams.get('mode') === 'signup' || pkgParam ? 'signup' : 'login') // 'login' | 'signup'
 
   // ---------- Login state ----------
   const [loginEmail, setLoginEmail] = useState('')
@@ -149,8 +150,10 @@ function SellerLoginForm() {
         ])
         setPackages(pkgRows || [])
         setBkashNumber(settings?.[0]?.value || '')
-        const freePkg = (pkgRows || []).find(p => !p.price || p.price <= 0)
-        setSelectedPkgId(freePkg ? freePkg.id : (pkgRows?.[0]?.id || ''))
+        const pkgList = pkgRows || []
+        const matchedPkg = pkgParam ? pkgList.find(p => p.id === pkgParam) : null
+        const freePkg = pkgList.find(p => !p.price || p.price <= 0)
+        setSelectedPkgId(matchedPkg ? matchedPkg.id : freePkg ? freePkg.id : (pkgList[0]?.id || ''))
       } catch (e) {
         console.error(e)
       }
