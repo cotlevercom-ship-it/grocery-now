@@ -15,12 +15,6 @@ const COLORS = {
   textMuted: '#6b7b74',
 }
 
-const trustPoints = [
-  'Easy product & order management',
-  'Open your shop and start taking orders in minutes',
-  'Secure payments & data protection',
-]
-
 export default function SellerLoginPage() {
   return (
     <Suspense fallback={null}>
@@ -94,16 +88,7 @@ function SellerLoginForm() {
 
       <div className="hero-content">
         <h1>Your Shop,<br />At Thousands of Doorsteps</h1>
-        <p>Join Cot Lever — sell across Bangladesh and worldwide, <span className="highlight">NO COMMISSION</span>, subscription-based plans only.</p>
-
-        <ul className="trust-list">
-          {trustPoints.map((point) => (
-            <li key={point}>
-              <span className="trust-dot" />
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
+        <p>Join Cot Lever — sell across Bangladesh and worldwide, <span className="highlight">NO COMMISSION</span>.</p>
       </div>
 
       <div className="form-panel">
@@ -240,28 +225,6 @@ function SellerLoginForm() {
         .highlight {
           color: ${COLORS.gold};
           font-weight: 800;
-        }
-        .trust-list {
-          list-style: none;
-          margin: 0 0 40px;
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-        .trust-list li {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 14px;
-          color: rgba(255,255,255,0.85);
-        }
-        .trust-dot {
-          flex-shrink: 0;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: ${COLORS.gold};
         }
         .form-panel {
           position: relative;
@@ -402,9 +365,6 @@ function SellerLoginForm() {
           }
           .hero-content h1 {
             font-size: 32px;
-          }
-          .trust-list {
-            display: none;
           }
           .form-panel {
             margin-left: 0;
