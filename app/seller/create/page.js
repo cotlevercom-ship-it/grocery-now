@@ -15,8 +15,11 @@ function CreateShopForm() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  const [name, setName] = useState('')
-  const [location, setLocation] = useState('')
+  const [storeName, setStoreName] = useState('')
+  const [ownerName, setOwnerName] = useState('')
+  const [mobileNumber, setMobileNumber] = useState('')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
 
   const [packages, setPackages] = useState([])
   const [selectedPkgId, setSelectedPkgId] = useState('')
@@ -26,7 +29,7 @@ function CreateShopForm() {
   const [trxId, setTrxId] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const [step, setStep] = useState('form')
+  const [step, setStep] = useState('form') // 'form' | 'payment' | 'done'
 
   useEffect(() => {
     async function init() {
@@ -35,6 +38,7 @@ function CreateShopForm() {
         router.replace('/seller/login?next=/seller/create')
         return
       }
+      setEmail(session.user.email || '')
       try {
         const existing = await supabaseFetch(`shops?select=id&owner_id=eq.${session.user.id}`)
         if (existing && existing.length > 0) {
@@ -83,67 +87,97 @@ function CreateShopForm() {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const validateForm = () => {
+    if (!storeName.trim()) return 'Please enter your store name'
+    if (!ownerName.trim()) return 'Please enter the owner name'
+    if (!mobileNumber.trim()) return 'Please enter a mobile number'
+    if (packages.length > 0 && !selectedPkgId) return 'Please select a package'
+    return ''
+  }
+
+  const createShop = async ({ withPayment }) => {
+    const session = getSession()
+    const rows = await supabaseFetch('shops', {
+      method: 'POST',
+      headers: { Prefer: 'return=representation' },
+      body: JSON.stringify({
+        name: storeName.trim(),
+        description: null,
+        location: address.trim() || null,
+        owner_id: session.user.id,
+        owner_name: ownerName.trim(),
+        phone: mobileNumber.trim(),
+        category: 'general',
+        delivery_charge: 20,
+        min_order_amount: 0,
+        package_id: selectedPkgId || null,
+        is_active: !withPayment,
+        ref_code: refCode || null,
+      }),
+    })
+    return Array.isArray(rows) ? rows[0] : rows
+  }
+
+  // Step 1: Registration form submit
+  const handleContinue = async (e) => {
     e.preventDefault()
     setError('')
 
-    if (!name.trim()) {
-      setError('Please enter shop name')
+    const validationError = validateForm()
+    if (validationError) {
+      setError(validationError)
       return
     }
-    if (packages.length > 0 && !selectedPkgId) {
-      setError('Please select a package')
+
+    if (isPaidPkg) {
+      // Move to the payment step; shop is created after payment info is submitted
+      setStep('payment')
       return
     }
-    if (isPaidPkg && (!payerNumber.trim() || !trxId.trim())) {
+
+    // Free package: create the shop immediately
+    setSubmitting(true)
+    try {
+      const shop = await createShop({ withPayment: false })
+      if (shop?.id && refCode) {
+        await createReferralIfNeeded(shop.id, refCode)
+      }
+      router.push('/seller/dashboard')
+    } catch (err) {
+      console.error(err)
+      setError(err.message || 'Failed to create shop, please try again')
+      setSubmitting(false)
+    }
+  }
+
+  // Step 2: Payment submit
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+
+    if (!payerNumber.trim() || !trxId.trim()) {
       setError('Please enter both bKash number and Transaction ID')
       return
     }
 
     setSubmitting(true)
     try {
-      const session = getSession()
-      const rows = await supabaseFetch('shops', {
+      const shop = await createShop({ withPayment: true })
+      await supabaseFetch('package_payment_requests', {
         method: 'POST',
-        headers: { Prefer: 'return=representation' },
         body: JSON.stringify({
-          name: name.trim(),
-          description: null,
-          location: location.trim() || null,
-          owner_id: session.user.id,
-          category: 'general',
-          delivery_charge: 20,
-          min_order_amount: 0,
-          package_id: selectedPkgId || null,
-          is_active: !isPaidPkg,
-          ref_code: refCode || null,
+          shop_id: shop?.id || null,
+          package_id: selectedPkgId,
+          amount: selectedPkg.price,
+          payer_number: payerNumber.trim(),
+          trx_id: trxId.trim(),
         }),
       })
-
-      if (isPaidPkg) {
-        const shop = Array.isArray(rows) ? rows[0] : rows
-        await supabaseFetch('package_payment_requests', {
-          method: 'POST',
-          body: JSON.stringify({
-            shop_id: shop?.id || null,
-            package_id: selectedPkgId,
-            amount: selectedPkg.price,
-            payer_number: payerNumber.trim(),
-            trx_id: trxId.trim(),
-          }),
-        })
-        setStep('done')
-        setSubmitting(false)
-      } else {
-        const shop = Array.isArray(rows) ? rows[0] : rows
-        if (shop?.id && refCode) {
-          await createReferralIfNeeded(shop.id, refCode)
-        }
-        router.push('/seller/dashboard')
-      }
+      setStep('done')
+      setSubmitting(false)
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Failed to create shop, please try again')
+      setError(err.message || 'Failed to submit payment, please try again')
       setSubmitting(false)
     }
   }
@@ -165,6 +199,7 @@ function CreateShopForm() {
   }
   const labelStyle = { fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }
 
+  // ---------- Step 3: Done ----------
   if (step === 'done') {
     return (
       <div style={{
@@ -172,100 +207,47 @@ function CreateShopForm() {
         justifyContent: 'center', textAlign: 'center', padding: '24px', background: '#f5f5f5'
       }}>
         <div style={{ fontSize: '44px', marginBottom: '14px' }}>✅</div>
-        <div style={{ fontSize: '17px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>
-          Shop created and payment request submitted
+        <div style={{ fontSize: '17px', fontWeight: '700', color: '#0a0a0a', marginBottom: '8px' }}>
+          Shop created and payment submitted
         </div>
         <div style={{ fontSize: '14px', color: '#666', marginBottom: '24px', maxWidth: '340px' }}>
           Your shop will be visible to buyers once the admin verifies your Transaction ID.
         </div>
         <button onClick={() => router.push('/seller/dashboard')} style={{
-          background: '#2e7d32', color: 'white', border: 'none', borderRadius: '10px',
+          background: '#0a0a0a', color: 'white', border: 'none', borderRadius: '10px',
           padding: '12px 24px', fontSize: '14px', fontWeight: '600'
         }}>Go to Dashboard</button>
       </div>
     )
   }
 
-  return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <div style={{
-        background: '#2e7d32', padding: '14px 16px',
-        display: 'flex', alignItems: 'center', gap: '12px'
-      }}>
-        <Link href="/">
-          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
-        </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
-          Open Your Shop
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} style={{
-        background: 'white', margin: '16px', borderRadius: '10px',
-        border: '1px solid #e0e0e0', padding: '20px'
-      }}>
-        <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>Shop Name *</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Rahim Store"
-            style={inputStyle}
-          />
-        </div>
-
-        <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>Address / City (optional)</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g. Dhaka, Chattogram, or any city/country"
-            style={inputStyle}
-          />
-        </div>
-
-        {packages.length > 0 && (
-          <div style={{ marginBottom: '18px' }}>
-            <label style={{ ...labelStyle, fontSize: '13px', fontWeight: '600', color: '#163a2c', marginBottom: '10px' }}>
-              Select a Package *
-            </label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {packages.map(pkg => {
-                const isSelected = selectedPkgId === pkg.id
-                return (
-                  <div
-                    key={pkg.id}
-                    onClick={() => setSelectedPkgId(pkg.id)}
-                    style={{
-                      border: isSelected ? '2px solid #2e7d32' : '1px solid #ddd',
-                      borderRadius: '10px', padding: '14px', cursor: 'pointer',
-                      background: isSelected ? '#f1f8f2' : 'white',
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#163a2c' }}>
-                        {pkg.name_bn}
-                      </div>
-                      {pkg.features_bn?.length > 0 && (
-                        <div style={{ fontSize: '12px', color: '#777', marginTop: '3px' }}>
-                          {pkg.features_bn.join(' · ')}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '15px', fontWeight: '700', color: '#2e7d32', whiteSpace: 'nowrap' }}>
-                      {pkg.price > 0 ? `৳${pkg.price}/month` : 'Free'}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+  // ---------- Step 2: Payment ----------
+  if (step === 'payment') {
+    return (
+      <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+        <div style={{
+          background: '#0a0a0a', padding: '14px 16px',
+          display: 'flex', alignItems: 'center', gap: '12px'
+        }}>
+          <button onClick={() => setStep('form')} style={{
+            background: 'none', border: 'none', color: 'white', fontSize: '22px', lineHeight: 1, cursor: 'pointer'
+          }}>←</button>
+          <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
+            Payment
           </div>
-        )}
+        </div>
 
-        {isPaidPkg && (
+        <form onSubmit={handlePaymentSubmit} style={{
+          background: 'white', margin: '16px', borderRadius: '10px',
+          border: '1px solid #e0e0e0', padding: '20px'
+        }}>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#0a0a0a', marginBottom: '4px' }}>
+            {selectedPkg?.name || 'Selected Package'}
+          </div>
+          <div style={{ fontSize: '20px', fontWeight: '800', color: '#dc2626', marginBottom: '18px' }}>
+            ৳{selectedPkg?.price}/month
+          </div>
+
           <div style={{
             background: '#fdf1f6', border: '1px dashed #e2136e', borderRadius: '8px',
             padding: '14px', marginBottom: '18px'
@@ -296,6 +278,139 @@ function CreateShopForm() {
               Your shop won't be visible to buyers until the admin verifies this payment.
             </div>
           </div>
+
+          {error && (
+            <div style={{
+              margin: '10px 0', padding: '10px 12px', background: '#ffebee',
+              color: '#c62828', borderRadius: '8px', fontSize: '13px'
+            }}>{error}</div>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            style={{
+              width: '100%', marginTop: '10px', background: submitting ? '#a9a9a9' : '#0a0a0a',
+              color: 'white', padding: '12px', borderRadius: '10px', fontSize: '14px',
+              fontWeight: '600', border: 'none'
+            }}>
+            {submitting ? 'Submitting...' : 'Submit'}
+          </button>
+        </form>
+      </div>
+    )
+  }
+
+  // ---------- Step 1: Registration form ----------
+  return (
+    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+      <div style={{
+        background: '#0a0a0a', padding: '14px 16px',
+        display: 'flex', alignItems: 'center', gap: '12px'
+      }}>
+        <Link href="/">
+          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+        </Link>
+        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
+          Seller Registration
+        </div>
+      </div>
+
+      <form onSubmit={handleContinue} style={{
+        background: 'white', margin: '16px', borderRadius: '10px',
+        border: '1px solid #e0e0e0', padding: '20px'
+      }}>
+        <div style={{ marginBottom: '14px' }}>
+          <label style={labelStyle}>Store Name *</label>
+          <input
+            type="text"
+            value={storeName}
+            onChange={(e) => setStoreName(e.target.value)}
+            placeholder="e.g. Rahim Store"
+            style={inputStyle}
+          />
+        </div>
+
+        <div style={{ marginBottom: '14px' }}>
+          <label style={labelStyle}>Owner Name *</label>
+          <input
+            type="text"
+            value={ownerName}
+            onChange={(e) => setOwnerName(e.target.value)}
+            placeholder="e.g. Rahim Uddin"
+            style={inputStyle}
+          />
+        </div>
+
+        <div style={{ marginBottom: '14px' }}>
+          <label style={labelStyle}>Mobile Number *</label>
+          <input
+            type="tel"
+            value={mobileNumber}
+            onChange={(e) => setMobileNumber(e.target.value)}
+            placeholder="e.g. 01XXXXXXXXX"
+            style={inputStyle}
+          />
+        </div>
+
+        <div style={{ marginBottom: '14px' }}>
+          <label style={labelStyle}>Email</label>
+          <input
+            type="email"
+            value={email}
+            readOnly
+            style={{ ...inputStyle, background: '#f5f5f5', color: '#888' }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '18px' }}>
+          <label style={labelStyle}>Address (optional)</label>
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="e.g. Dhaka, Chattogram, or any city/country"
+            style={inputStyle}
+          />
+        </div>
+
+        {packages.length > 0 && (
+          <div style={{ marginBottom: '18px' }}>
+            <label style={{ ...labelStyle, fontSize: '13px', fontWeight: '600', color: '#0a0a0a', marginBottom: '10px' }}>
+              Select a Package *
+            </label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {packages.map(pkg => {
+                const isSelected = selectedPkgId === pkg.id
+                return (
+                  <div
+                    key={pkg.id}
+                    onClick={() => setSelectedPkgId(pkg.id)}
+                    style={{
+                      border: isSelected ? '2px solid #0a0a0a' : '1px solid #ddd',
+                      borderRadius: '10px', padding: '14px', cursor: 'pointer',
+                      background: isSelected ? '#f5f5f5' : 'white',
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#0a0a0a' }}>
+                        {pkg.name_bn}
+                      </div>
+                      {pkg.features_bn?.length > 0 && (
+                        <div style={{ fontSize: '12px', color: '#777', marginTop: '3px' }}>
+                          {pkg.features_bn.join(' · ')}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '15px', fontWeight: '700', color: '#dc2626', whiteSpace: 'nowrap' }}>
+                      {pkg.price > 0 ? `৳${pkg.price}/month` : 'Free'}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         )}
 
         {error && (
@@ -309,11 +424,11 @@ function CreateShopForm() {
           type="submit"
           disabled={submitting}
           style={{
-            width: '100%', marginTop: '10px', background: submitting ? '#a5d6a7' : '#2e7d32',
+            width: '100%', marginTop: '10px', background: submitting ? '#a9a9a9' : '#0a0a0a',
             color: 'white', padding: '12px', borderRadius: '10px', fontSize: '14px',
             fontWeight: '600', border: 'none'
           }}>
-          {submitting ? 'Creating...' : isPaidPkg ? 'Create Shop & Submit Payment' : 'Create Shop'}
+          {submitting ? 'Creating...' : isPaidPkg ? 'Continue to Payment' : 'Create Shop'}
         </button>
       </form>
     </div>
