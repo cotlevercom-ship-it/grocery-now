@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabaseFetch, hashPin } from '@/lib/supabase'
+import { hashPin } from '@/lib/supabase'
 
 const SESSION_KEY = 'affiliate_session'
 
@@ -53,12 +53,20 @@ export default function AffiliateDashboardPage() {
   async function loadDashboard() {
     setLoading(true)
     try {
-      const [refRows, minRows] = await Promise.all([
-        supabaseFetch(`referrals?select=*,shops(name)&affiliate_id=eq.${affiliate.id}&order=created_at.desc`),
-        supabaseFetch(`app_settings?select=value&key=eq.affiliate_min_withdraw`),
-      ])
-      setReferrals(refRows || [])
-      setMinWithdraw(Number(minRows?.[0]?.value) || 100)
+      const params = new URLSearchParams({ affiliate_id: affiliate.id, session_token: affiliate.session_token })
+      const res = await fetch(`/api/affiliate/dashboard?${params}`)
+      const data = await res.json()
+      if (!res.ok) {
+        if (res.status === 401) {
+          clearAffiliateSession()
+          setAffiliate(null)
+          setLoading(false)
+          return
+        }
+        throw new Error(data.error || 'Failed to load data')
+      }
+      setReferrals(data.referrals || [])
+      setMinWithdraw(data.min_withdraw || 100)
     } catch (e) {
       console.error(e)
       setMessage('Failed to load data')
@@ -72,15 +80,19 @@ export default function AffiliateDashboardPage() {
     setLoggingIn(true)
     try {
       const pinHash = await hashPin(pin)
-      const rows = await supabaseFetch(`affiliates?select=*&phone=eq.${phone}&pin_hash=eq.${pinHash}`)
-      const found = rows?.[0]
-      if (!found) {
-        setLoginError('Incorrect phone number or PIN')
+      const res = await fetch('/api/affiliate/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, pinHash }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setLoginError(data.error || 'Login failed')
         setLoggingIn(false)
         return
       }
-      saveAffiliateSession(found)
-      setAffiliate(found)
+      saveAffiliateSession(data)
+      setAffiliate(data)
     } catch (e) {
       console.error(e)
       setLoginError('Login failed')
@@ -101,30 +113,23 @@ export default function AffiliateDashboardPage() {
       setMessage('Enter a valid bKash number')
       return
     }
-    const pendingRefs = referrals.filter(r => r.status === 'pending')
-    const total = pendingRefs.reduce((s, r) => s + Number(r.bonus_amount || 0), 0)
-    if (total < minWithdraw) {
-      setMessage(`You need at least ৳${minWithdraw} pending to withdraw`)
-      return
-    }
     setRequesting(true)
     try {
-      const wd = await supabaseFetch('withdrawal_requests', {
+      const res = await fetch('/api/affiliate/withdraw', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           affiliate_id: affiliate.id,
+          session_token: affiliate.session_token,
           bkash_number: bkashNumber,
-          total_amount: total,
-          status: 'requested',
         }),
       })
-      const wdId = wd?.[0]?.id
-      await Promise.all(pendingRefs.map(r =>
-        supabaseFetch(`referrals?id=eq.${r.id}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ status: 'requested', withdrawal_request_id: wdId }),
-        })
-      ))
+      const data = await res.json()
+      if (!res.ok) {
+        setMessage(data.error || 'Failed to send withdrawal request')
+        setRequesting(false)
+        return
+      }
       setMessage('Withdrawal request sent')
       await loadDashboard()
     } catch (e) {
