@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { supabaseFetch, hashPin } from '@/lib/supabase'
 
 const COLORS = {
-  ink: '#0a0a0a',
-  forest: '#0a0a0a',
+  ink: '#000000',
+  forest: '#000000',
   forestMid: '#2a2a2a',
   gold: '#dc2626',
   goldSoft: '#f8d7d5',
-  cream: '#0a0a0a',
+  cream: '#000000',
   line: '#e7e2d8',
   textMuted: '#6b7b74',
 }
@@ -184,7 +184,7 @@ export default function AffiliatePage() {
           position: relative;
           flex: 1 1 46%;
           max-width: 580px;
-          background: linear-gradient(160deg, ${COLORS.ink} 0%, ${COLORS.forestMid} 100%);
+          background: #000000;
           color: white;
           overflow: hidden;
           display: flex;
@@ -386,7 +386,7 @@ export default function AffiliatePage() {
           display: block;
           text-align: center;
           font-size: 13px;
-          color: ${COLORS.textMuted};
+          color: rgba(255,255,255,0.6);
           margin-top: 22px;
         }
         .dashboard-link {
