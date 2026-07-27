@@ -61,7 +61,7 @@ export default function AffiliateDashboardPage() {
       setMinWithdraw(Number(minRows?.[0]?.value) || 100)
     } catch (e) {
       console.error(e)
-      setMessage('তথ্য লোড করতে সমস্যা হয়েছে')
+      setMessage('Failed to load data')
     }
     setLoading(false)
   }
@@ -75,7 +75,7 @@ export default function AffiliateDashboardPage() {
       const rows = await supabaseFetch(`affiliates?select=*&phone=eq.${phone}&pin_hash=eq.${pinHash}`)
       const found = rows?.[0]
       if (!found) {
-        setLoginError('ফোন নম্বর অথবা পিন ভুল')
+        setLoginError('Incorrect phone number or PIN')
         setLoggingIn(false)
         return
       }
@@ -83,7 +83,7 @@ export default function AffiliateDashboardPage() {
       setAffiliate(found)
     } catch (e) {
       console.error(e)
-      setLoginError('লগইন করতে সমস্যা হয়েছে')
+      setLoginError('Login failed')
     }
     setLoggingIn(false)
   }
@@ -98,13 +98,13 @@ export default function AffiliateDashboardPage() {
     e.preventDefault()
     setMessage('')
     if (!bkashNumber || bkashNumber.length < 11) {
-      setMessage('সঠিক বিকাশ নম্বর দিন')
+      setMessage('Enter a valid bKash number')
       return
     }
     const pendingRefs = referrals.filter(r => r.status === 'pending')
     const total = pendingRefs.reduce((s, r) => s + Number(r.bonus_amount || 0), 0)
     if (total < minWithdraw) {
-      setMessage(`উইথড্র করতে কমপক্ষে ৳${minWithdraw} পেন্ডিং থাকতে হবে`)
+      setMessage(`You need at least ৳${minWithdraw} pending to withdraw`)
       return
     }
     setRequesting(true)
@@ -125,11 +125,11 @@ export default function AffiliateDashboardPage() {
           body: JSON.stringify({ status: 'requested', withdrawal_request_id: wdId }),
         })
       ))
-      setMessage('উইথড্র রিকোয়েস্ট পাঠানো হয়েছে')
+      setMessage('Withdrawal request sent')
       await loadDashboard()
     } catch (e) {
       console.error(e)
-      setMessage('উইথড্র রিকোয়েস্ট পাঠাতে সমস্যা হয়েছে')
+      setMessage('Failed to send withdrawal request')
     }
     setRequesting(false)
   }
@@ -145,19 +145,19 @@ export default function AffiliateDashboardPage() {
   }
 
   if (checkingSession) {
-    return <div style={{ padding: '40px 20px', textAlign: 'center', color: '#888' }}>লোড হচ্ছে...</div>
+    return <div style={{ padding: '40px 20px', textAlign: 'center', color: '#888' }}>Loading...</div>
   }
 
   if (!affiliate) {
     return (
       <div style={{ maxWidth: '380px', margin: '40px auto', padding: '0 20px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#163a2c', marginBottom: '20px', textAlign: 'center' }}>
-          অ্যাফিলিয়েট ড্যাশবোর্ড
+          Affiliate Dashboard
         </h1>
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <input
             type="tel"
-            placeholder="ফোন নম্বর"
+            placeholder="Phone number"
             value={phone}
             onChange={e => setPhone(e.target.value)}
             style={inputStyle}
@@ -166,7 +166,7 @@ export default function AffiliateDashboardPage() {
           <input
             type="password"
             inputMode="numeric"
-            placeholder="৪ সংখ্যার পিন"
+            placeholder="4-digit PIN"
             value={pin}
             onChange={e => setPin(e.target.value)}
             maxLength={4}
@@ -177,7 +177,7 @@ export default function AffiliateDashboardPage() {
             <div style={{ color: '#c62828', fontSize: '13px' }}>{loginError}</div>
           )}
           <button type="submit" disabled={loggingIn} style={btnStyle}>
-            {loggingIn ? 'লগইন হচ্ছে...' : 'লগইন করুন'}
+            {loggingIn ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>
@@ -197,54 +197,54 @@ export default function AffiliateDashboardPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#163a2c' }}>{affiliate.name}</h1>
         <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#c62828', fontSize: '13px' }}>
-          লগআউট
+          Logout
         </button>
       </div>
 
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         <div style={{ flex: 1, background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888' }}>পেন্ডিং</div>
+          <div style={{ fontSize: '11px', color: '#888' }}>Pending</div>
           <div style={{ fontSize: '18px', fontWeight: '700', color: '#f4a300' }}>৳{totalPending}</div>
         </div>
         <div style={{ flex: 1, background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888' }}>চাওয়া হয়েছে</div>
+          <div style={{ fontSize: '11px', color: '#888' }}>Requested</div>
           <div style={{ fontSize: '18px', fontWeight: '700', color: '#1565c0' }}>৳{totalRequested}</div>
         </div>
         <div style={{ flex: 1, background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888' }}>পেইড</div>
+          <div style={{ fontSize: '11px', color: '#888' }}>Paid</div>
           <div style={{ fontSize: '18px', fontWeight: '700', color: '#2d6a4f' }}>৳{totalPaid}</div>
         </div>
       </div>
 
       <div style={{ background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px', color: '#163a2c' }}>উইথড্র করুন</h2>
+        <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px', color: '#163a2c' }}>Withdraw</h2>
         {canWithdraw ? (
           <form onSubmit={handleRequestWithdraw} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input
               type="tel"
-              placeholder="বিকাশ নম্বর"
+              placeholder="bKash number"
               value={bkashNumber}
               onChange={e => setBkashNumber(e.target.value)}
               style={inputStyle}
               required
             />
             <button type="submit" disabled={requesting} style={btnStyle}>
-              {requesting ? 'পাঠানো হচ্ছে...' : `৳${totalPending} উইথড্র রিকোয়েস্ট পাঠান`}
+              {requesting ? 'Sending...' : `Request Withdrawal of ৳${totalPending}`}
             </button>
           </form>
         ) : (
           <p style={{ fontSize: '13px', color: '#888' }}>
-            উইথড্র করতে কমপক্ষে ৳{minWithdraw} পেন্ডিং থাকতে হবে (এখন ৳{totalPending})
+            You need at least ৳{minWithdraw} pending to withdraw (currently ৳{totalPending})
           </p>
         )}
         {message && <p style={{ fontSize: '13px', color: '#163a2c', marginTop: '8px' }}>{message}</p>}
       </div>
 
-      <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px', color: '#163a2c' }}>রেফারেল হিস্টোরি</h2>
+      <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px', color: '#163a2c' }}>Referral History</h2>
       {loading ? (
-        <p style={{ color: '#888', fontSize: '13px' }}>লোড হচ্ছে...</p>
+        <p style={{ color: '#888', fontSize: '13px' }}>Loading...</p>
       ) : referrals.length === 0 ? (
-        <p style={{ color: '#888', fontSize: '13px' }}>এখনো কোনো রেফারেল নেই</p>
+        <p style={{ color: '#888', fontSize: '13px' }}>No referrals yet</p>
       ) : (
         <div style={{ background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
           {referrals.map((r, i) => (
@@ -253,13 +253,13 @@ export default function AffiliateDashboardPage() {
               padding: '12px 14px', borderBottom: i < referrals.length - 1 ? '1px solid #eee' : 'none'
             }}>
               <div>
-                <div style={{ fontSize: '13px', fontWeight: '600' }}>{r.shops?.name || 'অজানা দোকান'}</div>
-                <div style={{ fontSize: '11px', color: '#999' }}>{new Date(r.created_at).toLocaleDateString('bn-BD')}</div>
+                <div style={{ fontSize: '13px', fontWeight: '600' }}>{r.shops?.name || 'Unknown store'}</div>
+                <div style={{ fontSize: '11px', color: '#999' }}>{new Date(r.created_at).toLocaleDateString('en-GB')}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '13px', fontWeight: '700' }}>৳{r.bonus_amount}</div>
                 <div style={{ fontSize: '11px', color: r.status === 'paid' ? '#2d6a4f' : r.status === 'requested' ? '#1565c0' : '#f4a300' }}>
-                  {r.status === 'paid' ? 'পেইড' : r.status === 'requested' ? 'চাওয়া হয়েছে' : 'পেন্ডিং'}
+                  {r.status === 'paid' ? 'Paid' : r.status === 'requested' ? 'Requested' : 'Pending'}
                 </div>
               </div>
             </div>
