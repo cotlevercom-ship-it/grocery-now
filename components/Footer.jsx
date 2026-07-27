@@ -67,11 +67,12 @@ export default function Footer() {
   }
   if (partnerPages.length > 0) {
     columns.push({ title: 'Partner With Us', items: partnerPages.map(p => ({ label: p.title, href: linkHref(p) })) })
+  } else {
+    columns.push({
+      title: 'Want to Sell?',
+      items: [{ label: 'Open a Store →', href: '/seller' }],
+    })
   }
-  columns.push({
-    title: 'Want to Sell?',
-    items: [{ label: 'Open a Store →', href: '/seller' }],
-  })
 
   const totalCols = columns.length + (hasSocial ? 1 : 0)
 
