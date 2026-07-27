@@ -15,12 +15,6 @@ const COLORS = {
   textMuted: '#6b7b74',
 }
 
-const stats = [
-  { value: '5,000+', label: 'Active Sellers' },
-  { value: '50,000+', label: 'Products Listed' },
-  { value: '0%', label: 'Platform Commission' },
-]
-
 const trustPoints = [
   'Easy product & order management',
   'Open your shop and start taking orders in minutes',
@@ -99,9 +93,8 @@ function SellerLoginForm() {
       <Link href="/" className="top-back">← Back to Home</Link>
 
       <div className="hero-content">
-        <span className="hero-eyebrow">Seller Portal</span>
         <h1>Your Shop,<br />At Thousands of Doorsteps</h1>
-        <p>Join Cot Lever — sell across Bangladesh and worldwide, no commission, subscription-based plans only.</p>
+        <p>Join Cot Lever — sell across Bangladesh and worldwide, <span className="highlight">NO COMMISSION</span>, subscription-based plans only.</p>
 
         <ul className="trust-list">
           {trustPoints.map((point) => (
@@ -111,15 +104,6 @@ function SellerLoginForm() {
             </li>
           ))}
         </ul>
-
-        <div className="stats-row">
-          {stats.map((s) => (
-            <div className="stat" key={s.label}>
-              <div className="stat-value">{s.value}</div>
-              <div className="stat-label">{s.label}</div>
-            </div>
-          ))}
-        </div>
       </div>
 
       <div className="form-panel">
@@ -238,19 +222,6 @@ function SellerLoginForm() {
           max-width: 620px;
           color: white;
         }
-        .hero-eyebrow {
-          display: inline-block;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: ${COLORS.goldSoft};
-          background: rgba(220,38,38,0.16);
-          border: 1px solid rgba(220,38,38,0.4);
-          padding: 6px 14px;
-          border-radius: 999px;
-          margin-bottom: 22px;
-        }
         .hero-content h1 {
           font-size: clamp(34px, 5vw, 56px);
           font-weight: 800;
@@ -265,6 +236,10 @@ function SellerLoginForm() {
           color: rgba(255,255,255,0.72);
           max-width: 460px;
           margin: 0 0 28px;
+        }
+        .highlight {
+          color: ${COLORS.gold};
+          font-weight: 800;
         }
         .trust-list {
           list-style: none;
@@ -288,23 +263,6 @@ function SellerLoginForm() {
           border-radius: 50%;
           background: ${COLORS.gold};
         }
-        .stats-row {
-          display: flex;
-          gap: clamp(20px, 4vw, 48px);
-          flex-wrap: wrap;
-        }
-        .stat-value {
-          font-size: clamp(26px, 3vw, 34px);
-          font-weight: 800;
-          color: white;
-          line-height: 1;
-        }
-        .stat-label {
-          font-size: 12.5px;
-          color: rgba(255,255,255,0.6);
-          margin-top: 6px;
-        }
-
         .form-panel {
           position: relative;
           z-index: 2;
