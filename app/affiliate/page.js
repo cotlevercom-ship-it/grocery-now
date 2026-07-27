@@ -4,11 +4,11 @@ import Link from 'next/link'
 import { supabaseFetch, hashPin } from '@/lib/supabase'
 
 const COLORS = {
-  ink: '#0f2a20',
-  forest: '#123024',
-  forestMid: '#1f5b41',
-  gold: '#d99a1b',
-  goldSoft: '#f4e3c1',
+  ink: '#0a0a0a',
+  forest: '#0a0a0a',
+  forestMid: '#2a2a2a',
+  gold: '#dc2626',
+  goldSoft: '#f8d7d5',
   cream: '#faf8f4',
   line: '#e7e2d8',
   textMuted: '#6b7b74',
@@ -107,7 +107,6 @@ export default function AffiliatePage() {
         <div className="brand-panel-pattern" />
         <div className="brand-panel-inner">
           <Link href="/" className="brand-mark">
-            <span className="brand-mark-badge">🧺</span>
             <span className="brand-mark-text">Cot Lever</span>
           </Link>
           <div className="brand-panel-copy">
@@ -216,16 +215,6 @@ export default function AffiliatePage() {
           align-items: center;
           gap: 10px;
           width: fit-content;
-        }
-        .brand-mark-badge {
-          width: 34px;
-          height: 34px;
-          border-radius: 9px;
-          background: ${COLORS.gold};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 17px;
         }
         .brand-mark-text {
           font-weight: 700;
