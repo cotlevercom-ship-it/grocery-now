@@ -2,7 +2,7 @@
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn, signUp } from '@/lib/supabase'
+import { signIn, signUp, signOut, setAccountType, verifyAccountType } from '@/lib/supabase'
 
 const COLORS = {
   ink: '#0a0a0a',
@@ -52,6 +52,7 @@ function SellerLoginForm() {
     try {
       if (mode === 'signup') {
         await signUp(email.trim(), password)
+        await setAccountType('seller')
         try {
           await fetch('/api/otp/send', {
             method: 'POST',
@@ -65,6 +66,13 @@ function SellerLoginForm() {
         router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=signup&next=${encodeURIComponent(nextAfterVerify)}`)
       } else {
         await signIn(email.trim(), password)
+        const ok = await verifyAccountType('seller')
+        if (!ok) {
+          signOut()
+          setError('This email is registered as a customer account. Please use the customer login instead.')
+          setSubmitting(false)
+          return
+        }
         router.push(nextUrl)
       }
     } catch (err) {
