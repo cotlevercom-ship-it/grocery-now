@@ -1,10 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { getSession } from '@/lib/supabase'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
+  const pathname = usePathname()
+  const isSellerArea = pathname?.startsWith('/seller')
 
   useEffect(() => {
     setSession(getSession())
@@ -43,6 +46,13 @@ export default function Navbar() {
             background: '#ff3b30', flexShrink: 0,
             animation: 'dotPulse 2s ease-in-out infinite',
           }} />
+          {isSellerArea && (
+            <span style={{
+              color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontWeight: '600',
+              borderLeft: '1px solid rgba(255,255,255,0.25)', paddingLeft: '8px',
+              whiteSpace: 'nowrap',
+            }}>Seller Centre</span>
+          )}
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
