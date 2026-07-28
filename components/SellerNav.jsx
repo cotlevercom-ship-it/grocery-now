@@ -80,7 +80,7 @@ export default function SellerNav({ children }) {
         .seller-shell { position: relative; }
         .sidebar {
           width: 220px;
-          background: linear-gradient(180deg, #163a2c 0%, #2d6a4f 100%);
+          background: #0a0a0a;
           color: white;
           flex-shrink: 0;
           position: sticky;
@@ -117,7 +117,7 @@ export default function SellerNav({ children }) {
             width: 36px;
             height: 36px;
             border-radius: 8px;
-            background: #163a2c;
+            background: #0a0a0a;
             color: white;
             border: none;
             font-size: 18px;
@@ -132,19 +132,16 @@ export default function SellerNav({ children }) {
 
       <div className={`sidebar ${menuOpen ? 'open' : ''}`}>
         <div style={{
-          padding: '20px', display: 'flex', alignItems: 'center', gap: '8px',
+          padding: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
-          <span style={{ fontSize: '20px' }}>🧺</span>
-          <div>
-            <div style={{ fontWeight: '700', fontSize: '14px' }}>Cot Lever</div>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Seller Panel</div>
-          </div>
+          <div style={{ fontWeight: '700', fontSize: '15px' }}>Cot Lever</div>
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Seller Centre</div>
         </div>
 
         {shopName && (
           <div style={{
-            padding: '14px 20px', fontSize: '13px', fontWeight: '600', color: '#f4a300',
+            padding: '14px 20px', fontSize: '13px', fontWeight: '600', color: '#dc2626',
             borderBottom: '1px solid rgba(255,255,255,0.1)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
           }}>
@@ -160,9 +157,9 @@ export default function SellerNav({ children }) {
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: '10px',
                   padding: '11px 20px', fontSize: '14px',
-                  background: active ? 'rgba(244,163,0,0.18)' : 'transparent',
-                  borderRight: active ? '3px solid #f4a300' : '3px solid transparent',
-                  color: active ? '#f4a300' : 'rgba(255,255,255,0.85)',
+                  background: active ? 'rgba(220,38,38,0.18)' : 'transparent',
+                  borderRight: active ? '3px solid #dc2626' : '3px solid transparent',
+                  color: active ? '#dc2626' : 'rgba(255,255,255,0.85)',
                   fontWeight: active ? '600' : '400'
                 }}>
                   <span>{item.icon}</span>
