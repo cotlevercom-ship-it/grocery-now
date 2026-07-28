@@ -8,7 +8,6 @@ export default function Navbar() {
   const [session, setSession] = useState(null)
   const pathname = usePathname()
   const isSellerArea = pathname?.startsWith('/seller')
-  const isHomePage = pathname === '/'
 
   useEffect(() => {
     setSession(getSession())
@@ -37,31 +36,22 @@ export default function Navbar() {
         padding: '14px 16px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
       }}>
-        <Link href="/" style={{ display: 'flex', flexDirection: 'column', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="navbar-logo-text" style={{
-              color: '#ffffff', fontWeight: '800', fontSize: '22px',
-              letterSpacing: '-0.02em', whiteSpace: 'nowrap',
-            }}>Cot Lever</span>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
+          <span className="navbar-logo-text" style={{
+            color: '#ffffff', fontWeight: '800', fontSize: '22px',
+            letterSpacing: '-0.02em', whiteSpace: 'nowrap',
+          }}>Cot Lever</span>
+          <span style={{
+            width: '7px', height: '7px', borderRadius: '50%',
+            background: '#ff3b30', flexShrink: 0,
+            animation: 'dotPulse 2s ease-in-out infinite',
+          }} />
+          {isSellerArea && (
             <span style={{
-              width: '7px', height: '7px', borderRadius: '50%',
-              background: '#ff3b30', flexShrink: 0,
-              animation: 'dotPulse 2s ease-in-out infinite',
-            }} />
-            {isSellerArea && (
-              <span style={{
-                color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontWeight: '600',
-                borderLeft: '1px solid rgba(255,255,255,0.25)', paddingLeft: '8px',
-                whiteSpace: 'nowrap',
-              }}>Seller Centre</span>
-            )}
-          </span>
-          {isHomePage && (
-            <span style={{
-              color: '#ff3b30', fontSize: '10.5px', fontWeight: '600',
-              fontStyle: 'italic', letterSpacing: '0.12em', textTransform: 'uppercase',
-              marginTop: '2px', whiteSpace: 'nowrap',
-            }}>stay around</span>
+              color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontWeight: '600',
+              borderLeft: '1px solid rgba(255,255,255,0.25)', paddingLeft: '8px',
+              whiteSpace: 'nowrap',
+            }}>Seller Centre</span>
           )}
         </Link>
 
