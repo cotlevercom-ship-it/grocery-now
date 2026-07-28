@@ -58,9 +58,10 @@ export default function Navbar() {
           </span>
           {isHomePage && (
             <span style={{
-              color: 'rgba(255,255,255,0.55)', fontSize: '11px', fontWeight: '500',
-              letterSpacing: '0.04em', marginTop: '1px', whiteSpace: 'nowrap',
-            }}>Stay Around</span>
+              color: '#ff3b30', fontSize: '10.5px', fontWeight: '600',
+              fontStyle: 'italic', letterSpacing: '0.12em', textTransform: 'uppercase',
+              marginTop: '2px', whiteSpace: 'nowrap',
+            }}>stay around</span>
           )}
         </Link>
 
