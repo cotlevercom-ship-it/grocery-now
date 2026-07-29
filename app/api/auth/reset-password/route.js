@@ -3,14 +3,15 @@ import { adminFetch, findUserByEmail, updateUserPassword } from '@/lib/supabase-
 
 export async function POST(req) {
   try {
-    const { email, newPassword } = await req.json()
+    const { email, newPassword, purpose } = await req.json()
     if (!email || !newPassword || newPassword.length < 6) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     const normalizedEmail = email.toLowerCase().trim()
+    const otpPurpose = purpose === 'seller_reset' ? 'seller_reset' : 'reset'
 
     const rows = await adminFetch(
-      `otp_codes?email=eq.${encodeURIComponent(normalizedEmail)}&purpose=eq.reset&verified=eq.true&order=created_at.desc&limit=1`
+      `otp_codes?email=eq.${encodeURIComponent(normalizedEmail)}&purpose=eq.${otpPurpose}&verified=eq.true&order=created_at.desc&limit=1`
     )
     const row = rows?.[0]
     if (!row || new Date(row.expires_at) < new Date()) {
