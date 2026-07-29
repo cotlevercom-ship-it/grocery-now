@@ -2,7 +2,7 @@
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn, signUp, signOut, setAccountType, verifyAccountType } from '@/lib/supabase'
+import { signIn, signUp, signOut, setAccountType, verifyAccountType, supabaseFetch } from '@/lib/supabase'
 
 export default function LoginPage() {
   return (
@@ -18,6 +18,7 @@ function LoginForm() {
   const nextUrl = searchParams.get('next') || '/'
 
   const [mode, setMode] = useState('login') // 'login' | 'signup'
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -29,6 +30,10 @@ function LoginForm() {
     setError('')
     setNotice('')
 
+    if (mode === 'signup' && !name.trim()) {
+      setError('Please enter your name')
+      return
+    }
     if (!email.trim() || !password.trim()) {
       setError('Please enter email and password')
       return
@@ -41,8 +46,19 @@ function LoginForm() {
     setSubmitting(true)
     try {
       if (mode === 'signup') {
-        await signUp(email.trim(), password)
+        const data = await signUp(email.trim(), password)
         await setAccountType('customer')
+        if (data?.user?.id) {
+          try {
+            await supabaseFetch('user_profiles', {
+              method: 'POST',
+              headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+              body: JSON.stringify({ id: data.user.id, full_name: name.trim() }),
+            })
+          } catch (profileErr) {
+            console.error('profile save failed', profileErr)
+          }
+        }
         // Send email OTP and require verification before continuing
         try {
           await fetch('/api/otp/send', {
@@ -103,6 +119,19 @@ function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit}>
+          {mode === 'signup' && (
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your full name"
+                className="login-input"
+              />
+            </div>
+          )}
+
           <div style={{ marginBottom: '16px' }}>
             <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Email</label>
             <input
