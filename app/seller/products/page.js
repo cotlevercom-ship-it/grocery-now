@@ -9,12 +9,17 @@ const emptyProductForm = {
   category_id: '',
   price: '',
   sale_price: '',
+  cost_price: '',
   unit: 'pcs',
   stock: 999,
   image_url: '',
   is_available: true,
   description: '',
+  sku: '',
+  brand: '',
+  weight_grams: '',
 }
+const emptyVariant = { id: null, name: '', price: '', sale_price: '', stock: 0, sku: '', is_available: true }
 
 export default function SellerProductsPage() {
   const [shopId, setShopId] = useState('')
@@ -41,6 +46,10 @@ export default function SellerProductsPage() {
   const [productForm, setProductForm] = useState(emptyProductForm)
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState('')
+  const [extraImageUrls, setExtraImageUrls] = useState([]) // already-uploaded gallery images
+  const [extraImageFiles, setExtraImageFiles] = useState([]) // newly picked, not yet uploaded
+  const [uploadingExtra, setUploadingExtra] = useState(false)
+  const [variants, setVariants] = useState([]) // [{id, name, price, sale_price, stock, sku, is_available}]
   const [savingProduct, setSavingProduct] = useState(false)
   const [uploading, setUploading] = useState(false)
 
@@ -77,7 +86,7 @@ export default function SellerProductsPage() {
     try {
       const [catsData, productsData] = await Promise.all([
         supabaseFetch(`product_categories?select=*&shop_id=eq.${id}&order=sort_order`),
-        supabaseFetch(`products?select=*&shop_id=eq.${id}&order=sort_order`),
+        supabaseFetch(`products?select=*,product_variants(count)&shop_id=eq.${id}&order=sort_order`),
       ])
       setCategories(catsData || [])
       setProducts(productsData || [])
@@ -187,24 +196,43 @@ export default function SellerProductsPage() {
     setProductForm(emptyProductForm)
     setImageFile(null)
     setImagePreview('')
+    setExtraImageUrls([])
+    setExtraImageFiles([])
+    setVariants([])
     setShowProductForm(true)
   }
-  const openEditProduct = (p) => {
+  const openEditProduct = async (p) => {
     setEditingProductId(p.id)
     setProductForm({
       name: p.name || '',
       category_id: p.category_id || '',
       price: p.price ?? '',
       sale_price: p.sale_price ?? '',
+      cost_price: p.cost_price ?? '',
       unit: p.unit || 'pcs',
       stock: p.stock ?? 999,
       image_url: p.image_url || '',
       is_available: !!p.is_available,
       description: p.description || '',
+      sku: p.sku || '',
+      brand: p.brand || '',
+      weight_grams: p.weight_grams ?? '',
     })
     setImageFile(null)
     setImagePreview(p.image_url || '')
+    setExtraImageUrls(p.image_urls || [])
+    setExtraImageFiles([])
     setShowProductForm(true)
+    try {
+      const rows = await supabaseFetch(`product_variants?select=*&product_id=eq.${p.id}&order=sort_order`)
+      setVariants((rows || []).map(v => ({
+        id: v.id, name: v.name || '', price: v.price ?? '', sale_price: v.sale_price ?? '',
+        stock: v.stock ?? 0, sku: v.sku || '', is_available: !!v.is_available,
+      })))
+    } catch (e) {
+      console.error(e)
+      setVariants([])
+    }
   }
   const closeProductForm = () => {
     setShowProductForm(false)
@@ -212,6 +240,9 @@ export default function SellerProductsPage() {
     setProductForm(emptyProductForm)
     setImageFile(null)
     setImagePreview('')
+    setExtraImageUrls([])
+    setExtraImageFiles([])
+    setVariants([])
   }
   const handleProductFieldChange = (field, value) => {
     setProductForm((prev) => ({ ...prev, [field]: value }))
@@ -221,6 +252,26 @@ export default function SellerProductsPage() {
     if (!file) return
     setImageFile(file)
     setImagePreview(URL.createObjectURL(file))
+  }
+  const handleExtraImagesChange = (e) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+    setExtraImageFiles(prev => [...prev, ...files])
+  }
+  const removeExtraImageUrl = (url) => {
+    setExtraImageUrls(prev => prev.filter(u => u !== url))
+  }
+  const removeExtraImageFile = (idx) => {
+    setExtraImageFiles(prev => prev.filter((_, i) => i !== idx))
+  }
+  const addVariantRow = () => {
+    setVariants(prev => [...prev, { ...emptyVariant }])
+  }
+  const updateVariantField = (idx, field, value) => {
+    setVariants(prev => prev.map((v, i) => i === idx ? { ...v, [field]: value } : v))
+  }
+  const removeVariantRow = (idx) => {
+    setVariants(prev => prev.filter((_, i) => i !== idx))
   }
   const handleProductSubmit = async (e) => {
     e.preventDefault()
@@ -245,6 +296,15 @@ export default function SellerProductsPage() {
         imageUrl = await uploadImage(imageFile, 'products')
         setUploading(false)
       }
+
+      let finalExtraImageUrls = extraImageUrls
+      if (extraImageFiles.length > 0) {
+        setUploadingExtra(true)
+        const uploaded = await Promise.all(extraImageFiles.map(f => uploadImage(f, 'products')))
+        finalExtraImageUrls = [...extraImageUrls, ...uploaded]
+        setUploadingExtra(false)
+      }
+
       const payload = {
         shop_id: shopId,
         category_id: productForm.category_id || null,
@@ -252,20 +312,59 @@ export default function SellerProductsPage() {
         description: productForm.description.trim() || null,
         price: Number(productForm.price),
         sale_price: productForm.sale_price ? Number(productForm.sale_price) : null,
+        cost_price: productForm.cost_price ? Number(productForm.cost_price) : null,
         unit: productForm.unit.trim() || 'pcs',
         stock: Number(productForm.stock) || 0,
         image_url: imageUrl || null,
+        image_urls: finalExtraImageUrls,
         is_available: !!productForm.is_available,
+        sku: productForm.sku.trim() || null,
+        brand: productForm.brand.trim() || null,
+        weight_grams: productForm.weight_grams ? Number(productForm.weight_grams) : null,
       }
+
+      let productId = editingProductId
       if (editingProductId) {
         await supabaseFetch(`products?id=eq.${editingProductId}`, {
           method: 'PATCH', body: JSON.stringify(payload),
         })
       } else {
-        await supabaseFetch('products', {
-          method: 'POST', body: JSON.stringify(payload),
+        const rows = await supabaseFetch('products', {
+          method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(payload),
         })
+        productId = Array.isArray(rows) ? rows[0]?.id : rows?.id
       }
+
+      // Sync variants: delete removed ones, update existing, insert new ones
+      if (productId) {
+        const existingIds = editingProductId
+          ? (await supabaseFetch(`product_variants?select=id&product_id=eq.${productId}`) || []).map(v => v.id)
+          : []
+        const keptIds = variants.filter(v => v.id).map(v => v.id)
+        const toDelete = existingIds.filter(id => !keptIds.includes(id))
+        await Promise.all(toDelete.map(id => supabaseFetch(`product_variants?id=eq.${id}`, { method: 'DELETE' })))
+
+        for (let i = 0; i < variants.length; i++) {
+          const v = variants[i]
+          if (!v.name.trim()) continue
+          const vPayload = {
+            product_id: productId,
+            name: v.name.trim(),
+            price: v.price ? Number(v.price) : null,
+            sale_price: v.sale_price ? Number(v.sale_price) : null,
+            stock: Number(v.stock) || 0,
+            sku: v.sku.trim() || null,
+            is_available: !!v.is_available,
+            sort_order: i,
+          }
+          if (v.id) {
+            await supabaseFetch(`product_variants?id=eq.${v.id}`, { method: 'PATCH', body: JSON.stringify(vPayload) })
+          } else {
+            await supabaseFetch('product_variants', { method: 'POST', body: JSON.stringify(vPayload) })
+          }
+        }
+      }
+
       closeProductForm()
       await loadShopData(shopId)
     } catch (e) {
@@ -274,6 +373,7 @@ export default function SellerProductsPage() {
     }
     setSavingProduct(false)
     setUploading(false)
+    setUploadingExtra(false)
   }
   const handleDeleteProduct = async (id) => {
     if (!confirm('Delete this product?')) return
@@ -494,6 +594,32 @@ export default function SellerProductsPage() {
                   {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
                 </div>
 
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={labelStyle}>Additional Images (optional gallery)</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                    {extraImageUrls.map(url => (
+                      <div key={url} style={{ position: 'relative', width: '52px', height: '52px' }}>
+                        <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd' }} />
+                        <button type="button" onClick={() => removeExtraImageUrl(url)} style={{
+                          position: 'absolute', top: '-6px', right: '-6px', width: '18px', height: '18px',
+                          borderRadius: '50%', background: '#c62828', color: 'white', border: 'none', fontSize: '10px', lineHeight: 1
+                        }}>×</button>
+                      </div>
+                    ))}
+                    {extraImageFiles.map((f, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '52px', height: '52px' }}>
+                        <img src={URL.createObjectURL(f)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd' }} />
+                        <button type="button" onClick={() => removeExtraImageFile(idx)} style={{
+                          position: 'absolute', top: '-6px', right: '-6px', width: '18px', height: '18px',
+                          borderRadius: '50%', background: '#c62828', color: 'white', border: 'none', fontSize: '10px', lineHeight: 1
+                        }}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                  <input type="file" accept="image/*" multiple onChange={handleExtraImagesChange} style={{ fontSize: '13px' }} />
+                  {uploadingExtra && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading images...</div>}
+                </div>
+
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
                     <label style={labelStyle}>Product Name *</label>
@@ -532,6 +658,28 @@ export default function SellerProductsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
+                    <label style={labelStyle}>Cost Price (৳) <span style={{ color: '#aaa', fontWeight: '400' }}>— private, only you see this</span></label>
+                    <input type="number" style={inputStyle} value={productForm.cost_price} onChange={e => handleProductFieldChange('cost_price', e.target.value)} placeholder="optional" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Weight (grams)</label>
+                    <input type="number" style={inputStyle} value={productForm.weight_grams} onChange={e => handleProductFieldChange('weight_grams', e.target.value)} placeholder="optional" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={labelStyle}>Brand</label>
+                    <input style={inputStyle} value={productForm.brand} onChange={e => handleProductFieldChange('brand', e.target.value)} placeholder="optional" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>SKU / Product Code</label>
+                    <input style={inputStyle} value={productForm.sku} onChange={e => handleProductFieldChange('sku', e.target.value)} placeholder="optional" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
                     <label style={labelStyle}>Stock</label>
                     <input type="number" style={inputStyle} value={productForm.stock} onChange={e => handleProductFieldChange('stock', e.target.value)} />
                   </div>
@@ -541,6 +689,43 @@ export default function SellerProductsPage() {
                       Available (visible on site)
                     </label>
                   </div>
+                </div>
+
+                <div style={{ marginBottom: '18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <label style={{ ...labelStyle, marginBottom: 0 }}>Variants (e.g. Size, Color) — optional</label>
+                    <button type="button" onClick={addVariantRow} style={{
+                      background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                      padding: '5px 12px', fontSize: '12px', fontWeight: '600'
+                    }}>+ Add Variant</button>
+                  </div>
+                  {variants.length === 0 ? (
+                    <div style={{ fontSize: '12px', color: '#999' }}>No variants — this product will be sold as a single option.</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {variants.map((v, idx) => (
+                        <div key={v.id || `new-${idx}`} style={{
+                          display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center',
+                          background: '#faf9f7', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '10px'
+                        }}>
+                          <input style={{ ...inputStyle, flex: '1 1 140px' }} value={v.name} onChange={e => updateVariantField(idx, 'name', e.target.value)} placeholder="e.g. Large / Red" />
+                          <input type="number" style={{ ...inputStyle, width: '90px' }} value={v.price} onChange={e => updateVariantField(idx, 'price', e.target.value)} placeholder="Price ৳" />
+                          <input type="number" style={{ ...inputStyle, width: '90px' }} value={v.sale_price} onChange={e => updateVariantField(idx, 'sale_price', e.target.value)} placeholder="Sale ৳" />
+                          <input type="number" style={{ ...inputStyle, width: '80px' }} value={v.stock} onChange={e => updateVariantField(idx, 'stock', e.target.value)} placeholder="Stock" />
+                          <input style={{ ...inputStyle, width: '100px' }} value={v.sku} onChange={e => updateVariantField(idx, 'sku', e.target.value)} placeholder="SKU" />
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#444' }}>
+                            <input type="checkbox" checked={v.is_available} onChange={e => updateVariantField(idx, 'is_available', e.target.checked)} />
+                            On
+                          </label>
+                          <button type="button" onClick={() => removeVariantRow(idx)} style={{
+                            background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '50%',
+                            width: '22px', height: '22px', fontSize: '11px'
+                          }}>×</button>
+                        </div>
+                      ))}
+                      <div style={{ fontSize: '11px', color: '#999' }}>Leave Price/Sale ৳ empty to use the product's own price for that variant.</div>
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ marginBottom: '18px' }}>
@@ -590,6 +775,9 @@ export default function SellerProductsPage() {
                       <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{p.name}</div>
                       <div style={{ fontSize: '12px', color: '#888' }}>
                         {categoryName(p.category_id)} · {p.unit} · Stock {p.stock}
+                        {p.brand ? ` · ${p.brand}` : ''}
+                        {p.sku ? ` · SKU ${p.sku}` : ''}
+                        {p.product_variants?.[0]?.count > 0 ? ` · ${p.product_variants[0].count} variant${p.product_variants[0].count !== 1 ? 's' : ''}` : ''}
                       </div>
                     </div>
                     <div style={{ fontSize: '13px', fontWeight: '600', color: '#2e7d32', whiteSpace: 'nowrap' }}>
