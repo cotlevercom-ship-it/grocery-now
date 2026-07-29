@@ -9,7 +9,7 @@ function generateCode() {
 export async function POST(req) {
   try {
     const { email, purpose } = await req.json()
-    if (!email || !['signup', 'reset'].includes(purpose)) {
+    if (!email || !['signup', 'reset', 'seller_reset'].includes(purpose)) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
