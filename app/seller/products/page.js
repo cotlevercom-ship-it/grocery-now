@@ -480,7 +480,7 @@ export default function SellerProductsPage() {
                   <input style={inputStyle} value={catForm.name} onChange={e => setCatForm(f => ({ ...f, name: e.target.value }))} placeholder={catForm.parent_id ? 'e.g. Leafy Greens' : 'e.g. Vegetables'} />
                 </div>
                 <div style={{ width: '80px' }}>
-                  <label style={labelStyle}>Order</label>
+                  <label style={labelStyle}>Position</label>
                   <input type="number" style={inputStyle} value={catForm.sort_order} onChange={e => setCatForm(f => ({ ...f, sort_order: e.target.value }))} />
                 </div>
                 <button type="submit" disabled={savingCat} style={{
