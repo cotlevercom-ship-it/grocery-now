@@ -16,11 +16,13 @@ const emptyForm = {
   is_featured: false,
   is_active: true,
   package_id: '',
+  department_id: '',
 }
 
 export default function AdminShopsPage() {
   const [shops, setShops] = useState([])
   const [packages, setPackages] = useState([])
+  const [departments, setDepartments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -42,12 +44,14 @@ export default function AdminShopsPage() {
     setLoading(true)
     setError('')
     try {
-      const [shopsData, packagesData] = await Promise.all([
-        supabaseFetch('shops?select=*,seller_packages(name_bn)&order=created_at.desc'),
+      const [shopsData, packagesData, departmentsData] = await Promise.all([
+        supabaseFetch('shops?select=*,seller_packages(name_bn),departments(name,icon)&order=created_at.desc'),
         supabaseFetch('seller_packages?select=*&order=sort_order'),
+        supabaseFetch('departments?select=*&order=sort_order'),
       ])
       setShops(shopsData || [])
       setPackages(packagesData || [])
+      setDepartments(departmentsData || [])
     } catch (e) {
       console.error(e)
       setError('তথ্য লোড করতে সমস্যা হয়েছে')
@@ -84,6 +88,7 @@ export default function AdminShopsPage() {
       is_featured: !!shop.is_featured,
       is_active: !!shop.is_active,
       package_id: shop.package_id || '',
+      department_id: shop.department_id || '',
     })
     setImageFile(null)
     setImagePreview(shop.image_url || '')
@@ -142,6 +147,7 @@ export default function AdminShopsPage() {
         is_featured: !!form.is_featured,
         is_active: !!form.is_active,
         package_id: form.package_id || null,
+        department_id: form.department_id || null,
       }
 
       if (editingId) {
@@ -255,6 +261,18 @@ export default function AdminShopsPage() {
               <label style={labelStyle}>ক্যাটাগরি</label>
               <input style={inputStyle} value={form.category} onChange={e => handleFieldChange('category', e.target.value)} placeholder="যেমন: গ্রোসারি, ফল, মাংস" />
             </div>
+          </div>
+
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>ডিপার্টমেন্ট</label>
+            <select style={inputStyle} value={form.department_id} onChange={e => handleFieldChange('department_id', e.target.value)}>
+              <option value="">নির্ধারিত নেই</option>
+              {departments.map(dept => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.icon ? `${dept.icon} ` : ''}{dept.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div style={{ marginBottom: '14px' }}>
@@ -402,6 +420,12 @@ export default function AdminShopsPage() {
               </div>
 
               <div style={{ display: 'flex', gap: '6px' }}>
+                {shop.departments?.name && (
+                  <span style={{
+                    fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
+                    background: '#e3f2fd', color: '#1565c0'
+                  }}>{shop.departments.icon ? `${shop.departments.icon} ` : ''}{shop.departments.name}</span>
+                )}
                 {shop.seller_packages?.name_bn && (
                   <span style={{
                     fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
