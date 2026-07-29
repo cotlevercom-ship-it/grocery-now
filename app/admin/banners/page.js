@@ -33,7 +33,7 @@ export default function AdminBannersPage() {
       setBanners(data || [])
     } catch (e) {
       console.error(e)
-      setError('ব্যানার লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load banners')
     }
     setLoading(false)
   }
@@ -89,7 +89,7 @@ export default function AdminBannersPage() {
     setError('')
 
     if (!imageFile && !form.image_url) {
-      setError('ব্যানারের ছবি দিন')
+      setError('Please provide a banner image')
       return
     }
 
@@ -126,21 +126,21 @@ export default function AdminBannersPage() {
       await loadBanners()
     } catch (e) {
       console.error(e)
-      setError('সেভ করতে সমস্যা হয়েছে')
+      setError('Failed to save')
     }
     setSubmitting(false)
     setUploading(false)
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('এই ব্যানারটি মুছে ফেলতে চান?')) return
+    if (!confirm('Delete this banner?')) return
     setDeletingId(id)
     try {
       await supabaseFetch(`banners?id=eq.${id}`, { method: 'DELETE' })
       await loadBanners()
     } catch (e) {
       console.error(e)
-      setError('ব্যানার মুছতে সমস্যা হয়েছে')
+      setError('Failed to delete banner')
     }
     setDeletingId(null)
   }
@@ -156,16 +156,16 @@ export default function AdminBannersPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', margin: 0 }}>ব্যানার</h1>
+        <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', margin: 0 }}>Banners</h1>
         {!showForm && (
           <button onClick={openAddForm} style={{
             background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
             padding: '10px 18px', fontSize: '14px', fontWeight: '600'
-          }}>+ নতুন ব্যানার</button>
+          }}>+ New Banner</button>
         )}
       </div>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        হোমপেজের উপরের স্লাইডার ব্যানারগুলো এখান থেকে ম্যানেজ করা যাবে।
+        Manage the slider banners shown at the top of the homepage.
       </p>
 
       {error && (
@@ -182,12 +182,12 @@ export default function AdminBannersPage() {
           padding: '20px', marginBottom: '24px', maxWidth: '600px'
         }}>
           <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '16px' }}>
-            {editingId ? 'ব্যানার এডিট করুন' : 'নতুন ব্যানার যোগ করুন'}
+            {editingId ? 'Edit Banner' : 'Add New Banner'}
           </div>
 
           {/* Image upload */}
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>ব্যানারের ছবি * (প্রস্থ বেশি, উচ্চতা কম হলে ভালো দেখাবে)</label>
+            <label style={labelStyle}>Banner Image * (Recommended size: 1600×280px, JPG/PNG/WebP, under 500KB)</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{
                 width: '140px', height: '56px', borderRadius: '8px', background: '#f5f5f5',
@@ -200,23 +200,23 @@ export default function AdminBannersPage() {
               </div>
               <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: '13px' }} />
             </div>
-            {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>ছবি আপলোড হচ্ছে...</div>}
+            {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>লিংক (ঐচ্ছিক — ব্যানারে ক্লিক করলে কোথায় যাবে)</label>
+            <label style={labelStyle}>Link (optional — where clicking the banner goes)</label>
             <input style={inputStyle} value={form.link_url} onChange={e => handleFieldChange('link_url', e.target.value)} placeholder="https://..." />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
             <div>
-              <label style={labelStyle}>ক্রম (Sort Order)</label>
+              <label style={labelStyle}>Sort Order</label>
               <input type="number" style={inputStyle} value={form.sort_order} onChange={e => handleFieldChange('sort_order', e.target.value)} />
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
                 <input type="checkbox" checked={form.is_active} onChange={e => handleFieldChange('is_active', e.target.checked)} />
-                একটিভ (সাইটে দেখাবে)
+                Active (shown on site)
               </label>
             </div>
           </div>
@@ -226,26 +226,26 @@ export default function AdminBannersPage() {
               background: submitting ? '#a5d6a7' : '#163a2c', color: 'white', border: 'none',
               borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
             }}>
-              {submitting ? 'সেভ হচ্ছে...' : (editingId ? 'আপডেট করুন' : 'যোগ করুন')}
+              {submitting ? 'Saving...' : (editingId ? 'Update' : 'Add')}
             </button>
             <button type="button" onClick={closeForm} style={{
               background: '#f0f0f0', color: '#555', border: 'none',
               borderRadius: '8px', padding: '10px 22px', fontSize: '14px'
-            }}>বাতিল</button>
+            }}>Cancel</button>
           </div>
         </form>
       )}
 
       {/* Banners list */}
       {loading ? (
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       ) : banners.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '50px 20px', color: '#999',
           background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0'
         }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>🖼️</div>
-          <p>এখনো কোনো ব্যানার যোগ করা হয়নি</p>
+          <p>No banners added yet</p>
         </div>
       ) : (
         <div style={{
@@ -268,10 +268,10 @@ export default function AdminBannersPage() {
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '13px', color: '#1a1a1a' }}>
-                  {banner.link_url || 'কোনো লিংক নাই'}
+                  {banner.link_url || 'No link'}
                 </div>
                 <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                  ক্রম: {banner.sort_order}
+                  Order: {banner.sort_order}
                 </div>
               </div>
 
@@ -279,17 +279,17 @@ export default function AdminBannersPage() {
                 fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
                 background: banner.is_active ? '#e8f5e9' : '#f5f5f5',
                 color: banner.is_active ? '#2d6a4f' : '#999'
-              }}>{banner.is_active ? 'একটিভ' : 'বন্ধ'}</span>
+              }}>{banner.is_active ? 'Active' : 'Off'}</span>
 
               <button onClick={() => openEditForm(banner)} style={{
                 background: '#e8f5e9', color: '#2d6a4f', border: 'none',
                 borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
-              }}>এডিট</button>
+              }}>Edit</button>
               <button onClick={() => handleDelete(banner.id)} disabled={deletingId === banner.id} style={{
                 background: '#ffebee', color: '#c62828', border: 'none',
                 borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
               }}>
-                {deletingId === banner.id ? 'মুছছে...' : 'মুছুন'}
+                {deletingId === banner.id ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           ))}
