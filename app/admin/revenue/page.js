@@ -175,6 +175,15 @@ export default function AdminRevenuePage() {
         Subscription revenue from approved seller package payments.
       </p>
 
+      <div className="print-only" style={{ display: 'none', marginBottom: '18px', fontSize: '12px', color: '#555' }}>
+        <div>Generated: {new Date().toLocaleString('en-US')}</div>
+        <div>
+          Package: {packageFilter === 'all' ? 'All' : (packages.find(p => String(p.id) === packageFilter)?.name || 'All')}
+          {' · '}Source: {sourceFilter === 'all' ? 'All' : sourceFilter === 'affiliate' ? 'Via Affiliate' : 'Direct'}
+          {(fromDate || toDate) ? ` · Date: ${fromDate || '...'} to ${toDate || '...'}` : ''}
+        </div>
+      </div>
+
       {error && (
         <div style={{
           marginBottom: '16px', padding: '10px 12px',
@@ -265,7 +274,7 @@ export default function AdminRevenuePage() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '14px' }}>
+      <div className="no-print" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '14px' }}>
         <select style={inputStyle} value={packageFilter} onChange={e => setPackageFilter(e.target.value)}>
           <option value="all">All Packages</option>
           {packages.map(p => (
@@ -280,8 +289,12 @@ export default function AdminRevenuePage() {
         <input type="date" style={inputStyle} value={fromDate} onChange={e => setFromDate(e.target.value)} />
         <span style={{ color: '#999', fontSize: '13px' }}>to</span>
         <input type="date" style={inputStyle} value={toDate} onChange={e => setToDate(e.target.value)} />
+        <button onClick={() => window.print()} style={{
+          marginLeft: 'auto', background: 'white', color: '#163a2c', border: '1px solid #163a2c',
+          borderRadius: '8px', padding: '9px 16px', fontSize: '13px', fontWeight: '600', cursor: 'pointer'
+        }}>Print Report</button>
         <button onClick={handleExportCsv} style={{
-          marginLeft: 'auto', background: '#163a2c', color: 'white', border: 'none',
+          background: '#163a2c', color: 'white', border: 'none',
           borderRadius: '8px', padding: '9px 16px', fontSize: '13px', fontWeight: '600', cursor: 'pointer'
         }}>Export CSV</button>
       </div>
@@ -333,6 +346,23 @@ export default function AdminRevenuePage() {
           </table>
         </div>
       )}
+
+      <style jsx global>{`
+        @media print {
+          .admin-sidebar, .admin-topbar, .admin-backdrop, .no-print {
+            display: none !important;
+          }
+          .admin-content {
+            padding: 0 !important;
+          }
+          .print-only {
+            display: block !important;
+          }
+          body {
+            background: white !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
