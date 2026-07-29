@@ -54,6 +54,8 @@ function VerifyOtpForm() {
       }
       if (purpose === 'reset') {
         router.push(`/reset-password?email=${encodeURIComponent(email)}`)
+      } else if (purpose === 'seller_reset') {
+        router.push(`/seller/reset-pin?email=${encodeURIComponent(email)}`)
       } else {
         router.push(next)
       }
