@@ -47,7 +47,7 @@ input {
 }
 
 .banner-box {
-  height: clamp(130px, 11vw, 220px);
+  height: clamp(130px, 16vw, 320px);
 }
 
 .shop-heading {
