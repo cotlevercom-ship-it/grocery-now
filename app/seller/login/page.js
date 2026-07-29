@@ -363,6 +363,9 @@ function SellerLoginForm() {
                   <label htmlFor="login-pin">4-digit PIN</label>
                   <input id="login-pin" type="password" inputMode="numeric" value={loginPin} onChange={e => setLoginPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="e.g. 1234" maxLength={4} autoComplete="off" />
                 </div>
+                <div style={{ textAlign: 'right', marginTop: '-8px', marginBottom: '14px' }}>
+                  <Link href="/seller/forgot-pin" style={{ fontSize: '12px', color: '#666' }}>Forgot PIN?</Link>
+                </div>
                 {loginError && <div className="alert alert-error">{loginError}</div>}
                 <button type="submit" className="submit-btn" disabled={loginSubmitting}>
                   {loginSubmitting ? 'Please wait...' : 'Log In'}
