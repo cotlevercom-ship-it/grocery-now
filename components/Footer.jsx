@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
+import Image from 'next/image'
 
 const COLORS = {
   ink: '#1a1a1a',
@@ -139,8 +140,8 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <div className="brand-row">
-            <span className="brand-badge">🛒</span>
-            <span className="brand-name">COT LEVER</span>
+            <Image src="/logo-dark.png" alt="Cot Lever" width={122} height={36}
+              style={{ height: '24px', width: 'auto' }} />
           </div>
           <div className="bottom-text">
             <span>© 2026 <span className="gold-text">Cot Lever</span> — All rights reserved.</span>
