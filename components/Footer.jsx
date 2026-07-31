@@ -163,7 +163,7 @@ export default function Footer() {
         }
         .col-scroll {
           display: flex;
-          gap: 12px;
+          gap: 8px;
           overflow-x: auto;
           scroll-snap-type: x mandatory;
           -webkit-overflow-scrolling: touch;
@@ -176,19 +176,19 @@ export default function Footer() {
         .footer-card {
           flex: 0 0 auto;
           scroll-snap-align: start;
-          width: calc(50% - 6px);
-          min-width: 190px;
+          width: calc(50% - 4px);
+          min-width: 140px;
           background: #fff;
           border: 1px solid ${COLORS.line};
-          border-radius: 14px;
-          padding: 18px 18px 6px;
+          border-radius: 10px;
+          padding: 12px 12px 4px;
         }
         .card-title {
           color: ${COLORS.gold};
           font-weight: 700;
-          font-size: 12px;
+          font-size: 10.5px;
           letter-spacing: 0.3px;
-          margin-bottom: 14px;
+          margin-bottom: 10px;
         }
         .link-list {
           display: flex;
@@ -196,10 +196,10 @@ export default function Footer() {
         }
         .footer-link {
           display: block;
-          font-size: 14px;
+          font-size: 12px;
           color: ${COLORS.textMuted};
           text-decoration: none;
-          margin-bottom: 14px;
+          margin-bottom: 10px;
           width: fit-content;
         }
         .footer-link:hover {
@@ -207,11 +207,11 @@ export default function Footer() {
         }
         .social-row {
           display: flex;
-          gap: 8px;
+          gap: 6px;
         }
         .social-icon {
-          width: 32px;
-          height: 32px;
+          width: 26px;
+          height: 26px;
           border-radius: 50%;
           background: ${COLORS.bg};
           border: 1px solid ${COLORS.line};
