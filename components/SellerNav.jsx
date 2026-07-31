@@ -136,31 +136,9 @@ export default function SellerNav({ children }) {
           padding: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
-          <span style={{ position: 'relative', display: 'inline-block', height: '32px', width: '109px' }}>
+          <span style={{ position: 'relative', display: 'inline-block', height: '44px', width: '150px' }}>
             <Image src="/logo-text.png" alt="Cot Lever" fill
               style={{ objectFit: 'contain', objectPosition: 'left center' }} />
-            <svg
-              viewBox="0 0 1220 358"
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <path
-                className="logo-underline-path"
-                d="M 40 300
-                   C 150 300, 260 300, 350 292
-                   C 460 282, 480 190, 560 155
-                   C 610 133, 660 210, 700 270
-                   C 730 312, 760 308, 800 285
-                   C 850 256, 870 175, 940 152
-                   C 995 133, 1010 240, 1060 285
-                   C 1100 320, 1140 305, 1180 296"
-                fill="none"
-                stroke="#dc2626"
-                strokeWidth="16"
-                strokeLinecap="round"
-                pathLength="1"
-              />
-            </svg>
           </span>
           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '6px' }}>Seller Centre</div>
         </div>

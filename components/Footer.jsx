@@ -140,7 +140,7 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <div className="brand-row">
-            <Image src="/logo-dark.png" alt="Cot Lever" width={122} height={36}
+            <Image src="/logo-text-dark.png" alt="Cot Lever" width={122} height={36}
               style={{ height: '34px', width: 'auto' }} />
           </div>
           <div className="bottom-text">

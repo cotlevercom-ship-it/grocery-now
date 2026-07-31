@@ -38,31 +38,9 @@ export default function Navbar() {
         boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
-          <span style={{ position: 'relative', display: 'inline-block', height: '42px', width: '143px' }}>
+          <span style={{ position: 'relative', display: 'inline-block', height: '58px', width: '198px' }}>
             <Image src="/logo-text.png" alt="Cot Lever" fill priority
               style={{ objectFit: 'contain', objectPosition: 'left center' }} />
-            <svg
-              viewBox="0 0 1220 358"
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <path
-                className="logo-underline-path"
-                d="M 40 300
-                   C 150 300, 260 300, 350 292
-                   C 460 282, 480 190, 560 155
-                   C 610 133, 660 210, 700 270
-                   C 730 312, 760 308, 800 285
-                   C 850 256, 870 175, 940 152
-                   C 995 133, 1010 240, 1060 285
-                   C 1100 320, 1140 305, 1180 296"
-                fill="none"
-                stroke="#dc2626"
-                strokeWidth="16"
-                strokeLinecap="round"
-                pathLength="1"
-              />
-            </svg>
           </span>
           {isSellerArea && (
             <span style={{
@@ -108,20 +86,6 @@ export default function Navbar() {
           )}
         </div>
       </div>
-
-      <style jsx global>{`
-        .logo-underline-path {
-          stroke-dasharray: 1 1;
-          stroke-dashoffset: 1;
-          animation: logoUnderlineDraw 2.6s ease-in-out infinite;
-        }
-        @keyframes logoUnderlineDraw {
-          0% { stroke-dashoffset: 1; }
-          35% { stroke-dashoffset: 0; }
-          75% { stroke-dashoffset: 0; }
-          100% { stroke-dashoffset: 1; }
-        }
-      `}</style>
     </>
   )
 }
