@@ -72,6 +72,7 @@ export default function AdminLayout({ children }) {
     { href: '/admin/revenue', label: 'Revenue', icon: '💰' },
     { href: '/admin/affiliates', label: 'Affiliates', icon: '🤝' },
     { href: '/admin/pages', label: 'Page Management', icon: '📄' },
+    { href: '/admin/help', label: 'Help Center', icon: '❓' },
     { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
   ]
 
