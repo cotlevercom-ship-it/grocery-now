@@ -137,7 +137,7 @@ export default function SellerNav({ children }) {
           borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
           <Image src="/logo.png" alt="Cot Lever" width={132} height={39}
-            style={{ height: '22px', width: 'auto' }} />
+            style={{ height: '32px', width: 'auto' }} />
           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '6px' }}>Seller Centre</div>
         </div>
 

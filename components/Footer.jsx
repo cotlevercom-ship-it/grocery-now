@@ -141,7 +141,7 @@ export default function Footer() {
         <div className="footer-bottom">
           <div className="brand-row">
             <Image src="/logo-dark.png" alt="Cot Lever" width={122} height={36}
-              style={{ height: '24px', width: 'auto' }} />
+              style={{ height: '34px', width: 'auto' }} />
           </div>
           <div className="bottom-text">
             <span>© 2026 <span className="gold-text">Cot Lever</span> — All rights reserved.</span>

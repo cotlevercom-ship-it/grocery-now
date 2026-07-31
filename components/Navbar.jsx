@@ -39,7 +39,7 @@ export default function Navbar() {
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
           <Image src="/logo.png" alt="Cot Lever" width={132} height={39} priority
-            style={{ height: '28px', width: 'auto' }} />
+            style={{ height: '42px', width: 'auto' }} />
           <span style={{
             width: '7px', height: '7px', borderRadius: '50%',
             background: '#ff3b30', flexShrink: 0,
