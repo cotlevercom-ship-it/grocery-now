@@ -40,11 +40,6 @@ export default function Navbar() {
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
           <Image src="/logo.png" alt="Cot Lever" width={132} height={39} priority
             style={{ height: '42px', width: 'auto' }} />
-          <span style={{
-            width: '7px', height: '7px', borderRadius: '50%',
-            background: '#ff3b30', flexShrink: 0,
-            animation: 'dotPulse 2s ease-in-out infinite',
-          }} />
           {isSellerArea && (
             <span style={{
               color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontWeight: '600',
@@ -89,13 +84,6 @@ export default function Navbar() {
           )}
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes dotPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.85); }
-        }
-      `}</style>
     </>
   )
 }
