@@ -32,11 +32,11 @@ export default async function OrderPage({ params }) {
       <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
         <div style={{ textAlign: 'center', padding: '80px 20px', color: '#999' }}>
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>❓</div>
-          <p style={{ marginBottom: '20px' }}>অর্ডারটি পাওয়া যায়নি</p>
+          <p style={{ marginBottom: '20px' }}>Order not found</p>
           <Link href="/" style={{
             display: 'inline-block', background: '#2e7d32', color: 'white',
             padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600'
-          }}>হোমে ফিরুন</Link>
+          }}>Back to home</Link>
         </div>
       </div>
     )
@@ -52,12 +52,12 @@ export default async function OrderPage({ params }) {
   }
 
   const timelineSteps = [
-    'অর্ডার প্লেস হয়েছে',
-    'সেলার কনফার্মেশনের অপেক্ষায়',
-    'সেলার আপনার অর্ডার গ্রহণ করেছে',
-    'অর্ডার প্রস্তুত করা হচ্ছে',
-    'কুরিয়ারের কাছে হস্তান্তর করা হয়েছে',
-    'ডেলিভারি সম্পন্ন হয়েছে',
+    'Order placed',
+    'Waiting for seller confirmation',
+    'Seller accepted your order',
+    'Order is being prepared',
+    'Handed to courier',
+    'Delivered',
   ]
 
   const isCancelled = order.status === 'cancelled'
@@ -75,7 +75,7 @@ export default async function OrderPage({ params }) {
         <Link href="/">
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>অর্ডার বিস্তারিত</div>
+        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>Order details</div>
       </div>
 
       {/* Success banner */}
@@ -84,9 +84,9 @@ export default async function OrderPage({ params }) {
           {isCancelled ? '❌' : '✅'}
         </div>
         <div style={{ fontSize: '16px', fontWeight: '600', color: '#1a1a1a', marginBottom: '4px' }}>
-          {isCancelled ? 'অর্ডারটি বাতিল হয়েছে' : 'অর্ডারটি সফলভাবে প্লেস হয়েছে'}
+          {isCancelled ? 'Order was cancelled' : 'Order placed successfully'}
         </div>
-        <div style={{ fontSize: '12px', color: '#888' }}>অর্ডার আইডি: {order.id.slice(0, 8)}</div>
+        <div style={{ fontSize: '12px', color: '#888' }}>Order ID: {order.id.slice(0, 8)}</div>
       </div>
 
       {/* Status tracker */}
@@ -96,7 +96,7 @@ export default async function OrderPage({ params }) {
           border: '1px solid #e0e0e0', padding: '16px'
         }}>
           <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '16px', color: '#1a1a1a' }}>
-            অর্ডার স্ট্যাটাস
+            Order status
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {timelineSteps.map((label, i) => (
@@ -126,8 +126,8 @@ export default async function OrderPage({ params }) {
                       marginTop: '4px', fontSize: '12px', color: '#555',
                       background: '#f5f5f5', borderRadius: '6px', padding: '6px 10px'
                     }}>
-                      {order.courier_name && <div>কুরিয়ার: {order.courier_name}</div>}
-                      {order.courier_tracking_id && <div>ট্র্যাকিং আইডি: {order.courier_tracking_id}</div>}
+                      {order.courier_name && <div>Courier: {order.courier_name}</div>}
+                      {order.courier_tracking_id && <div>Tracking ID: {order.courier_tracking_id}</div>}
                     </div>
                   )}
                 </div>
@@ -149,7 +149,7 @@ export default async function OrderPage({ params }) {
           background: 'white', margin: '0 16px 14px', borderRadius: '10px',
           border: '1px solid #e0e0e0', padding: '16px'
         }}>
-          <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>দোকান</div>
+          <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Shop</div>
           <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{shop.name}</div>
         </div>
       )}
@@ -160,14 +160,16 @@ export default async function OrderPage({ params }) {
         border: '1px solid #e0e0e0', padding: '16px'
       }}>
         <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '10px', color: '#1a1a1a' }}>
-          অর্ডার আইটেম
+          Order items
         </div>
         {items.map(item => (
           <div key={item.id} style={{
             display: 'flex', justifyContent: 'space-between',
             fontSize: '13px', color: '#555', marginBottom: '8px'
           }}>
-            <span>{item.product_name} × {item.quantity}</span>
+            <span>
+              {item.product_name}{item.variant_name ? ` (${item.variant_name})` : ''} × {item.quantity}
+            </span>
             <span>৳{item.total_price}</span>
           </div>
         ))}
@@ -175,18 +177,18 @@ export default async function OrderPage({ params }) {
           display: 'flex', justifyContent: 'space-between', fontSize: '13px',
           color: '#555', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #eee'
         }}>
-          <span>সাবটোটাল</span>
+          <span>Subtotal</span>
           <span>৳{order.subtotal}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginTop: '6px' }}>
-          <span>ডেলিভারি চার্জ</span>
-          <span>{order.delivery_charge === 0 ? 'ফ্রি' : `৳${order.delivery_charge}`}</span>
+          <span>Delivery charge</span>
+          <span>{order.delivery_charge === 0 ? 'Free' : `৳${order.delivery_charge}`}</span>
         </div>
         <div style={{
           display: 'flex', justifyContent: 'space-between', fontSize: '15px',
           fontWeight: '600', color: '#1a1a1a', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #eee'
         }}>
-          <span>মোট</span>
+          <span>Total</span>
           <span>৳{order.total}</span>
         </div>
       </div>
@@ -198,27 +200,27 @@ export default async function OrderPage({ params }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
           <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
-            {order.delivery_method === 'pickup' ? 'পিকআপ তথ্য' : 'ডেলিভারি তথ্য'}
+            {order.delivery_method === 'pickup' ? 'Pickup details' : 'Delivery details'}
           </div>
           {order.delivery_method === 'pickup' && (
             <div style={{
               fontSize: '11px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px',
               background: '#e3f2fd', color: '#1565c0'
-            }}>স্টোর পিকআপ</div>
+            }}>Store pickup</div>
           )}
         </div>
         <div style={{ fontSize: '13px', color: '#555', marginBottom: '4px' }}>{order.delivery_name}</div>
         <div style={{ fontSize: '13px', color: '#555', marginBottom: '4px' }}>{order.delivery_phone}</div>
         {order.delivery_method === 'pickup' ? (
           <div style={{ fontSize: '13px', color: '#555' }}>
-            <span style={{ color: '#888' }}>ঠিকানা থেকে সংগ্রহ করুন: </span>{order.delivery_address}
+            <span style={{ color: '#888' }}>Collect from: </span>{order.delivery_address}
           </div>
         ) : (
           <div style={{ fontSize: '13px', color: '#555' }}>{order.delivery_address}</div>
         )}
         {order.note && (
           <div style={{ fontSize: '12px', color: '#888', marginTop: '8px', fontStyle: 'italic' }}>
-            নোট: {order.note}
+            Note: {order.note}
           </div>
         )}
       </div>
@@ -227,7 +229,7 @@ export default async function OrderPage({ params }) {
         <Link href="/shops" style={{
           display: 'block', textAlign: 'center', background: '#2e7d32', color: 'white',
           padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: '600'
-        }}>আরও কেনাকাটা করুন</Link>
+        }}>Continue shopping</Link>
       </div>
     </div>
   )

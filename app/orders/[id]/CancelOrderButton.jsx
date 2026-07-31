@@ -21,7 +21,7 @@ export default function CancelOrderButton({ orderId }) {
       router.refresh()
     } catch (err) {
       console.error(err)
-      setError(err.message || 'অর্ডার বাতিল করতে সমস্যা হয়েছে')
+      setError(err.message || 'Could not cancel the order')
       setSubmitting(false)
     }
   }
@@ -30,7 +30,7 @@ export default function CancelOrderButton({ orderId }) {
     return (
       <div>
         <div style={{ fontSize: '13px', color: '#c62828', marginBottom: '10px' }}>
-          আপনি কি নিশ্চিত অর্ডারটি বাতিল করতে চান?
+          Are you sure you want to cancel this order?
         </div>
         {error && (
           <div style={{
@@ -47,7 +47,7 @@ export default function CancelOrderButton({ orderId }) {
               border: 'none', borderRadius: '8px', padding: '10px', fontSize: '13px',
               fontWeight: '600', cursor: 'pointer'
             }}>
-            {submitting ? 'বাতিল হচ্ছে...' : 'হ্যাঁ, বাতিল করুন'}
+            {submitting ? 'Cancelling...' : 'Yes, cancel'}
           </button>
           <button
             onClick={() => setConfirming(false)}
@@ -57,7 +57,7 @@ export default function CancelOrderButton({ orderId }) {
               border: 'none', borderRadius: '8px', padding: '10px', fontSize: '13px',
               fontWeight: '600', cursor: 'pointer'
             }}>
-            না, থাক
+            No, keep it
           </button>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function CancelOrderButton({ orderId }) {
         border: '1.5px solid #c62828', borderRadius: '8px', padding: '10px',
         fontSize: '13px', fontWeight: '600', cursor: 'pointer'
       }}>
-      অর্ডার বাতিল করুন
+      Cancel order
     </button>
   )
 }

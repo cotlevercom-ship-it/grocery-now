@@ -1,11 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import ProductDetailModal from './ProductDetailModal'
 
 export default function ProductList({ categories, products, shop }) {
   const router = useRouter()
   const [cart, setCart] = useState([])
   const [activeCategory, setActiveCategory] = useState('all')
+  const [detailProduct, setDetailProduct] = useState(null)
 
   // Load cart from localStorage on mount (only if it belongs to this shop)
   useEffect(() => {
@@ -46,25 +48,41 @@ export default function ProductList({ categories, products, shop }) {
     }
   }, [cart, shop.id, shop.name])
 
-  const addToCart = (product) => {
+  const cartKeyFor = (productId, variantId) => variantId ? `${productId}:${variantId}` : productId
+
+  const addToCart = (product, variant, qty = 1) => {
+    const cartKey = cartKeyFor(product.id, variant?.id)
+    const unitPrice = variant ? (variant.sale_price || variant.price) : (product.sale_price || product.price)
+
     setCart(prev => {
-      const existing = prev.find(i => i.id === product.id)
+      const existing = prev.find(i => i.cartKey === cartKey)
       if (existing) {
-        return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i)
+        return prev.map(i => i.cartKey === cartKey ? { ...i, qty: i.qty + qty } : i)
       }
-      return [...prev, { ...product, qty: 1 }]
+      return [...prev, {
+        cartKey,
+        id: product.id,
+        variantId: variant?.id || null,
+        name: product.name,
+        variantName: variant?.name || null,
+        price: unitPrice,
+        unit: product.unit,
+        image_url: (product.image_urls && product.image_urls[0]) || product.image_url,
+        qty,
+      }]
     })
   }
 
   const removeFromCart = (product) => {
+    const cartKey = cartKeyFor(product.id, null)
     setCart(prev => {
-      const existing = prev.find(i => i.id === product.id)
-      if (existing?.qty === 1) return prev.filter(i => i.id !== product.id)
-      return prev.map(i => i.id === product.id ? { ...i, qty: i.qty - 1 } : i)
+      const existing = prev.find(i => i.cartKey === cartKey)
+      if (existing?.qty === 1) return prev.filter(i => i.cartKey !== cartKey)
+      return prev.map(i => i.cartKey === cartKey ? { ...i, qty: i.qty - 1 } : i)
     })
   }
 
-  const getQty = (id) => cart.find(i => i.id === id)?.qty || 0
+  const getQty = (productId) => cart.find(i => i.cartKey === productId)?.qty || 0
 
   const totalItems = cart.reduce((a, b) => a + b.qty, 0)
   const totalPrice = cart.reduce((a, b) => a + b.qty * b.price, 0)
@@ -84,10 +102,24 @@ export default function ProductList({ categories, products, shop }) {
     })).filter(cat => cat.products.length > 0)
 
     if (uncategorized.length > 0) {
-      grouped.push({ id: 'none', name: 'অন্যান্য', products: uncategorized })
+      grouped.push({ id: 'none', name: 'Other', products: uncategorized })
     }
     return grouped
   }
+
+  const priceLabel = (product) => {
+    const variants = product.product_variants || []
+    if (variants.length === 0) {
+      return `৳${product.sale_price || product.price}`
+    }
+    const prices = variants.map(v => v.sale_price || v.price)
+    const min = Math.min(...prices)
+    return `From ৳${min}`
+  }
+
+  const hasImages = (product) => (product.image_urls && product.image_urls.length > 0) || product.image_url
+  const hasMultipleImages = (product) => (product.image_urls && product.image_urls.length > 1)
+  const mainImage = (product) => (product.image_urls && product.image_urls[0]) || product.image_url
 
   return (
     <div style={{ paddingBottom: totalItems > 0 ? '80px' : '16px' }}>
@@ -106,7 +138,7 @@ export default function ProductList({ categories, products, shop }) {
               background: activeCategory === 'all' ? '#2e7d32' : 'white',
               color: activeCategory === 'all' ? 'white' : '#555',
               borderColor: activeCategory === 'all' ? '#2e7d32' : '#ddd',
-            }}>সব পণ্য</button>
+            }}>All Products</button>
           {categories.map(cat => (
             <button
               key={cat.id}
@@ -133,29 +165,53 @@ export default function ProductList({ categories, products, shop }) {
             )}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               {group.products.map(product => {
+                const hasVariants = (product.product_variants || []).length > 0
                 const qty = getQty(product.id)
                 return (
                   <div key={product.id} style={{
                     background: 'white', borderRadius: '10px',
                     border: '1px solid #e0e0e0', overflow: 'hidden'
                   }}>
-                    <div style={{
-                      height: '90px', background: '#f9fbe7',
-                      display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontSize: '36px'
-                    }}>
-                      {product.image_url ? (
-                        <img src={product.image_url} alt={product.name}
+                    <div
+                      onClick={() => setDetailProduct(product)}
+                      style={{
+                        height: '90px', background: '#f9fbe7',
+                        display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', fontSize: '36px',
+                        position: 'relative', cursor: 'pointer'
+                      }}
+                    >
+                      {hasImages(product) ? (
+                        <img src={mainImage(product)} alt={product.name}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : '🛍️'}
+                      {hasMultipleImages(product) && (
+                        <span style={{
+                          position: 'absolute', bottom: '4px', right: '6px',
+                          background: 'rgba(0,0,0,0.55)', color: 'white',
+                          fontSize: '10px', padding: '1px 6px', borderRadius: '8px'
+                        }}>+{product.image_urls.length - 1}</span>
+                      )}
                     </div>
                     <div style={{ padding: '8px 10px' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '500', color: '#1a1a1a' }}>{product.name}</div>
+                      <div
+                        onClick={() => setDetailProduct(product)}
+                        style={{ fontSize: '12px', fontWeight: '500', color: '#1a1a1a', cursor: 'pointer' }}
+                      >{product.name}</div>
                       <div style={{ fontSize: '11px', color: '#888' }}>{product.unit}</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#2e7d32' }}>৳{product.price}</div>
-                        {qty === 0 ? (
-                          <button onClick={() => addToCart(product)} style={{
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#2e7d32' }}>{priceLabel(product)}</div>
+
+                        {hasVariants ? (
+                          <button
+                            onClick={() => setDetailProduct(product)}
+                            style={{
+                              padding: '5px 10px', borderRadius: '14px', fontSize: '11px',
+                              fontWeight: '600', background: '#2e7d32', color: 'white'
+                            }}
+                          >Select</button>
+                        ) : qty === 0 ? (
+                          <button onClick={() => addToCart(product, null, 1)} style={{
                             width: '28px', height: '28px', borderRadius: '50%',
                             background: '#2e7d32', color: 'white', fontSize: '18px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -168,7 +224,7 @@ export default function ProductList({ categories, products, shop }) {
                               display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}>-</button>
                             <span style={{ fontSize: '13px', fontWeight: '600' }}>{qty}</span>
-                            <button onClick={() => addToCart(product)} style={{
+                            <button onClick={() => addToCart(product, null, 1)} style={{
                               width: '24px', height: '24px', borderRadius: '50%',
                               background: '#2e7d32', color: 'white', fontSize: '16px',
                               display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -187,7 +243,7 @@ export default function ProductList({ categories, products, shop }) {
         {filteredProducts.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
-            <p>কোনো পণ্য পাওয়া যায়নি</p>
+            <p>No products found</p>
           </div>
         )}
       </div>
@@ -200,7 +256,7 @@ export default function ProductList({ categories, products, shop }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between'
         }}>
           <div style={{ color: 'white' }}>
-            <div style={{ fontSize: '13px', opacity: 0.85 }}>{totalItems}টি আইটেম</div>
+            <div style={{ fontSize: '13px', opacity: 0.85 }}>{totalItems} item{totalItems > 1 ? 's' : ''}</div>
             <div style={{ fontSize: '16px', fontWeight: '600' }}>৳{totalPrice}</div>
           </div>
           <button
@@ -208,8 +264,16 @@ export default function ProductList({ categories, products, shop }) {
             style={{
               background: 'white', color: '#2e7d32', padding: '10px 20px',
               borderRadius: '8px', fontSize: '14px', fontWeight: '600'
-            }}>চেকআউট →</button>
+            }}>Checkout →</button>
         </div>
+      )}
+
+      {detailProduct && (
+        <ProductDetailModal
+          product={detailProduct}
+          onClose={() => setDetailProduct(null)}
+          onAddToCart={addToCart}
+        />
       )}
     </div>
   )

@@ -27,8 +27,8 @@ export default async function ShopPage({ params }) {
   if (!shop) {
     return (
       <div style={{ textAlign: 'center', padding: '60px', color: '#999' }}>
-        <p>দোকান পাওয়া যায়নি</p>
-        <Link href="/">হোমে ফিরুন</Link>
+        <p>Shop not found</p>
+        <Link href="/">Back to home</Link>
       </div>
     )
   }
@@ -46,9 +46,9 @@ export default async function ShopPage({ params }) {
       {/* Shop info */}
       <div style={{ background: '#2e7d32', padding: '14px 16px 20px' }}>
         <div style={{ display: 'flex', gap: '16px', color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>
-          <span>⭐ {shop.rating || '৪.৫'}</span>
-          <span>⏱ {shop.delivery_time_min}-{shop.delivery_time_max} মি.</span>
-          <span>🚴 {shop.delivery_charge === 0 ? 'ফ্রি' : `৳${shop.delivery_charge}`}</span>
+          <span>⭐ {shop.rating || '4.5'}</span>
+          <span>⏱ {shop.delivery_time_min}-{shop.delivery_time_max} min</span>
+          <span>🚴 {shop.delivery_charge === 0 ? 'Free' : `৳${shop.delivery_charge}`}</span>
         </div>
       </div>
 

@@ -229,7 +229,7 @@ export default function SellerOrdersPage() {
                         <div key={item.id} style={{
                           display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '4px'
                         }}>
-                          <span>{item.product_name} × {item.quantity}</span>
+                          <span>{item.product_name}{item.variant_name ? ` (${item.variant_name})` : ''} × {item.quantity}</span>
                           <span>৳{item.total_price}</span>
                         </div>
                       ))}

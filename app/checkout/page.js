@@ -111,7 +111,7 @@ export default function CheckoutPage() {
       : (usingSavedAddress ? (selectedAddress?.address || '') : address.trim())
 
     if (!name.trim() || !phone.trim() || (deliveryMethod === 'delivery' && !deliveryAddressText.trim())) {
-      setError('নাম, ফোন নম্বর এবং ঠিকানা অবশ্যই দিতে হবে')
+      setError('Name, phone number and address are required')
       return
     }
 
@@ -135,7 +135,7 @@ export default function CheckoutPage() {
           payment_method: paymentMethod,
           payment_status: 'unpaid',
           status: 'pending',
-          tracking_history: [{ status: 'pending', note: 'অর্ডার প্লেস করা হয়েছে', time: new Date().toISOString() }],
+          tracking_history: [{ status: 'pending', note: 'Order placed', time: new Date().toISOString() }],
           note: note.trim() || null,
         }),
       })
@@ -182,6 +182,8 @@ export default function CheckoutPage() {
         product_id: item.id,
         product_name: item.name,
         product_unit: item.unit || null,
+        variant_id: item.variantId || null,
+        variant_name: item.variantName || null,
         quantity: item.qty,
         unit_price: item.price,
         total_price: item.price * item.qty,
@@ -198,7 +200,7 @@ export default function CheckoutPage() {
       router.push(`/orders/${order.id}`)
     } catch (err) {
       console.error(err)
-      setError('অর্ডার প্লেস করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError('Could not place the order, please try again')
       setSubmitting(false)
     }
   }
@@ -213,7 +215,7 @@ export default function CheckoutPage() {
         <Link href="/cart">
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>চেকআউট</div>
+        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>Checkout</div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -223,9 +225,9 @@ export default function CheckoutPage() {
             borderRadius: '8px', fontSize: '12px', color: '#1b5e20',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px'
           }}>
-            <span>গেস্ট হিসেবে অর্ডার করছেন</span>
+            <span>Ordering as a guest</span>
             <Link href={`/login?next=/checkout`} style={{ color: '#2e7d32', fontWeight: '600', textDecoration: 'underline' }}>
-              লগইন করুন
+              Log in
             </Link>
           </div>
         )}
@@ -237,7 +239,7 @@ export default function CheckoutPage() {
             border: '1px solid #e0e0e0', padding: '16px'
           }}>
             <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-              ডেলিভারি পদ্ধতি
+              Delivery method
             </div>
             <label style={{
               display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
@@ -250,7 +252,7 @@ export default function CheckoutPage() {
                 checked={deliveryMethod === 'delivery'}
                 onChange={() => setDeliveryMethod('delivery')}
               />
-              <span style={{ fontSize: '14px' }}>হোম ডেলিভারি</span>
+              <span style={{ fontSize: '14px' }}>Home delivery</span>
             </label>
             <label style={{
               display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
@@ -263,7 +265,7 @@ export default function CheckoutPage() {
                 checked={deliveryMethod === 'pickup'}
                 onChange={() => setDeliveryMethod('pickup')}
               />
-              <span style={{ fontSize: '14px' }}>স্টোর থেকে পিকআপ (ডেলিভারি চার্জ নেই)</span>
+              <span style={{ fontSize: '14px' }}>Store pickup (no delivery charge)</span>
             </label>
           </div>
         )}
@@ -274,16 +276,16 @@ export default function CheckoutPage() {
           border: '1px solid #e0e0e0', padding: '16px'
         }}>
           <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-            {deliveryMethod === 'pickup' ? 'পিকআপকারীর তথ্য' : 'ডেলিভারি তথ্য'}
+            {deliveryMethod === 'pickup' ? 'Pickup person details' : 'Delivery details'}
           </div>
 
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>নাম *</label>
+            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Name *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="আপনার নাম লিখুন"
+              placeholder="Enter your name"
               style={{
                 width: '100%', padding: '10px 12px', borderRadius: '8px',
                 border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
@@ -292,12 +294,12 @@ export default function CheckoutPage() {
           </div>
 
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>ফোন নম্বর *</label>
+            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Phone number *</label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="০১৭XXXXXXXX"
+              placeholder="01XXXXXXXXX"
               style={{
                 width: '100%', padding: '10px 12px', borderRadius: '8px',
                 border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
@@ -307,17 +309,17 @@ export default function CheckoutPage() {
 
           {deliveryMethod === 'pickup' ? (
             <div>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>পিকআপ ঠিকানা</label>
+              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Pickup address</label>
               <div style={{
                 padding: '10px 12px', borderRadius: '8px', background: '#f5f5f5',
                 fontSize: '14px', color: '#333'
-              }}>{shop?.pickup_address || 'দোকানের ঠিকানা শীঘ্রই জানানো হবে'}</div>
+              }}>{shop?.pickup_address || 'Store address will be shared soon'}</div>
             </div>
           ) : (
             <>
               {areaName && (
                 <div style={{ marginBottom: '12px' }}>
-                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>এলাকা</label>
+                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Area</label>
                   <div style={{
                     padding: '10px 12px', borderRadius: '8px', background: '#f5f5f5',
                     fontSize: '14px', color: '#333'
@@ -327,7 +329,7 @@ export default function CheckoutPage() {
 
               {session?.user?.id && savedAddresses.length > 0 && (
                 <div style={{ marginBottom: '12px' }}>
-                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>ডেলিভারি ঠিকানা *</label>
+                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>Delivery address *</label>
                   {savedAddresses.map(addr => (
                     <label key={addr.id} style={{
                       display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px',
@@ -342,7 +344,7 @@ export default function CheckoutPage() {
                         style={{ marginTop: '3px' }}
                       />
                       <div>
-                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>{addr.label || 'ঠিকানা'}</div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>{addr.label || 'Address'}</div>
                         <div style={{ fontSize: '13px', color: '#555', marginTop: '2px' }}>{addr.address}</div>
                       </div>
                     </label>
@@ -358,18 +360,18 @@ export default function CheckoutPage() {
                       checked={selectedAddressId === 'new'}
                       onChange={() => setSelectedAddressId('new')}
                     />
-                    <span style={{ fontSize: '14px' }}>+ নতুন ঠিকানা ব্যবহার করুন</span>
+                    <span style={{ fontSize: '14px' }}>+ Use a new address</span>
                   </label>
                 </div>
               )}
 
               {selectedAddressId === 'new' && (
                 <div>
-                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>বিস্তারিত ঠিকানা *</label>
+                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Full address *</label>
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="বাড়ি/ফ্ল্যাট নম্বর, রোড, এলাকার নাম"
+                    placeholder="House/flat number, road, area name"
                     rows={3}
                     style={{
                       width: '100%', padding: '10px 12px', borderRadius: '8px',
@@ -384,7 +386,7 @@ export default function CheckoutPage() {
                         checked={saveNewAddress}
                         onChange={(e) => setSaveNewAddress(e.target.checked)}
                       />
-                      এই ঠিকানা পরের বারের জন্য সেভ করে রাখো
+                      Save this address for next time
                     </label>
                   )}
                 </div>
@@ -399,7 +401,7 @@ export default function CheckoutPage() {
           border: '1px solid #e0e0e0', padding: '16px'
         }}>
           <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-            পেমেন্ট মেথড
+            Payment method
           </div>
           <label style={{
             display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
@@ -412,7 +414,7 @@ export default function CheckoutPage() {
               checked={paymentMethod === 'cod'}
               onChange={() => setPaymentMethod('cod')}
             />
-            <span style={{ fontSize: '14px' }}>ক্যাশ অন ডেলিভারি</span>
+            <span style={{ fontSize: '14px' }}>Cash on delivery</span>
           </label>
         </div>
 
@@ -422,12 +424,12 @@ export default function CheckoutPage() {
           border: '1px solid #e0e0e0', padding: '16px'
         }}>
           <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>
-            অর্ডার নোট (ঐচ্ছিক)
+            Order note (optional)
           </label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="বিশেষ কোনো নির্দেশনা থাকলে লিখুন"
+            placeholder="Any special instructions"
             rows={2}
             style={{
               width: '100%', padding: '10px 12px', borderRadius: '8px',
@@ -443,18 +445,18 @@ export default function CheckoutPage() {
           border: '1px solid #e0e0e0', padding: '16px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-            <span>সাবটোটাল</span>
+            <span>Subtotal</span>
             <span>৳{subtotal}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-            <span>ডেলিভারি চার্জ</span>
-            <span>{deliveryCharge === 0 ? 'ফ্রি' : `৳${deliveryCharge}`}</span>
+            <span>Delivery charge</span>
+            <span>{deliveryCharge === 0 ? 'Free' : `৳${deliveryCharge}`}</span>
           </div>
           <div style={{
             display: 'flex', justifyContent: 'space-between', fontSize: '15px',
             fontWeight: '600', color: '#1a1a1a', paddingTop: '8px', borderTop: '1px solid #eee'
           }}>
-            <span>মোট</span>
+            <span>Total</span>
             <span>৳{total}</span>
           </div>
         </div>
@@ -479,7 +481,7 @@ export default function CheckoutPage() {
               padding: '14px', borderRadius: '10px', fontSize: '15px', fontWeight: '600',
               border: 'none'
             }}>
-            {submitting ? 'অর্ডার হচ্ছে...' : `অর্ডার কনফার্ম করুন — ৳${total}`}
+            {submitting ? 'Placing order...' : `Confirm order — ৳${total}`}
           </button>
         </div>
       </form>
