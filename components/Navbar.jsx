@@ -96,10 +96,14 @@ export default function Navbar() {
       <style jsx global>{`
         .logo-underline-wrap {
           clip-path: inset(0 100% 0 0);
-          animation: logoUnderlineDraw 1.1s 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+          animation: logoUnderlineDraw 2.4s ease-in-out infinite;
         }
         @keyframes logoUnderlineDraw {
-          to { clip-path: inset(0 0 0 0); }
+          0% { clip-path: inset(0 100% 0 0); }
+          35% { clip-path: inset(0 0% 0 0); }
+          80% { clip-path: inset(0 0% 0 0); }
+          90% { clip-path: inset(0 100% 0 0); }
+          100% { clip-path: inset(0 100% 0 0); }
         }
       `}</style>
     </>
