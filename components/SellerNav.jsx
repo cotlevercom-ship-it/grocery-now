@@ -136,7 +136,10 @@ export default function SellerNav({ children }) {
           padding: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
-          <span style={{ position: 'relative', display: 'inline-block', height: '44px', width: '150px' }}>
+          <span style={{
+            position: 'relative', display: 'inline-block', height: '44px', width: '150px',
+            filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.85)) drop-shadow(0 0 16px rgba(255,255,255,0.55)) drop-shadow(0 0 28px rgba(255,255,255,0.3))',
+          }}>
             <Image src="/logo-text.png" alt="Cot Lever" fill
               style={{ objectFit: 'contain', objectPosition: 'left center' }} />
           </span>
