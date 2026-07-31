@@ -38,8 +38,16 @@ export default function Navbar() {
         boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
-          <Image src="/logo.png" alt="Cot Lever" width={132} height={39} priority
-            style={{ height: '42px', width: 'auto' }} />
+          <span style={{ position: 'relative', display: 'inline-block', height: '42px', width: '132px' }}>
+            <Image src="/logo-text.png" alt="Cot Lever" fill priority
+              style={{ objectFit: 'contain', objectPosition: 'left center' }} />
+            <span className="logo-underline-wrap" style={{
+              position: 'absolute', inset: 0, overflow: 'hidden',
+            }}>
+              <Image src="/logo-underline.png" alt="" fill
+                style={{ objectFit: 'contain', objectPosition: 'left center' }} />
+            </span>
+          </span>
           {isSellerArea && (
             <span style={{
               color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontWeight: '600',
@@ -84,6 +92,16 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      <style jsx global>{`
+        .logo-underline-wrap {
+          clip-path: inset(0 100% 0 0);
+          animation: logoUnderlineDraw 1.1s 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        }
+        @keyframes logoUnderlineDraw {
+          to { clip-path: inset(0 0 0 0); }
+        }
+      `}</style>
     </>
   )
 }

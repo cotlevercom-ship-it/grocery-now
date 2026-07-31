@@ -136,8 +136,14 @@ export default function SellerNav({ children }) {
           padding: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
-          <Image src="/logo.png" alt="Cot Lever" width={132} height={39}
-            style={{ height: '32px', width: 'auto' }} />
+          <span style={{ position: 'relative', display: 'inline-block', height: '32px', width: '100px' }}>
+            <Image src="/logo-text.png" alt="Cot Lever" fill
+              style={{ objectFit: 'contain', objectPosition: 'left center' }} />
+            <span className="logo-underline-wrap" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+              <Image src="/logo-underline.png" alt="" fill
+                style={{ objectFit: 'contain', objectPosition: 'left center' }} />
+            </span>
+          </span>
           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '6px' }}>Seller Centre</div>
         </div>
 
