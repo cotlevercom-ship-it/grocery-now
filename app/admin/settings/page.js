@@ -89,7 +89,7 @@ export default function AdminSettingsPage() {
       {success && (
         <div style={{
           maxWidth: '520px', marginBottom: '16px', padding: '10px 12px',
-          background: '#e8f5e9', color: '#2d6a4f', borderRadius: '8px', fontSize: '13px'
+          background: '#f5f5f5', color: '#2d6a4f', borderRadius: '8px', fontSize: '13px'
         }}>{success}</div>
       )}
 
@@ -110,7 +110,7 @@ export default function AdminSettingsPage() {
         ))}
 
         <button type="submit" disabled={saving} style={{
-          background: saving ? '#a5d6a7' : '#2e7d32', color: 'white', border: 'none',
+          background: saving ? '#9ca3af' : '#0a0a0a', color: 'white', border: 'none',
           borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
         }}>{saving ? 'সেভ হচ্ছে...' : 'সেভ করুন'}</button>
       </form>
