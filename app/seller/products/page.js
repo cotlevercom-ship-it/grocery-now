@@ -377,11 +377,6 @@ export default function SellerProductsPage() {
   return (
     <SellerNav>
     <div>
-      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Products</h1>
-      <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        Manage categories and products for your shop.
-      </p>
-
       {error && (
         <div style={{
           maxWidth: '600px', marginBottom: '16px', padding: '10px 12px',
