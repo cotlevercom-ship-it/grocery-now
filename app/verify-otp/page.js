@@ -130,7 +130,7 @@ function VerifyOtpForm() {
           )}
           {notice && (
             <div style={{
-              padding: '10px 12px', background: '#e8f5e9', color: '#1b5e20',
+              padding: '10px 12px', background: '#f5f5f5', color: '#0a0a0a',
               borderRadius: '8px', fontSize: '13px', marginBottom: '14px'
             }}>{notice}</div>
           )}
