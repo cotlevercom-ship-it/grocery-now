@@ -147,9 +147,9 @@ export default function ProductList({ categories, products, shop }) {
             style={{
               padding: '6px 14px', borderRadius: '20px', fontSize: '12px',
               border: '1px solid', whiteSpace: 'nowrap',
-              background: activeCategory === 'all' ? '#2e7d32' : 'white',
+              background: activeCategory === 'all' ? '#0a0a0a' : 'white',
               color: activeCategory === 'all' ? 'white' : '#555',
-              borderColor: activeCategory === 'all' ? '#2e7d32' : '#ddd',
+              borderColor: activeCategory === 'all' ? '#0a0a0a' : '#ddd',
             }}>All Products</button>
           {categories.map(cat => (
             <button
@@ -158,9 +158,9 @@ export default function ProductList({ categories, products, shop }) {
               style={{
                 padding: '6px 14px', borderRadius: '20px', fontSize: '12px',
                 border: '1px solid', whiteSpace: 'nowrap',
-                background: activeCategory === cat.id ? '#2e7d32' : 'white',
+                background: activeCategory === cat.id ? '#0a0a0a' : 'white',
                 color: activeCategory === cat.id ? 'white' : '#555',
-                borderColor: activeCategory === cat.id ? '#2e7d32' : '#ddd',
+                borderColor: activeCategory === cat.id ? '#0a0a0a' : '#ddd',
               }}>{cat.name}</button>
           ))}
         </div>
@@ -223,7 +223,7 @@ export default function ProductList({ categories, products, shop }) {
                       {discount > 0 && !outOfStock && (
                         <span style={{
                           position: 'absolute', top: '8px', right: '8px',
-                          background: '#2e7d32', color: 'white', fontSize: '10px',
+                          background: '#0a0a0a', color: 'white', fontSize: '10px',
                           fontWeight: '700', padding: '3px 8px', borderRadius: '5px'
                         }}>-{discount}%</span>
                       )}
@@ -271,26 +271,26 @@ export default function ProductList({ categories, products, shop }) {
                             onClick={() => setDetailProduct(product)}
                             style={{
                               padding: '5px 12px', borderRadius: '14px', fontSize: '11px',
-                              fontWeight: '600', background: '#2e7d32', color: 'white', border: 'none'
+                              fontWeight: '600', background: '#0a0a0a', color: 'white', border: 'none'
                             }}
                           >Select</button>
                         ) : qty === 0 ? (
                           <button onClick={() => addToCart(product, null, 1)} style={{
                             width: '28px', height: '28px', borderRadius: '50%',
-                            background: '#2e7d32', color: 'white', fontSize: '18px', border: 'none',
+                            background: '#0a0a0a', color: 'white', fontSize: '18px', border: 'none',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                           }}>+</button>
                         ) : (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <button onClick={() => removeFromCart(product)} style={{
                               width: '24px', height: '24px', borderRadius: '50%',
-                              background: '#e8f5e9', color: '#2e7d32', fontSize: '16px', border: 'none',
+                              background: '#f5f5f5', color: '#0a0a0a', fontSize: '16px', border: 'none',
                               display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}>-</button>
                             <span style={{ fontSize: '13px', fontWeight: '600' }}>{qty}</span>
                             <button onClick={() => addToCart(product, null, 1)} style={{
                               width: '24px', height: '24px', borderRadius: '50%',
-                              background: '#2e7d32', color: 'white', fontSize: '16px', border: 'none',
+                              background: '#0a0a0a', color: 'white', fontSize: '16px', border: 'none',
                               display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}>+</button>
                           </div>
@@ -316,7 +316,7 @@ export default function ProductList({ categories, products, shop }) {
       {totalItems > 0 && (
         <div style={{
           position: 'fixed', bottom: '0', left: '0', right: '0',
-          background: '#2e7d32', padding: '14px 16px',
+          background: '#0a0a0a', padding: '14px 16px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between'
         }}>
           <div style={{ color: 'white' }}>
@@ -326,7 +326,7 @@ export default function ProductList({ categories, products, shop }) {
           <button
             onClick={() => router.push('/cart')}
             style={{
-              background: 'white', color: '#2e7d32', padding: '10px 20px',
+              background: 'white', color: '#0a0a0a', padding: '10px 20px',
               borderRadius: '8px', fontSize: '14px', fontWeight: '600'
             }}>Checkout →</button>
         </div>
