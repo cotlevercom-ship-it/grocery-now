@@ -45,7 +45,7 @@ export default function ShopGrid({ shops, departments }) {
           All Shops
         </h2>
         <span style={{
-          fontSize: '12px', color: '#2d6a4f', background: '#e8f5e9',
+          fontSize: '12px', color: '#2d6a4f', background: '#f5f5f5',
           padding: '4px 12px', borderRadius: '20px', fontWeight: '500'
         }}>
           {filteredShops.length} shops
