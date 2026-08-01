@@ -18,7 +18,7 @@ const statusColors = {
   confirmed: { bg: '#e3f2fd', color: '#1565c0' },
   processing: { bg: '#ede7f6', color: '#5e35b1' },
   out_for_delivery: { bg: '#e0f2f1', color: '#00695c' },
-  delivered: { bg: '#e8f5e9', color: '#2d6a4f' },
+  delivered: { bg: '#f5f5f5', color: '#2d6a4f' },
   cancelled: { bg: '#ffebee', color: '#c62828' },
 }
 
@@ -189,7 +189,7 @@ export default function AdminOrdersPage() {
                       {new Date(order.created_at).toLocaleString('en-US')}
                     </div>
                   </div>
-                  <div style={{ fontSize: '14px', fontWeight: '700', color: '#2e7d32', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: '14px', fontWeight: '700', color: '#0a0a0a', whiteSpace: 'nowrap' }}>
                     ৳{order.total}
                   </div>
                   <span style={{
@@ -260,7 +260,7 @@ export default function AdminOrdersPage() {
                         onClick={(e) => { e.stopPropagation(); saveCourier(order) }}
                         disabled={savingCourierId === order.id}
                         style={{
-                          background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                          background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '6px',
                           padding: '7px 14px', fontSize: '12px', fontWeight: '600'
                         }}>{savingCourierId === order.id ? 'Saving...' : 'Save courier info'}</button>
                     </div>
