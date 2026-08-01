@@ -189,7 +189,7 @@ export default function ProductList({ categories, products, shop }) {
                     <div
                       onClick={() => setDetailProduct(product)}
                       style={{
-                        aspectRatio: '1 / 1', background: '#f5f5f5',
+                        height: '150px', background: '#f5f5f5',
                         display: 'flex', alignItems: 'center',
                         justifyContent: 'center', fontSize: '40px',
                         position: 'relative', cursor: 'pointer'
