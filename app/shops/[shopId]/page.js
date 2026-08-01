@@ -36,7 +36,7 @@ export default async function ShopPage({ params }) {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       {/* Topbar */}
-      <div style={{ background: '#2e7d32', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ background: '#0a0a0a', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <Link href="/shops">
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
@@ -44,7 +44,7 @@ export default async function ShopPage({ params }) {
       </div>
 
       {/* Shop info */}
-      <div style={{ background: '#2e7d32', padding: '14px 16px 20px' }}>
+      <div style={{ background: '#0a0a0a', padding: '14px 16px 20px' }}>
         <div style={{ display: 'flex', gap: '16px', color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>
           <span>⭐ {shop.rating || '4.5'}</span>
           <span>⏱ {shop.delivery_time_min}-{shop.delivery_time_max} min</span>
