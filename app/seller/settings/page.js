@@ -166,7 +166,7 @@ export default function SellerSettingsPage() {
       {success && (
         <div style={{
           maxWidth: '600px', marginBottom: '16px', padding: '10px 12px',
-          background: '#e8f5e9', color: '#2d6a4f', borderRadius: '8px', fontSize: '13px'
+          background: '#f5f5f5', color: '#2d6a4f', borderRadius: '8px', fontSize: '13px'
         }}>{success}</div>
       )}
 
@@ -178,7 +178,7 @@ export default function SellerSettingsPage() {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 14px', borderRadius: '8px', marginBottom: '18px',
-          background: form.is_active ? '#e8f5e9' : '#ffebee'
+          background: form.is_active ? '#f5f5f5' : '#ffebee'
         }}>
           <div>
             <div style={{ fontSize: '14px', fontWeight: '600', color: form.is_active ? '#2d6a4f' : '#c62828' }}>
@@ -319,7 +319,7 @@ export default function SellerSettingsPage() {
         )}
 
         <button type="submit" disabled={saving} style={{
-          background: saving ? '#a5d6a7' : '#163a2c', color: 'white', border: 'none',
+          background: saving ? '#9ca3af' : '#163a2c', color: 'white', border: 'none',
           borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
         }}>
           {saving ? 'Saving...' : 'Save Changes'}
