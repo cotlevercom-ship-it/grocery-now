@@ -63,7 +63,7 @@ export default function CartPage() {
     return (
       <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
         <div style={{
-          background: '#2e7d32', padding: '14px 16px',
+          background: '#0a0a0a', padding: '14px 16px',
           display: 'flex', alignItems: 'center', gap: '12px'
         }}>
           <Link href="/">
@@ -75,7 +75,7 @@ export default function CartPage() {
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>🛒</div>
           <p style={{ marginBottom: '20px' }}>Your cart is empty</p>
           <Link href="/shops" style={{
-            display: 'inline-block', background: '#2e7d32', color: 'white',
+            display: 'inline-block', background: '#0a0a0a', color: 'white',
             padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600'
           }}>Browse shops</Link>
         </div>
@@ -90,7 +90,7 @@ export default function CartPage() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '100px' }}>
       {/* Topbar */}
       <div style={{
-        background: '#2e7d32', padding: '14px 16px',
+        background: '#0a0a0a', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
         <Link href={`/shops/${cartData.shopId}`}>
@@ -130,20 +130,20 @@ export default function CartPage() {
                 <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
                   {item.variantName || item.unit}
                 </div>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#2e7d32' }}>৳{item.price} × {item.qty} = ৳{item.price * item.qty}</div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#0a0a0a' }}>৳{item.price} × {item.qty} = ৳{item.price * item.qty}</div>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <button onClick={() => removeQty(cartKey)} style={{
                     width: '24px', height: '24px', borderRadius: '50%',
-                    background: '#e8f5e9', color: '#2e7d32', fontSize: '16px',
+                    background: '#f5f5f5', color: '#0a0a0a', fontSize: '16px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>-</button>
                   <span style={{ fontSize: '13px', fontWeight: '600', minWidth: '16px', textAlign: 'center' }}>{item.qty}</span>
                   <button onClick={() => addQty(cartKey)} style={{
                     width: '24px', height: '24px', borderRadius: '50%',
-                    background: '#2e7d32', color: 'white', fontSize: '16px',
+                    background: '#0a0a0a', color: 'white', fontSize: '16px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>+</button>
                 </div>
@@ -181,7 +181,7 @@ export default function CartPage() {
       {/* Bottom bar */}
       <div style={{
         position: 'fixed', bottom: '0', left: '0', right: '0',
-        background: '#2e7d32', padding: '14px 16px',
+        background: '#0a0a0a', padding: '14px 16px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
       }}>
         <div style={{ color: 'white' }}>
@@ -191,7 +191,7 @@ export default function CartPage() {
         <button
           onClick={() => router.push('/checkout')}
           style={{
-            background: 'white', color: '#2e7d32', padding: '10px 24px',
+            background: 'white', color: '#0a0a0a', padding: '10px 24px',
             borderRadius: '8px', fontSize: '14px', fontWeight: '600'
           }}>Place order →</button>
       </div>
