@@ -330,7 +330,7 @@ export default function AdminRevenuePage() {
                     {referralMap[r.shop_id] ? (
                       <span style={{
                         fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '10px',
-                        background: '#e8f5e9', color: '#2d6a4f'
+                        background: '#f5f5f5', color: '#2d6a4f'
                       }}>{referralMap[r.shop_id]}</span>
                     ) : (
                       <span style={{ fontSize: '12px', color: '#999' }}>Direct</span>
