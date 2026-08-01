@@ -171,7 +171,7 @@ export default function SellerPackagePage() {
         {success && (
           <div style={{
             maxWidth: '700px', marginBottom: '16px', padding: '10px 12px',
-            background: '#e8f5e9', color: '#2d6a4f', borderRadius: '8px', fontSize: '13px'
+            background: '#f5f5f5', color: '#2d6a4f', borderRadius: '8px', fontSize: '13px'
           }}>{success}</div>
         )}
 
@@ -191,7 +191,7 @@ export default function SellerPackagePage() {
             <div style={{ background: '#eee', borderRadius: '6px', height: '8px', overflow: 'hidden' }}>
               <div style={{
                 width: `${usagePercent}%`, height: '100%',
-                background: usagePercent >= 100 ? '#c62828' : usagePercent >= 80 ? '#f4a300' : '#2e7d32',
+                background: usagePercent >= 100 ? '#c62828' : usagePercent >= 80 ? '#f4a300' : '#0a0a0a',
               }} />
             </div>
           )}
@@ -266,14 +266,14 @@ export default function SellerPackagePage() {
                 {isCurrent && (
                   <span style={{
                     position: 'absolute', top: '14px', right: '14px', fontSize: '11px',
-                    fontWeight: '700', color: '#2d6a4f', background: '#e8f5e9',
+                    fontWeight: '700', color: '#2d6a4f', background: '#f5f5f5',
                     padding: '3px 10px', borderRadius: '10px'
                   }}>Current</span>
                 )}
                 <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
                   {pkg.name_bn}
                 </div>
-                <div style={{ fontSize: '22px', fontWeight: '700', color: '#2e7d32', marginBottom: '14px' }}>
+                <div style={{ fontSize: '22px', fontWeight: '700', color: '#0a0a0a', marginBottom: '14px' }}>
                   {pkg.price > 0 ? `৳${pkg.price}` : 'Free'}
                   {pkg.price > 0 && <span style={{ fontSize: '12px', color: '#999', fontWeight: '400' }}>/month</span>}
                 </div>
@@ -283,7 +283,7 @@ export default function SellerPackagePage() {
                       fontSize: '13px', color: '#444', marginBottom: '8px',
                       display: 'flex', alignItems: 'flex-start', gap: '6px'
                     }}>
-                      <span style={{ color: '#2e7d32' }}>✓</span> {f}
+                      <span style={{ color: '#0a0a0a' }}>✓</span> {f}
                     </li>
                   ))}
                 </ul>
