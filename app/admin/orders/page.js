@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
 const statusLabels = {
-  pending: 'অর্ডার গৃহীত হয়েছে',
-  confirmed: 'অর্ডার কনফার্ম হয়েছে',
-  processing: 'প্রস্তুত করা হচ্ছে',
-  out_for_delivery: 'ডেলিভারির পথে',
-  delivered: 'ডেলিভারি সম্পন্ন',
-  cancelled: 'অর্ডার বাতিল হয়েছে',
+  pending: 'Order received',
+  confirmed: 'Order confirmed',
+  processing: 'Preparing',
+  out_for_delivery: 'Out for delivery',
+  delivered: 'Delivered',
+  cancelled: 'Order cancelled',
 }
 
 const statusOrder = ['pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered']
@@ -41,7 +41,7 @@ export default function AdminOrdersPage() {
       setOrders(data || [])
     } catch (e) {
       console.error(e)
-      setError('অর্ডার লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load orders')
     }
     setLoading(false)
   }
@@ -82,7 +82,7 @@ export default function AdminOrdersPage() {
       await loadOrders()
     } catch (e) {
       console.error(e)
-      setError('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে')
+      setError('Failed to update status')
     }
     setUpdatingId(null)
   }
@@ -116,20 +116,20 @@ export default function AdminOrdersPage() {
   const filteredOrders = filter === 'all' ? orders : orders.filter(o => o.status === filter)
 
   const filterOptions = [
-    { key: 'all', label: 'সব' },
-    { key: 'pending', label: 'নতুন' },
-    { key: 'confirmed', label: 'কনফার্ম' },
-    { key: 'processing', label: 'প্রস্তুত হচ্ছে' },
-    { key: 'out_for_delivery', label: 'ডেলিভারির পথে' },
-    { key: 'delivered', label: 'সম্পন্ন' },
-    { key: 'cancelled', label: 'বাতিল' },
+    { key: 'all', label: 'All' },
+    { key: 'pending', label: 'New' },
+    { key: 'confirmed', label: 'Confirmed' },
+    { key: 'processing', label: 'Preparing' },
+    { key: 'out_for_delivery', label: 'Out for delivery' },
+    { key: 'delivered', label: 'Delivered' },
+    { key: 'cancelled', label: 'Cancelled' },
   ]
 
   return (
     <div>
-      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>অর্ডার</h1>
+      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Orders</h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        সব অর্ডার এখান থেকে দেখা ও স্ট্যাটাস আপডেট করা যাবে।
+        View all orders and update their status from here.
       </p>
 
       {/* Filter tabs */}
@@ -153,14 +153,14 @@ export default function AdminOrdersPage() {
       )}
 
       {loading ? (
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       ) : filteredOrders.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '50px 20px', color: '#999',
           background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0'
         }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>🧾</div>
-          <p>কোনো অর্ডার পাওয়া যায়নি</p>
+          <p>No orders found</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -183,10 +183,10 @@ export default function AdminOrdersPage() {
                       {order.delivery_name} · {order.delivery_phone}
                     </div>
                     <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                      {order.shops?.name || 'দোকান নাই'} · {order.areas?.name || ''} · অর্ডার #{order.id.slice(0, 8)}
+                      {order.shops?.name || 'No shop'} · {order.areas?.name || ''} · Order #{order.id.slice(0, 8)}
                     </div>
                     <div style={{ fontSize: '11px', color: '#aaa', marginTop: '2px' }}>
-                      {new Date(order.created_at).toLocaleString('bn-BD')}
+                      {new Date(order.created_at).toLocaleString('en-US')}
                     </div>
                   </div>
                   <div style={{ fontSize: '14px', fontWeight: '700', color: '#2e7d32', whiteSpace: 'nowrap' }}>
@@ -201,15 +201,15 @@ export default function AdminOrdersPage() {
                 {isExpanded && (
                   <div style={{ padding: '0 16px 16px', borderTop: '1px solid #eee' }}>
                     <div style={{ paddingTop: '12px', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-                      <strong>ঠিকানা:</strong> {order.delivery_address}
+                      <strong>Address:</strong> {order.delivery_address}
                     </div>
                     {order.note && (
                       <div style={{ fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-                        <strong>নোট:</strong> {order.note}
+                        <strong>Note:</strong> {order.note}
                       </div>
                     )}
                     <div style={{ fontSize: '13px', color: '#555', marginBottom: '12px' }}>
-                      <strong>পেমেন্ট:</strong> {order.payment_method === 'cod' ? 'ক্যাশ অন ডেলিভারি' : order.payment_method} ({order.payment_status})
+                      <strong>Payment:</strong> {order.payment_method === 'cod' ? 'Cash on Delivery' : order.payment_method} ({order.payment_status})
                     </div>
 
                     {/* Items */}
@@ -226,7 +226,7 @@ export default function AdminOrdersPage() {
                         display: 'flex', justifyContent: 'space-between', fontSize: '13px',
                         fontWeight: '600', color: '#1a1a1a', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e5e5e5'
                       }}>
-                        <span>সাবটোটাল + ডেলিভারি</span>
+                        <span>Subtotal + Delivery</span>
                         <span>৳{order.subtotal} + ৳{order.delivery_charge}</span>
                       </div>
                     </div>
@@ -276,7 +276,7 @@ export default function AdminOrdersPage() {
                               background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
                               padding: '9px 16px', fontSize: '13px', fontWeight: '600'
                             }}>
-                            {updatingId === order.id ? 'আপডেট হচ্ছে...' : `→ ${statusLabels[nextStatus]}`}
+                            {updatingId === order.id ? 'Updating...' : `→ ${statusLabels[nextStatus]}`}
                           </button>
                         )}
                         <button
@@ -285,7 +285,7 @@ export default function AdminOrdersPage() {
                           style={{
                             background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '8px',
                             padding: '9px 16px', fontSize: '13px', fontWeight: '600'
-                          }}>অর্ডার বাতিল করুন</button>
+                          }}>Cancel Order</button>
                       </div>
                     )}
                   </div>
