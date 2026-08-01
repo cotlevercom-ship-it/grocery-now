@@ -131,13 +131,6 @@ export default function SellerNav({ children }) {
       <div className={`overlay ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(false)} />
 
       <div className={`sidebar ${menuOpen ? 'open' : ''}`}>
-        <div style={{
-          padding: '20px',
-          borderBottom: '1px solid rgba(255,255,255,0.1)'
-        }}>
-          <div style={{ fontSize: '15px', fontWeight: '700', color: 'white' }}>Seller Centre</div>
-        </div>
-
         {shopName && (
           <div style={{
             padding: '14px 20px', fontSize: '13px', fontWeight: '600', color: '#dc2626',

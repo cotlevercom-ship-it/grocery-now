@@ -45,13 +45,6 @@ export default function Navbar() {
             <Image src="/logo-text.png" alt="Cot Lever" fill priority
               style={{ objectFit: 'contain', objectPosition: 'left center' }} />
           </span>
-          {isSellerArea && (
-            <span style={{
-              color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontWeight: '600',
-              borderLeft: '1px solid rgba(255,255,255,0.25)', paddingLeft: '8px',
-              whiteSpace: 'nowrap',
-            }}>Seller Centre</span>
-          )}
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
