@@ -440,7 +440,7 @@ export default function SellerProductsPage() {
                       )
                     })}
                     <button type="button" onClick={addImageSlot} title="Add another image box" style={{
-                      width: '84px', height: '84px', borderRadius: '8px', background: '#e8f5e9',
+                      width: '84px', height: '84px', borderRadius: '8px', background: '#f5f5f5',
                       border: '1.5px dashed #2d6a4f', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '30px', color: '#2d6a4f', fontWeight: '700', lineHeight: 1
                     }}>+</button>
@@ -526,7 +526,7 @@ export default function SellerProductsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                     <div style={{ ...sectionTitleStyle, marginBottom: 0 }}>Variants <span style={{ color: '#aaa', fontWeight: '400' }}>— optional (e.g. Size, Color)</span></div>
                     <button type="button" onClick={addVariantRow} style={{
-                      background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                      background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '6px',
                       padding: '5px 12px', fontSize: '12px', fontWeight: '600'
                     }}>+ Add Variant</button>
                   </div>
@@ -581,7 +581,7 @@ export default function SellerProductsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <label style={{ ...labelStyle, marginBottom: 0 }}>Bulk / Tier Pricing — optional</label>
                       <button type="button" onClick={addTierRow} style={{
-                        background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                        background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '6px',
                         padding: '5px 12px', fontSize: '12px', fontWeight: '600'
                       }}>+ Add Tier</button>
                     </div>
@@ -654,7 +654,7 @@ export default function SellerProductsPage() {
 
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button type="submit" disabled={savingProduct} style={{
-                    background: savingProduct ? '#a5d6a7' : '#163a2c', color: 'white', border: 'none',
+                    background: savingProduct ? '#9ca3af' : '#163a2c', color: 'white', border: 'none',
                     borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
                   }}>{savingProduct ? 'Saving...' : (editingProductId ? 'Update' : 'Add')}</button>
                   <button type="button" onClick={closeProductForm} style={{
@@ -698,7 +698,7 @@ export default function SellerProductsPage() {
                         {p.product_variants?.[0]?.count > 0 ? ` · ${p.product_variants[0].count} variant${p.product_variants[0].count !== 1 ? 's' : ''}` : ''}
                       </div>
                     </div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#2e7d32', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#0a0a0a', whiteSpace: 'nowrap' }}>
                       {p.sale_price ? (
                         <>
                           <span style={{ textDecoration: 'line-through', color: '#999', fontWeight: '400', marginRight: '4px' }}>৳{p.price}</span>
@@ -708,11 +708,11 @@ export default function SellerProductsPage() {
                     </div>
                     <span style={{
                       fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
-                      background: p.is_available ? '#e8f5e9' : '#f5f5f5',
+                      background: p.is_available ? '#f5f5f5' : '#f5f5f5',
                       color: p.is_available ? '#2d6a4f' : '#999'
                     }}>{p.is_available ? 'Available' : 'Hidden'}</span>
                     <button onClick={() => openEditProduct(p)} style={{
-                      background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                      background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                       borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
                     }}>Edit</button>
                     <button onClick={() => handleDeleteProduct(p.id)} disabled={deletingProductId === p.id} style={{
