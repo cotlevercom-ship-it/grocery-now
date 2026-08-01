@@ -169,8 +169,8 @@ function LoginForm() {
           )}
           {notice && (
             <div style={{
-              margin: '12px 0 0', padding: '10px 12px', background: '#e8f5e9',
-              color: '#1b5e20', borderRadius: '8px', fontSize: '13px'
+              margin: '12px 0 0', padding: '10px 12px', background: '#f5f5f5',
+              color: '#0a0a0a', borderRadius: '8px', fontSize: '13px'
             }}>{notice}</div>
           )}
 
