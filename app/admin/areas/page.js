@@ -124,7 +124,7 @@ export default function AdminAreasPage() {
           type="submit"
           disabled={submitting}
           style={{
-            background: submitting ? '#a5d6a7' : '#163a2c', color: 'white',
+            background: submitting ? '#9ca3af' : '#163a2c', color: 'white',
             padding: '10px 20px', borderRadius: '8px', fontSize: '14px',
             fontWeight: '600', border: 'none', whiteSpace: 'nowrap'
           }}>
@@ -196,7 +196,7 @@ export default function AdminAreasPage() {
                   <button
                     onClick={() => startEdit(area)}
                     style={{
-                      background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                      background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                       borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
                     }}>এডিট</button>
                   <button
