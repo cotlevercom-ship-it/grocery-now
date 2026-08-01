@@ -59,7 +59,7 @@ export default function SellerDashboardPage() {
     {
       label: 'Total Products',
       value: maxProducts != null ? `${productCount}/${maxProducts}` : productCount,
-      icon: '📦', color: '#2e7d32'
+      icon: '📦', color: '#0a0a0a'
     },
     { label: 'Total Orders', value: orderCount, icon: '🧾', color: '#1565c0' },
     { label: 'Pending Orders', value: pendingOrderCount, icon: '⏳', color: '#f4a300' },
@@ -78,8 +78,8 @@ export default function SellerDashboardPage() {
         <span style={{
           display: 'inline-block', marginLeft: '8px', padding: '2px 10px',
           borderRadius: '12px', fontSize: '12px', fontWeight: '600',
-          background: shop.is_active ? '#e8f5e9' : '#ffebee',
-          color: shop.is_active ? '#2e7d32' : '#c62828'
+          background: shop.is_active ? '#f5f5f5' : '#ffebee',
+          color: shop.is_active ? '#0a0a0a' : '#c62828'
         }}>
           {shop.is_active ? 'Active' : 'Inactive'}
         </span>
