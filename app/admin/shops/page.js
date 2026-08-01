@@ -338,7 +338,7 @@ export default function AdminShopsPage() {
 
           <div style={{ display: 'flex', gap: '10px' }}>
             <button type="submit" disabled={submitting} style={{
-              background: submitting ? '#a5d6a7' : '#163a2c', color: 'white', border: 'none',
+              background: submitting ? '#9ca3af' : '#163a2c', color: 'white', border: 'none',
               borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
             }}>
               {submitting ? 'সেভ হচ্ছে...' : (editingId ? 'আপডেট করুন' : 'যোগ করুন')}
@@ -440,13 +440,13 @@ export default function AdminShopsPage() {
                 )}
                 <span style={{
                   fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
-                  background: shop.is_active ? '#e8f5e9' : '#f5f5f5',
+                  background: shop.is_active ? '#f5f5f5' : '#f5f5f5',
                   color: shop.is_active ? '#2d6a4f' : '#999'
                 }}>{shop.is_active ? 'একটিভ' : 'বন্ধ'}</span>
               </div>
 
               <button onClick={() => openEditForm(shop)} style={{
-                background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                 borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
               }}>এডিট</button>
               <button onClick={() => handleDelete(shop.id)} disabled={deletingId === shop.id} style={{
