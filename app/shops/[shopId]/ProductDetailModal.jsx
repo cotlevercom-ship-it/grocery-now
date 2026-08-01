@@ -100,7 +100,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
                     onClick={() => setImgIndex(i)}
                     style={{
                       width: '6px', height: '6px', borderRadius: '50%',
-                      background: i === imgIndex ? '#2e7d32' : 'rgba(255,255,255,0.8)',
+                      background: i === imgIndex ? '#0a0a0a' : 'rgba(255,255,255,0.8)',
                       border: i === imgIndex ? 'none' : '1px solid #ccc',
                       cursor: 'pointer'
                     }}
@@ -147,7 +147,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         padding: '10px 12px', borderRadius: '8px',
-                        border: `1px solid ${selectedVariantId === v.id ? '#2e7d32' : '#ddd'}`,
+                        border: `1px solid ${selectedVariantId === v.id ? '#0a0a0a' : '#ddd'}`,
                         opacity: vAvailable ? 1 : 0.5,
                         cursor: vAvailable ? 'pointer' : 'not-allowed'
                       }}
@@ -164,7 +164,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
                           {v.name}{!vAvailable ? ' (Out of stock)' : ''}
                         </span>
                       </span>
-                      <span style={{ fontSize: '13px', fontWeight: '600', color: '#2e7d32' }}>৳{vPrice}</span>
+                      <span style={{ fontSize: '13px', fontWeight: '600', color: '#0a0a0a' }}>৳{vPrice}</span>
                     </label>
                   )
                 })}
@@ -174,7 +174,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
 
           {/* Price */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '16px' }}>
-            <span style={{ fontSize: '20px', fontWeight: '700', color: '#2e7d32' }}>৳{price}</span>
+            <span style={{ fontSize: '20px', fontWeight: '700', color: '#0a0a0a' }}>৳{price}</span>
             {hasDiscount && (
               <span style={{ fontSize: '14px', color: '#999', textDecoration: 'line-through' }}>৳{originalPrice}</span>
             )}
@@ -194,12 +194,12 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
             }}>
               <button
                 onClick={() => setQty(q => Math.max(1, q - 1))}
-                style={{ fontSize: '16px', color: '#2e7d32', width: '20px' }}
+                style={{ fontSize: '16px', color: '#0a0a0a', width: '20px' }}
               >-</button>
               <span style={{ fontSize: '14px', fontWeight: '600', minWidth: '16px', textAlign: 'center' }}>{qty}</span>
               <button
                 onClick={() => setQty(q => q + 1)}
-                style={{ fontSize: '16px', color: '#2e7d32', width: '20px' }}
+                style={{ fontSize: '16px', color: '#0a0a0a', width: '20px' }}
               >+</button>
             </div>
 
@@ -207,7 +207,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
               onClick={handleAdd}
               disabled={outOfStock}
               style={{
-                flex: 1, background: outOfStock ? '#ccc' : '#2e7d32', color: 'white',
+                flex: 1, background: outOfStock ? '#ccc' : '#0a0a0a', color: 'white',
                 padding: '12px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none'
               }}
             >
