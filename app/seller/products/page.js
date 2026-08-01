@@ -18,8 +18,18 @@ const emptyProductForm = {
   sku: '',
   brand: '',
   weight_grams: '',
+  moq: '',
+  uom: '',
+  carton_size: '',
+  model_number: '',
+  origin: '',
+  certification: '',
+  lead_time: '',
+  payment_terms: '',
+  sample_available: false,
 }
 const emptyVariant = { id: null, name: '', price: '', sale_price: '', stock: 0, sku: '', is_available: true }
+const emptyTier = { min_qty: '', max_qty: '', price: '' }
 
 export default function SellerProductsPage() {
   const [shopId, setShopId] = useState('')
@@ -50,6 +60,7 @@ export default function SellerProductsPage() {
   const [extraImageFiles, setExtraImageFiles] = useState([]) // newly picked, not yet uploaded
   const [uploadingExtra, setUploadingExtra] = useState(false)
   const [variants, setVariants] = useState([]) // [{id, name, price, sale_price, stock, sku, is_available}]
+  const [tierPricing, setTierPricing] = useState([]) // [{min_qty, max_qty, price}]
   const [savingProduct, setSavingProduct] = useState(false)
   const [uploading, setUploading] = useState(false)
 
@@ -199,6 +210,7 @@ export default function SellerProductsPage() {
     setExtraImageUrls([])
     setExtraImageFiles([])
     setVariants([])
+    setTierPricing([])
     setShowProductForm(true)
   }
   const openEditProduct = async (p) => {
@@ -217,11 +229,23 @@ export default function SellerProductsPage() {
       sku: p.sku || '',
       brand: p.brand || '',
       weight_grams: p.weight_grams ?? '',
+      moq: p.moq ?? '',
+      uom: p.uom || '',
+      carton_size: p.carton_size ?? '',
+      model_number: p.model_number || '',
+      origin: p.origin || '',
+      certification: p.certification || '',
+      lead_time: p.lead_time || '',
+      payment_terms: p.payment_terms || '',
+      sample_available: !!p.sample_available,
     })
     setImageFile(null)
     setImagePreview(p.image_url || '')
     setExtraImageUrls(p.image_urls || [])
     setExtraImageFiles([])
+    setTierPricing(Array.isArray(p.tier_pricing) ? p.tier_pricing.map(t => ({
+      min_qty: t.min_qty ?? '', max_qty: t.max_qty ?? '', price: t.price ?? '',
+    })) : [])
     setShowProductForm(true)
     try {
       const rows = await supabaseFetch(`product_variants?select=*&product_id=eq.${p.id}&order=sort_order`)
@@ -243,6 +267,7 @@ export default function SellerProductsPage() {
     setExtraImageUrls([])
     setExtraImageFiles([])
     setVariants([])
+    setTierPricing([])
   }
   const handleProductFieldChange = (field, value) => {
     setProductForm((prev) => ({ ...prev, [field]: value }))
@@ -272,6 +297,15 @@ export default function SellerProductsPage() {
   }
   const removeVariantRow = (idx) => {
     setVariants(prev => prev.filter((_, i) => i !== idx))
+  }
+  const addTierRow = () => {
+    setTierPricing(prev => [...prev, { ...emptyTier }])
+  }
+  const updateTierField = (idx, field, value) => {
+    setTierPricing(prev => prev.map((t, i) => i === idx ? { ...t, [field]: value } : t))
+  }
+  const removeTierRow = (idx) => {
+    setTierPricing(prev => prev.filter((_, i) => i !== idx))
   }
   const handleProductSubmit = async (e) => {
     e.preventDefault()
@@ -321,6 +355,22 @@ export default function SellerProductsPage() {
         sku: productForm.sku.trim() || null,
         brand: productForm.brand.trim() || null,
         weight_grams: productForm.weight_grams ? Number(productForm.weight_grams) : null,
+        moq: productForm.moq ? Number(productForm.moq) : null,
+        uom: productForm.uom.trim() || null,
+        carton_size: productForm.carton_size ? Number(productForm.carton_size) : null,
+        model_number: productForm.model_number.trim() || null,
+        origin: productForm.origin.trim() || null,
+        certification: productForm.certification.trim() || null,
+        lead_time: productForm.lead_time.trim() || null,
+        payment_terms: productForm.payment_terms.trim() || null,
+        sample_available: !!productForm.sample_available,
+        tier_pricing: tierPricing
+          .filter(t => t.min_qty && t.price)
+          .map(t => ({
+            min_qty: Number(t.min_qty),
+            max_qty: t.max_qty ? Number(t.max_qty) : null,
+            price: Number(t.price),
+          })),
       }
 
       let productId = editingProductId
@@ -726,6 +776,95 @@ export default function SellerProductsPage() {
                       <div style={{ fontSize: '11px', color: '#999' }}>Leave Price/Sale ৳ empty to use the product's own price for that variant.</div>
                     </div>
                   )}
+                </div>
+
+                <div style={{ marginBottom: '8px', marginTop: '4px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c', borderTop: '1px solid #eee', paddingTop: '14px' }}>
+                    B2B / Wholesale Details <span style={{ color: '#aaa', fontWeight: '400' }}>— optional</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={labelStyle}>MOQ (Minimum Order Qty)</label>
+                    <input type="number" style={inputStyle} value={productForm.moq} onChange={e => handleProductFieldChange('moq', e.target.value)} placeholder="e.g. 50" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Unit of Measure (UOM)</label>
+                    <input style={inputStyle} value={productForm.uom} onChange={e => handleProductFieldChange('uom', e.target.value)} placeholder="e.g. Piece, Dozen, Carton, Sack" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Carton / Packing Size</label>
+                    <input type="number" style={inputStyle} value={productForm.carton_size} onChange={e => handleProductFieldChange('carton_size', e.target.value)} placeholder="units per carton" />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <label style={{ ...labelStyle, marginBottom: 0 }}>Bulk / Tier Pricing — optional</label>
+                    <button type="button" onClick={addTierRow} style={{
+                      background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                      padding: '5px 12px', fontSize: '12px', fontWeight: '600'
+                    }}>+ Add Tier</button>
+                  </div>
+                  {tierPricing.length === 0 ? (
+                    <div style={{ fontSize: '12px', color: '#999' }}>No tiers — product will sell at the price above regardless of quantity.</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {tierPricing.map((t, idx) => (
+                        <div key={idx} style={{
+                          display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center',
+                          background: '#faf9f7', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '10px'
+                        }}>
+                          <input type="number" style={{ ...inputStyle, width: '90px' }} value={t.min_qty} onChange={e => updateTierField(idx, 'min_qty', e.target.value)} placeholder="Min qty" />
+                          <span style={{ fontSize: '12px', color: '#999' }}>to</span>
+                          <input type="number" style={{ ...inputStyle, width: '90px' }} value={t.max_qty} onChange={e => updateTierField(idx, 'max_qty', e.target.value)} placeholder="Max qty (blank = ∞)" />
+                          <span style={{ fontSize: '12px', color: '#999' }}>=</span>
+                          <input type="number" style={{ ...inputStyle, width: '100px' }} value={t.price} onChange={e => updateTierField(idx, 'price', e.target.value)} placeholder="Price ৳" />
+                          <button type="button" onClick={() => removeTierRow(idx)} style={{
+                            background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '50%',
+                            width: '22px', height: '22px', fontSize: '11px'
+                          }}>×</button>
+                        </div>
+                      ))}
+                      <div style={{ fontSize: '11px', color: '#999' }}>Example: 1–50 units = ৳100, 51–100 = ৳95, 101+ = ৳90 (leave Max qty blank on the last tier).</div>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={labelStyle}>Model / Item Number</label>
+                    <input style={inputStyle} value={productForm.model_number} onChange={e => handleProductFieldChange('model_number', e.target.value)} placeholder="optional" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Origin / Manufacturer</label>
+                    <input style={inputStyle} value={productForm.origin} onChange={e => handleProductFieldChange('origin', e.target.value)} placeholder="e.g. Made in Bangladesh" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={labelStyle}>Certification</label>
+                    <input style={inputStyle} value={productForm.certification} onChange={e => handleProductFieldChange('certification', e.target.value)} placeholder="e.g. BSTI, ISO" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Lead Time</label>
+                    <input style={inputStyle} value={productForm.lead_time} onChange={e => handleProductFieldChange('lead_time', e.target.value)} placeholder="e.g. 7-10 days after order" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
+                  <div>
+                    <label style={labelStyle}>Payment Terms</label>
+                    <input style={inputStyle} value={productForm.payment_terms} onChange={e => handleProductFieldChange('payment_terms', e.target.value)} placeholder="e.g. 50% advance, rest on delivery" />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
+                      <input type="checkbox" checked={productForm.sample_available} onChange={e => handleProductFieldChange('sample_available', e.target.checked)} />
+                      Sample available
+                    </label>
+                  </div>
                 </div>
 
                 <div style={{ marginBottom: '18px' }}>
