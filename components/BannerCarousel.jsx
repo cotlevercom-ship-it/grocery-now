@@ -20,7 +20,7 @@ export default function BannerCarousel({ banners }) {
     <div style={{ padding: '14px 16px 4px' }}>
       <div className="banner-box" style={{
         position: 'relative', width: '100%',
-        borderRadius: '16px', overflow: 'hidden', background: '#e8f5e9',
+        borderRadius: '16px', overflow: 'hidden', background: '#f5f5f5',
       }}>
         <div style={{
           display: 'flex', width: `${banners.length * 100}%`, height: '100%',
