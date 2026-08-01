@@ -343,6 +343,14 @@ export default function SellerProductsPage() {
   const labelStyle = {
     fontSize: '13px', color: '#333', display: 'block', marginBottom: '6px', fontWeight: '600'
   }
+  const sectionBoxStyle = {
+    background: '#fafafa', border: '1px solid #e0e0e0', borderRadius: '10px',
+    padding: '16px', marginBottom: '16px'
+  }
+  const sectionTitleStyle = {
+    fontSize: '13px', fontWeight: '700', color: '#163a2c', marginBottom: '14px',
+    textTransform: 'uppercase', letterSpacing: '0.03em'
+  }
 
   const categoryName = (id) => categories.find(c => c.id === id)?.name || 'Other'
 
@@ -405,8 +413,8 @@ export default function SellerProductsPage() {
                   {editingProductId ? 'Edit Product' : 'Add New Product'}
                 </div>
 
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={labelStyle}>Product Images <span style={{ color: '#aaa', fontWeight: '400' }}>— first image is the main photo</span></label>
+                <div style={sectionBoxStyle}>
+                  <div style={sectionTitleStyle}>Product Images <span style={{ color: '#aaa', fontWeight: '400' }}>— first image is the main photo</span></div>
                   <input ref={slotFileInputRef} type="file" accept="image/*" onChange={handleSlotFileChange} style={{ display: 'none' }} />
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                     {imageSlots.map((slot) => {
@@ -440,80 +448,83 @@ export default function SellerProductsPage() {
                   {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading images...</div>}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Product Name *</label>
-                    <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
+                <div style={sectionBoxStyle}>
+                  <div style={sectionTitleStyle}>Basic Info</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>Product Name *</label>
+                      <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Category</label>
+                      <select style={inputStyle} value={productForm.category_id} onChange={e => handleProductFieldChange('category_id', e.target.value)}>
+                        <option value="">Other</option>
+                        {topCategories.map(cat => (
+                          <Fragment key={cat.id}>
+                            <option value={cat.id}>{cat.name}</option>
+                            {subcategoriesOf(cat.id).map(sub => (
+                              <option key={sub.id} value={sub.id}>&nbsp;&nbsp;— {sub.name}</option>
+                            ))}
+                          </Fragment>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                  <div>
-                    <label style={labelStyle}>Category</label>
-                    <select style={inputStyle} value={productForm.category_id} onChange={e => handleProductFieldChange('category_id', e.target.value)}>
-                      <option value="">Other</option>
-                      {topCategories.map(cat => (
-                        <Fragment key={cat.id}>
-                          <option value={cat.id}>{cat.name}</option>
-                          {subcategoriesOf(cat.id).map(sub => (
-                            <option key={sub.id} value={sub.id}>&nbsp;&nbsp;— {sub.name}</option>
-                          ))}
-                        </Fragment>
-                      ))}
-                    </select>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>Price (৳) *</label>
+                      <input type="number" style={inputStyle} value={productForm.price} onChange={e => handleProductFieldChange('price', e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Sale Price (৳)</label>
+                      <input type="number" style={inputStyle} value={productForm.sale_price} onChange={e => handleProductFieldChange('sale_price', e.target.value)} placeholder="optional" />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Unit</label>
+                      <input style={inputStyle} value={productForm.unit} onChange={e => handleProductFieldChange('unit', e.target.value)} placeholder="e.g. kg, pcs" />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>Cost Price (৳) <span style={{ color: '#aaa', fontWeight: '400' }}>— private, only you see this</span></label>
+                      <input type="number" style={inputStyle} value={productForm.cost_price} onChange={e => handleProductFieldChange('cost_price', e.target.value)} placeholder="optional" />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Weight (grams)</label>
+                      <input type="number" style={inputStyle} value={productForm.weight_grams} onChange={e => handleProductFieldChange('weight_grams', e.target.value)} placeholder="optional" />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>Brand</label>
+                      <input style={inputStyle} value={productForm.brand} onChange={e => handleProductFieldChange('brand', e.target.value)} placeholder="optional" />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>SKU / Product Code</label>
+                      <input style={inputStyle} value={productForm.sku} onChange={e => handleProductFieldChange('sku', e.target.value)} placeholder="optional" />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={labelStyle}>Stock</label>
+                      <input type="number" style={inputStyle} value={productForm.stock} onChange={e => handleProductFieldChange('stock', e.target.value)} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
+                        <input type="checkbox" checked={productForm.is_available} onChange={e => handleProductFieldChange('is_available', e.target.checked)} />
+                        Available (visible on site)
+                      </label>
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Price (৳) *</label>
-                    <input type="number" style={inputStyle} value={productForm.price} onChange={e => handleProductFieldChange('price', e.target.value)} />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Sale Price (৳)</label>
-                    <input type="number" style={inputStyle} value={productForm.sale_price} onChange={e => handleProductFieldChange('sale_price', e.target.value)} placeholder="optional" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Unit</label>
-                    <input style={inputStyle} value={productForm.unit} onChange={e => handleProductFieldChange('unit', e.target.value)} placeholder="e.g. kg, pcs" />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Cost Price (৳) <span style={{ color: '#aaa', fontWeight: '400' }}>— private, only you see this</span></label>
-                    <input type="number" style={inputStyle} value={productForm.cost_price} onChange={e => handleProductFieldChange('cost_price', e.target.value)} placeholder="optional" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Weight (grams)</label>
-                    <input type="number" style={inputStyle} value={productForm.weight_grams} onChange={e => handleProductFieldChange('weight_grams', e.target.value)} placeholder="optional" />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Brand</label>
-                    <input style={inputStyle} value={productForm.brand} onChange={e => handleProductFieldChange('brand', e.target.value)} placeholder="optional" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>SKU / Product Code</label>
-                    <input style={inputStyle} value={productForm.sku} onChange={e => handleProductFieldChange('sku', e.target.value)} placeholder="optional" />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Stock</label>
-                    <input type="number" style={inputStyle} value={productForm.stock} onChange={e => handleProductFieldChange('stock', e.target.value)} />
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
-                      <input type="checkbox" checked={productForm.is_available} onChange={e => handleProductFieldChange('is_available', e.target.checked)} />
-                      Available (visible on site)
-                    </label>
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '18px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <label style={{ ...labelStyle, marginBottom: 0 }}>Variants (e.g. Size, Color) — optional</label>
+                <div style={sectionBoxStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <div style={{ ...sectionTitleStyle, marginBottom: 0 }}>Variants <span style={{ color: '#aaa', fontWeight: '400' }}>— optional (e.g. Size, Color)</span></div>
                     <button type="button" onClick={addVariantRow} style={{
                       background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
                       padding: '5px 12px', fontSize: '12px', fontWeight: '600'
@@ -548,97 +559,95 @@ export default function SellerProductsPage() {
                   )}
                 </div>
 
-                <div style={{ marginBottom: '8px', marginTop: '4px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c', borderTop: '1px solid #eee', paddingTop: '14px' }}>
-                    B2B / Wholesale Details <span style={{ color: '#aaa', fontWeight: '400' }}>— optional</span>
-                  </div>
-                </div>
+                <div style={sectionBoxStyle}>
+                  <div style={sectionTitleStyle}>B2B / Wholesale Details <span style={{ color: '#aaa', fontWeight: '400' }}>— optional</span></div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>MOQ (Minimum Order Qty)</label>
-                    <input type="number" style={inputStyle} value={productForm.moq} onChange={e => handleProductFieldChange('moq', e.target.value)} placeholder="e.g. 50" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Unit of Measure (UOM)</label>
-                    <input style={inputStyle} value={productForm.uom} onChange={e => handleProductFieldChange('uom', e.target.value)} placeholder="e.g. Piece, Dozen, Carton, Sack" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Carton / Packing Size</label>
-                    <input type="number" style={inputStyle} value={productForm.carton_size} onChange={e => handleProductFieldChange('carton_size', e.target.value)} placeholder="units per carton" />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '18px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <label style={{ ...labelStyle, marginBottom: 0 }}>Bulk / Tier Pricing — optional</label>
-                    <button type="button" onClick={addTierRow} style={{
-                      background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
-                      padding: '5px 12px', fontSize: '12px', fontWeight: '600'
-                    }}>+ Add Tier</button>
-                  </div>
-                  {tierPricing.length === 0 ? (
-                    <div style={{ fontSize: '12px', color: '#999' }}>No tiers — product will sell at the price above regardless of quantity.</div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {tierPricing.map((t, idx) => (
-                        <div key={idx} style={{
-                          display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center',
-                          background: '#faf9f7', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '10px'
-                        }}>
-                          <input type="number" style={{ ...inputStyle, width: '90px' }} value={t.min_qty} onChange={e => updateTierField(idx, 'min_qty', e.target.value)} placeholder="Min qty" />
-                          <span style={{ fontSize: '12px', color: '#999' }}>to</span>
-                          <input type="number" style={{ ...inputStyle, width: '90px' }} value={t.max_qty} onChange={e => updateTierField(idx, 'max_qty', e.target.value)} placeholder="Max qty (blank = ∞)" />
-                          <span style={{ fontSize: '12px', color: '#999' }}>=</span>
-                          <input type="number" style={{ ...inputStyle, width: '100px' }} value={t.price} onChange={e => updateTierField(idx, 'price', e.target.value)} placeholder="Price ৳" />
-                          <button type="button" onClick={() => removeTierRow(idx)} style={{
-                            background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '50%',
-                            width: '22px', height: '22px', fontSize: '11px'
-                          }}>×</button>
-                        </div>
-                      ))}
-                      <div style={{ fontSize: '11px', color: '#999' }}>Example: 1–50 units = ৳100, 51–100 = ৳95, 101+ = ৳90 (leave Max qty blank on the last tier).</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>MOQ (Minimum Order Qty)</label>
+                      <input type="number" style={inputStyle} value={productForm.moq} onChange={e => handleProductFieldChange('moq', e.target.value)} placeholder="e.g. 50" />
                     </div>
-                  )}
+                    <div>
+                      <label style={labelStyle}>Unit of Measure (UOM)</label>
+                      <input style={inputStyle} value={productForm.uom} onChange={e => handleProductFieldChange('uom', e.target.value)} placeholder="e.g. Piece, Dozen, Carton, Sack" />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Carton / Packing Size</label>
+                      <input type="number" style={inputStyle} value={productForm.carton_size} onChange={e => handleProductFieldChange('carton_size', e.target.value)} placeholder="units per carton" />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <label style={{ ...labelStyle, marginBottom: 0 }}>Bulk / Tier Pricing — optional</label>
+                      <button type="button" onClick={addTierRow} style={{
+                        background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                        padding: '5px 12px', fontSize: '12px', fontWeight: '600'
+                      }}>+ Add Tier</button>
+                    </div>
+                    {tierPricing.length === 0 ? (
+                      <div style={{ fontSize: '12px', color: '#999' }}>No tiers — product will sell at the price above regardless of quantity.</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {tierPricing.map((t, idx) => (
+                          <div key={idx} style={{
+                            display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center',
+                            background: '#faf9f7', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '10px'
+                          }}>
+                            <input type="number" style={{ ...inputStyle, width: '90px' }} value={t.min_qty} onChange={e => updateTierField(idx, 'min_qty', e.target.value)} placeholder="Min qty" />
+                            <span style={{ fontSize: '12px', color: '#999' }}>to</span>
+                            <input type="number" style={{ ...inputStyle, width: '90px' }} value={t.max_qty} onChange={e => updateTierField(idx, 'max_qty', e.target.value)} placeholder="Max qty (blank = ∞)" />
+                            <span style={{ fontSize: '12px', color: '#999' }}>=</span>
+                            <input type="number" style={{ ...inputStyle, width: '100px' }} value={t.price} onChange={e => updateTierField(idx, 'price', e.target.value)} placeholder="Price ৳" />
+                            <button type="button" onClick={() => removeTierRow(idx)} style={{
+                              background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '50%',
+                              width: '22px', height: '22px', fontSize: '11px'
+                            }}>×</button>
+                          </div>
+                        ))}
+                        <div style={{ fontSize: '11px', color: '#999' }}>Example: 1–50 units = ৳100, 51–100 = ৳95, 101+ = ৳90 (leave Max qty blank on the last tier).</div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>Model / Item Number</label>
+                      <input style={inputStyle} value={productForm.model_number} onChange={e => handleProductFieldChange('model_number', e.target.value)} placeholder="optional" />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Origin / Manufacturer</label>
+                      <input style={inputStyle} value={productForm.origin} onChange={e => handleProductFieldChange('origin', e.target.value)} placeholder="e.g. Made in Bangladesh" />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={labelStyle}>Certification</label>
+                      <input style={inputStyle} value={productForm.certification} onChange={e => handleProductFieldChange('certification', e.target.value)} placeholder="e.g. BSTI, ISO" />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Lead Time</label>
+                      <input style={inputStyle} value={productForm.lead_time} onChange={e => handleProductFieldChange('lead_time', e.target.value)} placeholder="e.g. 7-10 days after order" />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={labelStyle}>Payment Terms</label>
+                      <input style={inputStyle} value={productForm.payment_terms} onChange={e => handleProductFieldChange('payment_terms', e.target.value)} placeholder="e.g. 50% advance, rest on delivery" />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
+                        <input type="checkbox" checked={productForm.sample_available} onChange={e => handleProductFieldChange('sample_available', e.target.checked)} />
+                        Sample available
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Model / Item Number</label>
-                    <input style={inputStyle} value={productForm.model_number} onChange={e => handleProductFieldChange('model_number', e.target.value)} placeholder="optional" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Origin / Manufacturer</label>
-                    <input style={inputStyle} value={productForm.origin} onChange={e => handleProductFieldChange('origin', e.target.value)} placeholder="e.g. Made in Bangladesh" />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Certification</label>
-                    <input style={inputStyle} value={productForm.certification} onChange={e => handleProductFieldChange('certification', e.target.value)} placeholder="e.g. BSTI, ISO" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Lead Time</label>
-                    <input style={inputStyle} value={productForm.lead_time} onChange={e => handleProductFieldChange('lead_time', e.target.value)} placeholder="e.g. 7-10 days after order" />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
-                  <div>
-                    <label style={labelStyle}>Payment Terms</label>
-                    <input style={inputStyle} value={productForm.payment_terms} onChange={e => handleProductFieldChange('payment_terms', e.target.value)} placeholder="e.g. 50% advance, rest on delivery" />
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
-                      <input type="checkbox" checked={productForm.sample_available} onChange={e => handleProductFieldChange('sample_available', e.target.checked)} />
-                      Sample available
-                    </label>
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '18px' }}>
-                  <label style={labelStyle}>Description</label>
+                <div style={sectionBoxStyle}>
+                  <div style={sectionTitleStyle}>Description</div>
                   <textarea rows={2} style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
                     value={productForm.description} onChange={e => handleProductFieldChange('description', e.target.value)} />
                 </div>
