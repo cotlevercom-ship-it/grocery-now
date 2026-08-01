@@ -260,7 +260,7 @@ export default function CheckoutPage() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '100px' }}>
       {/* Topbar */}
       <div style={{
-        background: '#2e7d32', padding: '14px 16px',
+        background: '#0a0a0a', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
         <Link href="/cart">
@@ -272,12 +272,12 @@ export default function CheckoutPage() {
       <form onSubmit={handleSubmit}>
         {!session && (
           <div style={{
-            margin: '14px 16px 0', padding: '10px 12px', background: '#e8f5e9',
-            borderRadius: '8px', fontSize: '12px', color: '#1b5e20',
+            margin: '14px 16px 0', padding: '10px 12px', background: '#f5f5f5',
+            borderRadius: '8px', fontSize: '12px', color: '#0a0a0a',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px'
           }}>
             <span>Ordering as a guest</span>
-            <Link href={`/login?next=/checkout`} style={{ color: '#2e7d32', fontWeight: '600', textDecoration: 'underline' }}>
+            <Link href={`/login?next=/checkout`} style={{ color: '#0a0a0a', fontWeight: '600', textDecoration: 'underline' }}>
               Log in
             </Link>
           </div>
@@ -294,7 +294,7 @@ export default function CheckoutPage() {
             </div>
             <label style={{
               display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-              border: `1px solid ${deliveryMethod === 'delivery' ? '#2e7d32' : '#ddd'}`,
+              border: `1px solid ${deliveryMethod === 'delivery' ? '#0a0a0a' : '#ddd'}`,
               borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
             }}>
               <input
@@ -307,7 +307,7 @@ export default function CheckoutPage() {
             </label>
             <label style={{
               display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-              border: `1px solid ${deliveryMethod === 'pickup' ? '#2e7d32' : '#ddd'}`,
+              border: `1px solid ${deliveryMethod === 'pickup' ? '#0a0a0a' : '#ddd'}`,
               borderRadius: '8px', cursor: 'pointer'
             }}>
               <input
@@ -401,7 +401,7 @@ export default function CheckoutPage() {
                   {matchedRules.map(r => (
                     <label key={r.id} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px',
-                      padding: '10px 12px', border: `1px solid ${selectedRuleId === r.id ? '#2e7d32' : '#ddd'}`,
+                      padding: '10px 12px', border: `1px solid ${selectedRuleId === r.id ? '#0a0a0a' : '#ddd'}`,
                       borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
                     }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -425,7 +425,7 @@ export default function CheckoutPage() {
                   {savedAddresses.map(addr => (
                     <label key={addr.id} style={{
                       display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px',
-                      border: `1px solid ${selectedAddressId === addr.id ? '#2e7d32' : '#ddd'}`,
+                      border: `1px solid ${selectedAddressId === addr.id ? '#0a0a0a' : '#ddd'}`,
                       borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
                     }}>
                       <input
@@ -443,7 +443,7 @@ export default function CheckoutPage() {
                   ))}
                   <label style={{
                     display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                    border: `1px solid ${selectedAddressId === 'new' ? '#2e7d32' : '#ddd'}`,
+                    border: `1px solid ${selectedAddressId === 'new' ? '#0a0a0a' : '#ddd'}`,
                     borderRadius: '8px', cursor: 'pointer'
                   }}>
                     <input
@@ -497,7 +497,7 @@ export default function CheckoutPage() {
           </div>
           <label style={{
             display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-            border: `1px solid ${paymentMethod === 'cod' ? '#2e7d32' : '#ddd'}`,
+            border: `1px solid ${paymentMethod === 'cod' ? '#0a0a0a' : '#ddd'}`,
             borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
           }}>
             <input
@@ -569,7 +569,7 @@ export default function CheckoutPage() {
             type="submit"
             disabled={submitting}
             style={{
-              width: '100%', background: submitting ? '#a5d6a7' : '#2e7d32', color: 'white',
+              width: '100%', background: submitting ? '#9ca3af' : '#0a0a0a', color: 'white',
               padding: '14px', borderRadius: '10px', fontSize: '15px', fontWeight: '600',
               border: 'none'
             }}>
