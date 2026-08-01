@@ -288,7 +288,7 @@ export default function AdminProductsPage() {
               <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>ক্যাটাগরি</div>
               {!showCatForm && (
                 <button onClick={openAddCat} style={{
-                  background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                  background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '6px',
                   padding: '6px 14px', fontSize: '12px', fontWeight: '600'
                 }}>+ নতুন ক্যাটাগরি</button>
               )}
@@ -331,7 +331,7 @@ export default function AdminProductsPage() {
                   }}>
                     <span>{cat.name}</span>
                     <button onClick={() => openEditCat(cat)} style={{
-                      background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '50%',
+                      background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '50%',
                       width: '22px', height: '22px', fontSize: '11px'
                     }}>✎</button>
                     <button onClick={() => handleDeleteCat(cat.id)} disabled={deletingCatId === cat.id} style={{
@@ -434,7 +434,7 @@ export default function AdminProductsPage() {
 
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button type="submit" disabled={savingProduct} style={{
-                    background: savingProduct ? '#a5d6a7' : '#163a2c', color: 'white', border: 'none',
+                    background: savingProduct ? '#9ca3af' : '#163a2c', color: 'white', border: 'none',
                     borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
                   }}>{savingProduct ? 'সেভ হচ্ছে...' : (editingProductId ? 'আপডেট করুন' : 'যোগ করুন')}</button>
                   <button type="button" onClick={closeProductForm} style={{
@@ -475,7 +475,7 @@ export default function AdminProductsPage() {
                         {categoryName(p.category_id)} · {p.unit} · স্টক {p.stock}
                       </div>
                     </div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#2e7d32', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#0a0a0a', whiteSpace: 'nowrap' }}>
                       {p.sale_price ? (
                         <>
                           <span style={{ textDecoration: 'line-through', color: '#999', fontWeight: '400', marginRight: '4px' }}>৳{p.price}</span>
@@ -485,11 +485,11 @@ export default function AdminProductsPage() {
                     </div>
                     <span style={{
                       fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
-                      background: p.is_available ? '#e8f5e9' : '#f5f5f5',
+                      background: p.is_available ? '#f5f5f5' : '#f5f5f5',
                       color: p.is_available ? '#2d6a4f' : '#999'
                     }}>{p.is_available ? 'Available' : 'বন্ধ'}</span>
                     <button onClick={() => openEditProduct(p)} style={{
-                      background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                      background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                       borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
                     }}>এডিট</button>
                     <button onClick={() => handleDeleteProduct(p.id)} disabled={deletingProductId === p.id} style={{
