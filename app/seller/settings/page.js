@@ -265,14 +265,13 @@ export default function SellerSettingsPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-          <div>
-            <label style={labelStyle}>Delivery Charge (৳)</label>
-            <input type="number" style={inputStyle} value={form.delivery_charge} onChange={e => handleFieldChange('delivery_charge', e.target.value)} />
-          </div>
+        <div style={{ marginBottom: '14px' }}>
           <div>
             <label style={labelStyle}>Minimum Order Amount (৳)</label>
             <input type="number" style={inputStyle} value={form.min_order_amount} onChange={e => handleFieldChange('min_order_amount', e.target.value)} />
+          </div>
+          <div style={{ fontSize: '12px', color: '#888', marginTop: '6px' }}>
+            Delivery charge is now set centrally by Cot Lever (based on the buyer's country, order weight, and item count) — it's no longer set per shop.
           </div>
         </div>
 

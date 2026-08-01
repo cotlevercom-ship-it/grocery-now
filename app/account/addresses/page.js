@@ -14,6 +14,7 @@ export default function AddressesPage() {
   const [editingId, setEditingId] = useState(null)
   const [label, setLabel] = useState('')
   const [address, setAddress] = useState('')
+  const [country, setCountry] = useState('Bangladesh')
   const [phone, setPhone] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -45,6 +46,7 @@ export default function AddressesPage() {
     setEditingId(null)
     setLabel('')
     setAddress('')
+    setCountry('Bangladesh')
     setPhone('')
     setError('')
   }
@@ -58,6 +60,7 @@ export default function AddressesPage() {
     setEditingId(addr.id)
     setLabel(addr.label || '')
     setAddress(addr.address || '')
+    setCountry(addr.country || 'Bangladesh')
     setPhone(addr.phone || '')
     setError('')
     setShowForm(true)
@@ -78,6 +81,7 @@ export default function AddressesPage() {
           body: JSON.stringify({
             label: label.trim() || null,
             address: address.trim(),
+            country: country.trim() || 'Bangladesh',
             phone: phone.trim() || null,
           }),
         })
@@ -89,6 +93,7 @@ export default function AddressesPage() {
             user_id: userId,
             label: label.trim() || null,
             address: address.trim(),
+            country: country.trim() || 'Bangladesh',
             phone: phone.trim() || null,
             is_default: isFirst,
           }),
@@ -249,6 +254,20 @@ export default function AddressesPage() {
                     width: '100%', padding: '10px 12px', borderRadius: '8px',
                     border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
                     resize: 'none', fontFamily: 'inherit'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Country *</label>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="e.g. Bangladesh"
+                  style={{
+                    width: '100%', padding: '10px 12px', borderRadius: '8px',
+                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
                   }}
                 />
               </div>

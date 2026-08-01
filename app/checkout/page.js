@@ -16,6 +16,8 @@ export default function CheckoutPage() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
+  const [country, setCountry] = useState('Bangladesh')
+  const [shippingRules, setShippingRules] = useState([])
   const [areaId, setAreaId] = useState(null)
   const [areaName, setAreaName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cod')
@@ -41,10 +43,18 @@ export default function CheckoutPage() {
         }
         setCartData(parsed)
 
-        // fetch shop for delivery charge
+        // fetch shop for pickup/store details
         const shops = await supabaseFetch(`shops?select=*&id=eq.${parsed.shopId}`)
         if (shops && shops.length > 0) {
           setShop(shops[0])
+        }
+
+        // fetch platform shipping rules (Cot Lever sets these centrally, not the seller)
+        try {
+          const rules = await supabaseFetch('shipping_rules?select=*&is_active=eq.true')
+          setShippingRules(rules || [])
+        } catch (e) {
+          console.error(e)
         }
 
         // prefill area from navbar selection
@@ -78,6 +88,7 @@ export default function CheckoutPage() {
             const defaultAddr = (addrRows || []).find(a => a.is_default) || (addrRows || [])[0]
             if (defaultAddr) {
               setSelectedAddressId(defaultAddr.id)
+              if (defaultAddr.country) setCountry(defaultAddr.country)
             }
           } catch (e) {
             console.error(e)
@@ -96,7 +107,18 @@ export default function CheckoutPage() {
   }
 
   const subtotal = cartData.items.reduce((a, b) => a + b.qty * b.price, 0)
-  const deliveryCharge = deliveryMethod === 'pickup' ? 0 : (shop?.delivery_charge || 0)
+  const totalWeightKg = cartData.items.reduce((a, b) => a + ((b.weightGrams || 0) * b.qty), 0) / 1000
+  const totalItems = cartData.items.reduce((a, b) => a + b.qty, 0)
+
+  const matchedRule = deliveryMethod === 'pickup' ? null : (
+    shippingRules.find(r => r.country.toLowerCase() === country.trim().toLowerCase())
+    || shippingRules.find(r => r.country === 'OTHER')
+  )
+  const deliveryCharge = deliveryMethod === 'pickup' || !matchedRule ? 0 : Math.round(
+    Number(matchedRule.base_charge)
+    + Math.max(0, totalWeightKg - Number(matchedRule.free_weight_kg)) * Number(matchedRule.per_kg_charge)
+    + Math.max(0, totalItems - Number(matchedRule.free_item_count)) * Number(matchedRule.per_item_charge)
+  )
   const total = subtotal + deliveryCharge
 
   const usingSavedAddress = deliveryMethod === 'delivery' && selectedAddressId !== 'new'
@@ -128,6 +150,7 @@ export default function CheckoutPage() {
           delivery_phone: phone.trim(),
           delivery_address: deliveryMethod === 'pickup' ? (shop?.pickup_address || null) : deliveryAddressText,
           delivery_method: deliveryMethod,
+          delivery_country: deliveryMethod === 'pickup' ? null : country.trim(),
           subtotal: subtotal,
           delivery_charge: deliveryCharge,
           discount: 0,
@@ -168,6 +191,7 @@ export default function CheckoutPage() {
             body: JSON.stringify({
               user_id: session.user.id,
               address: address.trim(),
+              country: country.trim() || 'Bangladesh',
               is_default: savedAddresses.length === 0,
             }),
           })
@@ -327,6 +351,20 @@ export default function CheckoutPage() {
                 </div>
               )}
 
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Delivery country *</label>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="e.g. Bangladesh"
+                  style={{
+                    width: '100%', padding: '10px 12px', borderRadius: '8px',
+                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
               {session?.user?.id && savedAddresses.length > 0 && (
                 <div style={{ marginBottom: '12px' }}>
                   <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>Delivery address *</label>
@@ -340,7 +378,7 @@ export default function CheckoutPage() {
                         type="radio"
                         name="savedAddress"
                         checked={selectedAddressId === addr.id}
-                        onChange={() => setSelectedAddressId(addr.id)}
+                        onChange={() => { setSelectedAddressId(addr.id); if (addr.country) setCountry(addr.country) }}
                         style={{ marginTop: '3px' }}
                       />
                       <div>

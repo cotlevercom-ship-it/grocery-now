@@ -67,6 +67,7 @@ export default function ProductList({ categories, products, shop }) {
         variantName: variant?.name || null,
         price: unitPrice,
         unit: product.unit,
+        weightGrams: product.weight_grams || 0,
         image_url: (product.image_urls && product.image_urls[0]) || product.image_url,
         qty,
       }]
