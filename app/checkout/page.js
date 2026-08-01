@@ -18,6 +18,7 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState('')
   const [country, setCountry] = useState('Bangladesh')
   const [shippingRules, setShippingRules] = useState([])
+  const [selectedRuleId, setSelectedRuleId] = useState(null)
   const [areaId, setAreaId] = useState(null)
   const [areaName, setAreaName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cod')
@@ -102,6 +103,15 @@ export default function CheckoutPage() {
     init()
   }, [router])
 
+  useEffect(() => {
+    if (deliveryMethod === 'pickup') return
+    const countryMatches = shippingRules.filter(r => r.country.toLowerCase() === country.trim().toLowerCase())
+    const options = countryMatches.length > 0 ? countryMatches : shippingRules.filter(r => r.country === 'OTHER')
+    if (options.length > 0 && !options.some(r => r.id === selectedRuleId)) {
+      setSelectedRuleId(options[0].id)
+    }
+  }, [country, deliveryMethod, shippingRules, selectedRuleId])
+
   if (!loaded || !cartData) {
     return null
   }
@@ -110,16 +120,32 @@ export default function CheckoutPage() {
   const totalWeightKg = cartData.items.reduce((a, b) => a + ((b.weightGrams || 0) * b.qty), 0) / 1000
   const totalItems = cartData.items.reduce((a, b) => a + b.qty, 0)
 
-  const matchedRule = deliveryMethod === 'pickup' ? null : (
-    shippingRules.find(r => r.country.toLowerCase() === country.trim().toLowerCase())
-    || shippingRules.find(r => r.country === 'OTHER')
+  // A country can have several rules (one per courier, e.g. EMS vs Bangladesh Post Office).
+  // Match on the exact country first; if none, fall back to the OTHER (rest-of-world) rules.
+  const countryMatches = shippingRules.filter(r => r.country.toLowerCase() === country.trim().toLowerCase())
+  const matchedRules = deliveryMethod === 'pickup' ? [] : (
+    countryMatches.length > 0 ? countryMatches : shippingRules.filter(r => r.country === 'OTHER')
   )
-  const deliveryCharge = deliveryMethod === 'pickup' || !matchedRule ? 0 : Math.round(
-    Number(matchedRule.base_charge)
-    + Math.max(0, totalWeightKg - Number(matchedRule.free_weight_kg)) * Number(matchedRule.per_kg_charge)
-    + Math.max(0, totalItems - Number(matchedRule.free_item_count)) * Number(matchedRule.per_item_charge)
+
+  const ruleCharge = (r) => Math.round(
+    Number(r.base_charge)
+    + Math.max(0, totalWeightKg - Number(r.free_weight_kg)) * Number(r.per_kg_charge)
+    + Math.max(0, totalItems - Number(r.free_item_count)) * Number(r.per_item_charge)
   )
+
+  const selectedRule = matchedRules.find(r => r.id === selectedRuleId) || matchedRules[0] || null
+  const deliveryCharge = deliveryMethod === 'pickup' || !selectedRule ? 0 : ruleCharge(selectedRule)
   const total = subtotal + deliveryCharge
+
+  // Country dropdown options come from whatever countries admin has set up shipping rules for.
+  const countryOptions = Array.from(new Set([
+    ...shippingRules.map(r => r.country),
+    country,
+  ].filter(Boolean))).sort((a, b) => {
+    if (a === 'OTHER') return 1
+    if (b === 'OTHER') return -1
+    return a.localeCompare(b)
+  })
 
   const usingSavedAddress = deliveryMethod === 'delivery' && selectedAddressId !== 'new'
   const selectedAddress = usingSavedAddress ? savedAddresses.find(a => a.id === selectedAddressId) : null
@@ -151,6 +177,7 @@ export default function CheckoutPage() {
           delivery_address: deliveryMethod === 'pickup' ? (shop?.pickup_address || null) : deliveryAddressText,
           delivery_method: deliveryMethod,
           delivery_country: deliveryMethod === 'pickup' ? null : country.trim(),
+          courier_name: deliveryMethod === 'pickup' ? null : (selectedRule?.courier_name || null),
           subtotal: subtotal,
           delivery_charge: deliveryCharge,
           discount: 0,
@@ -353,17 +380,44 @@ export default function CheckoutPage() {
 
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Delivery country *</label>
-                <input
-                  type="text"
+                <select
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  placeholder="e.g. Bangladesh"
                   style={{
                     width: '100%', padding: '10px 12px', borderRadius: '8px',
-                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
+                    background: 'white'
                   }}
-                />
+                >
+                  {countryOptions.map(c => (
+                    <option key={c} value={c}>{c === 'OTHER' ? 'Other (Rest of World)' : c}</option>
+                  ))}
+                </select>
               </div>
+
+              {matchedRules.length > 1 && (
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>Courier *</label>
+                  {matchedRules.map(r => (
+                    <label key={r.id} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px',
+                      padding: '10px 12px', border: `1px solid ${selectedRuleId === r.id ? '#2e7d32' : '#ddd'}`,
+                      borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
+                    }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                          type="radio"
+                          name="courierRule"
+                          checked={selectedRuleId === r.id}
+                          onChange={() => setSelectedRuleId(r.id)}
+                        />
+                        <span style={{ fontSize: '14px' }}>{r.courier_name || r.country}</span>
+                      </span>
+                      <span style={{ fontSize: '13px', color: '#555', fontWeight: '600' }}>৳{ruleCharge(r)}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
 
               {session?.user?.id && savedAddresses.length > 0 && (
                 <div style={{ marginBottom: '12px' }}>
