@@ -3,7 +3,6 @@ import { useState, useEffect, Fragment } from 'react'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import SellerNav from '@/components/SellerNav'
 
-const emptyCategoryForm = { name: '', sort_order: 0, parent_id: '' }
 const emptyProductForm = {
   name: '',
   category_id: '',
@@ -35,20 +34,12 @@ export default function SellerProductsPage() {
   const [shopId, setShopId] = useState('')
   const [loadingShop, setLoadingShop] = useState(true)
   const [maxProducts, setMaxProducts] = useState(null) // null = unlimited
-  const [maxCategories, setMaxCategories] = useState(null) // null = unlimited
-  const [maxSubcategories, setMaxSubcategories] = useState(null) // null = unlimited
   const [packageName, setPackageName] = useState('')
 
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
   const [loadingData, setLoadingData] = useState(false)
   const [error, setError] = useState('')
-
-  // Category form
-  const [showCatForm, setShowCatForm] = useState(false)
-  const [editingCatId, setEditingCatId] = useState(null)
-  const [catForm, setCatForm] = useState(emptyCategoryForm)
-  const [savingCat, setSavingCat] = useState(false)
 
   // Product form
   const [showProductForm, setShowProductForm] = useState(false)
@@ -64,7 +55,6 @@ export default function SellerProductsPage() {
   const [savingProduct, setSavingProduct] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  const [deletingCatId, setDeletingCatId] = useState(null)
   const [deletingProductId, setDeletingProductId] = useState(null)
 
   useEffect(() => {
@@ -73,12 +63,10 @@ export default function SellerProductsPage() {
       try {
         const session = getSession()
         if (session?.user) {
-          const shops = await supabaseFetch(`shops?select=id,seller_packages(name_bn,max_products,max_categories,max_subcategories)&owner_id=eq.${session.user.id}`)
+          const shops = await supabaseFetch(`shops?select=id,seller_packages(name_bn,max_products)&owner_id=eq.${session.user.id}`)
           if (shops && shops.length > 0) {
             setShopId(shops[0].id)
             setMaxProducts(shops[0].seller_packages?.max_products ?? null)
-            setMaxCategories(shops[0].seller_packages?.max_categories ?? null)
-            setMaxSubcategories(shops[0].seller_packages?.max_subcategories ?? null)
             setPackageName(shops[0].seller_packages?.name_bn || '')
           }
         }
@@ -115,85 +103,6 @@ export default function SellerProductsPage() {
   // ---------- Category handlers ----------
   const topCategories = categories.filter(c => !c.parent_id)
   const subcategoriesOf = (parentId) => categories.filter(c => c.parent_id === parentId)
-  const allSubcategories = categories.filter(c => c.parent_id)
-
-  const atCategoryLimit = maxCategories != null && topCategories.length >= maxCategories
-  const atSubcategoryLimit = maxSubcategories != null && allSubcategories.length >= maxSubcategories
-
-  const openAddCat = (parentId = null) => {
-    if (!parentId && atCategoryLimit) {
-      setError(`Your "${packageName}" package allows a maximum of ${maxCategories} categories. Upgrade your package to add more.`)
-      return
-    }
-    if (parentId && atSubcategoryLimit) {
-      setError(`Your "${packageName}" package allows a maximum of ${maxSubcategories} sub-categories. Upgrade your package to add more.`)
-      return
-    }
-    setEditingCatId(null)
-    setCatForm({ name: '', sort_order: categories.length + 1, parent_id: parentId || '' })
-    setShowCatForm(true)
-  }
-  const openEditCat = (cat) => {
-    setEditingCatId(cat.id)
-    setCatForm({ name: cat.name, sort_order: cat.sort_order ?? 0, parent_id: cat.parent_id || '' })
-    setShowCatForm(true)
-  }
-  const closeCatForm = () => {
-    setShowCatForm(false)
-    setEditingCatId(null)
-    setCatForm(emptyCategoryForm)
-  }
-  const handleCatSubmit = async (e) => {
-    e.preventDefault()
-    if (!catForm.name.trim()) return
-    if (!editingCatId) {
-      if (!catForm.parent_id && atCategoryLimit) {
-        setError(`Your "${packageName}" package allows a maximum of ${maxCategories} categories.`)
-        return
-      }
-      if (catForm.parent_id && atSubcategoryLimit) {
-        setError(`Your "${packageName}" package allows a maximum of ${maxSubcategories} sub-categories.`)
-        return
-      }
-    }
-    setSavingCat(true)
-    setError('')
-    try {
-      const payload = {
-        name: catForm.name.trim(),
-        sort_order: Number(catForm.sort_order) || 0,
-        shop_id: shopId,
-        parent_id: catForm.parent_id || null,
-      }
-      if (editingCatId) {
-        await supabaseFetch(`product_categories?id=eq.${editingCatId}`, {
-          method: 'PATCH', body: JSON.stringify(payload),
-        })
-      } else {
-        await supabaseFetch('product_categories', {
-          method: 'POST', body: JSON.stringify(payload),
-        })
-      }
-      closeCatForm()
-      await loadShopData(shopId)
-    } catch (e) {
-      console.error(e)
-      setError('Failed to save category')
-    }
-    setSavingCat(false)
-  }
-  const handleDeleteCat = async (id) => {
-    if (!confirm('Delete this category? Its products will move to "Other".')) return
-    setDeletingCatId(id)
-    try {
-      await supabaseFetch(`product_categories?id=eq.${id}`, { method: 'DELETE' })
-      await loadShopData(shopId)
-    } catch (e) {
-      console.error(e)
-      setError('Failed to delete category')
-    }
-    setDeletingCatId(null)
-  }
 
   // ---------- Product handlers ----------
   const atProductLimit = maxProducts != null && products.length >= maxProducts
@@ -482,121 +391,6 @@ export default function SellerProductsPage() {
 
       {!loadingData && (
         <>
-          {/* ---------- Categories section ---------- */}
-          <div style={{ marginBottom: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div>
-                <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>Categories</div>
-                {(maxCategories != null || maxSubcategories != null) && (
-                  <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                    {maxCategories != null && (
-                      <span style={{ color: atCategoryLimit ? '#c62828' : '#888' }}>
-                        Category: {topCategories.length} / {maxCategories}
-                      </span>
-                    )}
-                    {maxCategories != null && maxSubcategories != null && ' · '}
-                    {maxSubcategories != null && (
-                      <span style={{ color: atSubcategoryLimit ? '#c62828' : '#888' }}>
-                        Sub-category: {allSubcategories.length} / {maxSubcategories}
-                      </span>
-                    )}
-                    {(atCategoryLimit || atSubcategoryLimit) && (
-                      <a href="/seller/package" style={{ color: '#2d6a4f', fontWeight: '600', marginLeft: '6px' }}>Upgrade →</a>
-                    )}
-                  </div>
-                )}
-              </div>
-              {!showCatForm && (
-                <button onClick={() => openAddCat(null)} style={{
-                  background: atCategoryLimit ? '#eee' : '#e8f5e9', color: atCategoryLimit ? '#999' : '#2d6a4f',
-                  border: 'none', borderRadius: '6px',
-                  padding: '6px 14px', fontSize: '12px', fontWeight: '600', cursor: atCategoryLimit ? 'not-allowed' : 'pointer'
-                }}>+ New Category</button>
-              )}
-            </div>
-
-            {showCatForm && (
-              <form onSubmit={handleCatSubmit} style={{
-                background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
-                padding: '14px', marginBottom: '14px', maxWidth: '520px',
-                display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'flex-end'
-              }}>
-                {catForm.parent_id && (
-                  <div style={{ width: '100%', fontSize: '12px', color: '#2d6a4f', fontWeight: '600' }}>
-                    Sub-category under: {categories.find(c => c.id === catForm.parent_id)?.name}
-                  </div>
-                )}
-                <div style={{ flex: 1, minWidth: '140px' }}>
-                  <label style={labelStyle}>Name</label>
-                  <input style={inputStyle} value={catForm.name} onChange={e => setCatForm(f => ({ ...f, name: e.target.value }))} placeholder={catForm.parent_id ? 'e.g. Leafy Greens' : 'e.g. Vegetables'} />
-                </div>
-                <div style={{ width: '80px' }}>
-                  <label style={labelStyle}>Position</label>
-                  <input type="number" style={inputStyle} value={catForm.sort_order} onChange={e => setCatForm(f => ({ ...f, sort_order: e.target.value }))} />
-                </div>
-                <button type="submit" disabled={savingCat} style={{
-                  background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
-                  padding: '10px 16px', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap'
-                }}>{savingCat ? '...' : (editingCatId ? 'Update' : 'Add')}</button>
-                <button type="button" onClick={closeCatForm} style={{
-                  background: '#f0f0f0', color: '#555', border: 'none', borderRadius: '8px',
-                  padding: '10px 16px', fontSize: '13px'
-                }}>Cancel</button>
-              </form>
-            )}
-
-            {topCategories.length === 0 ? (
-              <div style={{ color: '#999', fontSize: '13px' }}>No categories yet. Products can still be added without one (shown under "Other").</div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {topCategories.map(cat => (
-                  <div key={cat.id} style={{
-                    background: 'white', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '10px 14px'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c' }}>{cat.name}</span>
-                      <button onClick={() => openEditCat(cat)} style={{
-                        background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '50%',
-                        width: '22px', height: '22px', fontSize: '11px'
-                      }}>✎</button>
-                      <button onClick={() => handleDeleteCat(cat.id)} disabled={deletingCatId === cat.id} style={{
-                        background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '50%',
-                        width: '22px', height: '22px', fontSize: '11px'
-                      }}>×</button>
-                      <button onClick={() => openAddCat(cat.id)} style={{
-                        background: atSubcategoryLimit ? '#eee' : '#f1f8f2', color: atSubcategoryLimit ? '#999' : '#2d6a4f',
-                        border: 'none', borderRadius: '20px', padding: '4px 12px', fontSize: '11px', fontWeight: '600',
-                        cursor: atSubcategoryLimit ? 'not-allowed' : 'pointer', marginLeft: 'auto'
-                      }}>+ Sub-category</button>
-                    </div>
-
-                    {subcategoriesOf(cat.id).length > 0 && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px', paddingLeft: '12px', borderLeft: '2px solid #eee' }}>
-                        {subcategoriesOf(cat.id).map(sub => (
-                          <div key={sub.id} style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            background: '#f9f9f9', border: '1px solid #e5e5e5', borderRadius: '16px',
-                            padding: '4px 6px 4px 12px', fontSize: '12px'
-                          }}>
-                            <span>{sub.name}</span>
-                            <button onClick={() => openEditCat(sub)} style={{
-                              background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '50%',
-                              width: '18px', height: '18px', fontSize: '9px'
-                            }}>✎</button>
-                            <button onClick={() => handleDeleteCat(sub.id)} disabled={deletingCatId === sub.id} style={{
-                              background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '50%',
-                              width: '18px', height: '18px', fontSize: '9px'
-                            }}>×</button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* ---------- Products section ---------- */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
