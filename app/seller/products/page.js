@@ -440,10 +440,11 @@ export default function SellerProductsPage() {
 
   const inputStyle = {
     width: '100%', padding: '10px 12px', borderRadius: '8px',
-    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+    border: '1.5px solid #9ca3af', fontSize: '14px', boxSizing: 'border-box',
+    color: '#111', background: '#fff'
   }
   const labelStyle = {
-    fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px', fontWeight: '500'
+    fontSize: '13px', color: '#333', display: 'block', marginBottom: '6px', fontWeight: '600'
   }
 
   const categoryName = (id) => categories.find(c => c.id === id)?.name || 'Other'
