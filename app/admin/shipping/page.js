@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
 const emptyForm = {
-  country: '', base_charge: '0', free_weight_kg: '0', per_kg_charge: '0',
+  country: '', courier_name: '', base_charge: '0', free_weight_kg: '0', per_kg_charge: '0',
   free_item_count: '0', per_item_charge: '0', sort_order: '0', is_active: true,
 }
 
@@ -43,6 +43,7 @@ export default function AdminShippingPage() {
     setEditingId(r.id)
     setForm({
       country: r.country || '',
+      courier_name: r.courier_name || '',
       base_charge: String(r.base_charge ?? '0'),
       free_weight_kg: String(r.free_weight_kg ?? '0'),
       per_kg_charge: String(r.per_kg_charge ?? '0'),
@@ -69,6 +70,7 @@ export default function AdminShippingPage() {
     try {
       const payload = {
         country: form.country.trim(),
+        courier_name: form.courier_name.trim() || null,
         base_charge: Number(form.base_charge) || 0,
         free_weight_kg: Number(form.free_weight_kg) || 0,
         per_kg_charge: Number(form.per_kg_charge) || 0,
@@ -160,6 +162,11 @@ export default function AdminShippingPage() {
             <input style={inputStyle} value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} placeholder="e.g. Bangladesh, India, or OTHER for fallback" />
           </div>
 
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>Courier Name <span style={{ color: '#aaa', fontWeight: '400' }}>— optional, e.g. Bangladesh Post Office</span></label>
+            <input style={inputStyle} value={form.courier_name} onChange={e => setForm({ ...form, courier_name: e.target.value })} placeholder="e.g. Bangladesh Post Office" />
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
             <div>
               <label style={labelStyle}>Base Charge (৳)</label>
@@ -229,6 +236,9 @@ export default function AdminShippingPage() {
                 <div style={{ fontSize: '14px', fontWeight: '700', color: '#0a0a0a' }}>
                   {r.country === 'OTHER' ? 'OTHER (Rest of World fallback)' : r.country} {!r.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(Inactive)</span>}
                 </div>
+                {r.courier_name && (
+                  <div style={{ fontSize: '12px', color: '#2d6a4f', fontWeight: '600', marginTop: '2px' }}>via {r.courier_name}</div>
+                )}
                 <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
                   Base ৳{r.base_charge} · first {r.free_weight_kg}kg & {r.free_item_count} item(s) free · then ৳{r.per_kg_charge}/kg + ৳{r.per_item_charge}/item
                 </div>
