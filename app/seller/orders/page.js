@@ -34,6 +34,8 @@ export default function SellerOrdersPage() {
   const [expandedId, setExpandedId] = useState(null)
   const [orderItems, setOrderItems] = useState({})
   const [updatingId, setUpdatingId] = useState(null)
+  const [courierDrafts, setCourierDrafts] = useState({}) // { [orderId]: { courier_name, courier_tracking_id } }
+  const [savingCourierId, setSavingCourierId] = useState(null)
 
   useEffect(() => {
     async function loadShop() {
@@ -105,6 +107,32 @@ export default function SellerOrdersPage() {
       setError('Failed to update status')
     }
     setUpdatingId(null)
+  }
+
+  const getCourierDraft = (order) => courierDrafts[order.id] ?? {
+    courier_name: order.courier_name || '', courier_tracking_id: order.courier_tracking_id || '',
+  }
+  const setCourierDraftField = (order, field, value) => {
+    setCourierDrafts(prev => ({ ...prev, [order.id]: { ...getCourierDraft(order), [field]: value } }))
+  }
+  const saveCourier = async (order) => {
+    const draft = getCourierDraft(order)
+    setSavingCourierId(order.id)
+    setError('')
+    try {
+      await supabaseFetch(`orders?id=eq.${order.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          courier_name: draft.courier_name.trim() || null,
+          courier_tracking_id: draft.courier_tracking_id.trim() || null,
+        }),
+      })
+      await loadOrders(shopId)
+    } catch (e) {
+      console.error(e)
+      setError('Failed to save courier info')
+    }
+    setSavingCourierId(null)
   }
 
   const filteredOrders = filter === 'all' ? orders : orders.filter(o => o.status === filter)
@@ -240,6 +268,40 @@ export default function SellerOrdersPage() {
                         <span>Subtotal + Delivery</span>
                         <span>৳{order.subtotal} + ৳{order.delivery_charge}</span>
                       </div>
+                    </div>
+
+                    {/* Courier / carrier */}
+                    <div style={{ background: '#f9f9f9', borderRadius: '8px', padding: '12px', marginBottom: '14px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Courier / Carrier</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                        <input
+                          value={getCourierDraft(order).courier_name}
+                          onChange={e => { e.stopPropagation(); setCourierDraftField(order, 'courier_name', e.target.value) }}
+                          onClick={e => e.stopPropagation()}
+                          placeholder="e.g. Sundarban, Pathao, DHL"
+                          style={{
+                            width: '100%', padding: '8px 10px', borderRadius: '6px',
+                            border: '1.5px solid #9ca3af', fontSize: '13px', boxSizing: 'border-box'
+                          }}
+                        />
+                        <input
+                          value={getCourierDraft(order).courier_tracking_id}
+                          onChange={e => { e.stopPropagation(); setCourierDraftField(order, 'courier_tracking_id', e.target.value) }}
+                          onClick={e => e.stopPropagation()}
+                          placeholder="Tracking / consignment number"
+                          style={{
+                            width: '100%', padding: '8px 10px', borderRadius: '6px',
+                            border: '1.5px solid #9ca3af', fontSize: '13px', boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); saveCourier(order) }}
+                        disabled={savingCourierId === order.id}
+                        style={{
+                          background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: '6px',
+                          padding: '7px 14px', fontSize: '12px', fontWeight: '600'
+                        }}>{savingCourierId === order.id ? 'Saving...' : 'Save courier info'}</button>
                     </div>
 
                     {/* Status actions */}

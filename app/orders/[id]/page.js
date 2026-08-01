@@ -223,6 +223,16 @@ export default async function OrderPage({ params }) {
             Note: {order.note}
           </div>
         )}
+        {(order.courier_name || order.courier_tracking_id) && (
+          <div style={{
+            marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #eee',
+            fontSize: '13px', color: '#555'
+          }}>
+            <div style={{ fontWeight: '600', color: '#1a1a1a', marginBottom: '2px' }}>Courier</div>
+            {order.courier_name && <div>{order.courier_name}</div>}
+            {order.courier_tracking_id && <div style={{ color: '#888' }}>Tracking ID: {order.courier_tracking_id}</div>}
+          </div>
+        )}
       </div>
 
       <div style={{ padding: '0 16px' }}>
