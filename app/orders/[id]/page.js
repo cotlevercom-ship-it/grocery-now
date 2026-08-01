@@ -34,7 +34,7 @@ export default async function OrderPage({ params }) {
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>❓</div>
           <p style={{ marginBottom: '20px' }}>Order not found</p>
           <Link href="/" style={{
-            display: 'inline-block', background: '#2e7d32', color: 'white',
+            display: 'inline-block', background: '#0a0a0a', color: 'white',
             padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600'
           }}>Back to home</Link>
         </div>
@@ -69,7 +69,7 @@ export default async function OrderPage({ params }) {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
       {/* Topbar */}
       <div style={{
-        background: '#2e7d32', padding: '14px 16px',
+        background: '#0a0a0a', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
         <Link href="/">
@@ -104,14 +104,14 @@ export default async function OrderPage({ params }) {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <div style={{
                     width: '20px', height: '20px', borderRadius: '50%',
-                    background: i <= currentStepIndex ? '#2e7d32' : '#e0e0e0',
+                    background: i <= currentStepIndex ? '#0a0a0a' : '#e0e0e0',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '11px', color: 'white', flexShrink: 0
                   }}>{i <= currentStepIndex ? '✓' : ''}</div>
                   {i < timelineSteps.length - 1 && (
                     <div style={{
                       width: '2px', height: '28px',
-                      background: i < currentStepIndex ? '#2e7d32' : '#e0e0e0'
+                      background: i < currentStepIndex ? '#0a0a0a' : '#e0e0e0'
                     }} />
                   )}
                 </div>
@@ -237,7 +237,7 @@ export default async function OrderPage({ params }) {
 
       <div style={{ padding: '0 16px' }}>
         <Link href="/shops" style={{
-          display: 'block', textAlign: 'center', background: '#2e7d32', color: 'white',
+          display: 'block', textAlign: 'center', background: '#0a0a0a', color: 'white',
           padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: '600'
         }}>Continue shopping</Link>
       </div>
