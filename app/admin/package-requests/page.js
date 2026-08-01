@@ -70,7 +70,7 @@ export default function AdminPackageRequestsPage() {
   const statusBadge = (status) => {
     const map = {
       pending: { bg: '#fff3e0', color: '#f4a300', label: 'Pending' },
-      approved: { bg: '#e8f5e9', color: '#2d6a4f', label: 'Approved' },
+      approved: { bg: '#f5f5f5', color: '#2d6a4f', label: 'Approved' },
       rejected: { bg: '#ffebee', color: '#c62828', label: 'Rejected' },
     }
     const s = map[status] || map.pending
@@ -146,7 +146,7 @@ export default function AdminPackageRequestsPage() {
               {req.status === 'pending' && (
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <button onClick={() => handleApprove(req)} disabled={processingId === req.id} style={{
-                    background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                    background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                     borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '600'
                   }}>Approve</button>
                   <button onClick={() => handleReject(req)} disabled={processingId === req.id} style={{
