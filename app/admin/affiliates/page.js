@@ -114,7 +114,7 @@ export default function AdminAffiliatesPage() {
     const map = {
       pending: { bg: '#fff3e0', color: '#f4a300', label: 'Pending' },
       requested: { bg: '#e3f2fd', color: '#1565c0', label: 'Withdrawal Requested' },
-      paid: { bg: '#e8f5e9', color: '#2d6a4f', label: 'Paid' },
+      paid: { bg: '#f5f5f5', color: '#2d6a4f', label: 'Paid' },
     }
     const s = map[status] || map.pending
     return (
@@ -224,7 +224,7 @@ export default function AdminAffiliatesPage() {
                 {new Date(wd.created_at).toLocaleDateString('en-GB')}
               </div>
               <button onClick={() => handleApproveWithdrawal(wd)} disabled={processingId === `wd-${wd.id}`} style={{
-                background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                 borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap'
               }}>{processingId === `wd-${wd.id}` ? '...' : 'Mark as Paid'}</button>
             </div>
