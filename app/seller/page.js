@@ -479,7 +479,7 @@ function SellerLoginForm() {
                     </div>
                   )}
                   {otpMessage && (
-                    <div style={{ fontSize: '12px', marginTop: '6px', color: otpVerified ? '#2e7d32' : COLORS.textMuted }}>
+                    <div style={{ fontSize: '12px', marginTop: '6px', color: otpVerified ? '#0a0a0a' : COLORS.textMuted }}>
                       {otpMessage}
                     </div>
                   )}
@@ -815,8 +815,8 @@ function SellerLoginForm() {
           width: 56px;
           height: 56px;
           border-radius: 50%;
-          background: #e8f5e9;
-          color: #2e7d32;
+          background: #f5f5f5;
+          color: #0a0a0a;
           font-size: 28px;
           display: flex;
           align-items: center;
