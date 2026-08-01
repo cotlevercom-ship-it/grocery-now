@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
-import Image from 'next/image'
 
 const navItems = [
   { href: '/seller/dashboard', label: 'Dashboard', icon: '📊' },
@@ -136,14 +135,7 @@ export default function SellerNav({ children }) {
           padding: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
-          <span style={{
-            position: 'relative', display: 'inline-block', height: '44px', width: '150px',
-            filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.85)) drop-shadow(0 0 16px rgba(255,255,255,0.55)) drop-shadow(0 0 28px rgba(255,255,255,0.3))',
-          }}>
-            <Image src="/logo-text.png" alt="Cot Lever" fill
-              style={{ objectFit: 'contain', objectPosition: 'left center' }} />
-          </span>
-          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '6px' }}>Seller Centre</div>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: 'white' }}>Seller Centre</div>
         </div>
 
         {shopName && (
