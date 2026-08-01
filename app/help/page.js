@@ -88,8 +88,8 @@ export default function HelpCenterPage() {
             style={{
               display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
               fontSize: '13px', fontWeight: activeCategory === 'all' ? '700' : '400',
-              color: activeCategory === 'all' ? '#2e7d32' : '#333',
-              background: activeCategory === 'all' ? '#e8f5e9' : 'transparent',
+              color: activeCategory === 'all' ? '#0a0a0a' : '#333',
+              background: activeCategory === 'all' ? '#f5f5f5' : 'transparent',
               border: 'none'
             }}
           >All categories</button>
@@ -100,8 +100,8 @@ export default function HelpCenterPage() {
               style={{
                 display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
                 fontSize: '13px', fontWeight: activeCategory === cat ? '700' : '400',
-                color: activeCategory === cat ? '#2e7d32' : '#333',
-                background: activeCategory === cat ? '#e8f5e9' : 'transparent',
+                color: activeCategory === cat ? '#0a0a0a' : '#333',
+                background: activeCategory === cat ? '#f5f5f5' : 'transparent',
                 border: 'none'
               }}
             >{cat}</button>
@@ -129,8 +129,8 @@ export default function HelpCenterPage() {
                     onClick={() => setActiveArticleId(a.id)}
                     style={{
                       textAlign: 'left', padding: '10px 14px', borderRadius: '8px',
-                      border: `1px solid ${activeArticleId === a.id ? '#2e7d32' : '#e0e0e0'}`,
-                      background: activeArticleId === a.id ? '#e8f5e9' : 'white',
+                      border: `1px solid ${activeArticleId === a.id ? '#0a0a0a' : '#e0e0e0'}`,
+                      background: activeArticleId === a.id ? '#f5f5f5' : 'white',
                       fontSize: '13px', fontWeight: activeArticleId === a.id ? '600' : '500',
                       color: '#1a1a1a'
                     }}
@@ -164,7 +164,7 @@ export default function HelpCenterPage() {
               Didn&apos;t find what you were looking for?
             </div>
             <Link href="/#footer-contact" style={{
-              display: 'inline-block', background: '#2e7d32', color: 'white',
+              display: 'inline-block', background: '#0a0a0a', color: 'white',
               padding: '9px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600'
             }}>Contact support</Link>
           </div>
