@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, Fragment } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import SellerNav from '@/components/SellerNav'
 
@@ -45,11 +45,9 @@ export default function SellerProductsPage() {
   const [showProductForm, setShowProductForm] = useState(false)
   const [editingProductId, setEditingProductId] = useState(null)
   const [productForm, setProductForm] = useState(emptyProductForm)
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState('')
-  const [extraImageUrls, setExtraImageUrls] = useState([]) // already-uploaded gallery images
-  const [extraImageFiles, setExtraImageFiles] = useState([]) // newly picked, not yet uploaded
-  const [uploadingExtra, setUploadingExtra] = useState(false)
+  const [imageSlots, setImageSlots] = useState([]) // [{ id, file: File|null, url: string|null }] — slot 0 is the main image, rest are gallery
+  const [activeSlotId, setActiveSlotId] = useState(null)
+  const slotFileInputRef = useRef(null)
   const [variants, setVariants] = useState([]) // [{id, name, price, sale_price, stock, sku, is_available}]
   const [tierPricing, setTierPricing] = useState([]) // [{min_qty, max_qty, price}]
   const [savingProduct, setSavingProduct] = useState(false)
@@ -106,6 +104,7 @@ export default function SellerProductsPage() {
 
   // ---------- Product handlers ----------
   const atProductLimit = maxProducts != null && products.length >= maxProducts
+  const makeSlotId = () => `slot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
   const openAddProduct = () => {
     if (atProductLimit) {
@@ -114,10 +113,7 @@ export default function SellerProductsPage() {
     }
     setEditingProductId(null)
     setProductForm(emptyProductForm)
-    setImageFile(null)
-    setImagePreview('')
-    setExtraImageUrls([])
-    setExtraImageFiles([])
+    setImageSlots([{ id: makeSlotId(), file: null, url: null }])
     setVariants([])
     setTierPricing([])
     setShowProductForm(true)
@@ -148,10 +144,10 @@ export default function SellerProductsPage() {
       payment_terms: p.payment_terms || '',
       sample_available: !!p.sample_available,
     })
-    setImageFile(null)
-    setImagePreview(p.image_url || '')
-    setExtraImageUrls(p.image_urls || [])
-    setExtraImageFiles([])
+    const existingUrls = [p.image_url, ...(p.image_urls || [])].filter(Boolean)
+    setImageSlots(existingUrls.length > 0
+      ? existingUrls.map(url => ({ id: makeSlotId(), file: null, url }))
+      : [{ id: makeSlotId(), file: null, url: null }])
     setTierPricing(Array.isArray(p.tier_pricing) ? p.tier_pricing.map(t => ({
       min_qty: t.min_qty ?? '', max_qty: t.max_qty ?? '', price: t.price ?? '',
     })) : [])
@@ -171,32 +167,29 @@ export default function SellerProductsPage() {
     setShowProductForm(false)
     setEditingProductId(null)
     setProductForm(emptyProductForm)
-    setImageFile(null)
-    setImagePreview('')
-    setExtraImageUrls([])
-    setExtraImageFiles([])
+    setImageSlots([])
     setVariants([])
     setTierPricing([])
   }
   const handleProductFieldChange = (field, value) => {
     setProductForm((prev) => ({ ...prev, [field]: value }))
   }
-  const handleImageChange = (e) => {
+  const openFilePickerForSlot = (id) => {
+    setActiveSlotId(id)
+    slotFileInputRef.current?.click()
+  }
+  const handleSlotFileChange = (e) => {
     const file = e.target.files?.[0]
-    if (!file) return
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
+    e.target.value = ''
+    if (!file || !activeSlotId) return
+    setImageSlots(prev => prev.map(s => s.id === activeSlotId ? { ...s, file, url: null } : s))
+    setActiveSlotId(null)
   }
-  const handleExtraImagesChange = (e) => {
-    const files = Array.from(e.target.files || [])
-    if (files.length === 0) return
-    setExtraImageFiles(prev => [...prev, ...files])
+  const addImageSlot = () => {
+    setImageSlots(prev => [...prev, { id: makeSlotId(), file: null, url: null }])
   }
-  const removeExtraImageUrl = (url) => {
-    setExtraImageUrls(prev => prev.filter(u => u !== url))
-  }
-  const removeExtraImageFile = (idx) => {
-    setExtraImageFiles(prev => prev.filter((_, i) => i !== idx))
+  const removeImageSlot = (id) => {
+    setImageSlots(prev => prev.filter(s => s.id !== id))
   }
   const addVariantRow = () => {
     setVariants(prev => [...prev, { ...emptyVariant }])
@@ -233,20 +226,15 @@ export default function SellerProductsPage() {
     }
     setSavingProduct(true)
     try {
-      let imageUrl = productForm.image_url
-      if (imageFile) {
-        setUploading(true)
-        imageUrl = await uploadImage(imageFile, 'products')
-        setUploading(false)
-      }
-
-      let finalExtraImageUrls = extraImageUrls
-      if (extraImageFiles.length > 0) {
-        setUploadingExtra(true)
-        const uploaded = await Promise.all(extraImageFiles.map(f => uploadImage(f, 'products')))
-        finalExtraImageUrls = [...extraImageUrls, ...uploaded]
-        setUploadingExtra(false)
-      }
+      setUploading(true)
+      const finalUrls = await Promise.all(imageSlots.map(async (slot) => {
+        if (slot.file) return uploadImage(slot.file, 'products')
+        return slot.url
+      }))
+      setUploading(false)
+      const cleanUrls = finalUrls.filter(Boolean)
+      const imageUrl = cleanUrls[0] || null
+      const finalExtraImageUrls = cleanUrls.slice(1)
 
       const payload = {
         shop_id: shopId,
@@ -258,7 +246,7 @@ export default function SellerProductsPage() {
         cost_price: productForm.cost_price ? Number(productForm.cost_price) : null,
         unit: productForm.unit.trim() || 'pcs',
         stock: Number(productForm.stock) || 0,
-        image_url: imageUrl || null,
+        image_url: imageUrl,
         image_urls: finalExtraImageUrls,
         is_available: !!productForm.is_available,
         sku: productForm.sku.trim() || null,
@@ -418,46 +406,38 @@ export default function SellerProductsPage() {
                 </div>
 
                 <div style={{ marginBottom: '14px' }}>
-                  <label style={labelStyle}>Product Image</label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                      width: '64px', height: '64px', borderRadius: '8px', background: '#f5f5f5',
-                      border: '1px solid #ddd', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', overflow: 'hidden', flexShrink: 0
-                    }}>
-                      {imagePreview ? (
-                        <img src={imagePreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : '🛍️'}
-                    </div>
-                    <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: '13px' }} />
+                  <label style={labelStyle}>Product Images <span style={{ color: '#aaa', fontWeight: '400' }}>— first image is the main photo</span></label>
+                  <input ref={slotFileInputRef} type="file" accept="image/*" onChange={handleSlotFileChange} style={{ display: 'none' }} />
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    {imageSlots.map((slot) => {
+                      const preview = slot.file ? URL.createObjectURL(slot.file) : slot.url
+                      return (
+                        <div key={slot.id} style={{ position: 'relative', width: '84px', height: '84px' }}>
+                          {preview ? (
+                            <>
+                              <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1.5px solid #9ca3af' }} />
+                              <button type="button" onClick={() => removeImageSlot(slot.id)} style={{
+                                position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px',
+                                borderRadius: '50%', background: '#c62828', color: 'white', border: 'none', fontSize: '11px', lineHeight: 1
+                              }}>×</button>
+                            </>
+                          ) : (
+                            <button type="button" onClick={() => openFilePickerForSlot(slot.id)} style={{
+                              width: '100%', height: '100%', borderRadius: '8px', background: '#f9fafb',
+                              border: '1.5px dashed #9ca3af', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: '11px', color: '#666', fontWeight: '600', textAlign: 'center', padding: '4px'
+                            }}>+ Add Image</button>
+                          )}
+                        </div>
+                      )
+                    })}
+                    <button type="button" onClick={addImageSlot} title="Add another image box" style={{
+                      width: '84px', height: '84px', borderRadius: '8px', background: '#e8f5e9',
+                      border: '1.5px dashed #2d6a4f', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '30px', color: '#2d6a4f', fontWeight: '700', lineHeight: 1
+                    }}>+</button>
                   </div>
-                  {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
-                </div>
-
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={labelStyle}>Additional Images (optional gallery)</label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-                    {extraImageUrls.map(url => (
-                      <div key={url} style={{ position: 'relative', width: '52px', height: '52px' }}>
-                        <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd' }} />
-                        <button type="button" onClick={() => removeExtraImageUrl(url)} style={{
-                          position: 'absolute', top: '-6px', right: '-6px', width: '18px', height: '18px',
-                          borderRadius: '50%', background: '#c62828', color: 'white', border: 'none', fontSize: '10px', lineHeight: 1
-                        }}>×</button>
-                      </div>
-                    ))}
-                    {extraImageFiles.map((f, idx) => (
-                      <div key={idx} style={{ position: 'relative', width: '52px', height: '52px' }}>
-                        <img src={URL.createObjectURL(f)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd' }} />
-                        <button type="button" onClick={() => removeExtraImageFile(idx)} style={{
-                          position: 'absolute', top: '-6px', right: '-6px', width: '18px', height: '18px',
-                          borderRadius: '50%', background: '#c62828', color: 'white', border: 'none', fontSize: '10px', lineHeight: 1
-                        }}>×</button>
-                      </div>
-                    ))}
-                  </div>
-                  <input type="file" accept="image/*" multiple onChange={handleExtraImagesChange} style={{ fontSize: '13px' }} />
-                  {uploadingExtra && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading images...</div>}
+                  {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading images...</div>}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
