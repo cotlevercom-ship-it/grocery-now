@@ -196,7 +196,7 @@ export default function AdminHelpPage() {
 
           <div style={{ display: 'flex', gap: '10px' }}>
             <button type="submit" disabled={saving} style={{
-              background: saving ? '#a5d6a7' : '#2e7d32', color: 'white', border: 'none',
+              background: saving ? '#9ca3af' : '#0a0a0a', color: 'white', border: 'none',
               borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
             }}>{saving ? 'Saving...' : 'Save'}</button>
             <button type="button" onClick={closeForm} style={{
@@ -235,7 +235,7 @@ export default function AdminHelpPage() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
                       <button onClick={() => openEditForm(a)} style={{
-                        background: '#e8f5e9', color: '#2d6a4f', border: 'none',
+                        background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                         borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
                       }}>Edit</button>
                       <button onClick={() => toggleActive(a)} style={{
