@@ -48,6 +48,21 @@ export default function Navbar() {
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <Link href="/ship" style={{
+            display: 'flex', alignItems: 'center', gap: '4px',
+            background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
+            borderRadius: '8px', padding: '7px 12px',
+            fontSize: '13px', whiteSpace: 'nowrap', textDecoration: 'none'
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <rect x="1" y="3" width="15" height="13" />
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+              <circle cx="5.5" cy="18.5" r="2.5" />
+              <circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
+            <span className="ship-label">Ship</span>
+          </Link>
+
           {session ? (
             <Link href="/account" style={{
               display: 'flex', alignItems: 'center', gap: '4px',
@@ -82,6 +97,12 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 380px) {
+          .ship-label { display: none; }
+        }
+      `}</style>
     </>
   )
 }
