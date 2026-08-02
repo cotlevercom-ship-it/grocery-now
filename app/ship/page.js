@@ -2,6 +2,14 @@
 import { useState } from 'react'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 
+const COUNTRIES = [
+  'Bangladesh', 'India', 'Nepal', 'USA', 'UK', 'Canada', 'Australia',
+  'UAE', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Oman', 'Bahrain',
+  'Malaysia', 'Singapore', 'China', 'Japan', 'South Korea', 'Thailand',
+  'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Sweden',
+  'Pakistan', 'Sri Lanka', 'Myanmar', 'South Africa', 'Other',
+]
+
 const emptyDetails = {
   sender_name: '', sender_phone: '', sender_address: '', sender_country: 'Bangladesh',
   receiver_name: '', receiver_phone: '', receiver_address: '', receiver_country: '',
@@ -133,7 +141,9 @@ export default function ShipPage() {
           </div>
           <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Sender Country</label>
-            <input style={inputStyle} value={details.sender_country} onChange={e => setDetails({ ...details, sender_country: e.target.value })} />
+            <select style={inputStyle} value={details.sender_country} onChange={e => setDetails({ ...details, sender_country: e.target.value })}>
+              {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
 
           <div style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c', margin: '0 0 10px' }}>Receiver</div>
@@ -151,7 +161,10 @@ export default function ShipPage() {
           </div>
           <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Destination Country *</label>
-            <input style={inputStyle} value={details.receiver_country} onChange={e => setDetails({ ...details, receiver_country: e.target.value })} placeholder="e.g. Bangladesh, USA, UK" />
+            <select style={inputStyle} value={details.receiver_country} onChange={e => setDetails({ ...details, receiver_country: e.target.value })}>
+              <option value="">Select a country</option>
+              {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
 
           <div style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c', margin: '0 0 10px' }}>Parcel</div>
