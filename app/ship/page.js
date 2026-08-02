@@ -13,7 +13,7 @@ const COUNTRIES = [
 const emptyDetails = {
   sender_name: '', sender_phone: '', sender_address: '', sender_country: 'Bangladesh',
   receiver_name: '', receiver_phone: '', receiver_address: '', receiver_country: '',
-  weight_kg: '', parcel_description: '', declared_value: '',
+  parcel_type: 'parcel', weight_kg: '', parcel_description: '', declared_value: '',
 }
 
 export default function ShipPage() {
@@ -87,6 +87,7 @@ export default function ShipPage() {
         receiver_phone: details.receiver_phone.trim(),
         receiver_address: details.receiver_address.trim(),
         receiver_country: details.receiver_country.trim(),
+        parcel_type: details.parcel_type,
         weight_kg: Number(details.weight_kg),
         parcel_description: details.parcel_description.trim() || null,
         declared_value: details.declared_value ? Number(details.declared_value) : null,
@@ -168,6 +169,19 @@ export default function ShipPage() {
           </div>
 
           <div style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c', margin: '0 0 10px' }}>Parcel</div>
+          <div style={{ marginBottom: '12px' }}>
+            <label style={labelStyle}>Type *</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {['parcel', 'documents'].map(t => (
+                <button key={t} type="button" onClick={() => setDetails({ ...details, parcel_type: t })} style={{
+                  flex: 1, padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+                  border: details.parcel_type === t ? '1.5px solid #0a0a0a' : '1.5px solid #d0d0d0',
+                  background: details.parcel_type === t ? '#0a0a0a' : 'white',
+                  color: details.parcel_type === t ? 'white' : '#333',
+                }}>{t === 'parcel' ? 'Parcel' : 'Documents'}</button>
+              ))}
+            </div>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             <div>
               <label style={labelStyle}>Weight (kg) *</label>
