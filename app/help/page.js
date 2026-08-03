@@ -75,7 +75,7 @@ export default function HelpCenterPage() {
         />
       </div>
 
-      <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', gap: '0' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', gap: '0' }} className="help-container">
         {/* Category sidebar (mobile: toggle) */}
         <div style={{
           width: '200px', flexShrink: 0, background: 'white',
@@ -173,6 +173,9 @@ export default function HelpCenterPage() {
 
       <style jsx>{`
         @media (max-width: 640px) {
+          .help-container {
+            flex-direction: column !important;
+          }
           .help-sidebar {
             width: 100% !important;
             display: flex !important;
