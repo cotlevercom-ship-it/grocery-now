@@ -17,6 +17,7 @@ export default function MerchantSettingsPage() {
     phone: '',
     description: '',
     image_url: '',
+    banner_url: '',
     delivery_time_min: 20,
     delivery_time_max: 40,
     delivery_charge: 0,
@@ -28,6 +29,8 @@ export default function MerchantSettingsPage() {
 
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState('')
+  const [bannerFile, setBannerFile] = useState(null)
+  const [bannerPreview, setBannerPreview] = useState('')
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
@@ -46,6 +49,7 @@ export default function MerchantSettingsPage() {
             phone: shop.phone || '',
             description: shop.description || '',
             image_url: shop.image_url || '',
+            banner_url: shop.banner_url || '',
             delivery_time_min: shop.delivery_time_min ?? 20,
             delivery_time_max: shop.delivery_time_max ?? 40,
             delivery_charge: shop.delivery_charge ?? 0,
@@ -55,6 +59,7 @@ export default function MerchantSettingsPage() {
             pickup_address: shop.pickup_address || '',
           })
           setImagePreview(shop.image_url || '')
+          setBannerPreview(shop.banner_url || '')
         }
       } catch (e) {
         console.error(e)
@@ -76,6 +81,13 @@ export default function MerchantSettingsPage() {
     setImagePreview(URL.createObjectURL(file))
   }
 
+  const handleBannerChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setBannerFile(file)
+    setBannerPreview(URL.createObjectURL(file))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -93,9 +105,15 @@ export default function MerchantSettingsPage() {
     setSaving(true)
     try {
       let imageUrl = form.image_url
-      if (imageFile) {
+      let bannerUrl = form.banner_url
+      if (imageFile || bannerFile) {
         setUploading(true)
-        imageUrl = await uploadImage(imageFile, 'shops')
+        if (imageFile) {
+          imageUrl = await uploadImage(imageFile, 'shops')
+        }
+        if (bannerFile) {
+          bannerUrl = await uploadImage(bannerFile, 'shops')
+        }
         setUploading(false)
       }
 
@@ -106,6 +124,7 @@ export default function MerchantSettingsPage() {
         phone: form.phone.trim() || null,
         description: form.description.trim() || null,
         image_url: imageUrl || null,
+        banner_url: bannerUrl || null,
         delivery_time_min: Number(form.delivery_time_min) || 0,
         delivery_time_max: Number(form.delivery_time_max) || 0,
         delivery_charge: Number(form.delivery_charge) || 0,
@@ -120,8 +139,9 @@ export default function MerchantSettingsPage() {
         body: JSON.stringify(payload),
       })
 
-      setForm(prev => ({ ...prev, image_url: imageUrl }))
+      setForm(prev => ({ ...prev, image_url: imageUrl, banner_url: bannerUrl }))
       setImageFile(null)
+      setBannerFile(null)
       setSuccess('Shop details updated successfully')
     } catch (e) {
       console.error(e)
@@ -208,6 +228,26 @@ export default function MerchantSettingsPage() {
           </label>
         </div>
 
+        {/* Cover photo upload */}
+        <div style={{ marginBottom: '14px' }}>
+          <label style={labelStyle}>Cover Photo</label>
+          <div style={{
+            width: '100%', height: '140px', borderRadius: '8px', background: '#f5f5f5',
+            border: '1px solid #ddd', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', overflow: 'hidden', marginBottom: '8px'
+          }}>
+            {bannerPreview ? (
+              <img src={bannerPreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <span style={{ color: '#aaa', fontSize: '13px' }}>No cover photo</span>
+            )}
+          </div>
+          <input type="file" accept="image/*" onChange={handleBannerChange} style={{ fontSize: '13px' }} />
+          <div style={{ fontSize: '12px', color: '#888', marginTop: '6px' }}>
+            Recommended size: 1200 x 400px (3:1 ratio), JPG or PNG, under 2MB. This appears as the banner at the top of your shop page.
+          </div>
+        </div>
+
         {/* Image upload */}
         <div style={{ marginBottom: '14px' }}>
           <label style={labelStyle}>Shop Image</label>
@@ -222,6 +262,9 @@ export default function MerchantSettingsPage() {
               ) : '🏪'}
             </div>
             <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: '13px' }} />
+          </div>
+          <div style={{ fontSize: '12px', color: '#888', marginTop: '6px' }}>
+            Recommended size: 400 x 400px (square), JPG or PNG, under 1MB.
           </div>
           {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
         </div>
