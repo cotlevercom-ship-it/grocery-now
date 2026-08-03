@@ -47,8 +47,6 @@ export default async function ShopPage({ params }) {
       <div style={{ background: '#0a0a0a', padding: '14px 16px 20px' }}>
         <div style={{ display: 'flex', gap: '16px', color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>
           <span>⭐ {shop.rating || '4.5'}</span>
-          <span>⏱ {shop.delivery_time_min}-{shop.delivery_time_max} min</span>
-          <span>🚴 {shop.delivery_charge === 0 ? 'Free' : `৳${shop.delivery_charge}`}</span>
         </div>
       </div>
 

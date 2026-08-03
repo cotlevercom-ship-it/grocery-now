@@ -91,12 +91,6 @@ export default function ShopGrid({ shops, departments }) {
                 <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
                   {shop.category}
                 </div>
-                <div style={{
-                  fontSize: '12px', color: '#2d6a4f', marginTop: '8px',
-                  fontWeight: '500'
-                }}>
-                  🚴 {shop.delivery_time_min}-{shop.delivery_time_max} min
-                </div>
               </div>
             </Link>
           ))}
