@@ -34,7 +34,7 @@ export default function ShipPage() {
     background: 'white', color: '#333'
   }
   const labelStyle = { fontSize: '14px', color: '#222', display: 'block', marginBottom: '6px', fontWeight: '600' }
-  const required = <span style={{ color: '#c0392b' }}> *</span>
+  const required = <span style={{ color: '#c62828' }}> *</span>
 
   const handleCalculate = async (e) => {
     e.preventDefault()
@@ -128,12 +128,12 @@ export default function ShipPage() {
 
       {step === 'calc' && (
         <>
-          <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#c0392b', textAlign: 'center', marginBottom: '22px' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#0a0a0a', textAlign: 'center', marginBottom: '22px' }}>
             Shipping Rates
           </h1>
 
           <div style={{
-            display: 'flex', borderRadius: '999px', border: '1.5px solid #c0392b',
+            display: 'flex', borderRadius: '999px', border: '1.5px solid #f4a300',
             overflow: 'hidden', marginBottom: '26px'
           }}>
             {[
@@ -144,8 +144,8 @@ export default function ShipPage() {
                 flex: 1, padding: '13px 10px', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 fontSize: '15px', fontWeight: '600',
-                background: calc.mode === m.key ? '#c0392b' : 'white',
-                color: calc.mode === m.key ? 'white' : '#c0392b',
+                background: calc.mode === m.key ? '#f4a300' : 'white',
+                color: calc.mode === m.key ? '#0a0a0a' : '#f4a300',
               }}>
                 <span>{m.icon}</span> {m.label}
               </button>
@@ -198,7 +198,7 @@ export default function ShipPage() {
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button type="submit" disabled={loadingRates} style={{
-                background: loadingRates ? '#d98c85' : '#c0392b', color: 'white', border: 'none',
+                background: loadingRates ? '#4a4a4a' : '#0a0a0a', color: 'white', border: 'none',
                 borderRadius: '999px', padding: '14px 34px', fontSize: '16px', fontWeight: '700'
               }}>{loadingRates ? 'Calculating...' : 'Calculate'}</button>
             </div>
@@ -234,8 +234,8 @@ export default function ShipPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {quotes.map(q => (
                 <div key={q.courier.id} onClick={() => setSelectedQuote(q)} style={{
-                  background: selectedQuote?.courier.id === q.courier.id ? '#fdecea' : 'white',
-                  border: selectedQuote?.courier.id === q.courier.id ? '1.5px solid #c0392b' : '1px solid #eee',
+                  background: selectedQuote?.courier.id === q.courier.id ? '#fff3e0' : 'white',
+                  border: selectedQuote?.courier.id === q.courier.id ? '1.5px solid #f4a300' : '1px solid #eee',
                   borderRadius: '10px', padding: '14px 16px', cursor: 'pointer',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px'
                 }}>
@@ -243,7 +243,7 @@ export default function ShipPage() {
                     <div style={{ fontSize: '15px', fontWeight: '700', color: '#0a0a0a' }}>{q.courier.name}</div>
                     {q.courier.description && <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>{q.courier.description}</div>}
                   </div>
-                  <div style={{ fontSize: '17px', fontWeight: '700', color: '#c0392b', whiteSpace: 'nowrap' }}>৳{q.charge}</div>
+                  <div style={{ fontSize: '17px', fontWeight: '700', color: '#f4a300', whiteSpace: 'nowrap' }}>৳{q.charge}</div>
                 </div>
               ))}
 
@@ -315,7 +315,7 @@ export default function ShipPage() {
             </div>
 
             <button type="submit" disabled={booking} style={{
-              width: '100%', background: booking ? '#a9a9a9' : '#c0392b', color: 'white', border: 'none',
+              width: '100%', background: booking ? '#a9a9a9' : '#0a0a0a', color: 'white', border: 'none',
               borderRadius: '10px', padding: '14px', fontSize: '15px', fontWeight: '700'
             }}>{booking ? 'Booking...' : `Confirm Booking — ৳${selectedQuote?.charge}`}</button>
           </form>
@@ -333,7 +333,7 @@ export default function ShipPage() {
             <p style={{ color: '#aaa', fontSize: '12px', marginBottom: '18px' }}>Booking ID: {bookingRef}</p>
           )}
           <button onClick={resetAll} style={{
-            background: '#c0392b', color: 'white', border: 'none',
+            background: '#0a0a0a', color: 'white', border: 'none',
             borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
           }}>Book Another Shipment</button>
         </div>
