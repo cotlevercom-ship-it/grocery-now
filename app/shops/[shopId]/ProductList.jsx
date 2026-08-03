@@ -183,13 +183,13 @@ export default function ProductList({ categories, products, shop }) {
                 const discount = discountPercent(product)
                 return (
                   <div key={product.id} style={{
-                    background: 'white', borderRadius: '14px',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.08)', overflow: 'hidden'
+                    background: 'white', borderRadius: '4px',
+                    border: '1px solid #e5e5e5', overflow: 'hidden'
                   }}>
                     <div
                       onClick={() => setDetailProduct(product)}
                       style={{
-                        height: '150px', background: '#f5f5f5',
+                        aspectRatio: '1 / 1', background: '#f5f5f5',
                         display: 'flex', alignItems: 'center',
                         justifyContent: 'center', fontSize: '40px',
                         position: 'relative', cursor: 'pointer'
@@ -241,19 +241,24 @@ export default function ProductList({ categories, products, shop }) {
                         </div>
                       )}
                     </div>
-                    <div style={{ padding: '10px 10px 12px' }}>
+                    <div style={{ padding: '10px' }}>
                       <div
                         onClick={() => setDetailProduct(product)}
                         style={{
-                          fontSize: '12.5px', fontWeight: '500', color: '#1a1a1a', cursor: 'pointer',
+                          fontSize: '12.5px', fontWeight: '400', color: '#333', cursor: 'pointer',
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden', lineHeight: '1.35', minHeight: '34px'
+                          overflow: 'hidden', lineHeight: '1.4', minHeight: '35px'
                         }}
                       >{product.name}</div>
-                      <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>{product.unit}</div>
+
+                      {product.moq > 1 && (
+                        <div style={{ fontSize: '10.5px', color: '#2d6a4f', marginTop: '4px', fontWeight: '500' }}>
+                          ✓ MOQ {product.moq} {product.unit}
+                        </div>
+                      )}
 
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
-                        <span style={{ fontSize: '16px', fontWeight: '800', color: '#e53935' }}>
+                        <span style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a1a' }}>
                           {hasVariants ? priceLabel(product) : `৳${product.sale_price || product.price}`}
                         </span>
                         {!hasVariants && discount > 0 && (
@@ -262,6 +267,7 @@ export default function ProductList({ categories, products, shop }) {
                           </span>
                         )}
                       </div>
+                      <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>{product.unit}</div>
 
                       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
                         {outOfStock ? (
@@ -270,26 +276,28 @@ export default function ProductList({ categories, products, shop }) {
                           <button
                             onClick={() => setDetailProduct(product)}
                             style={{
-                              padding: '5px 12px', borderRadius: '14px', fontSize: '11px',
-                              fontWeight: '600', background: '#0a0a0a', color: 'white', border: 'none'
+                              padding: '5px 14px', borderRadius: '3px', fontSize: '11px',
+                              fontWeight: '600', background: 'white', color: '#0a0a0a',
+                              border: '1px solid #0a0a0a'
                             }}
                           >Select</button>
                         ) : qty === 0 ? (
                           <button onClick={() => addToCart(product, null, 1)} style={{
-                            width: '28px', height: '28px', borderRadius: '50%',
-                            background: '#0a0a0a', color: 'white', fontSize: '18px', border: 'none',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                          }}>+</button>
+                            padding: '5px 14px', borderRadius: '3px', fontSize: '11px',
+                            fontWeight: '600', background: 'white', color: '#0a0a0a',
+                            border: '1px solid #0a0a0a'
+                          }}>+ Add</button>
                         ) : (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <button onClick={() => removeFromCart(product)} style={{
-                              width: '24px', height: '24px', borderRadius: '50%',
-                              background: '#f5f5f5', color: '#0a0a0a', fontSize: '16px', border: 'none',
+                              width: '24px', height: '24px', borderRadius: '3px',
+                              background: '#f5f5f5', color: '#0a0a0a', fontSize: '16px',
+                              border: '1px solid #ddd',
                               display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}>-</button>
                             <span style={{ fontSize: '13px', fontWeight: '600' }}>{qty}</span>
                             <button onClick={() => addToCart(product, null, 1)} style={{
-                              width: '24px', height: '24px', borderRadius: '50%',
+                              width: '24px', height: '24px', borderRadius: '3px',
                               background: '#0a0a0a', color: 'white', fontSize: '16px', border: 'none',
                               display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}>+</button>

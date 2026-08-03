@@ -18,7 +18,7 @@ export default async function ShopPage({ params }) {
     )
 
     products = await supabaseFetch(
-      `products?select=id,shop_id,category_id,name,description,price,sale_price,unit,image_url,image_urls,stock,is_available,sort_order,brand,weight_grams,sku,product_variants(id,name,price,sale_price,stock,sku,is_available,sort_order)&shop_id=eq.${shopId}&is_available=eq.true&order=sort_order`
+      `products?select=id,shop_id,category_id,name,description,price,sale_price,unit,image_url,image_urls,stock,is_available,sort_order,brand,weight_grams,sku,moq,product_variants(id,name,price,sale_price,stock,sku,is_available,sort_order)&shop_id=eq.${shopId}&is_available=eq.true&order=sort_order`
     )
   } catch (e) {
     console.error(e)
