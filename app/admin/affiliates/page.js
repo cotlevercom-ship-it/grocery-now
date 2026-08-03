@@ -131,7 +131,7 @@ export default function AdminAffiliatesPage() {
         Affiliates
       </h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '18px' }}>
-        See and pay out bonuses for new sellers brought in through referrals.
+        See and pay out bonuses for new merchants brought in through referrals.
       </p>
 
       {error && (

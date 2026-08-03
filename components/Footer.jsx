@@ -72,7 +72,7 @@ export default function Footer() {
   } else {
     columns.push({
       title: 'Want to Sell?',
-      items: [{ label: 'Open a Store →', href: '/seller' }],
+      items: [{ label: 'Open a Store →', href: '/merchant' }],
     })
   }
 

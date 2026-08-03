@@ -5,20 +5,20 @@ import Link from 'next/link'
 import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
 
 const navItems = [
-  { href: '/seller/dashboard', label: 'Dashboard', icon: '📊' },
-  { href: '/seller/products', label: 'Products', icon: '📦' },
-  { href: '/seller/orders', label: 'Orders', icon: '🧾' },
-  { href: '/seller/package', label: 'Package', icon: '💎' },
-  { href: '/seller/settings', label: 'Settings', icon: '⚙️' },
+  { href: '/merchant/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/merchant/products', label: 'Products', icon: '📦' },
+  { href: '/merchant/orders', label: 'Orders', icon: '🧾' },
+  { href: '/merchant/package', label: 'Package', icon: '💎' },
+  { href: '/merchant/settings', label: 'Settings', icon: '⚙️' },
 ]
 
-export default function SellerNav({ children }) {
+export default function MerchantNav({ children }) {
   const router = useRouter()
   const pathname = usePathname()
   const [checking, setChecking] = useState(true)
   const [allowed, setAllowed] = useState(false)
   const [shopName, setShopName] = useState('')
-  const [sellerEmail, setSellerEmail] = useState('')
+  const [merchantEmail, setMerchantEmail] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -26,25 +26,25 @@ export default function SellerNav({ children }) {
     async function check() {
       const session = getSession()
       if (!session?.user) {
-        router.replace(`/seller/login?next=${pathname}`)
+        router.replace(`/merchant/login?next=${pathname}`)
         if (!cancelled) setChecking(false)
         return
       }
       try {
         const shops = await supabaseFetch(`shops?select=id,name&owner_id=eq.${session.user.id}`)
         if (!shops || shops.length === 0) {
-          router.replace('/seller/create')
+          router.replace('/merchant/create')
           if (!cancelled) setChecking(false)
           return
         }
         if (!cancelled) {
           setShopName(shops[0].name)
-          setSellerEmail(session.user.email)
+          setMerchantEmail(session.user.email)
           setAllowed(true)
         }
       } catch (e) {
         console.error(e)
-        router.replace('/seller/login')
+        router.replace('/merchant/login')
       }
       if (!cancelled) setChecking(false)
     }
@@ -58,7 +58,7 @@ export default function SellerNav({ children }) {
 
   const handleLogout = () => {
     signOut()
-    router.replace('/seller/login')
+    router.replace('/merchant/login')
   }
 
   if (checking) {
@@ -75,9 +75,9 @@ export default function SellerNav({ children }) {
   if (!allowed) return null
 
   return (
-    <div className="seller-shell" style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex' }}>
+    <div className="merchant-shell" style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex' }}>
       <style jsx>{`
-        .seller-shell { position: relative; }
+        .merchant-shell { position: relative; }
         .sidebar {
           width: 220px;
           background: #0a0a0a;
@@ -166,7 +166,7 @@ export default function SellerNav({ children }) {
           <div style={{
             fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-          }}>{sellerEmail}</div>
+          }}>{merchantEmail}</div>
           <button onClick={handleLogout} style={{
             width: '100%', background: 'rgba(255,255,255,0.1)', color: 'white',
             border: 'none', borderRadius: '8px', padding: '8px', fontSize: '13px', cursor: 'pointer'

@@ -172,7 +172,7 @@ export default function AdminRevenuePage() {
         Revenue
       </h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '18px' }}>
-        Subscription revenue from approved seller package payments.
+        Subscription revenue from approved merchant package payments.
       </p>
 
       <div className="print-only" style={{ display: 'none', marginBottom: '18px', fontSize: '12px', color: '#555' }}>

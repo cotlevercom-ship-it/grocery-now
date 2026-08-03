@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getSession, supabaseFetch } from '@/lib/supabase'
-import SellerNav from '@/components/SellerNav'
+import MerchantNav from '@/components/MerchantNav'
 
-export default function SellerDashboardPage() {
+export default function MerchantDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [shop, setShop] = useState(null)
   const [productCount, setProductCount] = useState(0)
@@ -38,17 +38,17 @@ export default function SellerDashboardPage() {
 
   if (loading) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
   if (!shop) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#888', fontSize: '14px' }}>Shop information not found</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
@@ -67,7 +67,7 @@ export default function SellerDashboardPage() {
   ]
 
   return (
-    <SellerNav>
+    <MerchantNav>
     <div>
       <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#163a2c', margin: '0 0 6px' }}>
         {shop.name}
@@ -106,6 +106,6 @@ export default function SellerDashboardPage() {
         </div>
       )}
     </div>
-    </SellerNav>
+    </MerchantNav>
   )
 }

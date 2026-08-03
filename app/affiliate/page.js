@@ -24,7 +24,7 @@ export default function AffiliatePage() {
   const [copied, setCopied] = useState(false)
 
   const referralLink = result
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/seller/login?ref=${result.referral_code}`
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/merchant/login?ref=${result.referral_code}`
     : ''
 
   const handleCopy = async () => {
@@ -76,7 +76,7 @@ export default function AffiliatePage() {
         <div className="brand-panel-pattern" />
         <div className="brand-panel-inner">
           <div className="brand-panel-copy">
-            <h1>Bring in new sellers,<br />earn a bonus</h1>
+            <h1>Bring in new merchants,<br />earn a bonus</h1>
             <p>Earn a fixed bonus whenever someone opens a new store using your link and it becomes active.</p>
           </div>
           <ul className="how-list">
@@ -125,7 +125,7 @@ export default function AffiliatePage() {
             <div className="form-card">
               <div className="form-heading">
                 <h2>Welcome, {result.name}!</h2>
-                <p>Share this link — you'll earn a bonus when a new seller opens a store through it</p>
+                <p>Share this link — you'll earn a bonus when a new merchant opens a store through it</p>
               </div>
               <div className="code-box">
                 <div className="code-text">{referralLink}</div>

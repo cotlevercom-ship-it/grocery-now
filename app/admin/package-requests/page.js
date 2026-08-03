@@ -93,7 +93,7 @@ export default function AdminPackageRequestsPage() {
         Package Payment Requests
       </h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '18px' }}>
-        Verify sellers' bKash Transaction IDs and approve packages.
+        Verify merchants' bKash Transaction IDs and approve packages.
       </p>
 
       {error && (

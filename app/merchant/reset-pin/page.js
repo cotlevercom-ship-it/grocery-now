@@ -3,14 +3,14 @@ import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-// Must match the transform used in app/seller/login/page.js — Supabase Auth
+// Must match the transform used in app/merchant/login/page.js — Supabase Auth
 // requires a longer password than a 4-digit PIN, so it's deterministically
-// padded under the hood. The seller never sees or types anything but the PIN.
+// padded under the hood. The merchant never sees or types anything but the PIN.
 function pinToPassword(pin) {
   return `sl${pin}pin`
 }
 
-export default function SellerResetPinPage() {
+export default function MerchantResetPinPage() {
   return (
     <Suspense fallback={null}>
       <ResetPinForm />
@@ -45,7 +45,7 @@ function ResetPinForm() {
       const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword: pinToPassword(pin), purpose: 'seller_reset' }),
+        body: JSON.stringify({ email, newPassword: pinToPassword(pin), purpose: 'merchant_reset' }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -79,13 +79,13 @@ function ResetPinForm() {
             Your PIN has been changed. You can now log in with your new PIN.
           </div>
           <button
-            onClick={() => router.push('/seller/login')}
+            onClick={() => router.push('/merchant/login')}
             style={{
               width: '100%', background: '#dc2626', color: 'white', padding: '13px',
               borderRadius: '999px', fontSize: '15px', fontWeight: '700', border: 'none'
             }}
           >
-            Go to Seller Login
+            Go to Merchant Login
           </button>
         </div>
       </div>
@@ -164,7 +164,7 @@ function ResetPinForm() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '18px' }}>
-          <Link href="/seller/login" style={{ fontSize: '13px', color: '#999' }}>← Back to Seller Login</Link>
+          <Link href="/merchant/login" style={{ fontSize: '13px', color: '#999' }}>← Back to Merchant Login</Link>
         </div>
       </div>
     </div>

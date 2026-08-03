@@ -50,7 +50,7 @@ export default function CheckoutPage() {
           setShop(shops[0])
         }
 
-        // fetch platform shipping rules (Cot Lever sets these centrally, not the seller)
+        // fetch platform shipping rules (Cot Lever sets these centrally, not the merchant)
         try {
           const rules = await supabaseFetch('shipping_rules?select=*&is_active=eq.true')
           setShippingRules(rules || [])

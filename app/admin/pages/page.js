@@ -279,7 +279,7 @@ export default function AdminPagesPage() {
               <label style={labelStyle}>External URL *</label>
               <input style={inputStyle} value={form.external_url}
                 onChange={e => setForm({ ...form, external_url: e.target.value })}
-                placeholder="/seller/login বা https://..." />
+                placeholder="/merchant/login বা https://..." />
             </div>
           )}
 

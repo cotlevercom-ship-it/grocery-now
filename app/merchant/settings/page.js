@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
-import SellerNav from '@/components/SellerNav'
+import MerchantNav from '@/components/MerchantNav'
 
-export default function SellerSettingsPage() {
+export default function MerchantSettingsPage() {
   const [loading, setLoading] = useState(true)
   const [shopId, setShopId] = useState('')
   const [saving, setSaving] = useState(false)
@@ -141,14 +141,14 @@ export default function SellerSettingsPage() {
 
   if (loading) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
   return (
-    <SellerNav>
+    <MerchantNav>
     <div>
       <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>
         Shop Settings
@@ -326,6 +326,6 @@ export default function SellerSettingsPage() {
         </button>
       </form>
     </div>
-    </SellerNav>
+    </MerchantNav>
   )
 }

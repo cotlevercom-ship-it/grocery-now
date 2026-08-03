@@ -44,8 +44,8 @@ export default async function OrderPage({ params }) {
 
   // db status -> which timeline step index is "current" (0-based, 6 steps)
   const statusToStepIndex = {
-    pending: 1,            // order placed (0) is done, waiting for seller (1) is current
-    confirmed: 2,           // seller accepted
+    pending: 1,            // order placed (0) is done, waiting for merchant (1) is current
+    confirmed: 2,           // merchant accepted
     processing: 3,          // order processing
     out_for_delivery: 4,    // handed to courier
     delivered: 5,           // delivered
@@ -53,8 +53,8 @@ export default async function OrderPage({ params }) {
 
   const timelineSteps = [
     'Order placed',
-    'Waiting for seller confirmation',
-    'Seller accepted your order',
+    'Waiting for merchant confirmation',
+    'Merchant accepted your order',
     'Order is being prepared',
     'Handed to courier',
     'Delivered',
@@ -62,7 +62,7 @@ export default async function OrderPage({ params }) {
 
   const isCancelled = order.status === 'cancelled'
   const currentStepIndex = statusToStepIndex[order.status] ?? 0
-  // customer can cancel only before the seller has accepted (still 'pending')
+  // customer can cancel only before the merchant has accepted (still 'pending')
   const canCancel = order.status === 'pending'
 
   return (

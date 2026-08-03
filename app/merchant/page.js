@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, signUp, signOut, setAccountType, verifyAccountType, getSession, supabaseFetch, createReferralIfNeeded } from '@/lib/supabase'
 
 // Supabase Auth requires a longer password than a 4-digit PIN, so the PIN is
-// deterministically padded into one under the hood. The seller never sees
+// deterministically padded into one under the hood. The merchant never sees
 // or types anything but their 4-digit PIN.
 function pinToPassword(pin) {
   return `sl${pin}pin`
@@ -22,18 +22,18 @@ const COLORS = {
   textMuted: '#6b7b74',
 }
 
-export default function SellerLoginPage() {
+export default function MerchantLoginPage() {
   return (
     <Suspense fallback={null}>
-      <SellerLoginForm />
+      <MerchantLoginForm />
     </Suspense>
   )
 }
 
-function SellerLoginForm() {
+function MerchantLoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const nextUrl = searchParams.get('next') || '/seller/dashboard'
+  const nextUrl = searchParams.get('next') || '/merchant/dashboard'
   const refCode = searchParams.get('ref') || ''
   const pkgParam = searchParams.get('pkg') || ''
 
@@ -131,6 +131,8 @@ function SellerLoginForm() {
   const [pin, setPin] = useState('')
   const [confirmPin, setConfirmPin] = useState('')
 
+  const [departments, setDepartments] = useState([])
+  const [selectedDeptId, setSelectedDeptId] = useState('')
   const [packages, setPackages] = useState([])
   const [selectedPkgId, setSelectedPkgId] = useState('')
   const [bkashNumber, setBkashNumber] = useState('')
@@ -144,12 +146,14 @@ function SellerLoginForm() {
   useEffect(() => {
     async function loadPackages() {
       try {
-        const [pkgRows, settings] = await Promise.all([
+        const [pkgRows, settings, deptRows] = await Promise.all([
           supabaseFetch(`seller_packages?select=*&is_active=eq.true&order=sort_order`),
           supabaseFetch(`app_settings?select=value&key=eq.bkash_number`),
+          supabaseFetch(`departments?select=*&is_active=eq.true&order=sort_order`),
         ])
         setPackages(pkgRows || [])
         setBkashNumber(settings?.[0]?.value || '')
+        setDepartments(deptRows || [])
         const pkgList = pkgRows || []
         const matchedPkg = pkgParam ? pkgList.find(p => p.id === pkgParam) : null
         const freePkg = pkgList.find(p => !p.price || p.price <= 0)
@@ -230,6 +234,7 @@ function SellerLoginForm() {
         owner_id: session.user.id,
         owner_name: ownerName.trim(),
         phone: mobileNumber.trim(),
+        department_id: selectedDeptId || null,
         category: 'general',
         delivery_charge: 20,
         min_order_amount: 0,
@@ -250,6 +255,7 @@ function SellerLoginForm() {
     if (!mobileNumber.trim()) return setRegisterError('Please enter a mobile number')
     if (!email.trim()) return setRegisterError('Please enter your email')
     if (!otpVerified) return setRegisterError('Please verify your email with the OTP code first')
+    if (departments.length > 0 && !selectedDeptId) return setRegisterError('Please select a department')
     if (packages.length > 0 && !selectedPkgId) return setRegisterError('Please select a package')
     if (!/^\d{4}$/.test(pin)) return setRegisterError('PIN must be exactly 4 digits')
     if (pin !== confirmPin) return setRegisterError('PIN and Confirm PIN do not match')
@@ -269,7 +275,7 @@ function SellerLoginForm() {
       if (shop?.id && refCode) {
         await createReferralIfNeeded(shop.id, refCode)
       }
-      router.push('/seller/dashboard')
+      router.push('/merchant/dashboard')
     } catch (err) {
       console.error(err)
       setRegisterError(err.message || 'Registration failed, please try again')
@@ -329,7 +335,7 @@ function SellerLoginForm() {
   const labelStyle = { display: 'block', fontSize: '12px', fontWeight: '600', color: COLORS.forest, marginBottom: '6px' }
 
   return (
-    <div className="seller-auth-page">
+    <div className="merchant-auth-page">
       <div className="hero-bg" />
       <div className="hero-overlay" />
 
@@ -345,7 +351,7 @@ function SellerLoginForm() {
           {mode === 'login' ? (
             <>
               <div className="form-heading">
-                <h2>Seller Login</h2>
+                <h2>Merchant Login</h2>
                 <p>Log in to manage your shop</p>
               </div>
 
@@ -357,14 +363,11 @@ function SellerLoginForm() {
               <form onSubmit={handleLogin}>
                 <div className="field">
                   <label htmlFor="login-email">Email</label>
-                  <input id="login-email" type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="seller@example.com" autoComplete="email" />
+                  <input id="login-email" type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="merchant@example.com" autoComplete="email" />
                 </div>
                 <div className="field">
                   <label htmlFor="login-pin">4-digit PIN</label>
                   <input id="login-pin" type="password" inputMode="numeric" value={loginPin} onChange={e => setLoginPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="e.g. 1234" maxLength={4} autoComplete="off" />
-                </div>
-                <div style={{ textAlign: 'right', marginTop: '-8px', marginBottom: '14px' }}>
-                  <Link href="/seller/forgot-pin" style={{ fontSize: '12px', color: '#666' }}>Forgot PIN?</Link>
                 </div>
                 {loginError && <div className="alert alert-error">{loginError}</div>}
                 <button type="submit" className="submit-btn" disabled={loginSubmitting}>
@@ -384,7 +387,7 @@ function SellerLoginForm() {
                 <h2>Shop created and payment submitted</h2>
                 <p>Your shop will be visible to buyers once the admin verifies your Transaction ID.</p>
               </div>
-              <button type="button" className="submit-btn" onClick={() => router.push('/seller/dashboard')}>Go to Dashboard</button>
+              <button type="button" className="submit-btn" onClick={() => router.push('/merchant/dashboard')}>Go to Dashboard</button>
             </div>
           ) : signupStep === 'payment' ? (
             <>
@@ -420,7 +423,7 @@ function SellerLoginForm() {
           ) : (
             <>
               <div className="form-heading">
-                <h2>Seller Registration</h2>
+                <h2>Merchant Registration</h2>
                 <p>Open your shop in just a few steps</p>
               </div>
 
@@ -451,7 +454,7 @@ function SellerLoginForm() {
                       type="email"
                       value={email}
                       onChange={e => { setEmail(e.target.value); setOtpSent(false); setOtpVerified(false); setOtpMessage('') }}
-                      placeholder="seller@example.com"
+                      placeholder="merchant@example.com"
                       disabled={otpVerified}
                     />
                     {!otpVerified && (
@@ -486,6 +489,22 @@ function SellerLoginForm() {
                   <label>Address (optional)</label>
                   <input style={inputStyle} value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. Dhaka, Chattogram, or any city/country" />
                 </div>
+
+                {departments.length > 0 && (
+                  <div className="field">
+                    <label>Department *</label>
+                    <select
+                      style={{ ...inputStyle, background: 'white' }}
+                      value={selectedDeptId}
+                      onChange={e => setSelectedDeptId(e.target.value)}
+                    >
+                      <option value="">Select a department</option>
+                      {departments.map(d => (
+                        <option key={d.id} value={d.id}>{d.icon} {d.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 {packages.length > 0 && (
                   <div className="field">
@@ -539,7 +558,7 @@ function SellerLoginForm() {
       </div>
 
       <style jsx>{`
-        .seller-auth-page {
+        .merchant-auth-page {
           position: relative;
           min-height: 100vh;
           display: flex;
@@ -806,7 +825,7 @@ function SellerLoginForm() {
         }
 
         @media (max-width: 960px) {
-          .seller-auth-page {
+          .merchant-auth-page {
             flex-direction: column;
             align-items: stretch;
             padding: 80px 20px 40px;

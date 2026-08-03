@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 
 export const metadata = {
   title: 'Cot Lever',
-  description: 'Shop from sellers across the country and beyond',
+  description: 'Shop from merchants across the country and beyond',
 }
 
 export default function RootLayout({ children }) {

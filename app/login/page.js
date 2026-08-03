@@ -75,7 +75,7 @@ function LoginForm() {
         const ok = await verifyAccountType('customer')
         if (!ok) {
           signOut()
-          setError('This email is registered as a seller account. Please use the seller login instead.')
+          setError('This email is registered as a merchant account. Please use the merchant login instead.')
           setSubmitting(false)
           return
         }
@@ -196,12 +196,12 @@ function LoginForm() {
         </form>
       </div>
 
-      {/* Seller login */}
+      {/* Merchant login */}
       <div style={{ width: '100%', maxWidth: '420px', marginTop: '18px' }}>
-        <Link href="/seller/login" style={{
+        <Link href="/merchant/login" style={{
           display: 'block', textAlign: 'center', color: '#666',
           padding: '10px', fontSize: '13px', textDecoration: 'none'
-        }}>Own a shop? Seller Login →</Link>
+        }}>Own a shop? Merchant Login →</Link>
       </div>
 
       <style jsx>{`

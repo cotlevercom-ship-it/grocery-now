@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getSession, supabaseFetch } from '@/lib/supabase'
-import SellerNav from '@/components/SellerNav'
+import MerchantNav from '@/components/MerchantNav'
 
-export default function SellerPackagePage() {
+export default function MerchantPackagePage() {
   const [loading, setLoading] = useState(true)
   const [shop, setShop] = useState(null)
   const [packages, setPackages] = useState([])
@@ -133,9 +133,9 @@ export default function SellerPackagePage() {
 
   if (loading) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
@@ -153,7 +153,7 @@ export default function SellerPackagePage() {
   }
 
   return (
-    <SellerNav>
+    <MerchantNav>
       <div>
         <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
           Subscription Package
@@ -314,6 +314,6 @@ export default function SellerPackagePage() {
           })}
         </div>
       </div>
-    </SellerNav>
+    </MerchantNav>
   )
 }

@@ -35,14 +35,14 @@ function CreateShopForm() {
     async function init() {
       const session = getSession()
       if (!session?.user) {
-        router.replace('/seller/login?next=/seller/create')
+        router.replace('/merchant/login?next=/merchant/create')
         return
       }
       setEmail(session.user.email || '')
       try {
         const existing = await supabaseFetch(`shops?select=id&owner_id=eq.${session.user.id}`)
         if (existing && existing.length > 0) {
-          router.replace('/seller/dashboard')
+          router.replace('/merchant/dashboard')
           return
         }
         const [pkgRows, settings] = await Promise.all([
@@ -142,7 +142,7 @@ function CreateShopForm() {
       if (shop?.id && refCode) {
         await createReferralIfNeeded(shop.id, refCode)
       }
-      router.push('/seller/dashboard')
+      router.push('/merchant/dashboard')
     } catch (err) {
       console.error(err)
       setError(err.message || 'Failed to create shop, please try again')
@@ -213,7 +213,7 @@ function CreateShopForm() {
         <div style={{ fontSize: '14px', color: '#666', marginBottom: '24px', maxWidth: '340px' }}>
           Your shop will be visible to buyers once the admin verifies your Transaction ID.
         </div>
-        <button onClick={() => router.push('/seller/dashboard')} style={{
+        <button onClick={() => router.push('/merchant/dashboard')} style={{
           background: '#0a0a0a', color: 'white', border: 'none', borderRadius: '10px',
           padding: '12px 24px', fontSize: '14px', fontWeight: '600'
         }}>Go to Dashboard</button>
@@ -312,7 +312,7 @@ function CreateShopForm() {
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
         <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
-          Seller Registration
+          Merchant Registration
         </div>
       </div>
 

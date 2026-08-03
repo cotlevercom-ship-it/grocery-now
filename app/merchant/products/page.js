@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
-import SellerNav from '@/components/SellerNav'
+import MerchantNav from '@/components/MerchantNav'
 
 const emptyProductForm = {
   name: '',
@@ -30,7 +30,7 @@ const emptyProductForm = {
 const emptyVariant = { id: null, name: '', price: '', sale_price: '', stock: 0, sku: '', is_available: true }
 const emptyTier = { min_qty: '', max_qty: '', price: '' }
 
-export default function SellerProductsPage() {
+export default function MerchantProductsPage() {
   const [shopId, setShopId] = useState('')
   const [loadingShop, setLoadingShop] = useState(true)
   const [maxProducts, setMaxProducts] = useState(null) // null = unlimited
@@ -356,22 +356,22 @@ export default function SellerProductsPage() {
 
   if (loadingShop) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
   if (!shopId) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#c62828', fontSize: '14px' }}>Could not find your shop.</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
   return (
-    <SellerNav>
+    <MerchantNav>
     <div>
       {error && (
         <div style={{
@@ -391,7 +391,7 @@ export default function SellerProductsPage() {
                   <div style={{ fontSize: '12px', color: atProductLimit ? '#c62828' : '#888', marginTop: '2px' }}>
                     {products.length} / {maxProducts} used ({packageName} package)
                     {atProductLimit && (
-                      <a href="/seller/package" style={{ color: '#2d6a4f', fontWeight: '600', marginLeft: '6px' }}>Upgrade →</a>
+                      <a href="/merchant/package" style={{ color: '#2d6a4f', fontWeight: '600', marginLeft: '6px' }}>Upgrade →</a>
                     )}
                   </div>
                 )}
@@ -727,6 +727,6 @@ export default function SellerProductsPage() {
         </>
       )}
     </div>
-    </SellerNav>
+    </MerchantNav>
   )
 }

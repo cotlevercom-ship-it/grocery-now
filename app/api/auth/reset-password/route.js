@@ -8,7 +8,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     const normalizedEmail = email.toLowerCase().trim()
-    const otpPurpose = purpose === 'seller_reset' ? 'seller_reset' : 'reset'
+    const otpPurpose = purpose === 'merchant_reset' ? 'merchant_reset' : 'reset'
 
     const rows = await adminFetch(
       `otp_codes?email=eq.${encodeURIComponent(normalizedEmail)}&purpose=eq.${otpPurpose}&verified=eq.true&order=created_at.desc&limit=1`

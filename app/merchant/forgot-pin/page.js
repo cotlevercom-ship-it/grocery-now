@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-export default function SellerForgotPinPage() {
+export default function MerchantForgotPinPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -21,7 +21,7 @@ export default function SellerForgotPinPage() {
       const res = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), purpose: 'seller_reset' }),
+        body: JSON.stringify({ email: email.trim(), purpose: 'merchant_reset' }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -29,7 +29,7 @@ export default function SellerForgotPinPage() {
         setSubmitting(false)
         return
       }
-      router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=seller_reset`)
+      router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=merchant_reset`)
     } catch (err) {
       console.error(err)
       setError('Something went wrong, please try again')
@@ -50,7 +50,7 @@ export default function SellerForgotPinPage() {
           Forgot PIN
         </div>
         <div style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '22px', lineHeight: 1.6 }}>
-          Enter your seller account email and we'll send you a code to reset your PIN
+          Enter your merchant account email and we'll send you a code to reset your PIN
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -89,7 +89,7 @@ export default function SellerForgotPinPage() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '18px' }}>
-          <Link href="/seller/login" style={{ fontSize: '13px', color: '#999' }}>← Back to Seller Login</Link>
+          <Link href="/merchant/login" style={{ fontSize: '13px', color: '#999' }}>← Back to Merchant Login</Link>
         </div>
       </div>
     </div>

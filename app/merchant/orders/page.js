@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getSession, supabaseFetch } from '@/lib/supabase'
-import SellerNav from '@/components/SellerNav'
+import MerchantNav from '@/components/MerchantNav'
 
 const statusLabels = {
   pending: 'Order received',
@@ -23,7 +23,7 @@ const statusColors = {
   cancelled: { bg: '#ffebee', color: '#c62828' },
 }
 
-export default function SellerOrdersPage() {
+export default function MerchantOrdersPage() {
   const [shopId, setShopId] = useState('')
   const [loadingShop, setLoadingShop] = useState(true)
 
@@ -149,22 +149,22 @@ export default function SellerOrdersPage() {
 
   if (loadingShop) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
   if (!shopId) {
     return (
-      <SellerNav>
+      <MerchantNav>
         <div style={{ color: '#c62828', fontSize: '14px' }}>Could not find your shop.</div>
-      </SellerNav>
+      </MerchantNav>
     )
   }
 
   return (
-    <SellerNav>
+    <MerchantNav>
     <div>
       <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Orders</h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
@@ -335,6 +335,6 @@ export default function SellerOrdersPage() {
         </div>
       )}
     </div>
-    </SellerNav>
+    </MerchantNav>
   )
 }

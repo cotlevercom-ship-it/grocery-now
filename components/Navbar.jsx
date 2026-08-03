@@ -8,7 +8,7 @@ import Image from 'next/image'
 export default function Navbar() {
   const [session, setSession] = useState(null)
   const pathname = usePathname()
-  const isSellerArea = pathname?.startsWith('/seller')
+  const isMerchantArea = pathname?.startsWith('/merchant')
 
   useEffect(() => {
     setSession(getSession())

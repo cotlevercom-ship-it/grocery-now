@@ -128,7 +128,7 @@ export default function AdminShippingPage() {
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#0a0a0a', marginBottom: '4px' }}>Shipping</h1>
           <p style={{ color: '#888', fontSize: '14px', maxWidth: '640px' }}>
-            Cot Lever sets shipping charges centrally — sellers don't set their own delivery charge anymore.
+            Cot Lever sets shipping charges centrally — merchants don't set their own delivery charge anymore.
             Add one rule per destination country. Charge = Base + (extra weight over the free allowance × per-kg rate) + (extra items over the free allowance × per-item rate).
             Add a rule with country <b>OTHER</b> to act as the fallback rate for any country without its own rule.
           </p>

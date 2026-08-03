@@ -6,7 +6,7 @@ const emptyForm = {
   name_bn: '', price: '0', max_products: '', max_categories: '', max_subcategories: '', features_bn: '', sort_order: '0', is_active: true,
 }
 
-export default function AdminSellerPackagesPage() {
+export default function AdminMerchantPackagesPage() {
   const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -136,7 +136,7 @@ export default function AdminSellerPackagesPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-            Seller Packages
+            Merchant Packages
           </h1>
           <p style={{ color: '#888', fontSize: '14px' }}>
             Control pricing, product limits, and features here.
