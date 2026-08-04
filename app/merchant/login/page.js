@@ -15,8 +15,8 @@ const COLORS = {
   ink: '#0a0a0a',
   forest: '#0a0a0a',
   forestMid: '#2a2a2a',
-  gold: '#dc2626',
-  goldSoft: '#f8d7d5',
+  gold: '#f4a300',
+  goldSoft: '#fdf1d9',
   cream: '#faf8f4',
   line: '#e7e2d8',
   textMuted: '#6b7b74',
@@ -338,6 +338,30 @@ function MerchantLoginForm() {
       <div className="hero-content">
         <h1>Your Shop,<br />At Thousands of Doorsteps</h1>
         <p>Join Cot Lever — sell across Bangladesh and worldwide, <span className="highlight">NO COMMISSION</span>.</p>
+
+        <ul className="pitch-list">
+          <li>
+            <span className="pitch-icon">🌍</span>
+            <div>
+              <strong>Sell globally, we handle shipping</strong>
+              <span>Cross-border delivery via DHL, EMS &amp; more — you just pack the order</span>
+            </div>
+          </li>
+          <li>
+            <span className="pitch-icon">✓</span>
+            <div>
+              <strong>Reach verified buyers</strong>
+              <span>Your shop gets listed to a trusted, growing buyer network</span>
+            </div>
+          </li>
+          <li>
+            <span className="pitch-icon">📊</span>
+            <div>
+              <strong>One dashboard, full control</strong>
+              <span>Manage products, orders and B2B/wholesale pricing in one place</span>
+            </div>
+          </li>
+        </ul>
       </div>
 
       <div className="form-panel">
@@ -591,6 +615,43 @@ function MerchantLoginForm() {
         .highlight {
           color: ${COLORS.gold};
           font-weight: 800;
+        }
+        .pitch-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .pitch-list li {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .pitch-icon {
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+        }
+        .pitch-list strong {
+          display: block;
+          font-size: 14px;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 2px;
+        }
+        .pitch-list span {
+          display: block;
+          font-size: 12.5px;
+          line-height: 1.5;
+          color: rgba(255,255,255,0.6);
         }
         .form-panel {
           position: relative;
