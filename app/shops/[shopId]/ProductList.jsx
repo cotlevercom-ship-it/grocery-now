@@ -135,7 +135,7 @@ export default function ProductList({ categories, products, shop }) {
   }
 
   return (
-    <div style={{ paddingBottom: totalItems > 0 ? '80px' : '16px' }} className="shop-layout">
+    <div style={{ paddingBottom: totalItems > 0 ? 'calc(80px + env(safe-area-inset-bottom))' : '16px' }} className="shop-layout">
       {/* Mobile category pills */}
       {categories.length > 0 && (
         <div className="mobile-pills" style={{
@@ -383,7 +383,7 @@ export default function ProductList({ categories, products, shop }) {
       {totalItems > 0 && (
         <div style={{
           position: 'fixed', bottom: '0', left: '0', right: '0',
-          background: '#0a0a0a', padding: '14px 16px',
+          background: '#0a0a0a', padding: '14px 16px calc(14px + env(safe-area-inset-bottom))',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between'
         }}>
           <div style={{ color: 'white' }}>

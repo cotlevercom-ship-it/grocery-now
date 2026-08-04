@@ -88,7 +88,7 @@ export default function CartPage() {
   const subtotal = cartData.items.reduce((a, b) => a + b.qty * b.price, 0)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '90px' }} className="cart-page">
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: 'calc(90px + env(safe-area-inset-bottom))' }} className="cart-page">
       {/* Topbar */}
       <div style={{
         background: '#0a0a0a', padding: '14px 16px',
@@ -199,7 +199,7 @@ export default function CartPage() {
       {/* Bottom bar (mobile only) */}
       <div className="mobile-bottom-bar" style={{
         position: 'fixed', bottom: '0', left: '0', right: '0',
-        background: '#0a0a0a', padding: '14px 16px',
+        background: '#0a0a0a', padding: '14px 16px calc(14px + env(safe-area-inset-bottom))',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
       }}>
         <div style={{ color: 'white' }}>

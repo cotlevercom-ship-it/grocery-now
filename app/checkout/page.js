@@ -257,7 +257,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '100px' }} className="checkout-page">
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }} className="checkout-page">
       {/* Topbar */}
       <div style={{
         background: '#0a0a0a', padding: '14px 16px',
@@ -627,7 +627,7 @@ export default function CheckoutPage() {
         {/* Bottom bar (mobile only) */}
         <div className="mobile-bottom-bar" style={{
           position: 'fixed', bottom: '0', left: '0', right: '0',
-          background: 'white', padding: '14px 16px', borderTop: '1px solid #eee'
+          background: 'white', padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid #eee'
         }}>
           <button
             type="submit"
