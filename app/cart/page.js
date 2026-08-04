@@ -88,7 +88,7 @@ export default function CartPage() {
   const subtotal = cartData.items.reduce((a, b) => a + b.qty * b.price, 0)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '100px' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '90px' }} className="cart-page">
       {/* Topbar */}
       <div style={{
         background: '#0a0a0a', padding: '14px 16px',
@@ -100,87 +100,104 @@ export default function CartPage() {
         <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>Cart</div>
       </div>
 
-      {/* Shop name */}
-      <div style={{ padding: '14px 16px 6px', fontSize: '13px', color: '#666' }}>
-        From {cartData.shopName}
-      </div>
+      <div className="cart-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '16px' }}>
+        <div className="cart-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
 
-      {/* Cart items */}
-      <div style={{ padding: '8px 16px' }}>
-        {cartData.items.map(item => {
-          const cartKey = keyOf(item)
-          return (
-            <div key={cartKey} style={{
-              background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
-              padding: '12px', marginBottom: '10px',
-              display: 'flex', alignItems: 'center', gap: '12px'
-            }}>
-              <div style={{
-                width: '56px', height: '56px', borderRadius: '8px',
-                background: '#f9fbe7', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: '24px', flexShrink: 0, overflow: 'hidden'
-              }}>
-                {item.image_url ? (
-                  <img src={item.image_url} alt={item.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : '🛍️'}
-              </div>
-
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '13px', fontWeight: '500', color: '#1a1a1a' }}>{item.name}</div>
-                <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
-                  {item.variantName || item.unit}
-                </div>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#0a0a0a' }}>৳{item.price} × {item.qty} = ৳{item.price * item.qty}</div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <button onClick={() => removeQty(cartKey)} style={{
-                    width: '24px', height: '24px', borderRadius: '50%',
-                    background: '#f5f5f5', color: '#0a0a0a', fontSize: '16px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>-</button>
-                  <span style={{ fontSize: '13px', fontWeight: '600', minWidth: '16px', textAlign: 'center' }}>{item.qty}</span>
-                  <button onClick={() => addQty(cartKey)} style={{
-                    width: '24px', height: '24px', borderRadius: '50%',
-                    background: '#0a0a0a', color: 'white', fontSize: '16px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>+</button>
-                </div>
-                <button onClick={() => deleteItem(cartKey)} style={{
-                  fontSize: '11px', color: '#d32f2f'
-                }}>Remove</button>
-              </div>
+          {/* Left: items */}
+          <div className="cart-items-col" style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '13px', color: '#666', marginBottom: '10px', fontWeight: '600' }}>
+              From {cartData.shopName}
             </div>
-          )
-        })}
+
+            {cartData.items.map(item => {
+              const cartKey = keyOf(item)
+              return (
+                <div key={cartKey} style={{
+                  background: 'white', borderRadius: '6px', border: '1px solid #e5e5e5',
+                  padding: '14px', marginBottom: '10px',
+                  display: 'flex', alignItems: 'center', gap: '14px'
+                }}>
+                  <div style={{
+                    width: '72px', height: '72px', borderRadius: '4px',
+                    background: '#f5f5f5', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', fontSize: '24px', flexShrink: 0, overflow: 'hidden'
+                  }}>
+                    {item.image_url ? (
+                      <img src={item.image_url} alt={item.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : '🛍️'}
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '13.5px', fontWeight: '600', color: '#1a1a1a', marginBottom: '3px' }}>{item.name}</div>
+                    <div style={{ fontSize: '11.5px', color: '#888', marginBottom: '6px' }}>
+                      {item.variantName || item.unit}
+                    </div>
+                    <div style={{ fontSize: '13px', color: '#666' }}>
+                      ৳{item.price} × {item.qty} = <span style={{ fontWeight: '700', color: '#0a0a0a' }}>৳{item.price * item.qty}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
+                      <button onClick={() => removeQty(cartKey)} style={{
+                        width: '26px', height: '26px', background: '#f5f5f5', color: '#0a0a0a', fontSize: '15px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none'
+                      }}>-</button>
+                      <span style={{ fontSize: '13px', fontWeight: '600', minWidth: '28px', textAlign: 'center' }}>{item.qty}</span>
+                      <button onClick={() => addQty(cartKey)} style={{
+                        width: '26px', height: '26px', background: '#0a0a0a', color: 'white', fontSize: '15px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none'
+                      }}>+</button>
+                    </div>
+                    <button onClick={() => deleteItem(cartKey)} style={{
+                      fontSize: '11px', color: '#d32f2f', background: 'none', border: 'none'
+                    }}>Remove</button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Right: sticky summary (desktop) */}
+          <div className="cart-summary-col" style={{ width: '100%' }}>
+            <div style={{
+              background: 'white', borderRadius: '6px',
+              border: '1px solid #e5e5e5', padding: '18px'
+            }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: '#1a1a1a', marginBottom: '14px' }}>
+                Order Summary
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '10px' }}>
+                <span>Subtotal ({totalItems} item{totalItems > 1 ? 's' : ''})</span>
+                <span>৳{subtotal}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '10px' }}>
+                <span>Delivery charge</span>
+                <span>Added at checkout</span>
+              </div>
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', fontSize: '16px',
+                fontWeight: '700', color: '#1a1a1a', paddingTop: '12px', borderTop: '1px solid #eee', marginBottom: '16px'
+              }}>
+                <span>Total</span>
+                <span>৳{subtotal}</span>
+              </div>
+              <button
+                onClick={() => router.push('/checkout')}
+                className="desktop-place-order"
+                style={{
+                  width: '100%', background: '#f4a300', color: '#1a1a1a', padding: '12px',
+                  borderRadius: '6px', fontSize: '14px', fontWeight: '700', border: 'none'
+                }}>Place order →</button>
+            </div>
+          </div>
+
+        </div>
       </div>
 
-      {/* Summary */}
-      <div style={{
-        background: 'white', margin: '8px 16px', borderRadius: '10px',
-        border: '1px solid #e0e0e0', padding: '14px'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-          <span>Subtotal ({totalItems} item{totalItems > 1 ? 's' : ''})</span>
-          <span>৳{subtotal}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-          <span>Delivery charge</span>
-          <span>Added at checkout</span>
-        </div>
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', fontSize: '15px',
-          fontWeight: '600', color: '#1a1a1a', paddingTop: '8px', borderTop: '1px solid #eee'
-        }}>
-          <span>Total</span>
-          <span>৳{subtotal}</span>
-        </div>
-      </div>
-
-      {/* Bottom bar */}
-      <div style={{
+      {/* Bottom bar (mobile only) */}
+      <div className="mobile-bottom-bar" style={{
         position: 'fixed', bottom: '0', left: '0', right: '0',
         background: '#0a0a0a', padding: '14px 16px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
@@ -193,9 +210,21 @@ export default function CartPage() {
           onClick={() => router.push('/checkout')}
           style={{
             background: 'white', color: '#0a0a0a', padding: '10px 24px',
-            borderRadius: '8px', fontSize: '14px', fontWeight: '600'
+            borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none'
           }}>Place order →</button>
       </div>
+
+      <style jsx>{`
+        .cart-summary-col { width: 100%; }
+        .desktop-place-order { display: none; }
+        @media (min-width: 860px) {
+          .cart-layout { align-items: flex-start; }
+          .cart-summary-col { width: 320px; flex-shrink: 0; position: sticky; top: 20px; }
+          .desktop-place-order { display: block; }
+          .mobile-bottom-bar { display: none; }
+          .cart-page { padding-bottom: 40px !important; }
+        }
+      `}</style>
     </div>
   )
 }
