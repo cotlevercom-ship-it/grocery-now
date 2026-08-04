@@ -162,6 +162,18 @@ export default function ShipPage() {
             }}>{error}</div>
           )}
 
+          {calc.mode === 'domestic' ? (
+            <div style={{
+              textAlign: 'center', padding: '48px 20px', background: '#fdf1d9',
+              borderRadius: '12px', color: '#5c4600'
+            }}>
+              <div style={{ fontSize: '36px', marginBottom: '10px' }}>🚚</div>
+              <div style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px' }}>Domestic shipping coming soon</div>
+              <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
+                District-to-district delivery within Bangladesh isn't available yet. Use International for cross-border shipments.
+              </div>
+            </div>
+          ) : (
           <form onSubmit={handleCalculate}>
             <div style={{ marginBottom: '22px' }}>
               <label style={labelStyle}>From{required}</label>
@@ -206,6 +218,7 @@ export default function ShipPage() {
               }}>{loadingRates ? 'Calculating...' : 'Calculate'}</button>
             </div>
           </form>
+          )}
         </>
       )}
 
