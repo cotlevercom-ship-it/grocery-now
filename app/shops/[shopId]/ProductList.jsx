@@ -1,26 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import ProductDetailModal from './ProductDetailModal'
+import { useRouter } from 'next/navigation'
 import { getShopCart, setShopCart } from '@/lib/cart'
 
 export default function ProductList({ categories, products, shop }) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [cart, setCart] = useState([])
   const [activeCategory, setActiveCategory] = useState('all')
-  const [detailProduct, setDetailProduct] = useState(null)
-
-  // If arriving via a "view this product" link (e.g. from the homepage or
-  // search results), auto-open that product's detail modal on load.
-  useEffect(() => {
-    const productId = searchParams.get('product')
-    if (productId) {
-      const match = products.find(p => p.id === productId)
-      if (match) setDetailProduct(match)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   // Load this shop's items from the multi-shop cart on mount
   useEffect(() => {
@@ -216,7 +202,7 @@ export default function ProductList({ categories, products, shop }) {
                     border: '1px solid #e5e5e5', overflow: 'hidden'
                   }}>
                     <div
-                      onClick={() => setDetailProduct(product)}
+                      onClick={() => router.push(`/products/${product.id}`)}
                       style={{
                         aspectRatio: '1 / 1', background: '#f5f5f5',
                         display: 'flex', alignItems: 'center',
@@ -272,7 +258,7 @@ export default function ProductList({ categories, products, shop }) {
                     </div>
                     <div style={{ padding: '10px' }}>
                       <div
-                        onClick={() => setDetailProduct(product)}
+                        onClick={() => router.push(`/products/${product.id}`)}
                         style={{
                           fontSize: '12.5px', fontWeight: '400', color: '#333', cursor: 'pointer',
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
@@ -303,7 +289,7 @@ export default function ProductList({ categories, products, shop }) {
                           <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>Unavailable</span>
                         ) : hasVariants ? (
                           <button
-                            onClick={() => setDetailProduct(product)}
+                            onClick={() => router.push(`/products/${product.id}`)}
                             style={{
                               padding: '5px 14px', borderRadius: '3px', fontSize: '11px',
                               fontWeight: '600', background: 'white', color: '#0a0a0a',
@@ -388,14 +374,6 @@ export default function ProductList({ categories, products, shop }) {
               borderRadius: '8px', fontSize: '14px', fontWeight: '600'
             }}>Checkout →</button>
         </div>
-      )}
-
-      {detailProduct && (
-        <ProductDetailModal
-          product={detailProduct}
-          onClose={() => setDetailProduct(null)}
-          onAddToCart={addToCart}
-        />
       )}
     </div>
   )

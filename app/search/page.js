@@ -95,7 +95,7 @@ export default async function SearchPage({ searchParams }) {
               display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '12px'
             }}>
               {products.map(p => (
-                <Link key={p.id} href={`/shops/${p.shop_id}?product=${p.id}`} style={{
+                <Link key={p.id} href={`/products/${p.id}`} style={{
                   background: 'white', borderRadius: '4px', border: '1px solid #e5e5e5',
                   overflow: 'hidden', textDecoration: 'none', display: 'block'
                 }}>
