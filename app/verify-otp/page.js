@@ -54,6 +54,8 @@ function VerifyOtpForm() {
       }
       if (purpose === 'reset') {
         router.push(`/reset-password?email=${encodeURIComponent(email)}`)
+      } else if (purpose === 'admin_reset') {
+        router.push(`/reset-password?email=${encodeURIComponent(email)}&purpose=admin_reset`)
       } else if (purpose === 'merchant_reset') {
         router.push(`/merchant/reset-pin?email=${encodeURIComponent(email)}`)
       } else {

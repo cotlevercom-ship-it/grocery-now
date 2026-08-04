@@ -74,6 +74,9 @@ export default function AdminLoginPage() {
           }}>
             {submitting ? 'লগইন হচ্ছে...' : 'লগইন করুন'}
           </button>
+          <div style={{ textAlign: 'center', marginTop: '14px' }}>
+            <a href="/admin/forgot-password" style={{ fontSize: '12.5px', color: '#888' }}>Forgot password?</a>
+          </div>
         </form>
       </div>
     </div>

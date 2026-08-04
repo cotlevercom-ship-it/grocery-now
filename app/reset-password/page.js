@@ -15,6 +15,9 @@ function ResetPasswordForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get('email') || ''
+  const purpose = searchParams.get('purpose') || 'reset'
+  const isAdmin = purpose === 'admin_reset'
+  const loginHref = isAdmin ? '/admin/login' : '/login'
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -38,7 +41,7 @@ function ResetPasswordForm() {
       const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword: password }),
+        body: JSON.stringify({ email, newPassword: password, purpose }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -72,7 +75,7 @@ function ResetPasswordForm() {
             Your password has been changed. You can now log in with your new password.
           </div>
           <button
-            onClick={() => router.push('/login')}
+            onClick={() => router.push(loginHref)}
             style={{
               width: '100%', background: '#dc2626', color: 'white', padding: '13px',
               borderRadius: '999px', fontSize: '15px', fontWeight: '700', border: 'none'
@@ -151,7 +154,7 @@ function ResetPasswordForm() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '18px' }}>
-          <Link href="/login" style={{ fontSize: '13px', color: '#999' }}>← Back to Log In</Link>
+          <Link href={loginHref} style={{ fontSize: '13px', color: '#999' }}>← Back to Log In</Link>
         </div>
       </div>
     </div>

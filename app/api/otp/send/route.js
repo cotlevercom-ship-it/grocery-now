@@ -9,8 +9,18 @@ function generateCode() {
 export async function POST(req) {
   try {
     const { email, purpose } = await req.json()
-    if (!email || !['signup', 'reset', 'merchant_reset'].includes(purpose)) {
+    if (!email || !['signup', 'reset', 'merchant_reset', 'admin_reset'].includes(purpose)) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    }
+
+    const normalizedEmail = email.toLowerCase().trim()
+
+    if (purpose === 'admin_reset') {
+      const rows = await adminFetch(`admin_users?select=id&email=eq.${encodeURIComponent(normalizedEmail)}`)
+      if (!rows || rows.length === 0) {
+        // Don't reveal whether the email exists; respond success either way.
+        return NextResponse.json({ success: true })
+      }
     }
 
     const code = generateCode()
