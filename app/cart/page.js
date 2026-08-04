@@ -101,7 +101,7 @@ export default function CartPage() {
       </div>
 
       <div className="cart-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '16px' }}>
-        <div className="cart-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+        <div className="cart-layout" style={{ display: 'flex', gap: '20px' }}>
 
           {/* Left: items */}
           <div className="cart-items-col" style={{ flex: 1, minWidth: 0 }}>

@@ -285,7 +285,7 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          <div className="checkout-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+          <div className="checkout-layout" style={{ display: 'flex', gap: '20px' }}>
 
             {/* Left column: all form sections */}
             <div className="checkout-left" style={{ flex: 1, minWidth: 0 }}>
@@ -648,7 +648,7 @@ export default function CheckoutPage() {
         .desktop-confirm { display: none; }
         .desktop-only-error { display: none; }
         @media (min-width: 860px) {
-          .checkout-layout { flex-direction: row; }
+          .checkout-layout { flex-direction: row; align-items: flex-start; }
           .checkout-right { width: 360px; flex-shrink: 0; position: sticky; top: 20px; }
           .desktop-confirm { display: block; }
           .desktop-only-error { display: block; }
