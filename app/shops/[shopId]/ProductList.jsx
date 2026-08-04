@@ -212,7 +212,7 @@ export default function ProductList({ categories, products, shop }) {
                 {group.name}
               </div>
             )}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 180px))', gap: '12px' }}>
               {group.products.map(product => {
                 const hasVariants = (product.product_variants || []).length > 0
                 const qty = getQty(product.id)
