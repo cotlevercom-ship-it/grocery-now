@@ -7,6 +7,7 @@ import Image from 'next/image'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
+  const [cartCount, setCartCount] = useState(0)
   const pathname = usePathname()
   const isMerchantArea = pathname?.startsWith('/merchant')
 
@@ -18,6 +19,27 @@ export default function Navbar() {
     return () => {
       window.removeEventListener('auth-changed', onAuthChanged)
       window.removeEventListener('storage', onAuthChanged)
+    }
+  }, [])
+
+  useEffect(() => {
+    const readCart = () => {
+      try {
+        const saved = localStorage.getItem('cart')
+        if (!saved) { setCartCount(0); return }
+        const parsed = JSON.parse(saved)
+        const count = (parsed.items || []).reduce((a, b) => a + (b.qty || 0), 0)
+        setCartCount(count)
+      } catch (e) {
+        setCartCount(0)
+      }
+    }
+    readCart()
+    window.addEventListener('cart-changed', readCart)
+    window.addEventListener('storage', readCart)
+    return () => {
+      window.removeEventListener('cart-changed', readCart)
+      window.removeEventListener('storage', readCart)
     }
   }, [])
 
@@ -48,6 +70,29 @@ export default function Navbar() {
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <Link href="/cart" style={{
+            position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
+            borderRadius: '8px', width: '36px', height: '36px', flexShrink: 0
+          }}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            {cartCount > 0 && (
+              <span style={{
+                position: 'absolute', top: '-4px', right: '-4px',
+                background: '#f4a300', color: '#1a1a1a', fontSize: '10px', fontWeight: '700',
+                borderRadius: '999px', minWidth: '16px', height: '16px', padding: '0 3px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                lineHeight: 1, border: '2px solid #000'
+              }}>
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            )}
+          </Link>
+
           <Link href="/ship" style={{
             display: 'flex', alignItems: 'center', gap: '4px',
             background: 'rgba(255,255,255,0.12)', color: '#faf7f0',

@@ -27,6 +27,7 @@ export default function CartPage() {
     } else {
       localStorage.removeItem('cart')
     }
+    window.dispatchEvent(new Event('cart-changed'))
   }
 
   const keyOf = (item) => item.cartKey || item.id

@@ -43,6 +43,7 @@ export default function ProductList({ categories, products, shop }) {
           }
         }
       }
+      window.dispatchEvent(new Event('cart-changed'))
     } catch (e) {
       console.error(e)
     }
