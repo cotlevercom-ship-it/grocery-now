@@ -257,7 +257,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '100px' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '100px' }} className="checkout-page">
       {/* Topbar */}
       <div style={{
         background: '#0a0a0a', padding: '14px 16px',
@@ -270,298 +270,362 @@ export default function CheckoutPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {!session && (
-          <div style={{
-            margin: '14px 16px 0', padding: '10px 12px', background: '#f5f5f5',
-            borderRadius: '8px', fontSize: '12px', color: '#0a0a0a',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px'
-          }}>
-            <span>Ordering as a guest</span>
-            <Link href={`/login?next=/checkout`} style={{ color: '#0a0a0a', fontWeight: '600', textDecoration: 'underline' }}>
-              Log in
-            </Link>
-          </div>
-        )}
+        <div className="checkout-container" style={{ maxWidth: '1080px', margin: '0 auto', padding: '14px 16px' }}>
 
-        {/* Delivery method */}
-        {shop?.pickup_available && (
-          <div style={{
-            background: 'white', margin: '14px 16px', borderRadius: '10px',
-            border: '1px solid #e0e0e0', padding: '16px'
-          }}>
-            <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-              Delivery method
-            </div>
-            <label style={{
-              display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-              border: `1px solid ${deliveryMethod === 'delivery' ? '#0a0a0a' : '#ddd'}`,
-              borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
+          {!session && (
+            <div style={{
+              padding: '10px 12px', background: '#f5f5f5', marginBottom: '14px',
+              borderRadius: '8px', fontSize: '12px', color: '#0a0a0a',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px'
             }}>
-              <input
-                type="radio"
-                name="deliveryMethod"
-                checked={deliveryMethod === 'delivery'}
-                onChange={() => setDeliveryMethod('delivery')}
-              />
-              <span style={{ fontSize: '14px' }}>Home delivery</span>
-            </label>
-            <label style={{
-              display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-              border: `1px solid ${deliveryMethod === 'pickup' ? '#0a0a0a' : '#ddd'}`,
-              borderRadius: '8px', cursor: 'pointer'
-            }}>
-              <input
-                type="radio"
-                name="deliveryMethod"
-                checked={deliveryMethod === 'pickup'}
-                onChange={() => setDeliveryMethod('pickup')}
-              />
-              <span style={{ fontSize: '14px' }}>Store pickup (no delivery charge)</span>
-            </label>
-          </div>
-        )}
-
-        {/* Delivery info */}
-        <div style={{
-          background: 'white', margin: '14px 16px', borderRadius: '10px',
-          border: '1px solid #e0e0e0', padding: '16px'
-        }}>
-          <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-            {deliveryMethod === 'pickup' ? 'Pickup person details' : 'Delivery details'}
-          </div>
-
-          <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Name *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-              style={{
-                width: '100%', padding: '10px 12px', borderRadius: '8px',
-                border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Phone number *</label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="01XXXXXXXXX"
-              style={{
-                width: '100%', padding: '10px 12px', borderRadius: '8px',
-                border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          {deliveryMethod === 'pickup' ? (
-            <div>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Pickup address</label>
-              <div style={{
-                padding: '10px 12px', borderRadius: '8px', background: '#f5f5f5',
-                fontSize: '14px', color: '#333'
-              }}>{shop?.pickup_address || 'Store address will be shared soon'}</div>
+              <span>Ordering as a guest</span>
+              <Link href={`/login?next=/checkout`} style={{ color: '#0a0a0a', fontWeight: '600', textDecoration: 'underline' }}>
+                Log in
+              </Link>
             </div>
-          ) : (
-            <>
-              {areaName && (
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Area</label>
-                  <div style={{
-                    padding: '10px 12px', borderRadius: '8px', background: '#f5f5f5',
-                    fontSize: '14px', color: '#333'
-                  }}>{areaName}</div>
-                </div>
-              )}
+          )}
 
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Delivery country *</label>
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  style={{
-                    width: '100%', padding: '10px 12px', borderRadius: '8px',
-                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
-                    background: 'white'
-                  }}
-                >
-                  {countryOptions.map(c => (
-                    <option key={c} value={c}>{c === 'OTHER' ? 'Other (Rest of World)' : c}</option>
-                  ))}
-                </select>
-              </div>
+          <div className="checkout-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
 
-              {matchedRules.length > 1 && (
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>Courier *</label>
-                  {matchedRules.map(r => (
-                    <label key={r.id} style={{
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px',
-                      padding: '10px 12px', border: `1px solid ${selectedRuleId === r.id ? '#0a0a0a' : '#ddd'}`,
-                      borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
-                    }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input
-                          type="radio"
-                          name="courierRule"
-                          checked={selectedRuleId === r.id}
-                          onChange={() => setSelectedRuleId(r.id)}
-                        />
-                        <span style={{ fontSize: '14px' }}>{r.courier_name || r.country}</span>
-                      </span>
-                      <span style={{ fontSize: '13px', color: '#555', fontWeight: '600' }}>৳{ruleCharge(r)}</span>
-                    </label>
-                  ))}
-                </div>
-              )}
+            {/* Left column: all form sections */}
+            <div className="checkout-left" style={{ flex: 1, minWidth: 0 }}>
 
-              {session?.user?.id && savedAddresses.length > 0 && (
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>Delivery address *</label>
-                  {savedAddresses.map(addr => (
-                    <label key={addr.id} style={{
-                      display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px',
-                      border: `1px solid ${selectedAddressId === addr.id ? '#0a0a0a' : '#ddd'}`,
-                      borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
-                    }}>
-                      <input
-                        type="radio"
-                        name="savedAddress"
-                        checked={selectedAddressId === addr.id}
-                        onChange={() => { setSelectedAddressId(addr.id); if (addr.country) setCountry(addr.country) }}
-                        style={{ marginTop: '3px' }}
-                      />
-                      <div>
-                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>{addr.label || 'Address'}</div>
-                        <div style={{ fontSize: '13px', color: '#555', marginTop: '2px' }}>{addr.address}</div>
-                      </div>
-                    </label>
-                  ))}
+              {/* Delivery method */}
+              {shop?.pickup_available && (
+                <div style={{
+                  background: 'white', marginBottom: '14px', borderRadius: '6px',
+                  border: '1px solid #e5e5e5', padding: '16px'
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '12px', color: '#1a1a1a' }}>
+                    Delivery method
+                  </div>
                   <label style={{
                     display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                    border: `1px solid ${selectedAddressId === 'new' ? '#0a0a0a' : '#ddd'}`,
-                    borderRadius: '8px', cursor: 'pointer'
+                    border: `1px solid ${deliveryMethod === 'delivery' ? '#0a0a0a' : '#ddd'}`,
+                    borderRadius: '6px', marginBottom: '8px', cursor: 'pointer'
                   }}>
                     <input
                       type="radio"
-                      name="savedAddress"
-                      checked={selectedAddressId === 'new'}
-                      onChange={() => setSelectedAddressId('new')}
+                      name="deliveryMethod"
+                      checked={deliveryMethod === 'delivery'}
+                      onChange={() => setDeliveryMethod('delivery')}
                     />
-                    <span style={{ fontSize: '14px' }}>+ Use a new address</span>
+                    <span style={{ fontSize: '14px' }}>Home delivery</span>
+                  </label>
+                  <label style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+                    border: `1px solid ${deliveryMethod === 'pickup' ? '#0a0a0a' : '#ddd'}`,
+                    borderRadius: '6px', cursor: 'pointer'
+                  }}>
+                    <input
+                      type="radio"
+                      name="deliveryMethod"
+                      checked={deliveryMethod === 'pickup'}
+                      onChange={() => setDeliveryMethod('pickup')}
+                    />
+                    <span style={{ fontSize: '14px' }}>Store pickup (no delivery charge)</span>
                   </label>
                 </div>
               )}
 
-              {selectedAddressId === 'new' && (
-                <div>
-                  <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Full address *</label>
-                  <textarea
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="House/flat number, road, area name"
-                    rows={3}
-                    style={{
-                      width: '100%', padding: '10px 12px', borderRadius: '8px',
-                      border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
-                      resize: 'none', fontFamily: 'inherit'
-                    }}
-                  />
-                  {session?.user?.id && (
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', fontSize: '12px', color: '#666', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={saveNewAddress}
-                        onChange={(e) => setSaveNewAddress(e.target.checked)}
-                      />
-                      Save this address for next time
-                    </label>
-                  )}
+              {/* Delivery info */}
+              <div style={{
+                background: 'white', marginBottom: '14px', borderRadius: '6px',
+                border: '1px solid #e5e5e5', padding: '16px'
+              }}>
+                <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '12px', color: '#1a1a1a' }}>
+                  {deliveryMethod === 'pickup' ? 'Pickup person details' : 'Delivery details'}
                 </div>
+
+                <div className="form-row" style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Name *</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter your name"
+                      style={{
+                        width: '100%', padding: '10px 12px', borderRadius: '6px',
+                        border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Phone number *</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="01XXXXXXXXX"
+                      style={{
+                        width: '100%', padding: '10px 12px', borderRadius: '6px',
+                        border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {deliveryMethod === 'pickup' ? (
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Pickup address</label>
+                    <div style={{
+                      padding: '10px 12px', borderRadius: '6px', background: '#f5f5f5',
+                      fontSize: '14px', color: '#333'
+                    }}>{shop?.pickup_address || 'Store address will be shared soon'}</div>
+                  </div>
+                ) : (
+                  <>
+                    {areaName && (
+                      <div style={{ marginBottom: '12px' }}>
+                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Area</label>
+                        <div style={{
+                          padding: '10px 12px', borderRadius: '6px', background: '#f5f5f5',
+                          fontSize: '14px', color: '#333'
+                        }}>{areaName}</div>
+                      </div>
+                    )}
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Delivery country *</label>
+                      <select
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        style={{
+                          width: '100%', padding: '10px 12px', borderRadius: '6px',
+                          border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
+                          background: 'white'
+                        }}
+                      >
+                        {countryOptions.map(c => (
+                          <option key={c} value={c}>{c === 'OTHER' ? 'Other (Rest of World)' : c}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {matchedRules.length > 1 && (
+                      <div style={{ marginBottom: '12px' }}>
+                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>Courier *</label>
+                        {matchedRules.map(r => (
+                          <label key={r.id} style={{
+                            display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px',
+                            padding: '10px 12px', border: `1px solid ${selectedRuleId === r.id ? '#0a0a0a' : '#ddd'}`,
+                            borderRadius: '6px', marginBottom: '8px', cursor: 'pointer'
+                          }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <input
+                                type="radio"
+                                name="courierRule"
+                                checked={selectedRuleId === r.id}
+                                onChange={() => setSelectedRuleId(r.id)}
+                              />
+                              <span style={{ fontSize: '14px' }}>{r.courier_name || r.country}</span>
+                            </span>
+                            <span style={{ fontSize: '13px', color: '#555', fontWeight: '600' }}>৳{ruleCharge(r)}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+
+                    {session?.user?.id && savedAddresses.length > 0 && (
+                      <div style={{ marginBottom: '12px' }}>
+                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '6px' }}>Delivery address *</label>
+                        {savedAddresses.map(addr => (
+                          <label key={addr.id} style={{
+                            display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px',
+                            border: `1px solid ${selectedAddressId === addr.id ? '#0a0a0a' : '#ddd'}`,
+                            borderRadius: '6px', marginBottom: '8px', cursor: 'pointer'
+                          }}>
+                            <input
+                              type="radio"
+                              name="savedAddress"
+                              checked={selectedAddressId === addr.id}
+                              onChange={() => { setSelectedAddressId(addr.id); if (addr.country) setCountry(addr.country) }}
+                              style={{ marginTop: '3px' }}
+                            />
+                            <div>
+                              <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>{addr.label || 'Address'}</div>
+                              <div style={{ fontSize: '13px', color: '#555', marginTop: '2px' }}>{addr.address}</div>
+                            </div>
+                          </label>
+                        ))}
+                        <label style={{
+                          display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+                          border: `1px solid ${selectedAddressId === 'new' ? '#0a0a0a' : '#ddd'}`,
+                          borderRadius: '6px', cursor: 'pointer'
+                        }}>
+                          <input
+                            type="radio"
+                            name="savedAddress"
+                            checked={selectedAddressId === 'new'}
+                            onChange={() => setSelectedAddressId('new')}
+                          />
+                          <span style={{ fontSize: '14px' }}>+ Use a new address</span>
+                        </label>
+                      </div>
+                    )}
+
+                    {selectedAddressId === 'new' && (
+                      <div>
+                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Full address *</label>
+                        <textarea
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                          placeholder="House/flat number, road, area name"
+                          rows={3}
+                          style={{
+                            width: '100%', padding: '10px 12px', borderRadius: '6px',
+                            border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
+                            resize: 'none', fontFamily: 'inherit'
+                          }}
+                        />
+                        {session?.user?.id && (
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', fontSize: '12px', color: '#666', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={saveNewAddress}
+                              onChange={(e) => setSaveNewAddress(e.target.checked)}
+                            />
+                            Save this address for next time
+                          </label>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Payment method */}
+              <div style={{
+                background: 'white', marginBottom: '14px', borderRadius: '6px',
+                border: '1px solid #e5e5e5', padding: '16px'
+              }}>
+                <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '12px', color: '#1a1a1a' }}>
+                  Payment method
+                </div>
+                <label style={{
+                  display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+                  border: `1px solid ${paymentMethod === 'cod' ? '#0a0a0a' : '#ddd'}`,
+                  borderRadius: '6px', cursor: 'pointer'
+                }}>
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                  />
+                  <span style={{ fontSize: '14px' }}>Cash on delivery</span>
+                </label>
+              </div>
+
+              {/* Note */}
+              <div style={{
+                background: 'white', marginBottom: '14px', borderRadius: '6px',
+                border: '1px solid #e5e5e5', padding: '16px'
+              }}>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>
+                  Order note (optional)
+                </label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Any special instructions"
+                  rows={2}
+                  style={{
+                    width: '100%', padding: '10px 12px', borderRadius: '6px',
+                    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
+                    resize: 'none', fontFamily: 'inherit'
+                  }}
+                />
+              </div>
+
+              {error && (
+                <div className="mobile-only-error" style={{
+                  padding: '10px 12px', background: '#ffebee', marginBottom: '14px',
+                  color: '#c62828', borderRadius: '6px', fontSize: '13px'
+                }}>{error}</div>
               )}
-            </>
-          )}
+            </div>
+
+            {/* Right column: order summary */}
+            <div className="checkout-right">
+              <div style={{
+                background: 'white', borderRadius: '6px',
+                border: '1px solid #e5e5e5', padding: '16px'
+              }}>
+                <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '12px', color: '#1a1a1a' }}>
+                  Order Summary
+                </div>
+
+                <div style={{ maxHeight: '220px', overflowY: 'auto', marginBottom: '12px' }}>
+                  {cartData.items.map(item => (
+                    <div key={item.cartKey || item.id} style={{
+                      display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px'
+                    }}>
+                      <div style={{
+                        width: '40px', height: '40px', borderRadius: '4px', background: '#f5f5f5',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        overflow: 'hidden', flexShrink: 0, fontSize: '16px'
+                      }}>
+                        {item.image_url ? (
+                          <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : '🛍️'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: '12px', color: '#333', overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                        }}>{item.name}</div>
+                        <div style={{ fontSize: '11px', color: '#999' }}>Qty {item.qty}</div>
+                      </div>
+                      <div style={{ fontSize: '12px', fontWeight: '600', color: '#1a1a1a' }}>৳{item.price * item.qty}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid #eee' }}>
+                  <span>Subtotal</span>
+                  <span>৳{subtotal}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
+                  <span>Delivery charge</span>
+                  <span>{deliveryCharge === 0 ? 'Free' : `৳${deliveryCharge}`}</span>
+                </div>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', fontSize: '16px',
+                  fontWeight: '700', color: '#1a1a1a', paddingTop: '10px', borderTop: '1px solid #eee', marginBottom: '14px'
+                }}>
+                  <span>Total</span>
+                  <span>৳{total}</span>
+                </div>
+
+                {error && (
+                  <div className="desktop-only-error" style={{
+                    padding: '10px 12px', background: '#ffebee', marginBottom: '12px',
+                    color: '#c62828', borderRadius: '6px', fontSize: '13px'
+                  }}>{error}</div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="desktop-confirm"
+                  style={{
+                    width: '100%', background: submitting ? '#9ca3af' : '#f4a300', color: '#1a1a1a',
+                    padding: '12px', borderRadius: '6px', fontSize: '14px', fontWeight: '700',
+                    border: 'none'
+                  }}>
+                  {submitting ? 'Placing order...' : `Confirm order — ৳${total}`}
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
 
-        {/* Payment method */}
-        <div style={{
-          background: 'white', margin: '14px 16px', borderRadius: '10px',
-          border: '1px solid #e0e0e0', padding: '16px'
-        }}>
-          <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-            Payment method
-          </div>
-          <label style={{
-            display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-            border: `1px solid ${paymentMethod === 'cod' ? '#0a0a0a' : '#ddd'}`,
-            borderRadius: '8px', marginBottom: '8px', cursor: 'pointer'
-          }}>
-            <input
-              type="radio"
-              name="payment"
-              checked={paymentMethod === 'cod'}
-              onChange={() => setPaymentMethod('cod')}
-            />
-            <span style={{ fontSize: '14px' }}>Cash on delivery</span>
-          </label>
-        </div>
-
-        {/* Note */}
-        <div style={{
-          background: 'white', margin: '14px 16px', borderRadius: '10px',
-          border: '1px solid #e0e0e0', padding: '16px'
-        }}>
-          <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>
-            Order note (optional)
-          </label>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Any special instructions"
-            rows={2}
-            style={{
-              width: '100%', padding: '10px 12px', borderRadius: '8px',
-              border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
-              resize: 'none', fontFamily: 'inherit'
-            }}
-          />
-        </div>
-
-        {/* Summary */}
-        <div style={{
-          background: 'white', margin: '14px 16px', borderRadius: '10px',
-          border: '1px solid #e0e0e0', padding: '16px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-            <span>Subtotal</span>
-            <span>৳{subtotal}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-            <span>Delivery charge</span>
-            <span>{deliveryCharge === 0 ? 'Free' : `৳${deliveryCharge}`}</span>
-          </div>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', fontSize: '15px',
-            fontWeight: '600', color: '#1a1a1a', paddingTop: '8px', borderTop: '1px solid #eee'
-          }}>
-            <span>Total</span>
-            <span>৳{total}</span>
-          </div>
-        </div>
-
-        {error && (
-          <div style={{
-            margin: '0 16px 14px', padding: '10px 12px', background: '#ffebee',
-            color: '#c62828', borderRadius: '8px', fontSize: '13px'
-          }}>{error}</div>
-        )}
-
-        {/* Bottom bar */}
-        <div style={{
+        {/* Bottom bar (mobile only) */}
+        <div className="mobile-bottom-bar" style={{
           position: 'fixed', bottom: '0', left: '0', right: '0',
           background: 'white', padding: '14px 16px', borderTop: '1px solid #eee'
         }}>
@@ -577,6 +641,26 @@ export default function CheckoutPage() {
           </button>
         </div>
       </form>
+
+      <style jsx>{`
+        .checkout-layout { flex-direction: column; }
+        .checkout-right { width: 100%; }
+        .desktop-confirm { display: none; }
+        .desktop-only-error { display: none; }
+        @media (min-width: 860px) {
+          .checkout-layout { flex-direction: row; }
+          .checkout-right { width: 360px; flex-shrink: 0; position: sticky; top: 20px; }
+          .desktop-confirm { display: block; }
+          .desktop-only-error { display: block; }
+          .mobile-only-error { display: none; }
+          .mobile-bottom-bar { display: none; }
+          .checkout-page { padding-bottom: 40px !important; }
+          .form-row { flex-direction: row !important; }
+        }
+        @media (max-width: 859px) {
+          .form-row { flex-direction: column; }
+        }
+      `}</style>
     </div>
   )
 }
