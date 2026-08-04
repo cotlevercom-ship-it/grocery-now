@@ -17,10 +17,10 @@ export default function BannerCarousel({ banners }) {
   if (!banners || banners.length === 0) return null
 
   return (
-    <div style={{ padding: '14px 16px 4px' }}>
+    <div style={{ padding: '0 0 4px' }}>
       <div className="banner-box" style={{
         position: 'relative', width: '100%', aspectRatio: '2.6 / 1',
-        borderRadius: '16px', overflow: 'hidden', background: '#f5f5f5',
+        overflow: 'hidden', background: '#f5f5f5',
       }}>
         <div style={{
           display: 'flex', width: `${banners.length * 100}%`, height: '100%',
