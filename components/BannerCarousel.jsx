@@ -17,7 +17,7 @@ export default function BannerCarousel({ banners }) {
   if (!banners || banners.length === 0) return null
 
   return (
-    <div style={{ padding: '0 0 4px' }}>
+    <div>
       <div className="banner-box" style={{
         position: 'relative', width: '100%', aspectRatio: '2.6 / 1',
         overflow: 'hidden', background: '#f5f5f5',
