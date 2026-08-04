@@ -28,7 +28,7 @@ export default async function PopularProducts() {
             return (
               <Link
                 key={p.id}
-                href={`/shops/${p.shop_id}`}
+                href={`/shops/${p.shop_id}?product=${p.id}`}
                 style={{
                   display: 'block', background: 'white', border: '1px solid #eee',
                   textDecoration: 'none', overflow: 'hidden',

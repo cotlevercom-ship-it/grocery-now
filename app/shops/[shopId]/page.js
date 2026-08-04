@@ -1,5 +1,6 @@
 import { supabaseFetch } from '@/lib/supabase'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import ProductList from './ProductList'
 
 export default async function ShopPage({ params }) {
@@ -118,7 +119,9 @@ export default async function ShopPage({ params }) {
       </div>
 
       {/* Products */}
-      <ProductList categories={categories} products={products} shop={shop} />
+      <Suspense fallback={null}>
+        <ProductList categories={categories} products={products} shop={shop} />
+      </Suspense>
 
       {/* Floating contact button (desktop-style Alibaba widget) */}
       {whatsappLink && (

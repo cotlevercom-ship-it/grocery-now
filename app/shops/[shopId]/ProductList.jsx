@@ -1,14 +1,26 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import ProductDetailModal from './ProductDetailModal'
 import { getShopCart, setShopCart } from '@/lib/cart'
 
 export default function ProductList({ categories, products, shop }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [cart, setCart] = useState([])
   const [activeCategory, setActiveCategory] = useState('all')
   const [detailProduct, setDetailProduct] = useState(null)
+
+  // If arriving via a "view this product" link (e.g. from the homepage or
+  // search results), auto-open that product's detail modal on load.
+  useEffect(() => {
+    const productId = searchParams.get('product')
+    if (productId) {
+      const match = products.find(p => p.id === productId)
+      if (match) setDetailProduct(match)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Load this shop's items from the multi-shop cart on mount
   useEffect(() => {
