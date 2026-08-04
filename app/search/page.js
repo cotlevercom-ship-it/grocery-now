@@ -18,7 +18,7 @@ export default async function SearchPage({ searchParams }) {
           `products?select=id,shop_id,name,price,sale_price,unit,image_url,image_urls,moq,shops(id,name)&name=ilike.${encodeURIComponent(pattern)}&is_available=eq.true&limit=48`
         ),
         supabaseFetch(
-          `shops?select=id,name,image_url,category,location,rating&name=ilike.${encodeURIComponent(pattern)}&is_active=eq.true&limit=20`
+          `shops?select=id,name,slug,image_url,category,location,rating&name=ilike.${encodeURIComponent(pattern)}&is_active=eq.true&limit=20`
         ),
       ])
     } catch (e) {
@@ -62,7 +62,7 @@ export default async function SearchPage({ searchParams }) {
             </div>
             <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
               {shops.map(shop => (
-                <Link key={shop.id} href={`/shops/${shop.id}`} style={{
+                <Link key={shop.id} href={`/shop/${shop.slug}`} style={{
                   flexShrink: 0, width: '150px', background: 'white', borderRadius: '4px',
                   border: '1px solid #e5e5e5', overflow: 'hidden', textDecoration: 'none'
                 }}>

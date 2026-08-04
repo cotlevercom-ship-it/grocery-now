@@ -38,7 +38,7 @@ export default async function ShopsPage() {
         ) : (
           <div className="shop-grid">
             {shops.map((shop) => (
-              <Link key={shop.id} href={`/shops/${shop.id}`} className="shop-card">
+              <Link key={shop.id} href={`/shop/${shop.slug}`} className="shop-card">
                 <div style={{ position: 'relative' }}>
                   <img
                     src={shop.image_url || '/placeholder-shop.png'}

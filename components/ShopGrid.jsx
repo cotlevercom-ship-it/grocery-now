@@ -60,7 +60,7 @@ export default function ShopGrid({ shops, departments }) {
       ) : (
         <div className="shop-grid">
           {filteredShops.map((shop) => (
-            <Link key={shop.id} href={`/shops/${shop.id}`} className="shop-card">
+            <Link key={shop.id} href={`/shop/${shop.slug}`} className="shop-card">
               <div style={{ position: 'relative' }}>
                 <img
                   src={shop.image_url || '/placeholder-shop.png'}

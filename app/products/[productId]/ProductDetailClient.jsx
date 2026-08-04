@@ -225,7 +225,7 @@ export default function ProductDetailClient({ product, shop }) {
             )}
 
             {/* Visit Store */}
-            <Link href={`/shops/${shop.id}`} style={{
+            <Link href={`/shop/${shop.slug}`} style={{
               display: 'flex', alignItems: 'center', gap: '12px', marginTop: '26px',
               background: 'white', border: '1px solid #e5e5e5', borderRadius: '10px',
               padding: '14px', textDecoration: 'none'

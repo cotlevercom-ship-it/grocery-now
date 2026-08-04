@@ -10,7 +10,7 @@ export default async function ProductPage({ params }) {
   let product = null
   try {
     const rows = await supabaseFetch(
-      `products?select=*,product_variants(*),shops(id,name,rating,image_url,is_active)&id=eq.${productId}`
+      `products?select=*,product_variants(*),shops(id,name,slug,rating,image_url,is_active)&id=eq.${productId}`
     )
     product = rows?.[0] || null
   } catch (e) {
