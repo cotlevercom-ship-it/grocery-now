@@ -33,25 +33,104 @@ export default async function ShopPage({ params }) {
     )
   }
 
+  const yearsActive = shop.created_at
+    ? Math.max(1, Math.floor((Date.now() - new Date(shop.created_at).getTime()) / (365 * 24 * 60 * 60 * 1000)))
+    : 1
+
+  const whatsappLink = shop.phone
+    ? `https://wa.me/${shop.phone.replace(/[^0-9]/g, '')}`
+    : null
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      {/* Topbar */}
-      <div style={{ background: '#0a0a0a', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {/* Back bar */}
+      <div style={{ background: '#0a0a0a', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <Link href="/shops">
-          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+          <div style={{ color: 'white', fontSize: '20px', lineHeight: 1 }}>←</div>
         </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500', flex: 1 }}>{shop.name}</div>
+        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}>Back to shops</div>
       </div>
 
-      {/* Shop info */}
-      <div style={{ background: '#0a0a0a', padding: '14px 16px 20px' }}>
-        <div style={{ display: 'flex', gap: '16px', color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>
-          <span>⭐ {shop.rating || '4.5'}</span>
+      {/* Supplier banner */}
+      <div style={{
+        position: 'relative',
+        background: shop.banner_url
+          ? `linear-gradient(rgba(10,10,10,0.55), rgba(10,10,10,0.75)), url(${shop.banner_url})`
+          : 'linear-gradient(135deg, #163a2c 0%, #0a0a0a 100%)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: '20px 16px 22px',
+      }}>
+        <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+          <div style={{
+            width: '64px', height: '64px', borderRadius: '8px', background: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden', flexShrink: 0, border: '2px solid rgba(255,255,255,0.9)'
+          }}>
+            {shop.image_url ? (
+              <img src={shop.image_url} alt={shop.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : <span style={{ fontSize: '26px' }}>🏪</span>}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ color: 'white', fontSize: '18px', fontWeight: '700', lineHeight: '1.25' }}>
+              {shop.name}
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '12px', marginTop: '3px' }}>
+              {shop.category}{shop.location ? ` · ${shop.location}` : ''}
+            </div>
+          </div>
         </div>
+
+        {/* Badge row */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '14px' }}>
+          <span style={{
+            background: 'rgba(255,255,255,0.14)', color: 'white', fontSize: '11px',
+            padding: '4px 10px', borderRadius: '5px', fontWeight: '600'
+          }}>
+            {yearsActive} yr{yearsActive > 1 ? 's' : ''} on Cot Lever
+          </span>
+          <span style={{
+            background: 'rgba(255,255,255,0.14)', color: 'white', fontSize: '11px',
+            padding: '4px 10px', borderRadius: '5px', fontWeight: '600'
+          }}>
+            ⭐ {shop.rating || '4.5'}{shop.review_count ? ` (${shop.review_count})` : ''}
+          </span>
+          {shop.is_featured && (
+            <span style={{
+              background: '#f4a300', color: '#1a1a1a', fontSize: '11px',
+              padding: '4px 10px', borderRadius: '5px', fontWeight: '700'
+            }}>
+              Featured Merchant
+            </span>
+          )}
+        </div>
+
+        {/* Contact button */}
+        {whatsappLink && (
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '14px',
+            background: '#f4a300', color: '#1a1a1a', fontSize: '13px', fontWeight: '700',
+            padding: '9px 18px', borderRadius: '6px', textDecoration: 'none'
+          }}>
+            💬 Contact Merchant
+          </a>
+        )}
       </div>
 
       {/* Products */}
       <ProductList categories={categories} products={products} shop={shop} />
+
+      {/* Floating contact button (desktop-style Alibaba widget) */}
+      {whatsappLink && (
+        <a href={whatsappLink} target="_blank" rel="noopener noreferrer" style={{
+          position: 'fixed', right: '16px', bottom: '90px', zIndex: 30,
+          background: '#0a0a0a', color: 'white', width: '48px', height: '48px',
+          borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '20px', boxShadow: '0 4px 14px rgba(0,0,0,0.3)', textDecoration: 'none'
+        }} title="Contact Merchant">
+          💬
+        </a>
+      )}
     </div>
   )
 }

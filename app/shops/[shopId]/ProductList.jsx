@@ -134,10 +134,10 @@ export default function ProductList({ categories, products, shop }) {
   }
 
   return (
-    <div style={{ paddingBottom: totalItems > 0 ? '80px' : '16px' }}>
-      {/* Category filter */}
+    <div style={{ paddingBottom: totalItems > 0 ? '80px' : '16px' }} className="shop-layout">
+      {/* Mobile category pills */}
       {categories.length > 0 && (
-        <div style={{
+        <div className="mobile-pills" style={{
           display: 'flex', gap: '8px', padding: '12px 16px',
           overflowX: 'auto', scrollbarWidth: 'none', background: 'white',
           borderBottom: '1px solid #eee'
@@ -166,8 +166,45 @@ export default function ProductList({ categories, products, shop }) {
         </div>
       )}
 
+      <div className="shop-body" style={{ display: 'flex', alignItems: 'flex-start' }}>
+        {/* Desktop sidebar (Alibaba-style product categories) */}
+        {categories.length > 0 && (
+          <div className="desktop-sidebar" style={{
+            width: '220px', flexShrink: 0, background: 'white',
+            borderRight: '1px solid #eee', minHeight: '400px'
+          }}>
+            <div style={{
+              padding: '14px 16px', fontSize: '13px', fontWeight: '700',
+              color: '#1a1a1a', borderBottom: '1px solid #eee'
+            }}>
+              Product Categories
+            </div>
+            <button
+              onClick={() => setActiveCategory('all')}
+              style={{
+                display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
+                fontSize: '13px', border: 'none', borderBottom: '1px solid #f0f0f0',
+                background: activeCategory === 'all' ? '#fdf6e8' : 'white',
+                color: activeCategory === 'all' ? '#f4a300' : '#333',
+                fontWeight: activeCategory === 'all' ? '700' : '400', cursor: 'pointer'
+              }}>All Products</button>
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
+                  fontSize: '13px', border: 'none', borderBottom: '1px solid #f0f0f0',
+                  background: activeCategory === cat.id ? '#fdf6e8' : 'white',
+                  color: activeCategory === cat.id ? '#f4a300' : '#333',
+                  fontWeight: activeCategory === cat.id ? '700' : '400', cursor: 'pointer'
+                }}>{cat.name}</button>
+            ))}
+          </div>
+        )}
+
       {/* Product groups */}
-      <div style={{ padding: '12px 16px' }}>
+      <div style={{ padding: '12px 16px', flex: 1, minWidth: 0 }}>
         {groupedByCategory().map(group => (
           <div key={group.id} style={{ marginBottom: '20px' }}>
             {group.name && (
@@ -319,6 +356,15 @@ export default function ProductList({ categories, products, shop }) {
           </div>
         )}
       </div>
+      </div>
+
+      <style jsx>{`
+        .desktop-sidebar { display: none; }
+        @media (min-width: 768px) {
+          .desktop-sidebar { display: block; }
+          .mobile-pills { display: none !important; }
+        }
+      `}</style>
 
       {/* Cart bar */}
       {totalItems > 0 && (
