@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { supabaseFetch, getSession } from '@/lib/supabase'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 const COUNTRIES = [
   'Bangladesh', 'India', 'Nepal', 'USA', 'UK', 'Canada', 'Australia',
@@ -26,6 +27,7 @@ export default function ShipPage() {
   const [quotes, setQuotes] = useState([])
   const [selectedQuote, setSelectedQuote] = useState(null)
   const [booking, setBooking] = useState(false)
+  const [agreed, setAgreed] = useState(false)
   const [bookingRef, setBookingRef] = useState(null)
 
   const inputStyle = {
@@ -81,6 +83,7 @@ export default function ShipPage() {
     setError('')
     if (!contact.sender_name.trim() || !contact.sender_phone.trim() || !contact.sender_address.trim()) return setError('Please fill in your (sender) details')
     if (!contact.receiver_name.trim() || !contact.receiver_phone.trim() || !contact.receiver_address.trim()) return setError('Please fill in the receiver details')
+    if (!agreed) return setError('Please agree to the Shipping Terms to continue')
 
     setBooking(true)
     try {
@@ -312,6 +315,10 @@ export default function ShipPage() {
                 <label style={labelStyle}>Description</label>
                 <input style={inputStyle} value={contact.parcel_description} onChange={e => setContact({ ...contact, parcel_description: e.target.value })} placeholder="optional" />
               </div>
+            </div>
+
+            <div style={{ margin: '4px 0 14px' }}>
+              <AgreementCheckbox type="ship" checked={agreed} onChange={setAgreed} />
             </div>
 
             <button type="submit" disabled={booking} style={{

@@ -3,6 +3,7 @@ import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, signUp, signOut, setAccountType, verifyAccountType, supabaseFetch } from '@/lib/supabase'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 export default function LoginPage() {
   return (
@@ -22,6 +23,7 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [agreed, setAgreed] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
@@ -32,6 +34,10 @@ function LoginForm() {
 
     if (mode === 'signup' && !name.trim()) {
       setError('Please enter your name')
+      return
+    }
+    if (mode === 'signup' && !agreed) {
+      setError('Please agree to the terms to continue')
       return
     }
     if (!email.trim() || !password.trim()) {
@@ -172,6 +178,12 @@ function LoginForm() {
               margin: '12px 0 0', padding: '10px 12px', background: '#f5f5f5',
               color: '#0a0a0a', borderRadius: '8px', fontSize: '13px'
             }}>{notice}</div>
+          )}
+
+          {mode === 'signup' && (
+            <div style={{ marginTop: '16px' }}>
+              <AgreementCheckbox type="customer" checked={agreed} onChange={setAgreed} accent="#000000" />
+            </div>
           )}
 
           <button

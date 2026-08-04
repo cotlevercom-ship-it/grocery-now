@@ -2,13 +2,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { hashPin } from '@/lib/supabase'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 const COLORS = {
   ink: '#000000',
   forest: '#000000',
   forestMid: '#2a2a2a',
-  gold: '#dc2626',
-  goldSoft: '#f8d7d5',
+  gold: '#f4a300',
+  goldSoft: '#fdf1d9',
   cream: '#000000',
   line: '#e7e2d8',
   textMuted: '#6b7b74',
@@ -19,6 +20,7 @@ export default function AffiliatePage() {
   const [phone, setPhone] = useState('')
   const [pin, setPin] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [agreed, setAgreed] = useState(false)
   const [error, setError] = useState('')
   const [result, setResult] = useState(null) // { referral_code }
   const [copied, setCopied] = useState(false)
@@ -46,6 +48,10 @@ export default function AffiliatePage() {
     }
     if (!/^\d{4}$/.test(pin)) {
       setError('Enter a 4-digit PIN (numbers only)')
+      return
+    }
+    if (!agreed) {
+      setError('Please agree to the Affiliate Agreement to continue')
       return
     }
     setSubmitting(true)
@@ -116,6 +122,9 @@ export default function AffiliatePage() {
                   />
                 </div>
                 {error && <div className="alert">{error}</div>}
+                <div style={{ margin: '4px 0 14px' }}>
+                  <AgreementCheckbox type="affiliate" checked={agreed} onChange={setAgreed} />
+                </div>
                 <button type="submit" className="submit-btn" disabled={submitting}>
                   {submitting ? 'Please wait...' : 'Get Referral Link'}
                 </button>

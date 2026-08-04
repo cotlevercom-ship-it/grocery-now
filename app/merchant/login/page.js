@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, signUp, signOut, setAccountType, verifyAccountType, getSession, supabaseFetch, createReferralIfNeeded } from '@/lib/supabase'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 // Supabase Auth requires a longer password than a 4-digit PIN, so the PIN is
 // deterministically padded into one under the hood. The merchant never sees
@@ -140,6 +141,7 @@ function MerchantLoginForm() {
 
   const [registerSubmitting, setRegisterSubmitting] = useState(false)
   const [registerError, setRegisterError] = useState('')
+  const [agreed, setAgreed] = useState(false)
 
   useEffect(() => {
     async function loadPackages() {
@@ -253,6 +255,7 @@ function MerchantLoginForm() {
     if (packages.length > 0 && !selectedPkgId) return setRegisterError('Please select a package')
     if (!/^\d{4}$/.test(pin)) return setRegisterError('PIN must be exactly 4 digits')
     if (pin !== confirmPin) return setRegisterError('PIN and Confirm PIN do not match')
+    if (!agreed) return setRegisterError('Please agree to the Merchant Agreement to continue')
 
     setRegisterSubmitting(true)
     try {
@@ -547,6 +550,10 @@ function MerchantLoginForm() {
                 </div>
 
                 {registerError && <div className="alert alert-error">{registerError}</div>}
+
+                <div style={{ margin: '4px 0 14px' }}>
+                  <AgreementCheckbox type="merchant" checked={agreed} onChange={setAgreed} />
+                </div>
 
                 <button type="submit" className="submit-btn" disabled={registerSubmitting}>
                   {registerSubmitting ? 'Please wait...' : isPaidPkg ? 'Continue to Payment' : 'Create Shop'}
