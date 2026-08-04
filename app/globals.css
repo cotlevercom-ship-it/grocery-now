@@ -54,6 +54,22 @@ input {
   font-size: clamp(20px, 1.6vw, 26px);
 }
 
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 10px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .trust-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 15vw, 230px), 1fr));

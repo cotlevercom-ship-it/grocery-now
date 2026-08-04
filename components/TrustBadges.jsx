@@ -27,22 +27,6 @@ export default function TrustBadges() {
           </div>
         ))}
       </div>
-
-      <style jsx>{`
-        .trust-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 14px 10px;
-        }
-        .trust-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        @media (min-width: 640px) {
-          .trust-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-      `}</style>
     </div>
   )
 }
