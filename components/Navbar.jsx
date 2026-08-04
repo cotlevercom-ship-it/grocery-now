@@ -28,7 +28,10 @@ export default function Navbar() {
         const saved = localStorage.getItem('cart')
         if (!saved) { setCartCount(0); return }
         const parsed = JSON.parse(saved)
-        const count = (parsed.items || []).reduce((a, b) => a + (b.qty || 0), 0)
+        const shopsObj = parsed.shops || (parsed.shopId ? { [parsed.shopId]: parsed } : {})
+        const count = Object.values(shopsObj).reduce(
+          (sum, s) => sum + (s.items || []).reduce((a, b) => a + (b.qty || 0), 0), 0
+        )
         setCartCount(count)
       } catch (e) {
         setCartCount(0)

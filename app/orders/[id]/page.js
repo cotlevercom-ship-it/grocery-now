@@ -89,6 +89,18 @@ export default async function OrderPage({ params }) {
         <div style={{ fontSize: '12px', color: '#888' }}>Order ID: {order.id.slice(0, 8)}</div>
       </div>
 
+      {/* Multi-shop group note */}
+      {order.order_group_id && (
+        <div style={{ margin: '0 16px 14px', textAlign: 'center' }}>
+          <Link href={`/orders/group/${order.order_group_id}`} style={{
+            display: 'inline-block', fontSize: '12.5px', color: '#5c4600', background: '#fdf1d9',
+            padding: '8px 14px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600'
+          }}>
+            Part of a multi-shop order — view all orders →
+          </Link>
+        </div>
+      )}
+
       {/* Status tracker */}
       {!isCancelled && (
         <div style={{

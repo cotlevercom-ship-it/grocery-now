@@ -2,65 +2,52 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { getAllShopCarts, setShopCart } from '@/lib/cart'
 
 export default function CartPage() {
   const router = useRouter()
-  const [cartData, setCartData] = useState(null)
+  const [shopCarts, setShopCarts] = useState([])
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('cart')
-      if (saved) {
-        setCartData(JSON.parse(saved))
-      }
+      setShopCarts(getAllShopCarts())
     } catch (e) {
       console.error(e)
     }
     setLoaded(true)
   }, [])
 
-  const saveCart = (updated) => {
-    setCartData(updated)
-    if (updated && updated.items && updated.items.length > 0) {
-      localStorage.setItem('cart', JSON.stringify(updated))
-    } else {
-      localStorage.removeItem('cart')
-    }
-    window.dispatchEvent(new Event('cart-changed'))
-  }
-
   const keyOf = (item) => item.cartKey || item.id
 
-  const addQty = (cartKey) => {
-    const updated = {
-      ...cartData,
-      items: cartData.items.map(i => keyOf(i) === cartKey ? { ...i, qty: i.qty + 1 } : i)
-    }
-    saveCart(updated)
+  const updateShopItems = (shopId, shopName, newItems) => {
+    setShopCart(shopId, shopName, newItems)
+    setShopCarts(getAllShopCarts())
   }
 
-  const removeQty = (cartKey) => {
-    const item = cartData.items.find(i => keyOf(i) === cartKey)
-    let newItems
-    if (item.qty === 1) {
-      newItems = cartData.items.filter(i => keyOf(i) !== cartKey)
-    } else {
-      newItems = cartData.items.map(i => keyOf(i) === cartKey ? { ...i, qty: i.qty - 1 } : i)
-    }
-    saveCart({ ...cartData, items: newItems })
+  const addQty = (shopId, shopName, items, cartKey) => {
+    updateShopItems(shopId, shopName, items.map(i => keyOf(i) === cartKey ? { ...i, qty: i.qty + 1 } : i))
   }
 
-  const deleteItem = (cartKey) => {
-    const newItems = cartData.items.filter(i => keyOf(i) !== cartKey)
-    saveCart({ ...cartData, items: newItems })
+  const removeQty = (shopId, shopName, items, cartKey) => {
+    const item = items.find(i => keyOf(i) === cartKey)
+    const newItems = item.qty === 1
+      ? items.filter(i => keyOf(i) !== cartKey)
+      : items.map(i => keyOf(i) === cartKey ? { ...i, qty: i.qty - 1 } : i)
+    updateShopItems(shopId, shopName, newItems)
+  }
+
+  const deleteItem = (shopId, shopName, items, cartKey) => {
+    updateShopItems(shopId, shopName, items.filter(i => keyOf(i) !== cartKey))
   }
 
   if (!loaded) {
     return null
   }
 
-  if (!cartData || !cartData.items || cartData.items.length === 0) {
+  const activeShops = shopCarts.filter(s => s.items.length > 0)
+
+  if (activeShops.length === 0) {
     return (
       <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
         <div style={{
@@ -84,8 +71,8 @@ export default function CartPage() {
     )
   }
 
-  const totalItems = cartData.items.reduce((a, b) => a + b.qty, 0)
-  const subtotal = cartData.items.reduce((a, b) => a + b.qty * b.price, 0)
+  const totalItems = activeShops.reduce((sum, s) => sum + s.items.reduce((a, b) => a + b.qty, 0), 0)
+  const subtotal = activeShops.reduce((sum, s) => sum + s.items.reduce((a, b) => a + b.qty * b.price, 0), 0)
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: 'calc(90px + env(safe-area-inset-bottom))' }} className="cart-page">
@@ -94,66 +81,79 @@ export default function CartPage() {
         background: '#0a0a0a', padding: '14px 16px',
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
-        <Link href={`/shops/${cartData.shopId}`}>
+        <Link href="/">
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>Cart</div>
+        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
+          Cart {activeShops.length > 1 ? `· ${activeShops.length} shops` : ''}
+        </div>
       </div>
 
       <div className="cart-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '16px' }}>
         <div className="cart-layout" style={{ display: 'flex', gap: '20px' }}>
 
-          {/* Left: items */}
+          {/* Left: items, grouped per shop */}
           <div className="cart-items-col" style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', color: '#666', marginBottom: '10px', fontWeight: '600' }}>
-              From {cartData.shopName}
-            </div>
-
-            {cartData.items.map(item => {
-              const cartKey = keyOf(item)
+            {activeShops.map(({ shopId, shopName, items }) => {
+              const shopSubtotal = items.reduce((a, b) => a + b.qty * b.price, 0)
               return (
-                <div key={cartKey} style={{
-                  background: 'white', borderRadius: '6px', border: '1px solid #e5e5e5',
-                  padding: '14px', marginBottom: '10px',
-                  display: 'flex', alignItems: 'center', gap: '14px'
-                }}>
+                <div key={shopId} style={{ marginBottom: '18px' }}>
                   <div style={{
-                    width: '72px', height: '72px', borderRadius: '4px',
-                    background: '#f5f5f5', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: '24px', flexShrink: 0, overflow: 'hidden'
+                    fontSize: '13px', color: '#1a1a1a', marginBottom: '10px', fontWeight: '700',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'
                   }}>
-                    {item.image_url ? (
-                      <img src={item.image_url} alt={item.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : '🛍️'}
+                    <span>{shopName}</span>
+                    <span style={{ fontWeight: '500', color: '#888', fontSize: '12px' }}>৳{shopSubtotal}</span>
                   </div>
 
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '13.5px', fontWeight: '600', color: '#1a1a1a', marginBottom: '3px' }}>{item.name}</div>
-                    <div style={{ fontSize: '11.5px', color: '#888', marginBottom: '6px' }}>
-                      {item.variantName || item.unit}
-                    </div>
-                    <div style={{ fontSize: '13px', color: '#666' }}>
-                      ৳{item.price} × {item.qty} = <span style={{ fontWeight: '700', color: '#0a0a0a' }}>৳{item.price * item.qty}</span>
-                    </div>
-                  </div>
+                  {items.map(item => {
+                    const cartKey = keyOf(item)
+                    return (
+                      <div key={cartKey} style={{
+                        background: 'white', borderRadius: '6px', border: '1px solid #e5e5e5',
+                        padding: '14px', marginBottom: '10px',
+                        display: 'flex', alignItems: 'center', gap: '14px'
+                      }}>
+                        <div style={{
+                          width: '72px', height: '72px', borderRadius: '4px',
+                          background: '#f5f5f5', display: 'flex', alignItems: 'center',
+                          justifyContent: 'center', fontSize: '24px', flexShrink: 0, overflow: 'hidden'
+                        }}>
+                          {item.image_url ? (
+                            <img src={item.image_url} alt={item.name}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : '🛍️'}
+                        </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
-                      <button onClick={() => removeQty(cartKey)} style={{
-                        width: '26px', height: '26px', background: '#f5f5f5', color: '#0a0a0a', fontSize: '15px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none'
-                      }}>-</button>
-                      <span style={{ fontSize: '13px', fontWeight: '600', minWidth: '28px', textAlign: 'center' }}>{item.qty}</span>
-                      <button onClick={() => addQty(cartKey)} style={{
-                        width: '26px', height: '26px', background: '#0a0a0a', color: 'white', fontSize: '15px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none'
-                      }}>+</button>
-                    </div>
-                    <button onClick={() => deleteItem(cartKey)} style={{
-                      fontSize: '11px', color: '#d32f2f', background: 'none', border: 'none'
-                    }}>Remove</button>
-                  </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '13.5px', fontWeight: '600', color: '#1a1a1a', marginBottom: '3px' }}>{item.name}</div>
+                          <div style={{ fontSize: '11.5px', color: '#888', marginBottom: '6px' }}>
+                            {item.variantName || item.unit}
+                          </div>
+                          <div style={{ fontSize: '13px', color: '#666' }}>
+                            ৳{item.price} × {item.qty} = <span style={{ fontWeight: '700', color: '#0a0a0a' }}>৳{item.price * item.qty}</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
+                            <button onClick={() => removeQty(shopId, shopName, items, cartKey)} style={{
+                              width: '26px', height: '26px', background: '#f5f5f5', color: '#0a0a0a', fontSize: '15px',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none'
+                            }}>-</button>
+                            <span style={{ fontSize: '13px', fontWeight: '600', minWidth: '28px', textAlign: 'center' }}>{item.qty}</span>
+                            <button onClick={() => addQty(shopId, shopName, items, cartKey)} style={{
+                              width: '26px', height: '26px', background: '#0a0a0a', color: 'white', fontSize: '15px',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none'
+                            }}>+</button>
+                          </div>
+                          <button onClick={() => deleteItem(shopId, shopName, items, cartKey)} style={{
+                            fontSize: '11px', color: '#d32f2f', background: 'none', border: 'none'
+                          }}>Remove</button>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               )
             })}
@@ -168,6 +168,14 @@ export default function CartPage() {
               <div style={{ fontSize: '14px', fontWeight: '700', color: '#1a1a1a', marginBottom: '14px' }}>
                 Order Summary
               </div>
+              {activeShops.length > 1 && (
+                <div style={{
+                  fontSize: '12px', color: '#666', background: '#fdf1d9', padding: '8px 10px',
+                  borderRadius: '6px', marginBottom: '12px', lineHeight: 1.5
+                }}>
+                  Items from {activeShops.length} different shops will be shipped as separate orders.
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '10px' }}>
                 <span>Subtotal ({totalItems} item{totalItems > 1 ? 's' : ''})</span>
                 <span>৳{subtotal}</span>

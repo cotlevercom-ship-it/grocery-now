@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabaseFetch, getSession } from '@/lib/supabase'
+import { getAllShopCarts, clearCart } from '@/lib/cart'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const [cartData, setCartData] = useState(null)
-  const [shop, setShop] = useState(null)
+  const [shopCarts, setShopCarts] = useState([]) // [{ shopId, shopName, items }]
+  const [pickupShop, setPickupShop] = useState(null) // only fetched/used when cart has exactly 1 shop
   const [loaded, setLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -24,6 +26,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('cod')
   const [deliveryMethod, setDeliveryMethod] = useState('delivery') // 'delivery' | 'pickup'
   const [note, setNote] = useState('')
+  const [agreed, setAgreed] = useState(false)
 
   const [savedAddresses, setSavedAddresses] = useState([])
   const [selectedAddressId, setSelectedAddressId] = useState('new') // address id, or 'new'
@@ -32,22 +35,22 @@ export default function CheckoutPage() {
   useEffect(() => {
     async function init() {
       try {
-        const savedCart = localStorage.getItem('cart')
-        if (!savedCart) {
+        const carts = getAllShopCarts().filter(s => s.items.length > 0)
+        if (carts.length === 0) {
           router.replace('/cart')
           return
         }
-        const parsed = JSON.parse(savedCart)
-        if (!parsed.items || parsed.items.length === 0) {
-          router.replace('/cart')
-          return
-        }
-        setCartData(parsed)
+        setShopCarts(carts)
 
-        // fetch shop for pickup/store details
-        const shops = await supabaseFetch(`shops?select=*&id=eq.${parsed.shopId}`)
-        if (shops && shops.length > 0) {
-          setShop(shops[0])
+        // Pickup only makes sense when checking out from a single shop —
+        // fetch that shop's pickup details in that case.
+        if (carts.length === 1) {
+          try {
+            const shops = await supabaseFetch(`shops?select=*&id=eq.${carts[0].shopId}`)
+            if (shops && shops.length > 0) setPickupShop(shops[0])
+          } catch (e) {
+            console.error(e)
+          }
         }
 
         // fetch platform shipping rules (Cot Lever sets these centrally, not the merchant)
@@ -112,30 +115,39 @@ export default function CheckoutPage() {
     }
   }, [country, deliveryMethod, shippingRules, selectedRuleId])
 
-  if (!loaded || !cartData) {
+  if (!loaded || shopCarts.length === 0) {
     return null
   }
 
-  const subtotal = cartData.items.reduce((a, b) => a + b.qty * b.price, 0)
-  const totalWeightKg = cartData.items.reduce((a, b) => a + ((b.weightGrams || 0) * b.qty), 0) / 1000
-  const totalItems = cartData.items.reduce((a, b) => a + b.qty, 0)
+  const canPickup = shopCarts.length === 1 && pickupShop?.pickup_available
 
   // A country can have several rules (one per courier, e.g. EMS vs Bangladesh Post Office).
-  // Match on the exact country first; if none, fall back to the OTHER (rest-of-world) rules.
   const countryMatches = shippingRules.filter(r => r.country.toLowerCase() === country.trim().toLowerCase())
   const matchedRules = deliveryMethod === 'pickup' ? [] : (
     countryMatches.length > 0 ? countryMatches : shippingRules.filter(r => r.country === 'OTHER')
   )
+  const selectedRule = matchedRules.find(r => r.id === selectedRuleId) || matchedRules[0] || null
 
-  const ruleCharge = (r) => Math.round(
+  // Delivery charge is computed PER SHOP — each merchant ships its own parcel,
+  // so each shop's items get their own weight/item-count allowance against the rule.
+  const ruleChargeFor = (r, weightKg, itemCount) => Math.round(
     Number(r.base_charge)
-    + Math.max(0, totalWeightKg - Number(r.free_weight_kg)) * Number(r.per_kg_charge)
-    + Math.max(0, totalItems - Number(r.free_item_count)) * Number(r.per_item_charge)
+    + Math.max(0, weightKg - Number(r.free_weight_kg)) * Number(r.per_kg_charge)
+    + Math.max(0, itemCount - Number(r.free_item_count)) * Number(r.per_item_charge)
   )
 
-  const selectedRule = matchedRules.find(r => r.id === selectedRuleId) || matchedRules[0] || null
-  const deliveryCharge = deliveryMethod === 'pickup' || !selectedRule ? 0 : ruleCharge(selectedRule)
+  const shopBreakdown = shopCarts.map(sc => {
+    const subtotal = sc.items.reduce((a, b) => a + b.qty * b.price, 0)
+    const weightKg = sc.items.reduce((a, b) => a + ((b.weightGrams || 0) * b.qty), 0) / 1000
+    const itemCount = sc.items.reduce((a, b) => a + b.qty, 0)
+    const deliveryCharge = deliveryMethod === 'pickup' || !selectedRule ? 0 : ruleChargeFor(selectedRule, weightKg, itemCount)
+    return { ...sc, subtotal, weightKg, itemCount, deliveryCharge }
+  })
+
+  const subtotal = shopBreakdown.reduce((a, b) => a + b.subtotal, 0)
+  const deliveryCharge = shopBreakdown.reduce((a, b) => a + b.deliveryCharge, 0)
   const total = subtotal + deliveryCharge
+  const totalItems = shopBreakdown.reduce((a, b) => a + b.itemCount, 0)
 
   // Country dropdown options come from whatever countries admin has set up shipping rules for.
   const countryOptions = Array.from(new Set([
@@ -155,42 +167,72 @@ export default function CheckoutPage() {
     setError('')
 
     const deliveryAddressText = deliveryMethod === 'pickup'
-      ? (shop?.pickup_address || '')
+      ? (pickupShop?.pickup_address || '')
       : (usingSavedAddress ? (selectedAddress?.address || '') : address.trim())
 
     if (!name.trim() || !phone.trim() || (deliveryMethod === 'delivery' && !deliveryAddressText.trim())) {
       setError('Name, phone number and address are required')
       return
     }
+    if (!agreed) {
+      setError('Please agree to the Customer Terms to continue')
+      return
+    }
 
     setSubmitting(true)
     try {
-      // create order (user_id set only when logged in; null means guest order)
-      const orderRes = await supabaseFetch('orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          user_id: session?.user?.id || null,
-          shop_id: cartData.shopId,
-          area_id: areaId,
-          delivery_name: name.trim(),
-          delivery_phone: phone.trim(),
-          delivery_address: deliveryMethod === 'pickup' ? (shop?.pickup_address || null) : deliveryAddressText,
-          delivery_method: deliveryMethod,
-          delivery_country: deliveryMethod === 'pickup' ? null : country.trim(),
-          courier_name: deliveryMethod === 'pickup' ? null : (selectedRule?.courier_name || null),
-          subtotal: subtotal,
-          delivery_charge: deliveryCharge,
-          discount: 0,
-          total: total,
-          payment_method: paymentMethod,
-          payment_status: 'unpaid',
-          status: 'pending',
-          tracking_history: [{ status: 'pending', note: 'Order placed', time: new Date().toISOString() }],
-          note: note.trim() || null,
-        }),
-      })
+      const orderGroupId = shopBreakdown.length > 1
+        ? (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`)
+        : null
 
-      const order = orderRes[0]
+      const createdOrders = []
+
+      for (const sc of shopBreakdown) {
+        const orderRes = await supabaseFetch('orders', {
+          method: 'POST',
+          body: JSON.stringify({
+            user_id: session?.user?.id || null,
+            shop_id: sc.shopId,
+            order_group_id: orderGroupId,
+            area_id: areaId,
+            delivery_name: name.trim(),
+            delivery_phone: phone.trim(),
+            delivery_address: deliveryMethod === 'pickup' ? (pickupShop?.pickup_address || null) : deliveryAddressText,
+            delivery_method: deliveryMethod,
+            delivery_country: deliveryMethod === 'pickup' ? null : country.trim(),
+            courier_name: deliveryMethod === 'pickup' ? null : (selectedRule?.courier_name || null),
+            subtotal: sc.subtotal,
+            delivery_charge: sc.deliveryCharge,
+            discount: 0,
+            total: sc.subtotal + sc.deliveryCharge,
+            payment_method: paymentMethod,
+            payment_status: 'unpaid',
+            status: 'pending',
+            tracking_history: [{ status: 'pending', note: 'Order placed', time: new Date().toISOString() }],
+            note: note.trim() || null,
+          }),
+        })
+
+        const order = orderRes[0]
+        createdOrders.push(order)
+
+        const itemsPayload = sc.items.map(item => ({
+          order_id: order.id,
+          product_id: item.id,
+          product_name: item.name,
+          product_unit: item.unit || null,
+          variant_id: item.variantId || null,
+          variant_name: item.variantName || null,
+          quantity: item.qty,
+          unit_price: item.price,
+          total_price: item.price * item.qty,
+        }))
+
+        await supabaseFetch('order_items', {
+          method: 'POST',
+          body: JSON.stringify(itemsPayload),
+        })
+      }
 
       // save/update profile name+phone for logged-in users (best-effort, ignore failures)
       if (session?.user?.id) {
@@ -227,28 +269,13 @@ export default function CheckoutPage() {
         }
       }
 
-      // create order items
-      const itemsPayload = cartData.items.map(item => ({
-        order_id: order.id,
-        product_id: item.id,
-        product_name: item.name,
-        product_unit: item.unit || null,
-        variant_id: item.variantId || null,
-        variant_name: item.variantName || null,
-        quantity: item.qty,
-        unit_price: item.price,
-        total_price: item.price * item.qty,
-      }))
+      clearCart()
 
-      await supabaseFetch('order_items', {
-        method: 'POST',
-        body: JSON.stringify(itemsPayload),
-      })
-
-      // clear cart
-      localStorage.removeItem('cart')
-
-      router.push(`/orders/${order.id}`)
+      if (orderGroupId) {
+        router.push(`/orders/group/${orderGroupId}`)
+      } else {
+        router.push(`/orders/${createdOrders[0].id}`)
+      }
     } catch (err) {
       console.error(err)
       setError('Could not place the order, please try again')
@@ -285,13 +312,22 @@ export default function CheckoutPage() {
             </div>
           )}
 
+          {shopCarts.length > 1 && (
+            <div style={{
+              padding: '10px 12px', background: '#fdf1d9', marginBottom: '14px',
+              borderRadius: '8px', fontSize: '12.5px', color: '#5c4600', lineHeight: 1.5
+            }}>
+              You're ordering from {shopCarts.length} different shops. This will create {shopCarts.length} separate orders — one per shop, each shipped and tracked independently.
+            </div>
+          )}
+
           <div className="checkout-layout" style={{ display: 'flex', gap: '20px' }}>
 
             {/* Left column: all form sections */}
             <div className="checkout-left" style={{ flex: 1, minWidth: 0 }}>
 
               {/* Delivery method */}
-              {shop?.pickup_available && (
+              {canPickup && (
                 <div style={{
                   background: 'white', marginBottom: '14px', borderRadius: '6px',
                   border: '1px solid #e5e5e5', padding: '16px'
@@ -373,7 +409,7 @@ export default function CheckoutPage() {
                     <div style={{
                       padding: '10px 12px', borderRadius: '6px', background: '#f5f5f5',
                       fontSize: '14px', color: '#333'
-                    }}>{shop?.pickup_address || 'Store address will be shared soon'}</div>
+                    }}>{pickupShop?.pickup_address || 'Store address will be shared soon'}</div>
                   </div>
                 ) : (
                   <>
@@ -422,7 +458,6 @@ export default function CheckoutPage() {
                               />
                               <span style={{ fontSize: '14px' }}>{r.courier_name || r.country}</span>
                             </span>
-                            <span style={{ fontSize: '13px', color: '#555', fontWeight: '600' }}>৳{ruleCharge(r)}</span>
                           </label>
                         ))}
                       </div>
@@ -558,28 +593,41 @@ export default function CheckoutPage() {
                   Order Summary
                 </div>
 
-                <div style={{ maxHeight: '220px', overflowY: 'auto', marginBottom: '12px' }}>
-                  {cartData.items.map(item => (
-                    <div key={item.cartKey || item.id} style={{
-                      display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px'
-                    }}>
-                      <div style={{
-                        width: '40px', height: '40px', borderRadius: '4px', background: '#f5f5f5',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        overflow: 'hidden', flexShrink: 0, fontSize: '16px'
-                      }}>
-                        {item.image_url ? (
-                          <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : '🛍️'}
+                <div style={{ maxHeight: '260px', overflowY: 'auto', marginBottom: '12px' }}>
+                  {shopBreakdown.map(sc => (
+                    <div key={sc.shopId} style={{ marginBottom: '14px' }}>
+                      <div style={{ fontSize: '11.5px', fontWeight: '700', color: '#555', marginBottom: '8px' }}>
+                        {sc.shopName}
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontSize: '12px', color: '#333', overflow: 'hidden',
-                          textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                        }}>{item.name}</div>
-                        <div style={{ fontSize: '11px', color: '#999' }}>Qty {item.qty}</div>
-                      </div>
-                      <div style={{ fontSize: '12px', fontWeight: '600', color: '#1a1a1a' }}>৳{item.price * item.qty}</div>
+                      {sc.items.map(item => (
+                        <div key={item.cartKey || item.id} style={{
+                          display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px'
+                        }}>
+                          <div style={{
+                            width: '40px', height: '40px', borderRadius: '4px', background: '#f5f5f5',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            overflow: 'hidden', flexShrink: 0, fontSize: '16px'
+                          }}>
+                            {item.image_url ? (
+                              <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : '🛍️'}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{
+                              fontSize: '12px', color: '#333', overflow: 'hidden',
+                              textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                            }}>{item.name}</div>
+                            <div style={{ fontSize: '11px', color: '#999' }}>Qty {item.qty}</div>
+                          </div>
+                          <div style={{ fontSize: '12px', fontWeight: '600', color: '#1a1a1a' }}>৳{item.price * item.qty}</div>
+                        </div>
+                      ))}
+                      {shopBreakdown.length > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: '#888' }}>
+                          <span>Shop subtotal + delivery</span>
+                          <span>৳{sc.subtotal} + ৳{sc.deliveryCharge}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -589,7 +637,7 @@ export default function CheckoutPage() {
                   <span>৳{subtotal}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
-                  <span>Delivery charge</span>
+                  <span>Delivery charge{shopBreakdown.length > 1 ? ` (${shopBreakdown.length} shops)` : ''}</span>
                   <span>{deliveryCharge === 0 ? 'Free' : `৳${deliveryCharge}`}</span>
                 </div>
                 <div style={{
@@ -606,6 +654,10 @@ export default function CheckoutPage() {
                     color: '#c62828', borderRadius: '6px', fontSize: '13px'
                   }}>{error}</div>
                 )}
+
+                <div style={{ marginBottom: '12px' }}>
+                  <AgreementCheckbox type="customer" checked={agreed} onChange={setAgreed} accent="#f4a300" />
+                </div>
 
                 <button
                   type="submit"

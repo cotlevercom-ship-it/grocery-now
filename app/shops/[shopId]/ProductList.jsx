@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ProductDetailModal from './ProductDetailModal'
+import { getShopCart, setShopCart } from '@/lib/cart'
 
 export default function ProductList({ categories, products, shop }) {
   const router = useRouter()
@@ -9,41 +10,19 @@ export default function ProductList({ categories, products, shop }) {
   const [activeCategory, setActiveCategory] = useState('all')
   const [detailProduct, setDetailProduct] = useState(null)
 
-  // Load cart from localStorage on mount (only if it belongs to this shop)
+  // Load this shop's items from the multi-shop cart on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('cart')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (parsed.shopId === shop.id) {
-          setCart(parsed.items || [])
-        }
-      }
+      setCart(getShopCart(shop.id))
     } catch (e) {
       console.error(e)
     }
   }, [shop.id])
 
-  // Persist cart to localStorage whenever it changes
+  // Persist this shop's items back into the multi-shop cart whenever they change
   useEffect(() => {
     try {
-      if (cart.length > 0) {
-        localStorage.setItem('cart', JSON.stringify({
-          shopId: shop.id,
-          shopName: shop.name,
-          items: cart
-        }))
-      } else {
-        // If cart is empty, only clear localStorage if it was for this shop
-        const saved = localStorage.getItem('cart')
-        if (saved) {
-          const parsed = JSON.parse(saved)
-          if (parsed.shopId === shop.id) {
-            localStorage.removeItem('cart')
-          }
-        }
-      }
-      window.dispatchEvent(new Event('cart-changed'))
+      setShopCart(shop.id, shop.name, cart)
     } catch (e) {
       console.error(e)
     }

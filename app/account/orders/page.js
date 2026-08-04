@@ -136,6 +136,11 @@ export default function OrdersHistoryPage() {
                     }}>
                       #{order.id.slice(0, 8).toUpperCase()} · {new Date(order.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
+                    {order.order_group_id && (
+                      <div style={{ fontSize: '10.5px', color: '#c17a1f', marginTop: '3px', fontWeight: '600' }}>
+                        Part of a multi-shop order
+                      </div>
+                    )}
                     <div style={{
                       fontSize: '16px', color: '#dc2626', fontWeight: '700', marginTop: '8px',
                       fontFamily: '"Courier New", monospace'
