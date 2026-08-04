@@ -213,7 +213,7 @@ export default function ProductList({ categories, products, shop }) {
                 {group.name}
               </div>
             )}
-            <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 180px))', gap: '12px' }}>
+            <div className="product-grid" style={{ display: 'grid', gap: '12px' }}>
               {group.products.map(product => {
                 const hasVariants = (product.product_variants || []).length > 0
                 const qty = getQty(product.id)
@@ -364,6 +364,18 @@ export default function ProductList({ categories, products, shop }) {
         @media (min-width: 768px) {
           .desktop-sidebar { display: block; }
           .mobile-pills { display: none !important; }
+        }
+        .product-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        @media (min-width: 480px) {
+          .product-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 768px) {
+          .product-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (min-width: 1024px) {
+          .product-grid { grid-template-columns: repeat(5, 1fr); }
         }
       `}</style>
 
