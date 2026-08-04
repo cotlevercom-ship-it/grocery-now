@@ -1,6 +1,7 @@
 import Hero from '@/components/Hero'
 import HomeSearch from '@/components/HomeSearch'
 import TrustBadges from '@/components/TrustBadges'
+import PopularProducts from '@/components/PopularProducts'
 import ShopSection from '@/components/ShopSection'
 import Footer from '@/components/Footer'
 
@@ -12,6 +13,7 @@ export default function Home() {
       <Hero />
       <HomeSearch />
       <TrustBadges />
+      <PopularProducts />
       <ShopSection />
       <Footer />
     </div>
