@@ -19,7 +19,7 @@ export default function BannerCarousel({ banners }) {
   return (
     <div style={{ padding: '14px 16px 4px' }}>
       <div className="banner-box" style={{
-        position: 'relative', width: '100%',
+        position: 'relative', width: '100%', aspectRatio: '2.6 / 1',
         borderRadius: '16px', overflow: 'hidden', background: '#f5f5f5',
       }}>
         <div style={{
