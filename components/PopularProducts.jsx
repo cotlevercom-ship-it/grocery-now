@@ -19,7 +19,7 @@ export default async function PopularProducts() {
 
   return (
     <div style={{ background: '#f5f5f5', padding: '24px 16px 8px' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      <div>
         <h2 className="shop-heading" style={{ fontWeight: '800', color: '#0a0a0a', marginBottom: '14px' }}>
           Popular Products
         </h2>

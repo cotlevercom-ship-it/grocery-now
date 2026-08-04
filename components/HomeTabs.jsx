@@ -8,7 +8,7 @@ export default function HomeTabs({ productsSlot, shopsSlot }) {
 
   return (
     <div style={{ background: '#f5f5f5' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '20px 16px 0' }}>
+      <div style={{ padding: '20px 16px 0' }}>
         <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e5e5e5' }}>
           <button
             onClick={() => setTab('products')}

@@ -130,14 +130,8 @@ export default function ProductGrid({ products, departments }) {
         }
         .products-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-        }
-        @media (min-width: 640px) {
-          .products-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-        @media (min-width: 900px) {
-          .products-grid { grid-template-columns: repeat(4, 1fr); }
+          grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 15vw, 210px), 1fr));
+          gap: clamp(10px, 1.2vw, 20px);
         }
       `}</style>
     </>
