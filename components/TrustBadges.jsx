@@ -8,31 +8,41 @@ export default function TrustBadges() {
 
   return (
     <div style={{ background: 'white', borderBottom: '1px solid #eee' }}>
-      <div style={{
-        maxWidth: '1100px', margin: '0 auto', padding: '14px 16px',
-        display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none'
-      }}>
+      <div className="trust-grid" style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px' }}>
         {items.map(item => (
-          <div key={item.title} style={{
-            flex: '1 1 0', minWidth: '150px', display: 'flex', alignItems: 'center',
-            gap: '10px', padding: '8px 10px'
-          }}>
+          <div key={item.title} className="trust-item">
             <span style={{
-              width: '30px', height: '30px', borderRadius: '50%', background: '#f5f5f5',
+              width: '32px', height: '32px', borderRadius: '50%', background: '#f5f5f5',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '14px', flexShrink: 0, color: '#2d6a4f'
             }}>{item.icon}</span>
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: '#1a1a1a', whiteSpace: 'nowrap' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#1a1a1a' }}>
                 {item.title}
               </div>
-              <div style={{ fontSize: '10.5px', color: '#999', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: '10.5px', color: '#999' }}>
                 {item.desc}
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      <style jsx>{`
+        .trust-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 14px 10px;
+        }
+        .trust-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        @media (min-width: 640px) {
+          .trust-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+      `}</style>
     </div>
   )
 }

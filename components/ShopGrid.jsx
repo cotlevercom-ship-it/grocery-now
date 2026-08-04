@@ -102,9 +102,11 @@ export default function ShopGrid({ shops, departments }) {
           display: flex;
           gap: 8px;
           overflow-x: auto;
-          padding-bottom: 4px;
-          margin-bottom: 20px;
+          padding: 2px 20px 6px 2px;
+          margin: 0 -2px 20px;
           scrollbar-width: none;
+          -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+          mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
         }
         .dept-row::-webkit-scrollbar { display: none; }
         .dept-chip {
