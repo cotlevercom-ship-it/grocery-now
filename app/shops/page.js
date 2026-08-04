@@ -17,14 +17,14 @@ export default async function ShopsPage() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       {/* Topbar */}
       <div style={{
-        background: 'linear-gradient(135deg, #163a2c 0%, #2d6a4f 100%)',
+        background: '#0a0a0a',
         padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px'
       }}>
         <Link href="/">
           <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
-        <div style={{ color: '#faf7f0', fontSize: '16px', fontWeight: '600', flex: 1 }}>
-          সব দোকান
+        <div style={{ color: 'white', fontSize: '16px', fontWeight: '600', flex: 1 }}>
+          All Shops
         </div>
       </div>
 
@@ -33,7 +33,7 @@ export default async function ShopsPage() {
         {shops.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>🏪</div>
-            <p>এখনো কোনো দোকান নেই</p>
+            <p>No shops yet</p>
           </div>
         ) : (
           <div className="shop-grid">
@@ -52,14 +52,14 @@ export default async function ShopsPage() {
                       background: '#f4a300', color: '#1a1a1a',
                       fontSize: '10px', fontWeight: '700', padding: '3px 9px',
                       borderRadius: '6px'
-                    }}>ফিচার্ড</div>
+                    }}>Featured</div>
                   )}
                   <div style={{
                     position: 'absolute', bottom: '8px', right: '8px',
                     background: 'rgba(255,255,255,0.92)', borderRadius: '6px',
                     padding: '3px 8px', fontSize: '11px', fontWeight: '600', color: '#1a1a1a'
                   }}>
-                    ⏱ {shop.delivery_time_min}-{shop.delivery_time_max} মি.
+                    ⭐ {shop.rating || 'New'}
                   </div>
                 </div>
                 <div style={{ padding: '12px 14px' }}>
@@ -67,7 +67,7 @@ export default async function ShopsPage() {
                     {shop.name}
                   </div>
                   {shop.location && (
-                    <div style={{ fontSize: '11.5px', color: '#2d6a4f', marginTop: '2px', fontWeight: '500' }}>
+                    <div style={{ fontSize: '11.5px', color: '#666', marginTop: '2px', fontWeight: '500' }}>
                       📍 {shop.location}
                     </div>
                   )}
@@ -76,19 +76,6 @@ export default async function ShopsPage() {
                       {shop.description}
                     </div>
                   )}
-                  <div style={{ display: 'flex', gap: '14px', marginTop: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '12px', color: '#555' }}>
-                      ⭐ {shop.rating || '৪.৫'}
-                    </span>
-                    <span style={{ fontSize: '12px', color: '#2d6a4f', fontWeight: '500' }}>
-                      🚴 {shop.delivery_charge === 0 ? 'ফ্রি ডেলিভারি' : `৳${shop.delivery_charge}`}
-                    </span>
-                    {shop.min_order_amount > 0 && (
-                      <span style={{ fontSize: '12px', color: '#555' }}>
-                        সর্বনিম্ন ৳{shop.min_order_amount}
-                      </span>
-                    )}
-                  </div>
                 </div>
               </Link>
             ))}
