@@ -160,7 +160,7 @@ export default function CartPage() {
           </div>
 
           {/* Right: sticky summary (desktop) */}
-          <div className="cart-summary-col" style={{ width: '100%' }}>
+          <div className="cart-summary-col">
             <div style={{
               background: 'white', borderRadius: '6px',
               border: '1px solid #e5e5e5', padding: '18px'
@@ -215,10 +215,11 @@ export default function CartPage() {
       </div>
 
       <style jsx>{`
+        .cart-layout { flex-direction: column; }
         .cart-summary-col { width: 100%; }
         .desktop-place-order { display: none; }
         @media (min-width: 860px) {
-          .cart-layout { align-items: flex-start; }
+          .cart-layout { flex-direction: row; align-items: flex-start; }
           .cart-summary-col { width: 320px; flex-shrink: 0; position: sticky; top: 20px; }
           .desktop-place-order { display: block; }
           .mobile-bottom-bar { display: none; }
