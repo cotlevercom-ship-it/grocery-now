@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getSession } from '@/lib/supabase'
-import Image from 'next/image'
+import Logo from './Logo'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
@@ -59,14 +59,8 @@ export default function Navbar() {
         padding: '14px 16px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
-          <span style={{
-            position: 'relative', display: 'inline-block', height: '58px', width: '198px',
-            filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.85)) drop-shadow(0 0 16px rgba(255,255,255,0.55)) drop-shadow(0 0 28px rgba(255,255,255,0.3))',
-          }}>
-            <Image src="/logo-text.png" alt="Cot Lever" fill priority
-              style={{ objectFit: 'contain', objectPosition: 'left center' }} />
-          </span>
+        <Link href="/" className="navbar-logo-text" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
+          <Logo variant="light" size="1em" />
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
