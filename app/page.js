@@ -3,6 +3,7 @@ import HomeSearch from '@/components/HomeSearch'
 import TrustBadges from '@/components/TrustBadges'
 import PopularProducts from '@/components/PopularProducts'
 import ShopSection from '@/components/ShopSection'
+import HomeTabs from '@/components/HomeTabs'
 import Footer from '@/components/Footer'
 
 export const dynamic = 'force-dynamic'
@@ -13,8 +14,7 @@ export default function Home() {
       <Hero />
       <HomeSearch />
       <TrustBadges />
-      <PopularProducts />
-      <ShopSection />
+      <HomeTabs productsSlot={<PopularProducts />} shopsSlot={<ShopSection />} />
       <Footer />
     </div>
   )
