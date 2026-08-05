@@ -64,7 +64,7 @@ export default function Footer() {
 
   const columns = []
   if (infoPages.length > 0) {
-    columns.push({ title: 'About Cot Lever', items: infoPages.map(p => ({ label: p.title, href: linkHref(p) })) })
+    columns.push({ title: 'About Cot Lever', titleHref: '/about' })
   }
   if (partnerPages.length > 0) {
     columns.push({ title: 'Partner With Us', items: partnerPages.map(p => ({ label: p.title, href: linkHref(p) })) })
@@ -90,19 +90,27 @@ export default function Footer() {
         <div className="col-scroll" ref={scrollRef} onScroll={handleScroll}>
           {columns.map((col, i) => (
             <div className="footer-card" style={totalCols === 1 ? { width: '100%' } : undefined} key={i}>
-              <div className="card-title">{col.title}</div>
-              <div className="link-list">
-                {col.items.map((item, j) => (
-                  <Link
-                    key={j}
-                    href={item.href}
-                    className="footer-link"
-                    style={{ display: 'block', width: '100%', marginBottom: '14px' }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+              {col.titleHref ? (
+                <Link href={col.titleHref} className="card-title" style={{ display: 'block', textDecoration: 'none' }}>
+                  {col.title} →
+                </Link>
+              ) : (
+                <>
+                  <div className="card-title">{col.title}</div>
+                  <div className="link-list">
+                    {col.items.map((item, j) => (
+                      <Link
+                        key={j}
+                        href={item.href}
+                        className="footer-link"
+                        style={{ display: 'block', width: '100%', marginBottom: '14px' }}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           ))}
 
