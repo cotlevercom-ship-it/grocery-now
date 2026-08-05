@@ -12,8 +12,10 @@ export default function AdminLayout({ children }) {
   const [adminEmail, setAdminEmail] = useState('')
   const [navOpen, setNavOpen] = useState(false)
 
+  const publicPaths = ['/admin/login', '/admin/forgot-password']
+
   useEffect(() => {
-    if (pathname === '/admin/login') {
+    if (publicPaths.includes(pathname)) {
       setChecking(false)
       return
     }
@@ -45,7 +47,7 @@ export default function AdminLayout({ children }) {
     setNavOpen(false)
   }, [pathname])
 
-  if (pathname === '/admin/login') return children
+  if (publicPaths.includes(pathname)) return children
 
   if (checking) {
     return (
