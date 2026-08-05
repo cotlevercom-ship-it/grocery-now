@@ -63,9 +63,18 @@ export default function Footer() {
   const hasSocial = settings.facebook_url || whatsappHref || settings.contact_email
 
   const columns = []
-  columns.push({ title: 'Support', items: [{ label: 'Help Center', href: '/help' }] })
+  const helpItem = { label: 'Help Center', href: '/help' }
   if (infoPages.length > 0) {
-    columns.push({ title: 'About Cot Lever', items: infoPages.map(p => ({ label: p.title, href: linkHref(p) })) })
+    const infoItems = infoPages.map(p => ({ label: p.title, href: linkHref(p) }))
+    const contactIdx = infoItems.findIndex(i => i.label.toLowerCase().includes('contact'))
+    if (contactIdx >= 0) {
+      infoItems.splice(contactIdx + 1, 0, helpItem)
+    } else {
+      infoItems.push(helpItem)
+    }
+    columns.push({ title: 'About Cot Lever', items: infoItems })
+  } else {
+    columns.push({ title: 'About Cot Lever', items: [helpItem] })
   }
   if (partnerPages.length > 0) {
     columns.push({ title: 'Partner With Us', items: partnerPages.map(p => ({ label: p.title, href: linkHref(p) })) })
