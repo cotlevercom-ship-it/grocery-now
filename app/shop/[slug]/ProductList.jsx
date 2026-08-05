@@ -3,10 +3,9 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getShopCart, setShopCart } from '@/lib/cart'
 
-export default function ProductList({ categories, products, shop }) {
+export default function ProductList({ products, shop }) {
   const router = useRouter()
   const [cart, setCart] = useState([])
-  const [activeCategory, setActiveCategory] = useState('all')
 
   // Load this shop's items from the multi-shop cart on mount
   useEffect(() => {
@@ -66,26 +65,6 @@ export default function ProductList({ categories, products, shop }) {
   const totalItems = cart.reduce((a, b) => a + b.qty, 0)
   const totalPrice = cart.reduce((a, b) => a + b.qty * b.price, 0)
 
-  const filteredProducts = activeCategory === 'all'
-    ? products
-    : products.filter(p => p.category_id === activeCategory)
-
-  const groupedByCategory = () => {
-    if (activeCategory !== 'all') {
-      return [{ id: activeCategory, name: '', products: filteredProducts }]
-    }
-    const uncategorized = products.filter(p => !p.category_id)
-    const grouped = categories.map(cat => ({
-      ...cat,
-      products: products.filter(p => p.category_id === cat.id)
-    })).filter(cat => cat.products.length > 0)
-
-    if (uncategorized.length > 0) {
-      grouped.push({ id: 'none', name: 'Other', products: uncategorized })
-    }
-    return grouped
-  }
-
   const priceLabel = (product) => {
     const variants = product.product_variants || []
     if (variants.length === 0) {
@@ -113,235 +92,154 @@ export default function ProductList({ categories, products, shop }) {
 
   return (
     <div style={{ paddingBottom: totalItems > 0 ? 'calc(80px + env(safe-area-inset-bottom))' : '16px' }} className="shop-layout">
-      {/* Mobile category pills */}
-      {categories.length > 0 && (
-        <div className="mobile-pills" style={{
-          display: 'flex', gap: '8px', padding: '12px 16px',
-          overflowX: 'auto', scrollbarWidth: 'none', background: 'white',
-          borderBottom: '1px solid #eee'
-        }}>
-          <button
-            onClick={() => setActiveCategory('all')}
-            style={{
-              padding: '6px 14px', borderRadius: '20px', fontSize: '12px',
-              border: '1px solid', whiteSpace: 'nowrap',
-              background: activeCategory === 'all' ? '#0a0a0a' : 'white',
-              color: activeCategory === 'all' ? 'white' : '#555',
-              borderColor: activeCategory === 'all' ? '#0a0a0a' : '#ddd',
-            }}>All Products</button>
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              style={{
-                padding: '6px 14px', borderRadius: '20px', fontSize: '12px',
-                border: '1px solid', whiteSpace: 'nowrap',
-                background: activeCategory === cat.id ? '#0a0a0a' : 'white',
-                color: activeCategory === cat.id ? 'white' : '#555',
-                borderColor: activeCategory === cat.id ? '#0a0a0a' : '#ddd',
-              }}>{cat.name}</button>
-          ))}
-        </div>
-      )}
-
       <div className="shop-body" style={{ display: 'flex', alignItems: 'flex-start' }}>
-        {/* Desktop sidebar (Alibaba-style product categories) */}
-        {categories.length > 0 && (
-          <div className="desktop-sidebar" style={{
-            width: '220px', flexShrink: 0, background: 'white',
-            borderRight: '1px solid #eee', minHeight: '400px'
-          }}>
-            <div style={{
-              padding: '14px 16px', fontSize: '13px', fontWeight: '700',
-              color: '#1a1a1a', borderBottom: '1px solid #eee'
-            }}>
-              Product Categories
-            </div>
-            <button
-              onClick={() => setActiveCategory('all')}
-              style={{
-                display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
-                fontSize: '13px', border: 'none', borderBottom: '1px solid #f0f0f0',
-                background: activeCategory === 'all' ? '#fdf6e8' : 'white',
-                color: activeCategory === 'all' ? '#f4a300' : '#333',
-                fontWeight: activeCategory === 'all' ? '700' : '400', cursor: 'pointer'
-              }}>All Products</button>
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                style={{
-                  display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
-                  fontSize: '13px', border: 'none', borderBottom: '1px solid #f0f0f0',
-                  background: activeCategory === cat.id ? '#fdf6e8' : 'white',
-                  color: activeCategory === cat.id ? '#f4a300' : '#333',
-                  fontWeight: activeCategory === cat.id ? '700' : '400', cursor: 'pointer'
-                }}>{cat.name}</button>
-            ))}
-          </div>
-        )}
+        {/* Product grid */}
+        <div style={{ padding: '12px 16px', flex: 1, minWidth: 0 }}>
+          <div className="product-grid" style={{ display: 'grid', gap: '12px' }}>
+            {products.map(product => {
+              const hasVariants = (product.product_variants || []).length > 0
+              const qty = getQty(product.id)
+              const outOfStock = isOutOfStock(product)
+              const discount = discountPercent(product)
+              return (
+                <div key={product.id} style={{
+                  background: 'white', borderRadius: '4px',
+                  border: '1px solid #e5e5e5', overflow: 'hidden'
+                }}>
+                  <div
+                    onClick={() => router.push(`/products/${product.id}`)}
+                    style={{
+                      aspectRatio: '1 / 1', background: '#f5f5f5',
+                      display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', fontSize: '40px',
+                      position: 'relative', cursor: 'pointer'
+                    }}
+                  >
+                    {hasImages(product) ? (
+                      <img src={mainImage(product)} alt={product.name}
+                        style={{
+                          width: '100%', height: '100%', objectFit: 'cover',
+                          opacity: outOfStock ? 0.45 : 1
+                        }} />
+                    ) : '🛍️'}
 
-      {/* Product groups */}
-      <div style={{ padding: '12px 16px', flex: 1, minWidth: 0 }}>
-        {groupedByCategory().map(group => (
-          <div key={group.id} style={{ marginBottom: '20px' }}>
-            {group.name && (
-              <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a', marginBottom: '10px' }}>
-                {group.name}
-              </div>
-            )}
-            <div className="product-grid" style={{ display: 'grid', gap: '12px' }}>
-              {group.products.map(product => {
-                const hasVariants = (product.product_variants || []).length > 0
-                const qty = getQty(product.id)
-                const outOfStock = isOutOfStock(product)
-                const discount = discountPercent(product)
-                return (
-                  <div key={product.id} style={{
-                    background: 'white', borderRadius: '4px',
-                    border: '1px solid #e5e5e5', overflow: 'hidden'
-                  }}>
+                    {hasMultipleImages(product) && (
+                      <span style={{
+                        position: 'absolute', bottom: '6px', right: '6px',
+                        background: 'rgba(0,0,0,0.55)', color: 'white',
+                        fontSize: '10px', padding: '1px 6px', borderRadius: '8px'
+                      }}>+{product.image_urls.length - 1}</span>
+                    )}
+
+                    {isNew(product) && !outOfStock && (
+                      <span style={{
+                        position: 'absolute', top: '8px', left: '8px',
+                        background: '#e53935', color: 'white', fontSize: '10px',
+                        fontWeight: '700', padding: '3px 8px', borderRadius: '5px',
+                        letterSpacing: '0.3px'
+                      }}>NEW</span>
+                    )}
+
+                    {discount > 0 && !outOfStock && (
+                      <span style={{
+                        position: 'absolute', top: '8px', right: '8px',
+                        background: '#0a0a0a', color: 'white', fontSize: '10px',
+                        fontWeight: '700', padding: '3px 8px', borderRadius: '5px'
+                      }}>-{discount}%</span>
+                    )}
+
+                    {outOfStock && (
+                      <div style={{
+                        position: 'absolute', inset: 0, display: 'flex',
+                        alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <span style={{
+                          background: 'rgba(0,0,0,0.7)', color: 'white',
+                          fontSize: '11px', fontWeight: '600', padding: '4px 12px',
+                          borderRadius: '6px'
+                        }}>Out of Stock</span>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ padding: '10px' }}>
                     <div
                       onClick={() => router.push(`/products/${product.id}`)}
                       style={{
-                        aspectRatio: '1 / 1', background: '#f5f5f5',
-                        display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', fontSize: '40px',
-                        position: 'relative', cursor: 'pointer'
+                        fontSize: '12.5px', fontWeight: '400', color: '#333', cursor: 'pointer',
+                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden', lineHeight: '1.4', minHeight: '35px'
                       }}
-                    >
-                      {hasImages(product) ? (
-                        <img src={mainImage(product)} alt={product.name}
-                          style={{
-                            width: '100%', height: '100%', objectFit: 'cover',
-                            opacity: outOfStock ? 0.45 : 1
-                          }} />
-                      ) : '🛍️'}
+                    >{product.name}</div>
 
-                      {hasMultipleImages(product) && (
-                        <span style={{
-                          position: 'absolute', bottom: '6px', right: '6px',
-                          background: 'rgba(0,0,0,0.55)', color: 'white',
-                          fontSize: '10px', padding: '1px 6px', borderRadius: '8px'
-                        }}>+{product.image_urls.length - 1}</span>
-                      )}
+                    {product.moq > 1 && (
+                      <div style={{ fontSize: '10.5px', color: '#2d6a4f', marginTop: '4px', fontWeight: '500' }}>
+                        ✓ MOQ {product.moq} {product.unit}
+                      </div>
+                    )}
 
-                      {isNew(product) && !outOfStock && (
-                        <span style={{
-                          position: 'absolute', top: '8px', left: '8px',
-                          background: '#e53935', color: 'white', fontSize: '10px',
-                          fontWeight: '700', padding: '3px 8px', borderRadius: '5px',
-                          letterSpacing: '0.3px'
-                        }}>NEW</span>
-                      )}
-
-                      {discount > 0 && !outOfStock && (
-                        <span style={{
-                          position: 'absolute', top: '8px', right: '8px',
-                          background: '#0a0a0a', color: 'white', fontSize: '10px',
-                          fontWeight: '700', padding: '3px 8px', borderRadius: '5px'
-                        }}>-{discount}%</span>
-                      )}
-
-                      {outOfStock && (
-                        <div style={{
-                          position: 'absolute', inset: 0, display: 'flex',
-                          alignItems: 'center', justifyContent: 'center'
-                        }}>
-                          <span style={{
-                            background: 'rgba(0,0,0,0.7)', color: 'white',
-                            fontSize: '11px', fontWeight: '600', padding: '4px 12px',
-                            borderRadius: '6px'
-                          }}>Out of Stock</span>
-                        </div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
+                      <span style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a1a' }}>
+                        {hasVariants ? priceLabel(product) : `৳${product.sale_price || product.price}`}
+                      </span>
+                      {!hasVariants && discount > 0 && (
+                        <span style={{ fontSize: '11px', color: '#aaa', textDecoration: 'line-through' }}>
+                          ৳{product.price}
+                        </span>
                       )}
                     </div>
-                    <div style={{ padding: '10px' }}>
-                      <div
-                        onClick={() => router.push(`/products/${product.id}`)}
-                        style={{
-                          fontSize: '12.5px', fontWeight: '400', color: '#333', cursor: 'pointer',
-                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden', lineHeight: '1.4', minHeight: '35px'
-                        }}
-                      >{product.name}</div>
+                    <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>{product.unit}</div>
 
-                      {product.moq > 1 && (
-                        <div style={{ fontSize: '10.5px', color: '#2d6a4f', marginTop: '4px', fontWeight: '500' }}>
-                          ✓ MOQ {product.moq} {product.unit}
-                        </div>
-                      )}
-
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
-                        <span style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a1a' }}>
-                          {hasVariants ? priceLabel(product) : `৳${product.sale_price || product.price}`}
-                        </span>
-                        {!hasVariants && discount > 0 && (
-                          <span style={{ fontSize: '11px', color: '#aaa', textDecoration: 'line-through' }}>
-                            ৳{product.price}
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>{product.unit}</div>
-
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                        {outOfStock ? (
-                          <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>Unavailable</span>
-                        ) : hasVariants ? (
-                          <button
-                            onClick={() => router.push(`/products/${product.id}`)}
-                            style={{
-                              padding: '5px 14px', borderRadius: '3px', fontSize: '11px',
-                              fontWeight: '600', background: 'white', color: '#0a0a0a',
-                              border: '1px solid #0a0a0a'
-                            }}
-                          >Select</button>
-                        ) : qty === 0 ? (
-                          <button onClick={() => addToCart(product, null, 1)} style={{
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                      {outOfStock ? (
+                        <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>Unavailable</span>
+                      ) : hasVariants ? (
+                        <button
+                          onClick={() => router.push(`/products/${product.id}`)}
+                          style={{
                             padding: '5px 14px', borderRadius: '3px', fontSize: '11px',
                             fontWeight: '600', background: 'white', color: '#0a0a0a',
                             border: '1px solid #0a0a0a'
-                          }}>+ Add</button>
-                        ) : (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <button onClick={() => removeFromCart(product)} style={{
-                              width: '24px', height: '24px', borderRadius: '3px',
-                              background: '#f5f5f5', color: '#0a0a0a', fontSize: '16px',
-                              border: '1px solid #ddd',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center'
-                            }}>-</button>
-                            <span style={{ fontSize: '13px', fontWeight: '600' }}>{qty}</span>
-                            <button onClick={() => addToCart(product, null, 1)} style={{
-                              width: '24px', height: '24px', borderRadius: '3px',
-                              background: '#0a0a0a', color: 'white', fontSize: '16px', border: 'none',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center'
-                            }}>+</button>
-                          </div>
-                        )}
-                      </div>
+                          }}
+                        >Select</button>
+                      ) : qty === 0 ? (
+                        <button onClick={() => addToCart(product, null, 1)} style={{
+                          padding: '5px 14px', borderRadius: '3px', fontSize: '11px',
+                          fontWeight: '600', background: 'white', color: '#0a0a0a',
+                          border: '1px solid #0a0a0a'
+                        }}>+ Add</button>
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <button onClick={() => removeFromCart(product)} style={{
+                            width: '24px', height: '24px', borderRadius: '3px',
+                            background: '#f5f5f5', color: '#0a0a0a', fontSize: '16px',
+                            border: '1px solid #ddd',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          }}>-</button>
+                          <span style={{ fontSize: '13px', fontWeight: '600' }}>{qty}</span>
+                          <button onClick={() => addToCart(product, null, 1)} style={{
+                            width: '24px', height: '24px', borderRadius: '3px',
+                            background: '#0a0a0a', color: 'white', fontSize: '16px', border: 'none',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          }}>+</button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                )
-              })}
-            </div>
+                </div>
+              )
+            })}
           </div>
-        ))}
 
-        {filteredProducts.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
-            <p>No products found</p>
-          </div>
-        )}
-      </div>
+          {products.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+              <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
+              <p>No products found</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <style jsx>{`
-        .desktop-sidebar { display: none; }
-        @media (min-width: 768px) {
-          .desktop-sidebar { display: block; }
-          .mobile-pills { display: none !important; }
-        }
         .product-grid {
           grid-template-columns: repeat(2, 1fr);
         }

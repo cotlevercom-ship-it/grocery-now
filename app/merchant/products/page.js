@@ -1,11 +1,10 @@
 'use client'
-import { useState, useEffect, useRef, Fragment } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import MerchantNav from '@/components/MerchantNav'
 
 const emptyProductForm = {
   name: '',
-  category_id: '',
   price: '',
   sale_price: '',
   cost_price: '',
@@ -36,7 +35,6 @@ export default function MerchantProductsPage() {
   const [maxProducts, setMaxProducts] = useState(null) // null = unlimited
   const [packageName, setPackageName] = useState('')
 
-  const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
   const [loadingData, setLoadingData] = useState(false)
   const [error, setError] = useState('')
@@ -81,15 +79,11 @@ export default function MerchantProductsPage() {
     setLoadingData(true)
     setError('')
     try {
-      const [catsData, productsData] = await Promise.all([
-        supabaseFetch(`product_categories?select=*&shop_id=eq.${id}&order=sort_order`),
-        supabaseFetch(`products?select=*,product_variants(count)&shop_id=eq.${id}&order=sort_order`),
-      ])
-      setCategories(catsData || [])
+      const productsData = await supabaseFetch(`products?select=*,product_variants(count)&shop_id=eq.${id}&order=sort_order`)
       setProducts(productsData || [])
     } catch (e) {
       console.error(e)
-      setError('Failed to load products/categories')
+      setError('Failed to load products')
     }
     setLoadingData(false)
   }
@@ -97,10 +91,6 @@ export default function MerchantProductsPage() {
   useEffect(() => {
     if (shopId) loadShopData(shopId)
   }, [shopId])
-
-  // ---------- Category handlers ----------
-  const topCategories = categories.filter(c => !c.parent_id)
-  const subcategoriesOf = (parentId) => categories.filter(c => c.parent_id === parentId)
 
   // ---------- Product handlers ----------
   const atProductLimit = maxProducts != null && products.length >= maxProducts
@@ -122,7 +112,6 @@ export default function MerchantProductsPage() {
     setEditingProductId(p.id)
     setProductForm({
       name: p.name || '',
-      category_id: p.category_id || '',
       price: p.price ?? '',
       sale_price: p.sale_price ?? '',
       cost_price: p.cost_price ?? '',
@@ -238,7 +227,6 @@ export default function MerchantProductsPage() {
 
       const payload = {
         shop_id: shopId,
-        category_id: productForm.category_id || null,
         name: productForm.name.trim(),
         description: productForm.description.trim() || null,
         price: Number(productForm.price),
@@ -352,8 +340,6 @@ export default function MerchantProductsPage() {
     textTransform: 'uppercase', letterSpacing: '0.03em'
   }
 
-  const categoryName = (id) => categories.find(c => c.id === id)?.name || 'Other'
-
   if (loadingShop) {
     return (
       <MerchantNav>
@@ -450,25 +436,9 @@ export default function MerchantProductsPage() {
 
                 <div style={sectionBoxStyle}>
                   <div style={sectionTitleStyle}>Basic Info</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                    <div>
-                      <label style={labelStyle}>Product Name *</label>
-                      <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Category</label>
-                      <select style={inputStyle} value={productForm.category_id} onChange={e => handleProductFieldChange('category_id', e.target.value)}>
-                        <option value="">Other</option>
-                        {topCategories.map(cat => (
-                          <Fragment key={cat.id}>
-                            <option value={cat.id}>{cat.name}</option>
-                            {subcategoriesOf(cat.id).map(sub => (
-                              <option key={sub.id} value={sub.id}>&nbsp;&nbsp;— {sub.name}</option>
-                            ))}
-                          </Fragment>
-                        ))}
-                      </select>
-                    </div>
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={labelStyle}>Product Name *</label>
+                    <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
@@ -692,7 +662,7 @@ export default function MerchantProductsPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{p.name}</div>
                       <div style={{ fontSize: '12px', color: '#888' }}>
-                        {categoryName(p.category_id)} · {p.unit} · Stock {p.stock}
+                        {p.unit} · Stock {p.stock}
                         {p.brand ? ` · ${p.brand}` : ''}
                         {p.sku ? ` · SKU ${p.sku}` : ''}
                         {p.product_variants?.[0]?.count > 0 ? ` · ${p.product_variants[0].count} variant${p.product_variants[0].count !== 1 ? 's' : ''}` : ''}

@@ -2,10 +2,8 @@
 import { useState, useEffect } from 'react'
 import { supabaseFetch, uploadImage } from '@/lib/supabase'
 
-const emptyCategoryForm = { name: '', sort_order: 0 }
 const emptyProductForm = {
   name: '',
-  category_id: '',
   price: '',
   sale_price: '',
   unit: 'pcs',
@@ -20,16 +18,9 @@ export default function AdminProductsPage() {
   const [selectedShopId, setSelectedShopId] = useState('')
   const [loadingShops, setLoadingShops] = useState(true)
 
-  const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
   const [loadingData, setLoadingData] = useState(false)
   const [error, setError] = useState('')
-
-  // Category form
-  const [showCatForm, setShowCatForm] = useState(false)
-  const [editingCatId, setEditingCatId] = useState(null)
-  const [catForm, setCatForm] = useState(emptyCategoryForm)
-  const [savingCat, setSavingCat] = useState(false)
 
   // Product form
   const [showProductForm, setShowProductForm] = useState(false)
@@ -40,7 +31,6 @@ export default function AdminProductsPage() {
   const [savingProduct, setSavingProduct] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  const [deletingCatId, setDeletingCatId] = useState(null)
   const [deletingProductId, setDeletingProductId] = useState(null)
 
   useEffect(() => {
@@ -63,15 +53,11 @@ export default function AdminProductsPage() {
     setLoadingData(true)
     setError('')
     try {
-      const [catsData, productsData] = await Promise.all([
-        supabaseFetch(`product_categories?select=*&shop_id=eq.${shopId}&order=sort_order`),
-        supabaseFetch(`products?select=*&shop_id=eq.${shopId}&order=sort_order`),
-      ])
-      setCategories(catsData || [])
+      const productsData = await supabaseFetch(`products?select=*&shop_id=eq.${shopId}&order=sort_order`)
       setProducts(productsData || [])
     } catch (e) {
       console.error(e)
-      setError('Failed to load products/categories')
+      setError('Failed to load products')
     }
     setLoadingData(false)
   }
@@ -79,63 +65,6 @@ export default function AdminProductsPage() {
   useEffect(() => {
     if (selectedShopId) loadShopData(selectedShopId)
   }, [selectedShopId])
-
-  // ---------- Category handlers ----------
-  const openAddCat = () => {
-    setEditingCatId(null)
-    setCatForm({ name: '', sort_order: categories.length + 1 })
-    setShowCatForm(true)
-  }
-  const openEditCat = (cat) => {
-    setEditingCatId(cat.id)
-    setCatForm({ name: cat.name, sort_order: cat.sort_order ?? 0 })
-    setShowCatForm(true)
-  }
-  const closeCatForm = () => {
-    setShowCatForm(false)
-    setEditingCatId(null)
-    setCatForm(emptyCategoryForm)
-  }
-  const handleCatSubmit = async (e) => {
-    e.preventDefault()
-    if (!catForm.name.trim()) return
-    setSavingCat(true)
-    setError('')
-    try {
-      const payload = {
-        name: catForm.name.trim(),
-        sort_order: Number(catForm.sort_order) || 0,
-        shop_id: selectedShopId,
-      }
-      if (editingCatId) {
-        await supabaseFetch(`product_categories?id=eq.${editingCatId}`, {
-          method: 'PATCH', body: JSON.stringify(payload),
-        })
-      } else {
-        await supabaseFetch('product_categories', {
-          method: 'POST', body: JSON.stringify(payload),
-        })
-      }
-      closeCatForm()
-      await loadShopData(selectedShopId)
-    } catch (e) {
-      console.error(e)
-      setError('Failed to save category')
-    }
-    setSavingCat(false)
-  }
-  const handleDeleteCat = async (id) => {
-    if (!confirm('Delete this category? Its products will move to "Other".')) return
-    setDeletingCatId(id)
-    try {
-      await supabaseFetch(`product_categories?id=eq.${id}`, { method: 'DELETE' })
-      await loadShopData(selectedShopId)
-    } catch (e) {
-      console.error(e)
-      setError('Failed to delete category')
-    }
-    setDeletingCatId(null)
-  }
 
   // ---------- Product handlers ----------
   const openAddProduct = () => {
@@ -149,7 +78,6 @@ export default function AdminProductsPage() {
     setEditingProductId(p.id)
     setProductForm({
       name: p.name || '',
-      category_id: p.category_id || '',
       price: p.price ?? '',
       sale_price: p.sale_price ?? '',
       unit: p.unit || 'pcs',
@@ -199,7 +127,6 @@ export default function AdminProductsPage() {
       }
       const payload = {
         shop_id: selectedShopId,
-        category_id: productForm.category_id || null,
         name: productForm.name.trim(),
         description: productForm.description.trim() || null,
         price: Number(productForm.price),
@@ -248,13 +175,11 @@ export default function AdminProductsPage() {
     fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px', fontWeight: '500'
   }
 
-  const categoryName = (id) => categories.find(c => c.id === id)?.name || 'Other'
-
   return (
     <div>
       <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Products</h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        First pick a shop, then manage that shop's categories and products.
+        First pick a shop, then manage that shop's products.
       </p>
 
       {/* Shop selector */}
@@ -282,68 +207,6 @@ export default function AdminProductsPage() {
 
       {selectedShopId && !loadingData && (
         <>
-          {/* ---------- Categories section ---------- */}
-          <div style={{ marginBottom: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>Categories</div>
-              {!showCatForm && (
-                <button onClick={openAddCat} style={{
-                  background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '6px',
-                  padding: '6px 14px', fontSize: '12px', fontWeight: '600'
-                }}>+ New Category</button>
-              )}
-            </div>
-
-            {showCatForm && (
-              <form onSubmit={handleCatSubmit} style={{
-                background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
-                padding: '14px', marginBottom: '14px', maxWidth: '480px',
-                display: 'flex', gap: '10px', alignItems: 'flex-end'
-              }}>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>Name</label>
-                  <input style={inputStyle} value={catForm.name} onChange={e => setCatForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Vegetables" />
-                </div>
-                <div style={{ width: '80px' }}>
-                  <label style={labelStyle}>Order</label>
-                  <input type="number" style={inputStyle} value={catForm.sort_order} onChange={e => setCatForm(f => ({ ...f, sort_order: e.target.value }))} />
-                </div>
-                <button type="submit" disabled={savingCat} style={{
-                  background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
-                  padding: '10px 16px', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap'
-                }}>{savingCat ? '...' : (editingCatId ? 'Update' : 'Add')}</button>
-                <button type="button" onClick={closeCatForm} style={{
-                  background: '#f0f0f0', color: '#555', border: 'none', borderRadius: '8px',
-                  padding: '10px 16px', fontSize: '13px'
-                }}>Cancel</button>
-              </form>
-            )}
-
-            {categories.length === 0 ? (
-              <div style={{ color: '#999', fontSize: '13px' }}>No categories yet. Products can still be added without one (shown under "Other").</div>
-            ) : (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {categories.map(cat => (
-                  <div key={cat.id} style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    background: 'white', border: '1px solid #e0e0e0', borderRadius: '20px',
-                    padding: '6px 8px 6px 14px', fontSize: '13px'
-                  }}>
-                    <span>{cat.name}</span>
-                    <button onClick={() => openEditCat(cat)} style={{
-                      background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '50%',
-                      width: '22px', height: '22px', fontSize: '11px'
-                    }}>✎</button>
-                    <button onClick={() => handleDeleteCat(cat.id)} disabled={deletingCatId === cat.id} style={{
-                      background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '50%',
-                      width: '22px', height: '22px', fontSize: '11px'
-                    }}>×</button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* ---------- Products section ---------- */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -382,20 +245,9 @@ export default function AdminProductsPage() {
                   {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={labelStyle}>Product Name *</label>
-                    <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Category</label>
-                    <select style={inputStyle} value={productForm.category_id} onChange={e => handleProductFieldChange('category_id', e.target.value)}>
-                      <option value="">Other</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={labelStyle}>Product Name *</label>
+                  <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
@@ -472,7 +324,7 @@ export default function AdminProductsPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{p.name}</div>
                       <div style={{ fontSize: '12px', color: '#888' }}>
-                        {categoryName(p.category_id)} · {p.unit} · Stock {p.stock}
+                        {p.unit} · Stock {p.stock}
                       </div>
                     </div>
                     <div style={{ fontSize: '13px', fontWeight: '600', color: '#0a0a0a', whiteSpace: 'nowrap' }}>

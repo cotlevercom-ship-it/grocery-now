@@ -6,19 +6,14 @@ export default async function ShopPage({ params }) {
   const { slug } = await params
 
   let shop = null
-  let categories = []
   let products = []
 
   try {
     const shops = await supabaseFetch(`shops?select=*&slug=eq.${slug}`)
     shop = shops[0]
 
-    categories = await supabaseFetch(
-      `product_categories?select=*&shop_id=eq.${shop?.id}&order=sort_order`
-    )
-
     products = await supabaseFetch(
-      `products?select=id,shop_id,category_id,name,description,price,sale_price,unit,image_url,image_urls,stock,is_available,sort_order,brand,weight_grams,sku,moq,product_variants(id,name,price,sale_price,stock,sku,is_available,sort_order)&shop_id=eq.${shop?.id}&is_available=eq.true&order=sort_order`
+      `products?select=id,shop_id,name,description,price,sale_price,unit,image_url,image_urls,stock,is_available,sort_order,brand,weight_grams,sku,moq,product_variants(id,name,price,sale_price,stock,sku,is_available,sort_order)&shop_id=eq.${shop?.id}&is_available=eq.true&order=sort_order`
     )
   } catch (e) {
     console.error(e)
@@ -118,7 +113,7 @@ export default async function ShopPage({ params }) {
       </div>
 
       {/* Products */}
-      <ProductList categories={categories} products={products} shop={shop} />
+      <ProductList products={products} shop={shop} />
 
       {/* Floating contact button (desktop-style Alibaba widget) */}
       {whatsappLink && (
