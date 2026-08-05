@@ -14,7 +14,7 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
     let cancelled = false
     async function load() {
       try {
-        const rows = await supabaseFetch(`agreements?select=title,content_bn,content_en&type=eq.${type}`)
+        const rows = await supabaseFetch(`agreements?select=title_bn,title_en,content_bn,content_en&type=eq.${type}`)
         if (!cancelled) setAgreement(rows?.[0] || null)
       } catch (e) {
         console.error(e)
@@ -24,7 +24,7 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
     return () => { cancelled = true }
   }, [type])
 
-  const title = agreement?.title || 'Agreement'
+  const title = (lang === 'bn' ? agreement?.title_bn : agreement?.title_en) || 'Agreement'
 
   return (
     <>

@@ -15,7 +15,8 @@ export default function AdminAgreementsPage() {
   const [error, setError] = useState('')
 
   const [editingType, setEditingType] = useState(null)
-  const [title, setTitle] = useState('')
+  const [titleBn, setTitleBn] = useState('')
+  const [titleEn, setTitleEn] = useState('')
   const [contentBn, setContentBn] = useState('')
   const [contentEn, setContentEn] = useState('')
   const [saving, setSaving] = useState(false)
@@ -38,7 +39,8 @@ export default function AdminAgreementsPage() {
 
   const openEdit = (a) => {
     setEditingType(a.type)
-    setTitle(a.title)
+    setTitleBn(a.title_bn || '')
+    setTitleEn(a.title_en || '')
     setContentBn(a.content_bn || '')
     setContentEn(a.content_en || '')
     setSaved(false)
@@ -57,7 +59,7 @@ export default function AdminAgreementsPage() {
       await supabaseFetch(`agreements?type=eq.${editingType}`, {
         method: 'PATCH',
         headers: { Prefer: 'return=minimal' },
-        body: JSON.stringify({ title: title.trim(), content_bn: contentBn.trim(), content_en: contentEn.trim(), updated_at: new Date().toISOString() }),
+        body: JSON.stringify({ title_bn: titleBn.trim(), title_en: titleEn.trim(), content_bn: contentBn.trim(), content_en: contentEn.trim(), updated_at: new Date().toISOString() }),
       })
       setSaved(true)
       await load()
@@ -93,7 +95,7 @@ export default function AdminAgreementsPage() {
           }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: '13.5px', fontWeight: '700', color: '#0a0a0a' }}>
-                {TYPE_LABELS[a.type]?.label || a.type} — <span style={{ color: '#555', fontWeight: '500' }}>{a.title}</span>
+                {TYPE_LABELS[a.type]?.label || a.type} — <span style={{ color: '#555', fontWeight: '500' }}>{a.title_en}</span>
               </div>
               <div style={{ fontSize: '11.5px', color: '#999', marginTop: '2px' }}>{TYPE_LABELS[a.type]?.desc}</div>
             </div>
@@ -121,11 +123,19 @@ export default function AdminAgreementsPage() {
               Edit {TYPE_LABELS[editingType]?.label}
             </div>
 
-            <label style={{ fontSize: '11.5px', color: '#888', display: 'block', marginBottom: '4px' }}>Checkbox Label / Title</label>
+            <label style={{ fontSize: '11.5px', color: '#888', display: 'block', marginBottom: '4px' }}>Checkbox Label / Title — বাংলা</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={titleBn}
+              onChange={(e) => setTitleBn(e.target.value)}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', marginBottom: '12px', boxSizing: 'border-box' }}
+            />
+
+            <label style={{ fontSize: '11.5px', color: '#888', display: 'block', marginBottom: '4px' }}>Checkbox Label / Title — English</label>
+            <input
+              type="text"
+              value={titleEn}
+              onChange={(e) => setTitleEn(e.target.value)}
               style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', marginBottom: '14px', boxSizing: 'border-box' }}
             />
 
