@@ -222,7 +222,7 @@ function MerchantLoginForm() {
     setVerifyingOtp(false)
   }
 
-  const createShop = async ({ withPayment }) => {
+  const createShop = async () => {
     const session = getSession()
     const rows = await supabaseFetch('shops', {
       method: 'POST',
@@ -238,8 +238,8 @@ function MerchantLoginForm() {
         category: 'general',
         delivery_charge: 20,
         min_order_amount: 0,
-        package_id: selectedPkgId || null,
-        is_active: !withPayment,
+        package_id: null,
+        is_active: true,
         ref_code: refCode || null,
       }),
     })
@@ -256,7 +256,6 @@ function MerchantLoginForm() {
     if (!email.trim()) return setRegisterError('Please enter your email')
     if (!otpVerified) return setRegisterError('Please verify your email with the OTP code first')
     if (departments.length > 0 && !selectedDeptId) return setRegisterError('Please select a department')
-    if (packages.length > 0 && !selectedPkgId) return setRegisterError('Please select a package')
     if (!/^\d{4}$/.test(pin)) return setRegisterError('PIN must be exactly 4 digits')
     if (pin !== confirmPin) return setRegisterError('PIN and Confirm PIN do not match')
 
@@ -265,13 +264,7 @@ function MerchantLoginForm() {
       await signUp(email.trim(), pinToPassword(pin))
       await setAccountType('seller')
 
-      if (isPaidPkg) {
-        setSignupStep('payment')
-        setRegisterSubmitting(false)
-        return
-      }
-
-      const shop = await createShop({ withPayment: false })
+      const shop = await createShop()
       if (shop?.id && refCode) {
         await createReferralIfNeeded(shop.id, refCode)
       }
@@ -506,32 +499,6 @@ function MerchantLoginForm() {
                   </div>
                 )}
 
-                {packages.length > 0 && (
-                  <div className="field">
-                    <label>Select a Package *</label>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {packages.map(pkg => {
-                        const isSelected = selectedPkgId === pkg.id
-                        return (
-                          <div
-                            key={pkg.id}
-                            onClick={() => setSelectedPkgId(pkg.id)}
-                            className={`pkg-card ${isSelected ? 'selected' : ''}`}
-                          >
-                            <div>
-                              <div className="pkg-name">{pkg.name_bn}</div>
-                              {pkg.features_bn?.length > 0 && (
-                                <div className="pkg-features">{pkg.features_bn.join(' · ')}</div>
-                              )}
-                            </div>
-                            <div className="pkg-price">{pkg.price > 0 ? `৳${pkg.price}/month` : 'Free'}</div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-
                 <div className="field">
                   <label>Set PIN *</label>
                   <input style={inputStyle} type="password" inputMode="numeric" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="4-digit PIN" maxLength={4} autoComplete="off" />
@@ -544,7 +511,7 @@ function MerchantLoginForm() {
                 {registerError && <div className="alert alert-error">{registerError}</div>}
 
                 <button type="submit" className="submit-btn" disabled={registerSubmitting}>
-                  {registerSubmitting ? 'Please wait...' : isPaidPkg ? 'Continue to Payment' : 'Create Shop'}
+                  {registerSubmitting ? 'Please wait...' : 'Create Shop'}
                 </button>
               </form>
 
