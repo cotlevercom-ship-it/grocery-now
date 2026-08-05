@@ -16,7 +16,8 @@ export default function AdminAgreementsPage() {
 
   const [editingType, setEditingType] = useState(null)
   const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+  const [contentBn, setContentBn] = useState('')
+  const [contentEn, setContentEn] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -38,7 +39,8 @@ export default function AdminAgreementsPage() {
   const openEdit = (a) => {
     setEditingType(a.type)
     setTitle(a.title)
-    setContent(a.content)
+    setContentBn(a.content_bn || '')
+    setContentEn(a.content_en || '')
     setSaved(false)
   }
 
@@ -55,7 +57,7 @@ export default function AdminAgreementsPage() {
       await supabaseFetch(`agreements?type=eq.${editingType}`, {
         method: 'PATCH',
         headers: { Prefer: 'return=minimal' },
-        body: JSON.stringify({ title: title.trim(), content: content.trim(), updated_at: new Date().toISOString() }),
+        body: JSON.stringify({ title: title.trim(), content_bn: contentBn.trim(), content_en: contentEn.trim(), updated_at: new Date().toISOString() }),
       })
       setSaved(true)
       await load()
@@ -127,11 +129,19 @@ export default function AdminAgreementsPage() {
               style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', marginBottom: '14px', boxSizing: 'border-box' }}
             />
 
-            <label style={{ fontSize: '11.5px', color: '#888', display: 'block', marginBottom: '4px' }}>Full Agreement Text</label>
+            <label style={{ fontSize: '11.5px', color: '#888', display: 'block', marginBottom: '4px' }}>Full Agreement Text — বাংলা</label>
             <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={10}
+              value={contentBn}
+              onChange={(e) => setContentBn(e.target.value)}
+              rows={8}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '13.5px', lineHeight: 1.6, marginBottom: '14px', boxSizing: 'border-box', resize: 'vertical' }}
+            />
+
+            <label style={{ fontSize: '11.5px', color: '#888', display: 'block', marginBottom: '4px' }}>Full Agreement Text — English</label>
+            <textarea
+              value={contentEn}
+              onChange={(e) => setContentEn(e.target.value)}
+              rows={8}
               style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '13.5px', lineHeight: 1.6, marginBottom: '16px', boxSizing: 'border-box', resize: 'vertical' }}
             />
 

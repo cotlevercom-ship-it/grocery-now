@@ -8,12 +8,13 @@ import { supabaseFetch } from '@/lib/supabase'
 export default function AgreementCheckbox({ type, checked, onChange, accent = '#f4a300' }) {
   const [agreement, setAgreement] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [lang, setLang] = useState('bn') // 'bn' | 'en'
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        const rows = await supabaseFetch(`agreements?select=title,content&type=eq.${type}`)
+        const rows = await supabaseFetch(`agreements?select=title,content_bn,content_en&type=eq.${type}`)
         if (!cancelled) setAgreement(rows?.[0] || null)
       } catch (e) {
         console.error(e)
@@ -74,8 +75,22 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
                 style={{ background: 'none', border: 'none', fontSize: '20px', color: '#999', cursor: 'pointer', lineHeight: 1 }}
               >×</button>
             </div>
+            <div style={{ display: 'flex', borderBottom: '1px solid #eee', flexShrink: 0 }}>
+              {[['bn', 'বাংলা'], ['en', 'English']].map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => setLang(key)}
+                  style={{
+                    flex: 1, padding: '11px', border: 'none', background: 'none', cursor: 'pointer',
+                    fontSize: '13.5px', fontWeight: '700',
+                    color: lang === key ? '#0a0a0a' : '#999',
+                    borderBottom: lang === key ? `2px solid ${accent}` : '2px solid transparent',
+                  }}
+                >{label}</button>
+              ))}
+            </div>
             <div style={{ padding: '18px', overflowY: 'auto', fontSize: '13.5px', color: '#333', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
-              {agreement?.content || 'Loading...'}
+              {(lang === 'bn' ? agreement?.content_bn : agreement?.content_en) || 'Loading...'}
             </div>
           </div>
         </div>
