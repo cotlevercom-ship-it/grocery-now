@@ -4,25 +4,10 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 
-const STATUS_LABELS = {
-  pending: 'Pending',
-  picked_up: 'Picked Up',
-  in_transit: 'In Transit',
-  delivered: 'Delivered',
-  cancelled: 'Cancelled',
-}
-
-const STATUS_STAMP = {
-  pending: '#c17a1f',
-  picked_up: '#1f5aa6',
-  in_transit: '#6a3fa0',
-  delivered: '#1f4a37',
-  cancelled: '#a6402b',
-}
-
-function StatusStamp({ status }) {
-  const color = STATUS_STAMP[status] || STATUS_STAMP.pending
-  const label = STATUS_LABELS[status] || status
+function StatusStamp({ status, statuses }) {
+  const s = statuses.find(s => s.key === status)
+  const color = s?.color || '#888'
+  const label = s?.label || status
   return (
     <div style={{
       position: 'relative', flexShrink: 0, transform: 'rotate(-7deg)',
@@ -45,6 +30,7 @@ export default function MyShipmentsPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const [shipments, setShipments] = useState([])
+  const [statuses, setStatuses] = useState([])
 
   useEffect(() => {
     async function init() {
@@ -55,10 +41,12 @@ export default function MyShipmentsPage() {
       }
 
       try {
-        const rows = await supabaseFetch(
-          `shipment_bookings?select=*&user_id=eq.${session.user.id}&order=created_at.desc`
-        )
+        const [rows, statusRows] = await Promise.all([
+          supabaseFetch(`shipment_bookings?select=*&user_id=eq.${session.user.id}&order=created_at.desc`),
+          supabaseFetch('shipment_statuses?select=*&is_active=eq.true&order=sort_order'),
+        ])
         setShipments(rows || [])
+        setStatuses(statusRows || [])
       } catch (e) {
         console.error(e)
       }
@@ -137,7 +125,7 @@ export default function MyShipmentsPage() {
                     fontFamily: '"Courier New", monospace'
                   }}>৳{s.charge_amount}</div>
                 </div>
-                <StatusStamp status={s.status} />
+                <StatusStamp status={s.status} statuses={statuses} />
               </div>
             ))}
           </div>
