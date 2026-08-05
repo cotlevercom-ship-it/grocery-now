@@ -135,6 +135,27 @@ function MerchantLoginForm() {
   const [registerError, setRegisterError] = useState('')
   const [agreed, setAgreed] = useState(false)
 
+  const [nameStatus, setNameStatus] = useState('idle') // 'idle' | 'checking' | 'available' | 'taken'
+
+  useEffect(() => {
+    const trimmed = storeName.trim()
+    if (!trimmed) {
+      setNameStatus('idle')
+      return
+    }
+    setNameStatus('checking')
+    const timer = setTimeout(async () => {
+      try {
+        const rows = await supabaseFetch(`shops?select=id&name=ilike.${encodeURIComponent(trimmed)}`)
+        setNameStatus(rows && rows.length > 0 ? 'taken' : 'available')
+      } catch (e) {
+        console.error(e)
+        setNameStatus('idle')
+      }
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [storeName])
+
   const handleSendOtp = async () => {
     setOtpMessage('')
     if (!email.trim()) {
@@ -217,6 +238,7 @@ function MerchantLoginForm() {
     setRegisterError('')
 
     if (!storeName.trim()) return setRegisterError('Please enter your store name')
+    if (nameStatus === 'taken') return setRegisterError('This store name is already taken, please choose another')
     if (!ownerName.trim()) return setRegisterError('Please enter the owner name')
     if (!mobileNumber.trim()) return setRegisterError('Please enter a mobile number')
     if (!email.trim()) return setRegisterError('Please enter your email')
@@ -352,6 +374,15 @@ function MerchantLoginForm() {
                 <div className="field">
                   <label>Store Name *</label>
                   <input style={inputStyle} value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="e.g. Rahim Store" />
+                  {nameStatus === 'checking' && (
+                    <div style={{ fontSize: '12px', marginTop: '5px', color: COLORS.textMuted }}>Checking...</div>
+                  )}
+                  {nameStatus === 'available' && (
+                    <div style={{ fontSize: '12px', marginTop: '5px', color: '#1a9d4a', fontWeight: '600' }}>✓ Available</div>
+                  )}
+                  {nameStatus === 'taken' && (
+                    <div style={{ fontSize: '12px', marginTop: '5px', color: '#d32f2f', fontWeight: '600' }}>✗ This name is already taken</div>
+                  )}
                 </div>
                 <div className="field">
                   <label>Owner Name *</label>
