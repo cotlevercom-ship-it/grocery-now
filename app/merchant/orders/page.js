@@ -25,6 +25,7 @@ const statusColors = {
 
 export default function MerchantOrdersPage() {
   const [shopId, setShopId] = useState('')
+  const [isSubscribed, setIsSubscribed] = useState(false)
   const [loadingShop, setLoadingShop] = useState(true)
 
   const [orders, setOrders] = useState([])
@@ -43,8 +44,11 @@ export default function MerchantOrdersPage() {
       try {
         const session = getSession()
         if (session?.user) {
-          const shops = await supabaseFetch(`shops?select=id&owner_id=eq.${session.user.id}`)
-          if (shops && shops.length > 0) setShopId(shops[0].id)
+          const shops = await supabaseFetch(`shops?select=id,package_id&owner_id=eq.${session.user.id}`)
+          if (shops && shops.length > 0) {
+            setShopId(shops[0].id)
+            setIsSubscribed(!!shops[0].package_id)
+          }
         }
       } catch (e) {
         console.error(e)
@@ -73,6 +77,7 @@ export default function MerchantOrdersPage() {
   }, [shopId])
 
   const toggleExpand = async (order) => {
+    if (!isSubscribed) return
     if (expandedId === order.id) {
       setExpandedId(null)
       return
@@ -171,6 +176,22 @@ export default function MerchantOrdersPage() {
         View and update the status of orders placed at your shop.
       </p>
 
+      {!isSubscribed && (
+        <div style={{
+          maxWidth: '700px', marginBottom: '20px', padding: '14px 16px', borderRadius: '10px',
+          background: '#fff3e0', border: '1px solid #ffe0b2', display: 'flex',
+          alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap'
+        }}>
+          <div style={{ fontSize: '13px', color: '#8a5a00' }}>
+            🔒 Subscribe to a package to view your customers' order details and manage orders.
+          </div>
+          <a href="/merchant/package" style={{
+            background: '#f4a300', color: 'white', borderRadius: '8px', padding: '8px 16px',
+            fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', textDecoration: 'none'
+          }}>Subscribe now</a>
+        </div>
+      )}
+
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {filterOptions.map(opt => (
@@ -215,15 +236,24 @@ export default function MerchantOrdersPage() {
                 background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', overflow: 'hidden'
               }}>
                 <div onClick={() => toggleExpand(order)} style={{
-                  display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', cursor: 'pointer'
+                  display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px',
+                  cursor: isSubscribed ? 'pointer' : 'default'
                 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
-                      {order.delivery_name} · {order.delivery_phone}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                      {order.areas?.name || ''} · Order #{order.id.slice(0, 8)}
-                    </div>
+                    {isSubscribed ? (
+                      <>
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
+                          {order.delivery_name} · {order.delivery_phone}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                          {order.areas?.name || ''} · Order #{order.id.slice(0, 8)}
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#999' }}>
+                        🔒 Order #{order.id.slice(0, 8)} · Subscribe to view details
+                      </div>
+                    )}
                     <div style={{ fontSize: '11px', color: '#aaa', marginTop: '2px' }}>
                       {new Date(order.created_at).toLocaleString('en-US')}
                     </div>
@@ -235,9 +265,24 @@ export default function MerchantOrdersPage() {
                     fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px',
                     background: colors.bg, color: colors.color, whiteSpace: 'nowrap'
                   }}>{statusLabels[order.status] || order.status}</span>
+                  {isSubscribed ? (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleExpand(order) }}
+                      style={{
+                        background: isExpanded ? '#163a2c' : '#f5f5f5', color: isExpanded ? 'white' : '#163a2c',
+                        border: 'none', borderRadius: '8px', padding: '7px 12px', fontSize: '12px', fontWeight: '700',
+                        whiteSpace: 'nowrap'
+                      }}>{isExpanded ? 'Hide' : 'View Order'}</button>
+                  ) : (
+                    <a href="/merchant/package" onClick={e => e.stopPropagation()} style={{
+                      background: '#f0f0f0', color: '#999', border: 'none', borderRadius: '8px',
+                      padding: '7px 12px', fontSize: '12px', fontWeight: '700', whiteSpace: 'nowrap',
+                      textDecoration: 'none', cursor: 'pointer'
+                    }}>🔒 View Order</a>
+                  )}
                 </div>
 
-                {isExpanded && (
+                {isExpanded && isSubscribed && (
                   <div style={{ padding: '0 16px 16px', borderTop: '1px solid #eee' }}>
                     <div style={{ paddingTop: '12px', fontSize: '13px', color: '#555', marginBottom: '8px' }}>
                       <strong>Address:</strong> {order.delivery_address}
