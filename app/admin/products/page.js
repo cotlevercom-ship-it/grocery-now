@@ -8,7 +8,7 @@ const emptyProductForm = {
   category_id: '',
   price: '',
   sale_price: '',
-  unit: 'পিস',
+  unit: 'pcs',
   stock: 999,
   image_url: '',
   is_available: true,
@@ -52,7 +52,7 @@ export default function AdminProductsPage() {
         if (data && data.length > 0) setSelectedShopId(data[0].id)
       } catch (e) {
         console.error(e)
-        setError('দোকান লোড করতে সমস্যা হয়েছে')
+        setError('Failed to load shops')
       }
       setLoadingShops(false)
     }
@@ -71,7 +71,7 @@ export default function AdminProductsPage() {
       setProducts(productsData || [])
     } catch (e) {
       console.error(e)
-      setError('প্রোডাক্ট/ক্যাটাগরি লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load products/categories')
     }
     setLoadingData(false)
   }
@@ -120,19 +120,19 @@ export default function AdminProductsPage() {
       await loadShopData(selectedShopId)
     } catch (e) {
       console.error(e)
-      setError('ক্যাটাগরি সেভ করতে সমস্যা হয়েছে')
+      setError('Failed to save category')
     }
     setSavingCat(false)
   }
   const handleDeleteCat = async (id) => {
-    if (!confirm('এই ক্যাটাগরিটি মুছে ফেলতে চান? এই ক্যাটাগরির প্রোডাক্টগুলো "অন্যান্য"-তে চলে যাবে।')) return
+    if (!confirm('Delete this category? Its products will move to "Other".')) return
     setDeletingCatId(id)
     try {
       await supabaseFetch(`product_categories?id=eq.${id}`, { method: 'DELETE' })
       await loadShopData(selectedShopId)
     } catch (e) {
       console.error(e)
-      setError('ক্যাটাগরি মুছতে সমস্যা হয়েছে')
+      setError('Failed to delete category')
     }
     setDeletingCatId(null)
   }
@@ -152,7 +152,7 @@ export default function AdminProductsPage() {
       category_id: p.category_id || '',
       price: p.price ?? '',
       sale_price: p.sale_price ?? '',
-      unit: p.unit || 'পিস',
+      unit: p.unit || 'pcs',
       stock: p.stock ?? 999,
       image_url: p.image_url || '',
       is_available: !!p.is_available,
@@ -182,11 +182,11 @@ export default function AdminProductsPage() {
     e.preventDefault()
     setError('')
     if (!productForm.name.trim()) {
-      setError('প্রোডাক্টের নাম দিন')
+      setError('Please enter the product name')
       return
     }
     if (!productForm.price) {
-      setError('দাম দিন')
+      setError('Please enter the price')
       return
     }
     setSavingProduct(true)
@@ -204,7 +204,7 @@ export default function AdminProductsPage() {
         description: productForm.description.trim() || null,
         price: Number(productForm.price),
         sale_price: productForm.sale_price ? Number(productForm.sale_price) : null,
-        unit: productForm.unit.trim() || 'পিস',
+        unit: productForm.unit.trim() || 'pcs',
         stock: Number(productForm.stock) || 0,
         image_url: imageUrl || null,
         is_available: !!productForm.is_available,
@@ -222,20 +222,20 @@ export default function AdminProductsPage() {
       await loadShopData(selectedShopId)
     } catch (e) {
       console.error(e)
-      setError('প্রোডাক্ট সেভ করতে সমস্যা হয়েছে')
+      setError('Failed to save product')
     }
     setSavingProduct(false)
     setUploading(false)
   }
   const handleDeleteProduct = async (id) => {
-    if (!confirm('এই প্রোডাক্টটি মুছে ফেলতে চান?')) return
+    if (!confirm('Delete this product?')) return
     setDeletingProductId(id)
     try {
       await supabaseFetch(`products?id=eq.${id}`, { method: 'DELETE' })
       await loadShopData(selectedShopId)
     } catch (e) {
       console.error(e)
-      setError('প্রোডাক্ট মুছতে সমস্যা হয়েছে')
+      setError('Failed to delete product')
     }
     setDeletingProductId(null)
   }
@@ -248,22 +248,22 @@ export default function AdminProductsPage() {
     fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px', fontWeight: '500'
   }
 
-  const categoryName = (id) => categories.find(c => c.id === id)?.name || 'অন্যান্য'
+  const categoryName = (id) => categories.find(c => c.id === id)?.name || 'Other'
 
   return (
     <div>
-      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>প্রোডাক্ট</h1>
+      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Products</h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        প্রথমে একটা দোকান বাছাই করো, তারপর সেই দোকানের ক্যাটাগরি ও প্রোডাক্ট ম্যানেজ করো।
+        First pick a shop, then manage that shop's categories and products.
       </p>
 
       {/* Shop selector */}
       <div style={{ marginBottom: '24px', maxWidth: '400px' }}>
-        <label style={labelStyle}>দোকান বাছাই করো</label>
+        <label style={labelStyle}>Select a shop</label>
         {loadingShops ? (
-          <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+          <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
         ) : shops.length === 0 ? (
-          <div style={{ color: '#c62828', fontSize: '13px' }}>প্রথমে "দোকান" ট্যাব থেকে একটা দোকান যোগ করো</div>
+          <div style={{ color: '#c62828', fontSize: '13px' }}>First add a shop from the "Shops" tab</div>
         ) : (
           <select style={inputStyle} value={selectedShopId} onChange={e => setSelectedShopId(e.target.value)}>
             {shops.map(shop => (
@@ -285,12 +285,12 @@ export default function AdminProductsPage() {
           {/* ---------- Categories section ---------- */}
           <div style={{ marginBottom: '28px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>ক্যাটাগরি</div>
+              <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>Categories</div>
               {!showCatForm && (
                 <button onClick={openAddCat} style={{
                   background: '#f5f5f5', color: '#2d6a4f', border: 'none', borderRadius: '6px',
                   padding: '6px 14px', fontSize: '12px', fontWeight: '600'
-                }}>+ নতুন ক্যাটাগরি</button>
+                }}>+ New Category</button>
               )}
             </div>
 
@@ -301,26 +301,26 @@ export default function AdminProductsPage() {
                 display: 'flex', gap: '10px', alignItems: 'flex-end'
               }}>
                 <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>নাম</label>
-                  <input style={inputStyle} value={catForm.name} onChange={e => setCatForm(f => ({ ...f, name: e.target.value }))} placeholder="যেমন: সবজি" />
+                  <label style={labelStyle}>Name</label>
+                  <input style={inputStyle} value={catForm.name} onChange={e => setCatForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Vegetables" />
                 </div>
                 <div style={{ width: '80px' }}>
-                  <label style={labelStyle}>ক্রম</label>
+                  <label style={labelStyle}>Order</label>
                   <input type="number" style={inputStyle} value={catForm.sort_order} onChange={e => setCatForm(f => ({ ...f, sort_order: e.target.value }))} />
                 </div>
                 <button type="submit" disabled={savingCat} style={{
                   background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
                   padding: '10px 16px', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap'
-                }}>{savingCat ? '...' : (editingCatId ? 'আপডেট' : 'যোগ')}</button>
+                }}>{savingCat ? '...' : (editingCatId ? 'Update' : 'Add')}</button>
                 <button type="button" onClick={closeCatForm} style={{
                   background: '#f0f0f0', color: '#555', border: 'none', borderRadius: '8px',
                   padding: '10px 16px', fontSize: '13px'
-                }}>বাতিল</button>
+                }}>Cancel</button>
               </form>
             )}
 
             {categories.length === 0 ? (
-              <div style={{ color: '#999', fontSize: '13px' }}>কোনো ক্যাটাগরি নাই। ক্যাটাগরি ছাড়াও প্রোডাক্ট যোগ করা যাবে ("অন্যান্য"-তে দেখাবে)।</div>
+              <div style={{ color: '#999', fontSize: '13px' }}>No categories yet. Products can still be added without one (shown under "Other").</div>
             ) : (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {categories.map(cat => (
@@ -347,12 +347,12 @@ export default function AdminProductsPage() {
           {/* ---------- Products section ---------- */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>প্রোডাক্ট</div>
+              <div style={{ fontSize: '16px', fontWeight: '700', color: '#163a2c' }}>Products</div>
               {!showProductForm && (
                 <button onClick={openAddProduct} style={{
                   background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
                   padding: '10px 18px', fontSize: '14px', fontWeight: '600'
-                }}>+ নতুন প্রোডাক্ট</button>
+                }}>+ New Product</button>
               )}
             </div>
 
@@ -362,11 +362,11 @@ export default function AdminProductsPage() {
                 padding: '20px', marginBottom: '20px', maxWidth: '600px'
               }}>
                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '16px' }}>
-                  {editingProductId ? 'প্রোডাক্ট এডিট করুন' : 'নতুন প্রোডাক্ট যোগ করুন'}
+                  {editingProductId ? 'Edit Product' : 'Add New Product'}
                 </div>
 
                 <div style={{ marginBottom: '14px' }}>
-                  <label style={labelStyle}>প্রোডাক্টের ছবি</label>
+                  <label style={labelStyle}>Product Image</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{
                       width: '64px', height: '64px', borderRadius: '8px', background: '#f5f5f5',
@@ -379,18 +379,18 @@ export default function AdminProductsPage() {
                     </div>
                     <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: '13px' }} />
                   </div>
-                  {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>ছবি আপলোড হচ্ছে...</div>}
+                  {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
-                    <label style={labelStyle}>প্রোডাক্টের নাম *</label>
+                    <label style={labelStyle}>Product Name *</label>
                     <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
                   </div>
                   <div>
-                    <label style={labelStyle}>ক্যাটাগরি</label>
+                    <label style={labelStyle}>Category</label>
                     <select style={inputStyle} value={productForm.category_id} onChange={e => handleProductFieldChange('category_id', e.target.value)}>
-                      <option value="">অন্যান্য</option>
+                      <option value="">Other</option>
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                       ))}
@@ -400,34 +400,34 @@ export default function AdminProductsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
-                    <label style={labelStyle}>দাম (৳) *</label>
+                    <label style={labelStyle}>Price (৳) *</label>
                     <input type="number" style={inputStyle} value={productForm.price} onChange={e => handleProductFieldChange('price', e.target.value)} />
                   </div>
                   <div>
-                    <label style={labelStyle}>ছাড়ের দাম (৳)</label>
-                    <input type="number" style={inputStyle} value={productForm.sale_price} onChange={e => handleProductFieldChange('sale_price', e.target.value)} placeholder="ঐচ্ছিক" />
+                    <label style={labelStyle}>Sale Price (৳)</label>
+                    <input type="number" style={inputStyle} value={productForm.sale_price} onChange={e => handleProductFieldChange('sale_price', e.target.value)} placeholder="Optional" />
                   </div>
                   <div>
-                    <label style={labelStyle}>ইউনিট</label>
-                    <input style={inputStyle} value={productForm.unit} onChange={e => handleProductFieldChange('unit', e.target.value)} placeholder="যেমন: কেজি, পিস" />
+                    <label style={labelStyle}>Unit</label>
+                    <input style={inputStyle} value={productForm.unit} onChange={e => handleProductFieldChange('unit', e.target.value)} placeholder="e.g. kg, pcs" />
                   </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
-                    <label style={labelStyle}>স্টক</label>
+                    <label style={labelStyle}>Stock</label>
                     <input type="number" style={inputStyle} value={productForm.stock} onChange={e => handleProductFieldChange('stock', e.target.value)} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
                       <input type="checkbox" checked={productForm.is_available} onChange={e => handleProductFieldChange('is_available', e.target.checked)} />
-                      Available (সাইটে দেখাবে)
+                      Available (visible on site)
                     </label>
                   </div>
                 </div>
 
                 <div style={{ marginBottom: '18px' }}>
-                  <label style={labelStyle}>বিবরণ</label>
+                  <label style={labelStyle}>Description</label>
                   <textarea rows={2} style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
                     value={productForm.description} onChange={e => handleProductFieldChange('description', e.target.value)} />
                 </div>
@@ -436,11 +436,11 @@ export default function AdminProductsPage() {
                   <button type="submit" disabled={savingProduct} style={{
                     background: savingProduct ? '#9ca3af' : '#163a2c', color: 'white', border: 'none',
                     borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
-                  }}>{savingProduct ? 'সেভ হচ্ছে...' : (editingProductId ? 'আপডেট করুন' : 'যোগ করুন')}</button>
+                  }}>{savingProduct ? 'Saving...' : (editingProductId ? 'Update' : 'Add')}</button>
                   <button type="button" onClick={closeProductForm} style={{
                     background: '#f0f0f0', color: '#555', border: 'none',
                     borderRadius: '8px', padding: '10px 22px', fontSize: '14px'
-                  }}>বাতিল</button>
+                  }}>Cancel</button>
                 </div>
               </form>
             )}
@@ -451,7 +451,7 @@ export default function AdminProductsPage() {
                 background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0'
               }}>
                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>📦</div>
-                <p>এই দোকানে এখনো কোনো প্রোডাক্ট নাই</p>
+                <p>No products in this shop yet</p>
               </div>
             ) : (
               <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', overflow: 'hidden' }}>
@@ -472,7 +472,7 @@ export default function AdminProductsPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{p.name}</div>
                       <div style={{ fontSize: '12px', color: '#888' }}>
-                        {categoryName(p.category_id)} · {p.unit} · স্টক {p.stock}
+                        {categoryName(p.category_id)} · {p.unit} · Stock {p.stock}
                       </div>
                     </div>
                     <div style={{ fontSize: '13px', fontWeight: '600', color: '#0a0a0a', whiteSpace: 'nowrap' }}>
@@ -487,15 +487,15 @@ export default function AdminProductsPage() {
                       fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
                       background: p.is_available ? '#f5f5f5' : '#f5f5f5',
                       color: p.is_available ? '#2d6a4f' : '#999'
-                    }}>{p.is_available ? 'Available' : 'বন্ধ'}</span>
+                    }}>{p.is_available ? 'Available' : 'Unavailable'}</span>
                     <button onClick={() => openEditProduct(p)} style={{
                       background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                       borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
-                    }}>এডিট</button>
+                    }}>Edit</button>
                     <button onClick={() => handleDeleteProduct(p.id)} disabled={deletingProductId === p.id} style={{
                       background: '#ffebee', color: '#c62828', border: 'none',
                       borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
-                    }}>{deletingProductId === p.id ? 'মুছছে...' : 'মুছুন'}</button>
+                    }}>{deletingProductId === p.id ? 'Deleting...' : 'Delete'}</button>
                   </div>
                 ))}
               </div>

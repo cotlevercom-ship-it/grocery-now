@@ -5,10 +5,10 @@ import { supabaseFetch } from '@/lib/supabase'
 const KEYS = ['bkash_number', 'contact_email', 'whatsapp_number', 'facebook_url']
 
 const FIELD_META = {
-  bkash_number: { label: 'bKash নাম্বার (Merchant)', placeholder: '01XXXXXXXXX' },
-  contact_email: { label: 'সাপোর্ট Email', placeholder: 'support@example.com' },
-  whatsapp_number: { label: 'WhatsApp নাম্বার (দেশের কোড ছাড়া, যেমন 01XXXXXXXXX)', placeholder: '01XXXXXXXXX' },
-  facebook_url: { label: 'Facebook Page লিংক', placeholder: 'https://facebook.com/yourpage' },
+  bkash_number: { label: 'bKash Number (Merchant)', placeholder: '01XXXXXXXXX' },
+  contact_email: { label: 'Support Email', placeholder: 'support@example.com' },
+  whatsapp_number: { label: 'WhatsApp Number (without country code, e.g. 01XXXXXXXXX)', placeholder: '01XXXXXXXXX' },
+  facebook_url: { label: 'Facebook Page Link', placeholder: 'https://facebook.com/yourpage' },
 }
 
 export default function AdminSettingsPage() {
@@ -29,7 +29,7 @@ export default function AdminSettingsPage() {
       setValues(map)
     } catch (e) {
       console.error(e)
-      setError('সেটিংস লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load settings')
     }
     setLoading(false)
   }
@@ -52,11 +52,11 @@ export default function AdminSettingsPage() {
           body: JSON.stringify({ value: values[key] || '', updated_at: new Date().toISOString() }),
         })
       }
-      setSuccess('সফলভাবে সেভ হয়েছে')
+      setSuccess('Saved successfully')
       setTimeout(() => setSuccess(''), 3000)
     } catch (e) {
       console.error(e)
-      setError('সেভ করতে সমস্যা হয়েছে')
+      setError('Failed to save')
     }
     setSaving(false)
   }
@@ -68,16 +68,16 @@ export default function AdminSettingsPage() {
   const labelStyle = { fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }
 
   if (loading) {
-    return <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+    return <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
   }
 
   return (
     <div>
       <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-        সেটিংস
+        Settings
       </h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        সাইটের যোগাযোগ তথ্য ও পেমেন্ট নাম্বার এখান থেকে নিয়ন্ত্রণ করুন। খালি রাখলে ফুটারে সেই আইকন/তথ্য দেখাবে না।
+        Manage the site's contact info and payment number from here. Leave a field blank to hide that icon/info in the footer.
       </p>
 
       {error && (
@@ -112,7 +112,7 @@ export default function AdminSettingsPage() {
         <button type="submit" disabled={saving} style={{
           background: saving ? '#9ca3af' : '#0a0a0a', color: 'white', border: 'none',
           borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
-        }}>{saving ? 'সেভ হচ্ছে...' : 'সেভ করুন'}</button>
+        }}>{saving ? 'Saving...' : 'Save'}</button>
       </form>
     </div>
   )

@@ -14,7 +14,7 @@ export default function AdminLoginPage() {
     e.preventDefault()
     setError('')
     if (!email.trim() || !password.trim()) {
-      setError('ইমেইল এবং পাসওয়ার্ড দিন')
+      setError('Please enter your email and password')
       return
     }
     setSubmitting(true)
@@ -22,13 +22,13 @@ export default function AdminLoginPage() {
       const data = await signIn(email.trim(), password)
       const rows = await supabaseFetch(`admin_users?select=id&user_id=eq.${data.user.id}`)
       if (!rows || rows.length === 0) {
-        setError('এই একাউন্টের admin অ্যাক্সেস নেই')
+        setError('This account does not have admin access')
         setSubmitting(false)
         return
       }
       router.replace('/admin')
     } catch (err) {
-      setError(err.message || 'লগইন ব্যর্থ হয়েছে')
+      setError(err.message || 'Login failed')
       setSubmitting(false)
     }
   }
@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #163a2c 0%, #2d6a4f 100%)',
+      background: '#0a0a0a',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
     }}>
       <div style={{
@@ -45,12 +45,12 @@ export default function AdminLoginPage() {
       }}>
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <div style={{ fontSize: '32px', marginBottom: '8px' }}>🧺</div>
-          <div style={{ fontSize: '18px', fontWeight: '700', color: '#163a2c' }}>GroceryNow Admin</div>
-          <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>এডমিন প্যানেলে লগইন করুন</div>
+          <div style={{ fontSize: '18px', fontWeight: '700', color: '#0a0a0a' }}>Cot Lever Admin</div>
+          <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>Sign in to the admin panel</div>
         </div>
         <form onSubmit={handleSubmit}>
           <input
-            type="email" placeholder="ইমেইল" value={email}
+            type="email" placeholder="Email" value={email}
             onChange={e => setEmail(e.target.value)}
             style={{
               width: '100%', padding: '12px 14px', marginBottom: '12px',
@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
             }}
           />
           <input
-            type="password" placeholder="পাসওয়ার্ড" value={password}
+            type="password" placeholder="Password" value={password}
             onChange={e => setPassword(e.target.value)}
             style={{
               width: '100%', padding: '12px 14px', marginBottom: '12px',
@@ -68,11 +68,11 @@ export default function AdminLoginPage() {
           {error && <div style={{ color: '#c62828', fontSize: '13px', marginBottom: '12px' }}>{error}</div>}
           <button type="submit" disabled={submitting} style={{
             width: '100%',
-            background: submitting ? '#ccc' : 'linear-gradient(135deg, #163a2c 0%, #2d6a4f 100%)',
+            background: submitting ? '#ccc' : '#0a0a0a',
             color: 'white', border: 'none', borderRadius: '10px', padding: '12px',
             fontSize: '14px', fontWeight: '600', cursor: submitting ? 'default' : 'pointer'
           }}>
-            {submitting ? 'লগইন হচ্ছে...' : 'লগইন করুন'}
+            {submitting ? 'Signing in...' : 'Sign In'}
           </button>
           <div style={{ textAlign: 'center', marginTop: '14px' }}>
             <a href="/admin/forgot-password" style={{ fontSize: '12.5px', color: '#888' }}>Forgot password?</a>

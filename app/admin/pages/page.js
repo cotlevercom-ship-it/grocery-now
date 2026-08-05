@@ -35,7 +35,7 @@ export default function AdminPagesPage() {
       setPages(data || [])
     } catch (e) {
       console.error(e)
-      setError('পেজ লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load pages')
     }
     setLoading(false)
   }
@@ -84,15 +84,15 @@ export default function AdminPagesPage() {
     e.preventDefault()
     setError('')
     if (!form.title.trim()) {
-      setError('টাইটেল দিন')
+      setError('Please enter a title')
       return
     }
     if (form.link_type === 'page' && !form.slug.trim()) {
-      setError('Slug দিন (URL এর জন্য)')
+      setError('Please enter a slug (for the URL)')
       return
     }
     if (form.link_type === 'external' && !form.external_url.trim()) {
-      setError('External URL দিন')
+      setError('Please enter an external URL')
       return
     }
     setSaving(true)
@@ -120,20 +120,20 @@ export default function AdminPagesPage() {
       await loadPages()
     } catch (e) {
       console.error(e)
-      setError('সেভ করতে সমস্যা হয়েছে। Slug টা ইউনিক আছে কিনা দেখুন।')
+      setError('Failed to save — check that the slug is unique')
     }
     setSaving(false)
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('এই পেজটি মুছে ফেলতে চান?')) return
+    if (!confirm('Delete this page?')) return
     setDeletingId(id)
     try {
       await supabaseFetch(`site_pages?id=eq.${id}`, { method: 'DELETE' })
       await loadPages()
     } catch (e) {
       console.error(e)
-      setError('মুছতে সমস্যা হয়েছে')
+      setError('Failed to delete')
     }
     setDeletingId(null)
   }
@@ -146,7 +146,7 @@ export default function AdminPagesPage() {
       await loadPages()
     } catch (e) {
       console.error(e)
-      setError('স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে')
+      setError('Failed to change status')
     }
   }
 
@@ -170,27 +170,27 @@ export default function AdminPagesPage() {
         }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: '14px', fontWeight: '700', color: '#163a2c' }}>
-              {p.title} {!p.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(নিষ্ক্রিয়)</span>}
+              {p.title} {!p.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(Inactive)</span>}
             </div>
             <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
               {p.link_type === 'external'
                 ? `External → ${p.external_url}`
-                : `/page/${p.slug}`} · ক্রম: {p.sort_order}
+                : `/page/${p.slug}`} · Order: {p.sort_order}
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
             <button onClick={() => openEditForm(p)} style={{
               background: '#f5f5f5', color: '#2d6a4f', border: 'none',
               borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
-            }}>এডিট</button>
+            }}>Edit</button>
             <button onClick={() => toggleActive(p)} style={{
               background: '#fff3e0', color: '#f4a300', border: 'none',
               borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
-            }}>{p.is_active ? 'নিষ্ক্রিয় করুন' : 'সক্রিয় করুন'}</button>
+            }}>{p.is_active ? 'Deactivate' : 'Activate'}</button>
             <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id} style={{
               background: '#ffebee', color: '#c62828', border: 'none',
               borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
-            }}>{deletingId === p.id ? 'মুছছে...' : 'মুছুন'}</button>
+            }}>{deletingId === p.id ? 'Deleting...' : 'Delete'}</button>
           </div>
         </div>
       ))}
@@ -202,17 +202,17 @@ export default function AdminPagesPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>
-            পেজ ম্যানেজমেন্ট
+            Page Management
           </h1>
           <p style={{ color: '#888', fontSize: '14px' }}>
-            ফুটারের Info ও Partner With Us সেকশনের লিংক/পেজ এখান থেকে নিয়ন্ত্রণ করুন।
+            Manage the footer's Info and Partner With Us section links/pages from here.
           </p>
         </div>
         {!showForm && (
           <button onClick={openNewForm} style={{
             background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
             padding: '10px 18px', fontSize: '14px', fontWeight: '600', whiteSpace: 'nowrap'
-          }}>+ নতুন পেজ</button>
+          }}>+ New Page</button>
         )}
       </div>
 
@@ -229,12 +229,12 @@ export default function AdminPagesPage() {
           padding: '20px', marginBottom: '24px', maxWidth: '560px'
         }}>
           <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '14px' }}>
-            {editingId ? 'পেজ এডিট করুন' : 'নতুন পেজ'}
+            {editingId ? 'Edit Page' : 'New Page'}
           </div>
 
           <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
             <div style={{ flex: 1 }}>
-              <label style={labelStyle}>সেকশন</label>
+              <label style={labelStyle}>Section</label>
               <select style={{ ...inputStyle, background: 'white' }} value={form.section}
                 onChange={e => setForm({ ...form, section: e.target.value })}>
                 <option value="info">Info</option>
@@ -242,20 +242,20 @@ export default function AdminPagesPage() {
               </select>
             </div>
             <div style={{ flex: 1 }}>
-              <label style={labelStyle}>ধরন</label>
+              <label style={labelStyle}>Type</label>
               <select style={{ ...inputStyle, background: 'white' }} value={form.link_type}
                 onChange={e => setForm({ ...form, link_type: e.target.value })}>
-                <option value="page">নিজস্ব কন্টেন্ট পেজ</option>
-                <option value="external">External লিংক (অন্য পেজে যাবে)</option>
+                <option value="page">Own content page</option>
+                <option value="external">External link (goes to another page)</option>
               </select>
             </div>
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>টাইটেল (লিংকে যা দেখাবে) *</label>
+            <label style={labelStyle}>Title (shown in the link) *</label>
             <input style={inputStyle} value={form.title}
               onChange={e => handleTitleChange(e.target.value)}
-              placeholder="যেমন: About Us" />
+              placeholder="e.g. About Us" />
           </div>
 
           {form.link_type === 'page' ? (
@@ -267,11 +267,11 @@ export default function AdminPagesPage() {
                   placeholder="about-us" />
               </div>
               <div style={{ marginBottom: '14px' }}>
-                <label style={labelStyle}>কন্টেন্ট</label>
+                <label style={labelStyle}>Content</label>
                 <textarea style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} rows={6}
                   value={form.content}
                   onChange={e => setForm({ ...form, content: e.target.value })}
-                  placeholder="পেজের লেখা এখানে দিন..." />
+                  placeholder="Enter the page content here..." />
               </div>
             </>
           ) : (
@@ -279,20 +279,20 @@ export default function AdminPagesPage() {
               <label style={labelStyle}>External URL *</label>
               <input style={inputStyle} value={form.external_url}
                 onChange={e => setForm({ ...form, external_url: e.target.value })}
-                placeholder="/merchant/login বা https://..." />
+                placeholder="/merchant/login or https://..." />
             </div>
           )}
 
           <div style={{ display: 'flex', gap: '10px', marginBottom: '14px', alignItems: 'center' }}>
             <div style={{ flex: 1 }}>
-              <label style={labelStyle}>ক্রম (Sort Order)</label>
+              <label style={labelStyle}>Sort Order</label>
               <input style={inputStyle} type="number" value={form.sort_order}
                 onChange={e => setForm({ ...form, sort_order: e.target.value })} />
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444', marginTop: '18px' }}>
               <input type="checkbox" checked={form.is_active}
                 onChange={e => setForm({ ...form, is_active: e.target.checked })} />
-              সক্রিয়
+              Active
             </label>
           </div>
 
@@ -300,17 +300,17 @@ export default function AdminPagesPage() {
             <button type="submit" disabled={saving} style={{
               background: saving ? '#9ca3af' : '#0a0a0a', color: 'white', border: 'none',
               borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
-            }}>{saving ? 'সেভ হচ্ছে...' : 'সেভ করুন'}</button>
+            }}>{saving ? 'Saving...' : 'Save'}</button>
             <button type="button" onClick={closeForm} style={{
               background: '#f0f0f0', color: '#555', border: 'none',
               borderRadius: '8px', padding: '10px 20px', fontSize: '14px'
-            }}>বাতিল</button>
+            }}>Cancel</button>
           </div>
         </form>
       )}
 
       {loading ? (
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', maxWidth: '680px' }}>
           <div>
@@ -318,7 +318,7 @@ export default function AdminPagesPage() {
               {sectionLabel.info}
             </div>
             {infoPages.length === 0 ? (
-              <div style={{ color: '#999', fontSize: '13px' }}>কোনো পেজ নেই</div>
+              <div style={{ color: '#999', fontSize: '13px' }}>No pages</div>
             ) : renderList(infoPages)}
           </div>
           <div>
@@ -326,7 +326,7 @@ export default function AdminPagesPage() {
               {sectionLabel.partner}
             </div>
             {partnerPages.length === 0 ? (
-              <div style={{ color: '#999', fontSize: '13px' }}>কোনো পেজ নেই</div>
+              <div style={{ color: '#999', fontSize: '13px' }}>No pages</div>
             ) : renderList(partnerPages)}
           </div>
         </div>

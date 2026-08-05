@@ -54,7 +54,7 @@ export default function AdminShopsPage() {
       setDepartments(departmentsData || [])
     } catch (e) {
       console.error(e)
-      setError('তথ্য লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load data')
     }
     setLoading(false)
   }
@@ -120,7 +120,7 @@ export default function AdminShopsPage() {
     setError('')
 
     if (!form.name.trim()) {
-      setError('দোকানের নাম দিন')
+      setError('Please enter the shop name')
       return
     }
     setSubmitting(true)
@@ -166,21 +166,21 @@ export default function AdminShopsPage() {
       await loadData()
     } catch (e) {
       console.error(e)
-      setError('সেভ করতে সমস্যা হয়েছে')
+      setError('Failed to save')
     }
     setSubmitting(false)
     setUploading(false)
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('এই দোকানটি মুছে ফেলতে চান? এর সব প্রোডাক্টও প্রভাবিত হতে পারে।')) return
+    if (!confirm('Delete this shop? Its products may also be affected.')) return
     setDeletingId(id)
     try {
       await supabaseFetch(`shops?id=eq.${id}`, { method: 'DELETE' })
       await loadData()
     } catch (e) {
       console.error(e)
-      setError('দোকান মুছতে সমস্যা হয়েছে')
+      setError('Failed to delete shop')
     }
     setDeletingId(null)
   }
@@ -205,16 +205,16 @@ export default function AdminShopsPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', margin: 0 }}>দোকান</h1>
+        <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', margin: 0 }}>Shops</h1>
         {!showForm && (
           <button onClick={openAddForm} style={{
             background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
             padding: '10px 18px', fontSize: '14px', fontWeight: '600'
-          }}>+ নতুন দোকান</button>
+          }}>+ New Shop</button>
         )}
       </div>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        সব দোকান এখান থেকে যোগ, এডিট বা মুছে ফেলা যাবে।
+        Add, edit, or remove shops from here.
       </p>
 
       {error && (
@@ -231,12 +231,12 @@ export default function AdminShopsPage() {
           padding: '20px', marginBottom: '24px', maxWidth: '600px'
         }}>
           <div style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '16px' }}>
-            {editingId ? 'দোকান এডিট করুন' : 'নতুন দোকান যোগ করুন'}
+            {editingId ? 'Edit Shop' : 'Add New Shop'}
           </div>
 
           {/* Image upload */}
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>দোকানের ছবি</label>
+            <label style={labelStyle}>Shop Image</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{
                 width: '70px', height: '70px', borderRadius: '8px', background: '#f5f5f5',
@@ -249,24 +249,24 @@ export default function AdminShopsPage() {
               </div>
               <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: '13px' }} />
             </div>
-            {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>ছবি আপলোড হচ্ছে...</div>}
+            {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
             <div>
-              <label style={labelStyle}>দোকানের নাম *</label>
+              <label style={labelStyle}>Shop Name *</label>
               <input style={inputStyle} value={form.name} onChange={e => handleFieldChange('name', e.target.value)} />
             </div>
             <div>
-              <label style={labelStyle}>ক্যাটাগরি</label>
-              <input style={inputStyle} value={form.category} onChange={e => handleFieldChange('category', e.target.value)} placeholder="যেমন: গ্রোসারি, ফল, মাংস" />
+              <label style={labelStyle}>Category</label>
+              <input style={inputStyle} value={form.category} onChange={e => handleFieldChange('category', e.target.value)} placeholder="e.g. Grocery, Fruits, Meat" />
             </div>
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>ডিপার্টমেন্ট</label>
+            <label style={labelStyle}>Department</label>
             <select style={inputStyle} value={form.department_id} onChange={e => handleFieldChange('department_id', e.target.value)}>
-              <option value="">নির্ধারিত নেই</option>
+              <option value="">Not set</option>
               {departments.map(dept => (
                 <option key={dept.id} value={dept.id}>
                   {dept.icon ? `${dept.icon} ` : ''}{dept.name}
@@ -276,50 +276,50 @@ export default function AdminShopsPage() {
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>ঠিকানা / শহর</label>
-            <input style={inputStyle} value={form.location} onChange={e => handleFieldChange('location', e.target.value)} placeholder="যেমন: ঢাকা, চট্টগ্রাম বা যেকোনো শহর/দেশ" />
+            <label style={labelStyle}>Address / City</label>
+            <input style={inputStyle} value={form.location} onChange={e => handleFieldChange('location', e.target.value)} placeholder="e.g. Dhaka, Chattogram, or any city/country" />
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>ফোন নাম্বার</label>
-            <input style={inputStyle} value={form.phone} onChange={e => handleFieldChange('phone', e.target.value)} placeholder="যেমন: 01712345678" />
+            <label style={labelStyle}>Phone Number</label>
+            <input style={inputStyle} value={form.phone} onChange={e => handleFieldChange('phone', e.target.value)} placeholder="e.g. 01712345678" />
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>বিবরণ</label>
+            <label style={labelStyle}>Description</label>
             <textarea rows={2} style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
               value={form.description} onChange={e => handleFieldChange('description', e.target.value)} />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
             <div>
-              <label style={labelStyle}>ডেলিভারি টাইম মিন (মিনিট)</label>
+              <label style={labelStyle}>Delivery Time Min (minutes)</label>
               <input type="number" style={inputStyle} value={form.delivery_time_min} onChange={e => handleFieldChange('delivery_time_min', e.target.value)} />
             </div>
             <div>
-              <label style={labelStyle}>ডেলিভারি টাইম ম্যাক্স (মিনিট)</label>
+              <label style={labelStyle}>Delivery Time Max (minutes)</label>
               <input type="number" style={inputStyle} value={form.delivery_time_max} onChange={e => handleFieldChange('delivery_time_max', e.target.value)} />
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
             <div>
-              <label style={labelStyle}>ডেলিভারি চার্জ (৳)</label>
+              <label style={labelStyle}>Delivery Charge (৳)</label>
               <input type="number" style={inputStyle} value={form.delivery_charge} onChange={e => handleFieldChange('delivery_charge', e.target.value)} />
             </div>
             <div>
-              <label style={labelStyle}>ন্যূনতম অর্ডার (৳)</label>
+              <label style={labelStyle}>Minimum Order (৳)</label>
               <input type="number" style={inputStyle} value={form.min_order_amount} onChange={e => handleFieldChange('min_order_amount', e.target.value)} />
             </div>
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>সাবস্ক্রিপশন প্যাকেজ</label>
+            <label style={labelStyle}>Subscription Package</label>
             <select style={inputStyle} value={form.package_id} onChange={e => handleFieldChange('package_id', e.target.value)}>
-              <option value="">নির্ধারিত নেই</option>
+              <option value="">Not set</option>
               {packages.map(pkg => (
                 <option key={pkg.id} value={pkg.id}>
-                  {pkg.name_bn} {pkg.max_products != null ? `(সর্বোচ্চ ${pkg.max_products}টি পণ্য)` : '(আনলিমিটেড)'}
+                  {pkg.name_bn} {pkg.max_products != null ? `(max ${pkg.max_products} products)` : '(Unlimited)'}
                 </option>
               ))}
             </select>
@@ -328,11 +328,11 @@ export default function AdminShopsPage() {
           <div style={{ display: 'flex', gap: '20px', marginBottom: '18px' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
               <input type="checkbox" checked={form.is_featured} onChange={e => handleFieldChange('is_featured', e.target.checked)} />
-              ফিচার্ড দোকান
+              Featured Shop
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
               <input type="checkbox" checked={form.is_active} onChange={e => handleFieldChange('is_active', e.target.checked)} />
-              একটিভ (সাইটে দেখাবে)
+              Active (visible on site)
             </label>
           </div>
 
@@ -341,12 +341,12 @@ export default function AdminShopsPage() {
               background: submitting ? '#9ca3af' : '#163a2c', color: 'white', border: 'none',
               borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '600'
             }}>
-              {submitting ? 'সেভ হচ্ছে...' : (editingId ? 'আপডেট করুন' : 'যোগ করুন')}
+              {submitting ? 'Saving...' : (editingId ? 'Update' : 'Add')}
             </button>
             <button type="button" onClick={closeForm} style={{
               background: '#f0f0f0', color: '#555', border: 'none',
               borderRadius: '8px', padding: '10px 22px', fontSize: '14px'
-            }}>বাতিল</button>
+            }}>Cancel</button>
           </div>
         </form>
       )}
@@ -358,7 +358,7 @@ export default function AdminShopsPage() {
         }}>
           <input
             style={{ ...inputStyle, maxWidth: '240px' }}
-            placeholder="দোকানের নাম দিয়ে খুঁজুন..."
+            placeholder="Search by shop name..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
@@ -367,23 +367,23 @@ export default function AdminShopsPage() {
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
           >
-            <option value="all">সব স্ট্যাটাস</option>
-            <option value="active">একটিভ</option>
-            <option value="inactive">বন্ধ</option>
+            <option value="all">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
           </select>
         </div>
       )}
 
       {/* Shops list */}
       {loading ? (
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       ) : shops.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '50px 20px', color: '#999',
           background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0'
         }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>🏪</div>
-          <p>এখনো কোনো দোকান যোগ করা হয়নি</p>
+          <p>No shops added yet</p>
         </div>
       ) : filteredShops.length === 0 ? (
         <div style={{
@@ -391,7 +391,7 @@ export default function AdminShopsPage() {
           background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0'
         }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>🔍</div>
-          <p>কোনো দোকান পাওয়া যায়নি</p>
+          <p>No shops found</p>
         </div>
       ) : (
         <div style={{
@@ -436,24 +436,24 @@ export default function AdminShopsPage() {
                   <span style={{
                     fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
                     background: '#fff3e0', color: '#f4a300'
-                  }}>ফিচার্ড</span>
+                  }}>Featured</span>
                 )}
                 <span style={{
                   fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
                   background: shop.is_active ? '#f5f5f5' : '#f5f5f5',
                   color: shop.is_active ? '#2d6a4f' : '#999'
-                }}>{shop.is_active ? 'একটিভ' : 'বন্ধ'}</span>
+                }}>{shop.is_active ? 'Active' : 'Inactive'}</span>
               </div>
 
               <button onClick={() => openEditForm(shop)} style={{
                 background: '#f5f5f5', color: '#2d6a4f', border: 'none',
                 borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
-              }}>এডিট</button>
+              }}>Edit</button>
               <button onClick={() => handleDelete(shop.id)} disabled={deletingId === shop.id} style={{
                 background: '#ffebee', color: '#c62828', border: 'none',
                 borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
               }}>
-                {deletingId === shop.id ? 'মুছছে...' : 'মুছুন'}
+                {deletingId === shop.id ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           ))}
