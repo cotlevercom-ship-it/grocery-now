@@ -224,6 +224,80 @@ export default function ProductDetailClient({ product, shop }) {
               </div>
             )}
 
+            {(Array.isArray(product.tier_pricing) && product.tier_pricing.length > 0) ||
+              product.uom || product.carton_size || product.model_number || product.origin ||
+              product.certification || product.lead_time || product.payment_terms ||
+              product.sample_available ? (
+              <div style={{
+                marginTop: '24px', background: 'white', border: '1px solid #e5e5e5',
+                borderRadius: '10px', padding: '16px'
+              }}>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a', marginBottom: '12px' }}>
+                  Wholesale / B2B Details
+                </div>
+
+                {Array.isArray(product.tier_pricing) && product.tier_pricing.length > 0 && (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '14px', fontSize: '12.5px' }}>
+                    <thead>
+                      <tr style={{ background: '#f5f5f5' }}>
+                        <th style={{ textAlign: 'left', padding: '7px 10px', fontWeight: '700', color: '#555' }}>Quantity</th>
+                        <th style={{ textAlign: 'right', padding: '7px 10px', fontWeight: '700', color: '#555' }}>Price / {product.unit || 'unit'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {product.tier_pricing.map((t, i) => (
+                        <tr key={i} style={{ borderTop: '1px solid #eee' }}>
+                          <td style={{ padding: '7px 10px', color: '#333' }}>
+                            {t.max_qty ? `${t.min_qty} – ${t.max_qty}` : `${t.min_qty}+`}
+                          </td>
+                          <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: '700', color: '#0a0a0a' }}>
+                            ৳{t.price}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                <div style={{
+                  display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: '10px', columnGap: '12px', fontSize: '12.5px'
+                }}>
+                  {product.moq > 1 && (
+                    <div><span style={{ color: '#888' }}>MOQ: </span><b style={{ color: '#1a1a1a' }}>{product.moq} {product.unit}</b></div>
+                  )}
+                  {product.uom && (
+                    <div><span style={{ color: '#888' }}>Unit of Measure: </span><b style={{ color: '#1a1a1a' }}>{product.uom}</b></div>
+                  )}
+                  {product.carton_size && (
+                    <div><span style={{ color: '#888' }}>Carton Size: </span><b style={{ color: '#1a1a1a' }}>{product.carton_size}</b></div>
+                  )}
+                  {product.model_number && (
+                    <div><span style={{ color: '#888' }}>Model No: </span><b style={{ color: '#1a1a1a' }}>{product.model_number}</b></div>
+                  )}
+                  {product.origin && (
+                    <div><span style={{ color: '#888' }}>Origin: </span><b style={{ color: '#1a1a1a' }}>{product.origin}</b></div>
+                  )}
+                  {product.certification && (
+                    <div><span style={{ color: '#888' }}>Certification: </span><b style={{ color: '#1a1a1a' }}>{product.certification}</b></div>
+                  )}
+                  {product.lead_time && (
+                    <div><span style={{ color: '#888' }}>Lead Time: </span><b style={{ color: '#1a1a1a' }}>{product.lead_time}</b></div>
+                  )}
+                  {product.payment_terms && (
+                    <div><span style={{ color: '#888' }}>Payment Terms: </span><b style={{ color: '#1a1a1a' }}>{product.payment_terms}</b></div>
+                  )}
+                  {product.sample_available && (
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <span style={{
+                        display: 'inline-block', background: '#e8f5e9', color: '#2e7d32',
+                        fontSize: '11.5px', fontWeight: '700', padding: '3px 10px', borderRadius: '5px'
+                      }}>✓ Samples available</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
+
             {/* Visit Store */}
             <Link href={`/shop/${shop.slug}`} style={{
               display: 'flex', alignItems: 'center', gap: '12px', marginTop: '26px',
