@@ -59,10 +59,10 @@ export default function MerchantDashboardPage() {
     {
       label: 'Total Products',
       value: maxProducts != null ? `${productCount}/${maxProducts}` : productCount,
-      icon: '📦', color: '#0a0a0a'
+      icon: '📦', color: '#0a0a0a', href: '/merchant/products'
     },
-    { label: 'Total Orders', value: orderCount, icon: '🧾', color: '#1565c0' },
-    { label: 'Pending Orders', value: pendingOrderCount, icon: '⏳', color: '#f4a300' },
+    { label: 'Total Orders', value: orderCount, icon: '🧾', color: '#1565c0', href: '/merchant/orders' },
+    { label: 'Pending Orders', value: pendingOrderCount, icon: '⏳', color: '#f4a300', href: '/merchant/orders?status=pending' },
   ]
 
   return (
@@ -99,14 +99,15 @@ export default function MerchantDashboardPage() {
       </div>
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         {statCards.map(card => (
-          <div key={card.label} style={{
+          <a key={card.label} href={card.href} style={{
             background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
-            padding: '18px 22px', minWidth: '160px', flex: '1 1 160px'
+            padding: '18px 22px', minWidth: '160px', flex: '1 1 160px',
+            textDecoration: 'none', cursor: 'pointer', display: 'block'
           }}>
             <div style={{ fontSize: '22px', marginBottom: '8px' }}>{card.icon}</div>
             <div style={{ fontSize: '24px', fontWeight: '700', color: card.color }}>{card.value}</div>
             <div style={{ fontSize: '13px', color: '#777', marginTop: '2px' }}>{card.label}</div>
-          </div>
+          </a>
         ))}
       </div>
       {shop.description && (

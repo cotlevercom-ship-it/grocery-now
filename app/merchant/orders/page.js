@@ -1,5 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import MerchantNav from '@/components/MerchantNav'
 
@@ -24,6 +25,14 @@ const statusColors = {
 }
 
 export default function MerchantOrdersPage() {
+  return (
+    <Suspense fallback={null}>
+      <MerchantOrdersInner />
+    </Suspense>
+  )
+}
+
+function MerchantOrdersInner() {
   const [shopId, setShopId] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [loadingShop, setLoadingShop] = useState(true)
@@ -31,7 +40,8 @@ export default function MerchantOrdersPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [filter, setFilter] = useState('all')
+  const searchParams = useSearchParams()
+  const [filter, setFilter] = useState(searchParams.get('status') || 'all')
   const [expandedId, setExpandedId] = useState(null)
   const [orderItems, setOrderItems] = useState({})
   const [updatingId, setUpdatingId] = useState(null)
