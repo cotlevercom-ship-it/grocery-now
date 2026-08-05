@@ -277,6 +277,7 @@ function MerchantLoginForm() {
     if (nameStatus === 'taken') return setRegisterError('This store name is already taken, please choose another')
     if (!ownerName.trim()) return setRegisterError('Please enter the owner name')
     if (!mobileNumber.trim()) return setRegisterError('Please enter a mobile number')
+    if (!/^01\d{9}$/.test(mobileNumber.trim())) return setRegisterError('Enter a valid 11-digit Bangladeshi mobile number starting with 01')
     if (!email.trim()) return setRegisterError('Please enter your email')
     if (!otpVerified) return setRegisterError('Please verify your email with the OTP code first')
     if (departments.length > 0 && !selectedDeptId) return setRegisterError('Please select a department')
@@ -470,7 +471,20 @@ function MerchantLoginForm() {
                 </div>
                 <div className="field">
                   <label>Mobile Number *</label>
-                  <input style={inputStyle} type="tel" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} placeholder="e.g. 01XXXXXXXXX" />
+                  <input
+                    style={inputStyle}
+                    type="tel"
+                    inputMode="numeric"
+                    value={mobileNumber}
+                    onChange={e => setMobileNumber(e.target.value.replace(/\D/g, '').slice(0, 11))}
+                    placeholder="e.g. 01XXXXXXXXX"
+                    maxLength={11}
+                  />
+                  {mobileNumber && !/^01\d{9}$/.test(mobileNumber) && (
+                    <div style={{ fontSize: '12px', marginTop: '5px', color: '#d32f2f', fontWeight: '600' }}>
+                      Enter a valid 11-digit Bangladeshi number starting with 01
+                    </div>
+                  )}
                 </div>
 
                 <div className="field">
