@@ -63,18 +63,8 @@ export default function Footer() {
   const hasSocial = settings.facebook_url || whatsappHref || settings.contact_email
 
   const columns = []
-  const helpItem = { label: 'Help Center', href: '/help' }
   if (infoPages.length > 0) {
-    const infoItems = infoPages.map(p => ({ label: p.title, href: linkHref(p) }))
-    const contactIdx = infoItems.findIndex(i => i.label.toLowerCase().includes('contact'))
-    if (contactIdx >= 0) {
-      infoItems.splice(contactIdx + 1, 0, helpItem)
-    } else {
-      infoItems.push(helpItem)
-    }
-    columns.push({ title: 'About Cot Lever', items: infoItems })
-  } else {
-    columns.push({ title: 'About Cot Lever', items: [helpItem] })
+    columns.push({ title: 'About Cot Lever', items: infoPages.map(p => ({ label: p.title, href: linkHref(p) })) })
   }
   if (partnerPages.length > 0) {
     columns.push({ title: 'Partner With Us', items: partnerPages.map(p => ({ label: p.title, href: linkHref(p) })) })
@@ -85,7 +75,7 @@ export default function Footer() {
     })
   }
 
-  const totalCols = columns.length + (hasSocial ? 1 : 0)
+  const totalCols = columns.length + 1
 
   function handleScroll() {
     const el = scrollRef.current
@@ -116,9 +106,14 @@ export default function Footer() {
             </div>
           ))}
 
-          {hasSocial && (
-            <div className="footer-card" style={totalCols === 1 ? { width: '100%' } : undefined}>
-              <div className="card-title">Contact</div>
+          <div className="footer-card" style={totalCols === 1 ? { width: '100%' } : undefined}>
+            <div className="card-title">Contact</div>
+            <div className="link-list">
+              <Link href="/help" className="footer-link" style={{ display: 'block', width: '100%', marginBottom: '14px' }}>
+                Help Center
+              </Link>
+            </div>
+            {hasSocial && (
               <div className="social-row">
                 {settings.facebook_url && (
                   <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook">
@@ -136,8 +131,8 @@ export default function Footer() {
                   </a>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {totalCols > 1 && (
