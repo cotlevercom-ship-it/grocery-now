@@ -166,8 +166,8 @@ export default function Footer() {
         .site-footer {
           background: ${COLORS.bg};
           border-top: 1px solid ${COLORS.line};
-          margin-top: 32px;
-          padding: 28px 16px 20px;
+          margin-top: 20px;
+          padding: 16px 16px 12px;
         }
         .footer-inner {
           max-width: 980px;
@@ -175,7 +175,7 @@ export default function Footer() {
         }
         .col-scroll {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           overflow-x: auto;
           scroll-snap-type: x mandatory;
           -webkit-overflow-scrolling: touch;
@@ -188,19 +188,19 @@ export default function Footer() {
         .footer-card {
           flex: 0 0 auto;
           scroll-snap-align: start;
-          width: calc(50% - 4px);
+          width: calc(50% - 3px);
           min-width: 140px;
           background: #fff;
           border: 1px solid ${COLORS.line};
-          border-radius: 10px;
-          padding: 12px 12px 4px;
+          border-radius: 8px;
+          padding: 9px 10px 7px;
         }
         .card-title {
           color: ${COLORS.gold};
           font-weight: 700;
           font-size: 10.5px;
           letter-spacing: 0.3px;
-          margin-bottom: 10px;
+          margin-bottom: 6px;
         }
         .link-list {
           display: flex;
@@ -211,7 +211,7 @@ export default function Footer() {
           font-size: 12px;
           color: ${COLORS.textMuted};
           text-decoration: none;
-          margin-bottom: 10px;
+          margin-bottom: 6px;
           width: fit-content;
         }
         .footer-link:hover {
@@ -222,8 +222,8 @@ export default function Footer() {
           gap: 6px;
         }
         .social-icon {
-          width: 26px;
-          height: 26px;
+          width: 24px;
+          height: 24px;
           border-radius: 50%;
           background: ${COLORS.bg};
           border: 1px solid ${COLORS.line};
@@ -237,7 +237,7 @@ export default function Footer() {
           display: flex;
           justify-content: center;
           gap: 6px;
-          margin: 14px 0 20px;
+          margin: 8px 0 10px;
         }
         .dot {
           width: 6px;
@@ -250,13 +250,13 @@ export default function Footer() {
         }
         .footer-bottom {
           border-top: 1px solid ${COLORS.line};
-          padding-top: 18px;
+          padding-top: 10px;
         }
         .brand-row {
           display: flex;
           align-items: center;
           gap: 8px;
-          margin-bottom: 10px;
+          margin-bottom: 6px;
         }
         .brand-badge {
           font-size: 18px;
@@ -270,15 +270,15 @@ export default function Footer() {
         .bottom-text {
           display: flex;
           flex-direction: column;
-          gap: 4px;
-          font-size: 12.5px;
+          gap: 3px;
+          font-size: 12px;
           color: ${COLORS.textMuted};
         }
         .gold-text {
           color: ${COLORS.gold};
         }
         .pay-line {
-          font-size: 12px;
+          font-size: 11.5px;
           color: ${COLORS.textMuted};
         }
 
