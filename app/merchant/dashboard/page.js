@@ -71,6 +71,20 @@ export default function MerchantDashboardPage() {
       <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#163a2c', margin: '0 0 6px' }}>
         {shop.name}
       </h1>
+      <div style={{ marginBottom: '10px' }}>
+        {pkg ? (
+          <span style={{
+            display: 'inline-block', padding: '3px 10px', borderRadius: '12px',
+            fontSize: '12px', fontWeight: '600', background: '#f3e8fd', color: '#8e24aa'
+          }}>💎 {pkg.name_bn} Package</span>
+        ) : (
+          <a href="/merchant/package" style={{
+            display: 'inline-block', padding: '3px 10px', borderRadius: '12px',
+            fontSize: '12px', fontWeight: '600', background: '#fff3e0', color: '#f4a300',
+            textDecoration: 'none'
+          }}>Not subscribed — Choose a package →</a>
+        )}
+      </div>
       <div style={{ fontSize: '13px', color: '#777', marginBottom: '24px' }}>
         {shop.areas?.name ? `📍 ${shop.areas.name}` : ''}
         {'  '}
