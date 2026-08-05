@@ -237,7 +237,15 @@ function MerchantLoginForm() {
       router.push('/merchant/dashboard')
     } catch (err) {
       console.error(err)
-      setRegisterError(err.message || 'Registration failed, please try again')
+      const msg = err.message || ''
+      if (/already registered|already exists/i.test(msg)) {
+        setRegisterError('This email already has an account (as a customer or merchant). Please use a different email to register — you\'ll need to verify it with a new OTP.')
+        setOtpSent(false)
+        setOtpVerified(false)
+        setOtpCode('')
+      } else {
+        setRegisterError(msg || 'Registration failed, please try again')
+      }
       setRegisterSubmitting(false)
     }
   }
