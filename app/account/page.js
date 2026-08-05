@@ -22,6 +22,8 @@ export default function AccountPage() {
   const [orderCount, setOrderCount] = useState(0)
   const [ongoingCount, setOngoingCount] = useState(0)
   const [addressCount, setAddressCount] = useState(0)
+  const [shipmentCount, setShipmentCount] = useState(0)
+  const [ongoingShipmentCount, setOngoingShipmentCount] = useState(0)
 
   const handleLogout = () => {
     signOut()
@@ -56,6 +58,14 @@ export default function AccountPage() {
       try {
         const addresses = await supabaseFetch(`user_addresses?select=id&user_id=eq.${session.user.id}`)
         setAddressCount(addresses?.length || 0)
+      } catch (e) {
+        console.error(e)
+      }
+
+      try {
+        const shipments = await supabaseFetch(`shipment_bookings?select=id,status&user_id=eq.${session.user.id}`)
+        setShipmentCount(shipments?.length || 0)
+        setOngoingShipmentCount((shipments || []).filter(s => s.status !== 'delivered' && s.status !== 'cancelled').length)
       } catch (e) {
         console.error(e)
       }
@@ -96,6 +106,13 @@ export default function AccountPage() {
       title: 'Order History',
       subtitle: `${orderCount} order${orderCount !== 1 ? 's' : ''}${ongoingCount > 0 ? ` · ${ongoingCount} ongoing` : ''}`,
       tag: ongoingCount > 0 ? `${ongoingCount} ongoing` : (orderCount > 0 ? String(orderCount) : null),
+    },
+    {
+      href: '/account/shipments',
+      icon: '📦',
+      title: 'My Shipments',
+      subtitle: shipmentCount > 0 ? `${shipmentCount} shipment${shipmentCount !== 1 ? 's' : ''}${ongoingShipmentCount > 0 ? ` · ${ongoingShipmentCount} ongoing` : ''}` : 'No parcels booked yet',
+      tag: ongoingShipmentCount > 0 ? `${ongoingShipmentCount} ongoing` : (shipmentCount > 0 ? String(shipmentCount) : null),
     },
   ]
 

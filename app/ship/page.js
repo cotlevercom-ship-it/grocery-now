@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import AgreementCheckbox from '@/components/AgreementCheckbox'
 
@@ -19,6 +20,8 @@ const emptyContact = {
 }
 
 export default function ShipPage() {
+  const router = useRouter()
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const [step, setStep] = useState('calc') // calc | rates | contact | done
   const [calc, setCalc] = useState(emptyCalc)
   const [contact, setContact] = useState(emptyContact)
@@ -29,6 +32,23 @@ export default function ShipPage() {
   const [booking, setBooking] = useState(false)
   const [agreed, setAgreed] = useState(false)
   const [bookingRef, setBookingRef] = useState(null)
+
+  useEffect(() => {
+    const session = getSession()
+    if (!session?.user?.id) {
+      router.replace('/login?next=/ship')
+      return
+    }
+    setCheckingAuth(false)
+  }, [router])
+
+  if (checkingAuth) {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '14px' }}>
+        Loading...
+      </div>
+    )
+  }
 
   const inputStyle = {
     width: '100%', padding: '13px 14px', borderRadius: '10px',
