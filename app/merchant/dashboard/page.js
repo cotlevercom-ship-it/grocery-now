@@ -63,7 +63,6 @@ export default function MerchantDashboardPage() {
     },
     { label: 'Total Orders', value: orderCount, icon: '🧾', color: '#1565c0' },
     { label: 'Pending Orders', value: pendingOrderCount, icon: '⏳', color: '#f4a300' },
-    { label: 'Package', value: pkg?.name_bn || '—', icon: '💎', color: '#8e24aa' },
   ]
 
   return (
