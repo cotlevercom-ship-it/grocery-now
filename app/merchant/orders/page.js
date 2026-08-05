@@ -269,7 +269,7 @@ function MerchantOrdersInner() {
                     </div>
                   </div>
                   <div style={{ fontSize: '14px', fontWeight: '700', color: '#0a0a0a', whiteSpace: 'nowrap' }}>
-                    ৳{order.total}
+                    {isSubscribed ? `৳${order.total}` : '🔒 ৳---'}
                   </div>
                   <span style={{
                     fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px',
