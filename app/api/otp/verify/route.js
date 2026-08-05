@@ -4,7 +4,7 @@ import { adminFetch } from '@/lib/supabase-admin'
 export async function POST(req) {
   try {
     const { email, code, purpose } = await req.json()
-    if (!email || !code || !['signup', 'reset', 'merchant_reset'].includes(purpose)) {
+    if (!email || !code || !['signup', 'reset', 'seller_reset', 'merchant_reset', 'admin_reset'].includes(purpose)) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
