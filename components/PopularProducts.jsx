@@ -1,5 +1,6 @@
 import { supabaseFetch } from '@/lib/supabase'
 import ProductGrid from './ProductGrid'
+import CategorySections from './CategorySections'
 
 export default async function PopularProducts() {
   let products = []
@@ -28,6 +29,8 @@ export default async function PopularProducts() {
 
         <ProductGrid products={products} departments={departments || []} categories={categories || []} />
       </div>
+
+      <CategorySections products={products} categories={categories || []} />
     </div>
   )
 }
