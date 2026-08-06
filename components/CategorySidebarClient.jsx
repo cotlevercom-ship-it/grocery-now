@@ -34,7 +34,7 @@ export default function CategorySidebarClient({ categories }) {
         return (
           <div key={c.id} className="cat-sidebar-row">
             <div className="cat-sidebar-item">
-              <a href={`#cat-${c.id}`} className="cat-sidebar-link">
+              <a href={`/?cat=${c.id}#products-grid`} className="cat-sidebar-link">
                 <span className="cat-sidebar-icon">{renderIcon(c)}</span>
                 <span className="cat-sidebar-name">{c.name}</span>
               </a>
@@ -53,7 +53,7 @@ export default function CategorySidebarClient({ categories }) {
             {children.length > 0 && isOpen && (
               <div className="cat-sub-list">
                 {children.map(sub => (
-                  <a key={sub.id} href={`#cat-${c.id}`} className="cat-sub-item">
+                  <a key={sub.id} href={`/?cat=${c.id}#products-grid`} className="cat-sub-item">
                     <span className="cat-sub-icon">{renderIcon(sub)}</span>
                     <span>{sub.name}</span>
                   </a>

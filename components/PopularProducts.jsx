@@ -1,6 +1,5 @@
 import { supabaseFetch } from '@/lib/supabase'
 import ProductGrid from './ProductGrid'
-import CategorySections from './CategorySections'
 
 export default async function PopularProducts() {
   let products = []
@@ -31,7 +30,7 @@ export default async function PopularProducts() {
   }
 
   return (
-    <div style={{ background: '#f5f5f5', padding: '24px 16px 8px' }}>
+    <div id="products-grid" style={{ background: '#f5f5f5', padding: '24px 16px 24px', scrollMarginTop: '70px' }}>
       <div>
         <h2 className="shop-heading" style={{ fontWeight: '800', color: '#0a0a0a', marginBottom: '14px' }}>
           Popular Products
@@ -39,8 +38,6 @@ export default async function PopularProducts() {
 
         <ProductGrid products={products} categories={categories || []} soldCounts={soldCounts} />
       </div>
-
-      <CategorySections products={products} categories={categories || []} soldCounts={soldCounts} />
     </div>
   )
 }
