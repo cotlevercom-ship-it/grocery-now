@@ -33,6 +33,7 @@ function AboutTabs() {
   const [pages, setPages] = useState({})
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState(initialTab)
+  const [lang, setLang] = useState('bn')
 
   useEffect(() => {
     async function load() {
@@ -52,6 +53,10 @@ function AboutTabs() {
   }, [])
 
   const current = pages[activeTab]
+  const hasBilingual = !!(current?.content_bn || current?.content_en)
+  const displayedContent = hasBilingual
+    ? (lang === 'bn' ? (current.content_bn || current.content_en) : (current.content_en || current.content_bn))
+    : current?.content
 
   return (
     <div style={{ maxWidth: '760px', margin: '0 auto', padding: '24px 16px 60px' }}>
@@ -78,11 +83,29 @@ function AboutTabs() {
         ))}
       </div>
 
+      {hasBilingual && (
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+          {[{ key: 'bn', label: 'বাংলা' }, { key: 'en', label: 'English' }].map(l => (
+            <button
+              key={l.key}
+              onClick={() => setLang(l.key)}
+              style={{
+                padding: '6px 16px', borderRadius: '20px', fontSize: '12.5px', fontWeight: '700',
+                border: '1px solid', cursor: 'pointer',
+                background: lang === l.key ? COLORS.ink : 'white',
+                color: lang === l.key ? 'white' : COLORS.textMuted,
+                borderColor: lang === l.key ? COLORS.ink : '#ddd',
+              }}
+            >{l.label}</button>
+          ))}
+        </div>
+      )}
+
       {loading ? (
         <div style={{ color: COLORS.textMuted, fontSize: '14px', padding: '30px 0', textAlign: 'center' }}>Loading...</div>
-      ) : current ? (
+      ) : displayedContent ? (
         <div style={{ fontSize: '15px', lineHeight: '1.8', color: '#333', whiteSpace: 'pre-wrap' }}>
-          {current.content || 'Content for this page will be added soon.'}
+          {displayedContent}
         </div>
       ) : (
         <div style={{ color: COLORS.textMuted, fontSize: '14px', padding: '30px 0', textAlign: 'center' }}>

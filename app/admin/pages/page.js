@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
 const emptyForm = {
-  section: 'info', title: '', slug: '', content: '',
+  section: 'info', title: '', slug: '', content: '', content_bn: '', content_en: '',
   link_type: 'page', external_url: '', sort_order: '0', is_active: true,
 }
 
@@ -56,6 +56,8 @@ export default function AdminPagesPage() {
       title: p.title || '',
       slug: p.slug || '',
       content: p.content || '',
+      content_bn: p.content_bn || '',
+      content_en: p.content_en || '',
       link_type: p.link_type || 'page',
       external_url: p.external_url || '',
       sort_order: String(p.sort_order ?? '0'),
@@ -102,6 +104,8 @@ export default function AdminPagesPage() {
         title: form.title.trim(),
         slug: form.link_type === 'page' ? slugify(form.slug) : null,
         content: form.link_type === 'page' ? form.content : null,
+        content_bn: form.link_type === 'page' ? (form.content_bn.trim() || null) : null,
+        content_en: form.link_type === 'page' ? (form.content_en.trim() || null) : null,
         link_type: form.link_type,
         external_url: form.link_type === 'external' ? form.external_url.trim() : null,
         sort_order: Number(form.sort_order) || 0,
@@ -267,8 +271,22 @@ export default function AdminPagesPage() {
                   placeholder="about-us" />
               </div>
               <div style={{ marginBottom: '14px' }}>
-                <label style={labelStyle}>Content</label>
+                <label style={labelStyle}>Content — বাংলা (shown on the বাংলা tab; leave blank to fall back to English)</label>
                 <textarea style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} rows={6}
+                  value={form.content_bn}
+                  onChange={e => setForm({ ...form, content_bn: e.target.value })}
+                  placeholder="এখানে বাংলা কনটেন্ট লিখুন..." />
+              </div>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={labelStyle}>Content — English (shown on the English tab; leave blank to fall back to বাংলা)</label>
+                <textarea style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} rows={6}
+                  value={form.content_en}
+                  onChange={e => setForm({ ...form, content_en: e.target.value })}
+                  placeholder="Enter the English content here..." />
+              </div>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={labelStyle}>Content — legacy single-language field (only used if both বাংলা and English above are blank)</label>
+                <textarea style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} rows={4}
                   value={form.content}
                   onChange={e => setForm({ ...form, content: e.target.value })}
                   placeholder="Enter the page content here..." />
