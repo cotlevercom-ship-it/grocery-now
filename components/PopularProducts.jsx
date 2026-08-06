@@ -18,6 +18,18 @@ export default async function PopularProducts() {
 
   if (!products || products.length === 0) return null
 
+  let soldCounts = {}
+  try {
+    const ids = products.map(p => p.id).join(',')
+    const items = await supabaseFetch(`order_items?select=product_id,quantity&product_id=in.(${ids})`)
+    soldCounts = (items || []).reduce((acc, item) => {
+      acc[item.product_id] = (acc[item.product_id] || 0) + (item.quantity || 0)
+      return acc
+    }, {})
+  } catch (e) {
+    console.error(e)
+  }
+
   return (
     <div style={{ background: '#f5f5f5', padding: '24px 16px 8px' }}>
       <div>
@@ -25,10 +37,10 @@ export default async function PopularProducts() {
           Popular Products
         </h2>
 
-        <ProductGrid products={products} categories={categories || []} />
+        <ProductGrid products={products} categories={categories || []} soldCounts={soldCounts} />
       </div>
 
-      <CategorySections products={products} categories={categories || []} />
+      <CategorySections products={products} categories={categories || []} soldCounts={soldCounts} />
     </div>
   )
 }

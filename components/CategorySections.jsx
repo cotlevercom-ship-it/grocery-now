@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 
-export default function CategorySections({ products, categories = [] }) {
+export default function CategorySections({ products, categories = [], soldCounts = {} }) {
   const catById = {}
   categories.forEach(c => { catById[c.id] = c })
 
@@ -28,7 +28,7 @@ export default function CategorySections({ products, categories = [] }) {
   return (
     <div style={{ background: '#f5f5f5', padding: '4px 16px 24px' }}>
       {sections.map(s => (
-        <div key={s.id} style={{ marginBottom: '24px' }}>
+        <div key={s.id} id={`cat-${s.id}`} style={{ marginBottom: '24px', scrollMarginTop: '70px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0a0a0a', marginBottom: '10px' }}>
             {s.name}
           </h3>
@@ -61,6 +61,9 @@ export default function CategorySections({ products, categories = [] }) {
                         <span style={{ fontSize: '10px', color: '#aaa', textDecoration: 'line-through' }}>৳{p.price}</span>
                       )}
                     </div>
+                    {soldCounts[p.id] > 0 && (
+                      <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>SOLD: {soldCounts[p.id]}</div>
+                    )}
                   </div>
                 </Link>
               )

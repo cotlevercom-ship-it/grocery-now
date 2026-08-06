@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 
-export default function ProductGrid({ products, categories = [] }) {
+export default function ProductGrid({ products, categories = [], soldCounts = {} }) {
   const [selectedCat, setSelectedCat] = useState('all')
 
   // Build category tree helpers: resolve any category to its top-level ancestor
@@ -120,8 +120,11 @@ export default function ProductGrid({ products, categories = [] }) {
 
                   <div style={{
                     fontSize: '11px', color: '#999', marginTop: '4px',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>{p.shops?.name || ''}</div>
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px',
+                  }}>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.shops?.name || ''}</span>
+                    {soldCounts[p.id] > 0 && <span style={{ flexShrink: 0 }}>SOLD: {soldCounts[p.id]}</span>}
+                  </div>
                 </div>
               </Link>
             )
