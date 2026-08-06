@@ -1,6 +1,5 @@
 import Hero from '@/components/Hero'
 import CategorySidebar from '@/components/CategorySidebar'
-import CategoryIconGrid from '@/components/CategoryIconGrid'
 import PopularProducts from '@/components/PopularProducts'
 import ShopSection from '@/components/ShopSection'
 import HomeTabs from '@/components/HomeTabs'
@@ -15,7 +14,6 @@ export default function Home() {
         <CategorySidebar />
         <div className="home-main">
           <Hero />
-          <CategoryIconGrid />
           <HomeTabs productsSlot={<PopularProducts />} shopsSlot={<ShopSection />} />
         </div>
       </div>
