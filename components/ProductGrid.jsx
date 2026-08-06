@@ -1,20 +1,53 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 
-export default function ProductGrid({ products, departments }) {
+export default function ProductGrid({ products, departments, categories = [] }) {
   const [selectedDept, setSelectedDept] = useState('all')
+  const [selectedCat, setSelectedCat] = useState('all')
 
   const deptOf = (p) => p.shops?.department_id || null
+
+  // Build category tree helpers: resolve any category to its top-level ancestor
+  const catById = useMemo(() => {
+    const map = {}
+    categories.forEach(c => { map[c.id] = c })
+    return map
+  }, [categories])
+
+  const topAncestorId = useMemo(() => {
+    const cache = {}
+    const resolve = (id) => {
+      if (!id) return null
+      if (cache[id]) return cache[id]
+      let cur = catById[id]
+      if (!cur) return null
+      while (cur.parent_id && catById[cur.parent_id]) {
+        cur = catById[cur.parent_id]
+      }
+      cache[id] = cur.id
+      return cur.id
+    }
+    return resolve
+  }, [catById])
+
+  const topCategories = categories.filter(c => !c.parent_id)
+
+  const catOf = (p) => topAncestorId(p.category_id)
 
   const deptCounts = departments.map(d => ({
     ...d,
     count: products.filter(p => deptOf(p) === d.id).length,
   })).filter(d => d.count > 0)
 
-  const filteredProducts = selectedDept === 'all'
-    ? products
-    : products.filter(p => deptOf(p) === selectedDept)
+  const catCounts = topCategories.map(c => ({
+    ...c,
+    count: products.filter(p => catOf(p) === c.id).length,
+  })).filter(c => c.count > 0)
+
+  const filteredProducts = products
+    .filter(p => selectedDept === 'all' || deptOf(p) === selectedDept)
+    .filter(p => selectedCat === 'all' || catOf(p) === selectedCat)
 
   return (
     <>
@@ -34,6 +67,26 @@ export default function ProductGrid({ products, departments }) {
             >
               <span style={{ marginRight: '5px' }}>{d.icon}</span>
               {d.name} ({d.count})
+            </button>
+          ))}
+        </div>
+      )}
+
+      {catCounts.length > 0 && (
+        <div className="dept-row cat-row">
+          <button
+            className={`cat-chip ${selectedCat === 'all' ? 'active' : ''}`}
+            onClick={() => setSelectedCat('all')}
+          >
+            All Categories
+          </button>
+          {catCounts.map(c => (
+            <button
+              key={c.id}
+              className={`cat-chip ${selectedCat === c.id ? 'active' : ''}`}
+              onClick={() => setSelectedCat(c.id)}
+            >
+              {c.name} ({c.count})
             </button>
           ))}
         </div>
@@ -127,6 +180,25 @@ export default function ProductGrid({ products, departments }) {
           background: #0a0a0a;
           border-color: #0a0a0a;
           color: white;
+        }
+        .cat-row {
+          margin-top: -10px;
+        }
+        .cat-chip {
+          flex-shrink: 0;
+          background: white;
+          border: 1px solid #f4a300;
+          border-radius: 999px;
+          padding: 6px 14px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #a06c00;
+          white-space: nowrap;
+        }
+        .cat-chip.active {
+          background: #f4a300;
+          border-color: #f4a300;
+          color: #0a0a0a;
         }
         .products-grid {
           display: grid;
