@@ -132,8 +132,6 @@ function MerchantLoginForm() {
   const [pin, setPin] = useState('')
   const [confirmPin, setConfirmPin] = useState('')
 
-  const [departments, setDepartments] = useState([])
-  const [selectedDeptId, setSelectedDeptId] = useState('')
   const [packages, setPackages] = useState([])
   const [selectedPkgId, setSelectedPkgId] = useState('')
   const [bkashNumber, setBkashNumber] = useState('')
@@ -169,14 +167,12 @@ function MerchantLoginForm() {
   useEffect(() => {
     async function loadPackages() {
       try {
-        const [pkgRows, settings, deptRows] = await Promise.all([
+        const [pkgRows, settings] = await Promise.all([
           supabaseFetch(`seller_packages?select=*&is_active=eq.true&order=sort_order`),
           supabaseFetch(`app_settings?select=value&key=eq.bkash_number`),
-          supabaseFetch(`departments?select=*&is_active=eq.true&order=sort_order`),
         ])
         setPackages(pkgRows || [])
         setBkashNumber(settings?.[0]?.value || '')
-        setDepartments(deptRows || [])
         const pkgList = pkgRows || []
         const matchedPkg = pkgParam ? pkgList.find(p => p.id === pkgParam) : null
         const freePkg = pkgList.find(p => !p.price || p.price <= 0)
@@ -257,7 +253,6 @@ function MerchantLoginForm() {
         owner_id: session.user.id,
         owner_name: ownerName.trim(),
         phone: mobileNumber.trim(),
-        department_id: selectedDeptId || null,
         category: 'general',
         delivery_charge: 20,
         min_order_amount: 0,
@@ -280,7 +275,6 @@ function MerchantLoginForm() {
     if (!/^01\d{9}$/.test(mobileNumber.trim())) return setRegisterError('Enter a valid 11-digit Bangladeshi mobile number starting with 01')
     if (!email.trim()) return setRegisterError('Please enter your email')
     if (!otpVerified) return setRegisterError('Please verify your email with the OTP code first')
-    if (departments.length > 0 && !selectedDeptId) return setRegisterError('Please select a department')
     if (!/^\d{4}$/.test(pin)) return setRegisterError('PIN must be exactly 4 digits')
     if (pin !== confirmPin) return setRegisterError('PIN and Confirm PIN do not match')
     if (!agreed) return setRegisterError('Please agree to the Merchant Agreement to continue')
@@ -530,22 +524,6 @@ function MerchantLoginForm() {
                   <label>Address (optional)</label>
                   <input style={inputStyle} value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. Dhaka, Chattogram, or any city/country" />
                 </div>
-
-                {departments.length > 0 && (
-                  <div className="field">
-                    <label>Department *</label>
-                    <select
-                      style={{ ...inputStyle, background: 'white' }}
-                      value={selectedDeptId}
-                      onChange={e => setSelectedDeptId(e.target.value)}
-                    >
-                      <option value="">Select a department</option>
-                      {departments.map(d => (
-                        <option key={d.id} value={d.id}>{d.icon} {d.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
 
                 <div className="field">
                   <label>Set PIN *</label>

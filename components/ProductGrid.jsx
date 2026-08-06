@@ -2,11 +2,8 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 
-export default function ProductGrid({ products, departments, categories = [] }) {
-  const [selectedDept, setSelectedDept] = useState('all')
+export default function ProductGrid({ products, categories = [] }) {
   const [selectedCat, setSelectedCat] = useState('all')
-
-  const deptOf = (p) => p.shops?.department_id || null
 
   // Build category tree helpers: resolve any category to its top-level ancestor
   const catById = useMemo(() => {
@@ -35,50 +32,24 @@ export default function ProductGrid({ products, departments, categories = [] }) 
 
   const catOf = (p) => topAncestorId(p.category_id)
 
-  const deptCounts = departments.map(d => ({
-    ...d,
-    count: products.filter(p => deptOf(p) === d.id).length,
-  })).filter(d => d.count > 0)
-
   const catCounts = topCategories.map(c => ({
     ...c,
     count: products.filter(p => catOf(p) === c.id).length,
   })).filter(c => c.count > 0)
 
-  const filteredProducts = products
-    .filter(p => selectedDept === 'all' || deptOf(p) === selectedDept)
-    .filter(p => selectedCat === 'all' || catOf(p) === selectedCat)
+  const filteredProducts = selectedCat === 'all'
+    ? products
+    : products.filter(p => catOf(p) === selectedCat)
 
   return (
     <>
-      {deptCounts.length > 0 && (
-        <div className="dept-row">
-          <button
-            className={`dept-chip ${selectedDept === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedDept('all')}
-          >
-            All ({products.length})
-          </button>
-          {deptCounts.map(d => (
-            <button
-              key={d.id}
-              className={`dept-chip ${selectedDept === d.id ? 'active' : ''}`}
-              onClick={() => setSelectedDept(d.id)}
-            >
-              <span style={{ marginRight: '5px' }}>{d.icon}</span>
-              {d.name} ({d.count})
-            </button>
-          ))}
-        </div>
-      )}
-
       {catCounts.length > 0 && (
         <div className="dept-row cat-row">
           <button
             className={`cat-chip ${selectedCat === 'all' ? 'active' : ''}`}
             onClick={() => setSelectedCat('all')}
           >
-            All Categories
+            All ({products.length})
           </button>
           {catCounts.map(c => (
             <button
@@ -165,32 +136,13 @@ export default function ProductGrid({ products, departments, categories = [] }) 
           mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
         }
         .dept-row::-webkit-scrollbar { display: none; }
-        .dept-chip {
-          flex-shrink: 0;
-          background: white;
-          border: 1px solid #e0e0e0;
-          border-radius: 999px;
-          padding: 8px 16px;
-          font-size: 13px;
-          font-weight: 600;
-          color: #444;
-          white-space: nowrap;
-        }
-        .dept-chip.active {
-          background: #0a0a0a;
-          border-color: #0a0a0a;
-          color: white;
-        }
-        .cat-row {
-          margin-top: -10px;
-        }
         .cat-chip {
           flex-shrink: 0;
           background: white;
           border: 1px solid #f4a300;
           border-radius: 999px;
-          padding: 6px 14px;
-          font-size: 12px;
+          padding: 8px 16px;
+          font-size: 13px;
           font-weight: 600;
           color: #a06c00;
           white-space: nowrap;

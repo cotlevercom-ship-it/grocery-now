@@ -5,12 +5,8 @@ export const dynamic = 'force-dynamic'
 
 export default async function ShopSection() {
   let shops = []
-  let departments = []
   try {
-    ;[shops, departments] = await Promise.all([
-      supabaseFetch(`shops?select=*&is_active=eq.true&order=is_featured.desc,created_at.desc`),
-      supabaseFetch(`departments?select=*&is_active=eq.true&order=sort_order`),
-    ])
+    shops = await supabaseFetch(`shops?select=*&is_active=eq.true&order=is_featured.desc,created_at.desc`)
   } catch (e) {
     console.error(e)
   }
@@ -26,7 +22,7 @@ export default async function ShopSection() {
 
   return (
     <section style={{ padding: '28px 16px 8px' }}>
-      <ShopGrid shops={shops} departments={departments || []} />
+      <ShopGrid shops={shops} />
     </section>
   )
 }

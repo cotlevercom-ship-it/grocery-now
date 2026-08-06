@@ -1,42 +1,9 @@
 'use client'
-import { useState } from 'react'
 import Link from 'next/link'
 
-export default function ShopGrid({ shops, departments }) {
-  const [selectedDept, setSelectedDept] = useState('all')
-
-  const deptCounts = departments.map(d => ({
-    ...d,
-    count: shops.filter(s => s.department_id === d.id).length,
-  })).filter(d => d.count > 0)
-
-  const filteredShops = selectedDept === 'all'
-    ? shops
-    : shops.filter(s => s.department_id === selectedDept)
-
+export default function ShopGrid({ shops }) {
   return (
     <>
-      {deptCounts.length > 0 && (
-        <div className="dept-row">
-          <button
-            className={`dept-chip ${selectedDept === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedDept('all')}
-          >
-            All ({shops.length})
-          </button>
-          {deptCounts.map(d => (
-            <button
-              key={d.id}
-              className={`dept-chip ${selectedDept === d.id ? 'active' : ''}`}
-              onClick={() => setSelectedDept(d.id)}
-            >
-              <span style={{ marginRight: '5px' }}>{d.icon}</span>
-              {d.name} ({d.count})
-            </button>
-          ))}
-        </div>
-      )}
-
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         marginBottom: '16px'
@@ -48,18 +15,18 @@ export default function ShopGrid({ shops, departments }) {
           fontSize: '12px', color: '#2d6a4f', background: '#f5f5f5',
           padding: '4px 12px', borderRadius: '20px', fontWeight: '500'
         }}>
-          {filteredShops.length} shops
+          {shops.length} shops
         </span>
       </div>
 
-      {filteredShops.length === 0 ? (
+      {shops.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
           <div style={{ fontSize: '40px', marginBottom: '10px' }}>🏪</div>
-          <p>No shops in this department yet</p>
+          <p>No shops yet</p>
         </div>
       ) : (
         <div className="shop-grid">
-          {filteredShops.map((shop) => (
+          {shops.map((shop) => (
             <Link key={shop.id} href={`/shop/${shop.slug}`} className="shop-card">
               <div style={{ position: 'relative' }}>
                 <img
@@ -96,36 +63,6 @@ export default function ShopGrid({ shops, departments }) {
           ))}
         </div>
       )}
-
-      <style jsx>{`
-        .dept-row {
-          display: flex;
-          gap: 8px;
-          overflow-x: auto;
-          padding: 2px 20px 6px 2px;
-          margin: 0 -2px 20px;
-          scrollbar-width: none;
-          -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
-          mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
-        }
-        .dept-row::-webkit-scrollbar { display: none; }
-        .dept-chip {
-          flex-shrink: 0;
-          background: white;
-          border: 1px solid #e0e0e0;
-          border-radius: 999px;
-          padding: 8px 16px;
-          font-size: 13px;
-          font-weight: 600;
-          color: #444;
-          white-space: nowrap;
-        }
-        .dept-chip.active {
-          background: #0a0a0a;
-          border-color: #0a0a0a;
-          color: white;
-        }
-      `}</style>
     </>
   )
 }
