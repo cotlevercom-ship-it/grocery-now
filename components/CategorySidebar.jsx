@@ -1,6 +1,5 @@
 import { supabaseFetch } from '@/lib/supabase'
-
-const FALLBACK_EMOJI = '🛍️'
+import { guessCategoryEmoji } from '@/lib/categoryEmoji'
 
 export default async function CategorySidebar() {
   let categories = []
@@ -22,7 +21,7 @@ export default async function CategorySidebar() {
             {c.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={c.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
-            ) : FALLBACK_EMOJI}
+            ) : guessCategoryEmoji(c.name)}
           </span>
           <span>{c.name}</span>
         </a>
@@ -46,8 +45,8 @@ export default async function CategorySidebar() {
           display: flex;
           align-items: center;
           gap: 10px;
-          padding: 11px 16px;
-          font-size: 13.5px;
+          padding: 9px 14px;
+          font-size: 13px;
           color: #333;
           text-decoration: none;
           border-bottom: 1px solid #f2f2f2;
@@ -55,13 +54,15 @@ export default async function CategorySidebar() {
         .cat-sidebar-item:last-child { border-bottom: none; }
         .cat-sidebar-item:hover { background: #faf6ec; color: #a06c00; }
         .cat-sidebar-icon {
-          width: 22px;
-          height: 22px;
+          width: 26px;
+          height: 26px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 15px;
+          font-size: 17px;
+          background: #f7f7f7;
+          border-radius: 6px;
         }
       `}</style>
     </div>
