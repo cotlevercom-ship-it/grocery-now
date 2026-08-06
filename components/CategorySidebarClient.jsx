@@ -21,10 +21,24 @@ function CategoryNode({ category, categories, depth, topId, expanded, toggle }) 
         <a
           href={`/?cat=${topId}#products-grid`}
           className="cat-sidebar-link"
-          style={{ paddingLeft: `${14 + depth * 24}px` }}
+          style={{
+            paddingLeft: `${14 + depth * 24}px`,
+            boxSizing: 'border-box',
+            maxWidth: '100%',
+            overflow: 'hidden',
+          }}
         >
           <span className="cat-sidebar-icon">{renderIcon(category)}</span>
-          <span className="cat-sidebar-name">{category.name}</span>
+          <span
+            className="cat-sidebar-name"
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              display: 'block',
+              minWidth: 0,
+            }}
+          >{category.name}</span>
         </a>
         {children.length > 0 && (
           <button
@@ -98,15 +112,22 @@ export default function CategorySidebarClient({ categories }) {
             background: white;
             border: 1px solid #eee;
             align-self: flex-start;
+            box-sizing: border-box;
+            overflow: hidden;
           }
         }
         .cat-sidebar-row {
           border-bottom: 1px solid #f2f2f2;
+          box-sizing: border-box;
+          width: 100%;
+          overflow: hidden;
         }
         .cat-sidebar-row:last-child { border-bottom: none; }
         .cat-sidebar-item {
           display: flex;
           align-items: stretch;
+          width: 100%;
+          box-sizing: border-box;
         }
         .cat-sidebar-link {
           flex: 1;
