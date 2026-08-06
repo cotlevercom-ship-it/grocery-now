@@ -8,17 +8,27 @@ const statusLabels = {
   pending: 'Order received',
   confirmed: 'Order confirmed',
   processing: 'Preparing',
+  packed: 'Packed',
+  shipped_to_warehouse: 'Shipped to Cot Lever warehouse',
+  received_at_warehouse: 'Received at warehouse',
   out_for_delivery: 'Out for delivery',
   delivered: 'Delivered',
   cancelled: 'Cancelled',
 }
 
-const statusOrder = ['pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered']
+const statusOrder = ['pending', 'confirmed', 'processing', 'packed', 'shipped_to_warehouse', 'received_at_warehouse', 'out_for_delivery', 'delivered']
+// Merchant can push the order forward through packing/shipping, but only Cot Lever admin
+// marks it received at the warehouse (which also triggers the payout calculation) — so the
+// merchant's "next status" button stops there.
+const merchantStatusOrder = ['pending', 'confirmed', 'processing', 'packed', 'shipped_to_warehouse']
 
 const statusColors = {
   pending: { bg: '#fff3e0', color: '#f4a300' },
   confirmed: { bg: '#e3f2fd', color: '#1565c0' },
   processing: { bg: '#ede7f6', color: '#5e35b1' },
+  packed: { bg: '#fce4ec', color: '#ad1457' },
+  shipped_to_warehouse: { bg: '#e8eaf6', color: '#3949ab' },
+  received_at_warehouse: { bg: '#e0f7fa', color: '#00838f' },
   out_for_delivery: { bg: '#e0f2f1', color: '#00695c' },
   delivered: { bg: '#f5f5f5', color: '#2d6a4f' },
   cancelled: { bg: '#ffebee', color: '#c62828' },
@@ -157,6 +167,9 @@ function MerchantOrdersInner() {
     { key: 'pending', label: 'New' },
     { key: 'confirmed', label: 'Confirmed' },
     { key: 'processing', label: 'Preparing' },
+    { key: 'packed', label: 'Packed' },
+    { key: 'shipped_to_warehouse', label: 'Shipped to Warehouse' },
+    { key: 'received_at_warehouse', label: 'Received & Paid' },
     { key: 'out_for_delivery', label: 'Out for Delivery' },
     { key: 'delivered', label: 'Delivered' },
     { key: 'cancelled', label: 'Cancelled' },
@@ -238,8 +251,8 @@ function MerchantOrdersInner() {
             const colors = statusColors[order.status] || statusColors.pending
             const isExpanded = expandedId === order.id
             const isCancelled = order.status === 'cancelled'
-            const nextStatusIndex = statusOrder.indexOf(order.status) + 1
-            const nextStatus = statusOrder[nextStatusIndex]
+            const merchantIdx = merchantStatusOrder.indexOf(order.status)
+            const nextStatus = merchantIdx >= 0 ? merchantStatusOrder[merchantIdx + 1] : undefined
 
             return (
               <div key={order.id} style={{
@@ -325,9 +338,23 @@ function MerchantOrdersInner() {
                       </div>
                     </div>
 
+                    {order.warehouse_received_at && (
+                      <div style={{ background: '#e0f7fa', borderRadius: '8px', padding: '12px', marginBottom: '14px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: '#00838f', marginBottom: '6px' }}>
+                          Warehouse Payout {order.warehouse_paid_at ? '(Paid)' : '(Pending)'}
+                        </div>
+                        <div style={{ fontSize: '13px', color: '#333' }}>
+                          Commission applied: {order.commission_percent_applied}% · Your payout: <strong>৳{order.merchant_payout_amount}</strong>
+                        </div>
+                        {order.warehouse_note && (
+                          <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>Note: {order.warehouse_note}</div>
+                        )}
+                      </div>
+                    )}
+
                     {/* Courier / carrier */}
                     <div style={{ background: '#f9f9f9', borderRadius: '8px', padding: '12px', marginBottom: '14px' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Courier / Carrier</div>
+                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Courier / Carrier (to Cot Lever warehouse)</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
                         <input
                           value={getCourierDraft(order).courier_name}
@@ -360,7 +387,7 @@ function MerchantOrdersInner() {
                     </div>
 
                     {/* Status actions */}
-                    {!isCancelled && order.status !== 'delivered' && (
+                    {!isCancelled && !['shipped_to_warehouse', 'received_at_warehouse', 'out_for_delivery', 'delivered'].includes(order.status) && (
                       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         {nextStatus && (
                           <button

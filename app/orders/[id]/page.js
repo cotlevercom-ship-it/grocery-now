@@ -42,13 +42,16 @@ export default async function OrderPage({ params }) {
     )
   }
 
-  // db status -> which timeline step index is "current" (0-based, 6 steps)
+  // db status -> which timeline step index is "current" (0-based, 8 steps)
   const statusToStepIndex = {
-    pending: 1,            // order placed (0) is done, waiting for merchant (1) is current
-    confirmed: 2,           // merchant accepted
-    processing: 3,          // order processing
-    out_for_delivery: 4,    // handed to courier
-    delivered: 5,           // delivered
+    pending: 1,               // order placed (0) is done, waiting for merchant (1) is current
+    confirmed: 2,              // merchant accepted
+    processing: 3,             // order processing
+    packed: 4,                 // merchant packed the order
+    shipped_to_warehouse: 5,   // merchant shipped to Cot Lever warehouse
+    received_at_warehouse: 6,  // Cot Lever received it, now preparing final shipment
+    out_for_delivery: 7,       // handed to courier for final delivery
+    delivered: 8,              // delivered
   }
 
   const timelineSteps = [
@@ -56,7 +59,10 @@ export default async function OrderPage({ params }) {
     'Waiting for merchant confirmation',
     'Merchant accepted your order',
     'Order is being prepared',
-    'Handed to courier',
+    'Packed by merchant',
+    'On its way to Cot Lever',
+    'Received by Cot Lever',
+    'Out for delivery',
     'Delivered',
   ]
 
@@ -132,8 +138,8 @@ export default async function OrderPage({ params }) {
                     fontSize: '13px', fontWeight: i === currentStepIndex ? '600' : '400',
                     color: i <= currentStepIndex ? '#1a1a1a' : '#999'
                   }}>{label}</div>
-                  {/* courier info shows once the parcel has been handed to the courier */}
-                  {i === 4 && currentStepIndex >= 4 && (order.courier_name || order.courier_tracking_id) && (
+                  {/* courier info shows once the parcel has been handed to the courier for final delivery */}
+                  {i === 7 && currentStepIndex >= 7 && (order.courier_name || order.courier_tracking_id) && (
                     <div style={{
                       marginTop: '4px', fontSize: '12px', color: '#555',
                       background: '#f5f5f5', borderRadius: '6px', padding: '6px 10px'

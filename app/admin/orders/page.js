@@ -6,17 +6,25 @@ const statusLabels = {
   pending: 'Order received',
   confirmed: 'Order confirmed',
   processing: 'Preparing',
+  packed: 'Packed by merchant',
+  shipped_to_warehouse: 'Shipped to warehouse',
+  received_at_warehouse: 'Received & paid at warehouse',
   out_for_delivery: 'Out for delivery',
   delivered: 'Delivered',
   cancelled: 'Order cancelled',
 }
 
-const statusOrder = ['pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered']
+// received_at_warehouse is set via the dedicated "Receive & Pay" action, not the generic next-status button
+const statusOrder = ['pending', 'confirmed', 'processing', 'packed', 'shipped_to_warehouse', 'received_at_warehouse', 'out_for_delivery', 'delivered']
+const genericNextStatusOrder = ['pending', 'confirmed', 'processing', 'packed']
 
 const statusColors = {
   pending: { bg: '#fff3e0', color: '#f4a300' },
   confirmed: { bg: '#e3f2fd', color: '#1565c0' },
   processing: { bg: '#ede7f6', color: '#5e35b1' },
+  packed: { bg: '#fce4ec', color: '#ad1457' },
+  shipped_to_warehouse: { bg: '#e8eaf6', color: '#3949ab' },
+  received_at_warehouse: { bg: '#e0f7fa', color: '#00838f' },
   out_for_delivery: { bg: '#e0f2f1', color: '#00695c' },
   delivered: { bg: '#f5f5f5', color: '#2d6a4f' },
   cancelled: { bg: '#ffebee', color: '#c62828' },
@@ -33,6 +41,13 @@ export default function AdminOrdersPage() {
   const [courierDrafts, setCourierDrafts] = useState({})
   const [savingCourierId, setSavingCourierId] = useState(null)
 
+  // Warehouse receive & pay
+  const [categoryCommissions, setCategoryCommissions] = useState({}) // { categoryId: percent }
+  const [defaultCommission, setDefaultCommission] = useState(10)
+  const [receivingId, setReceivingId] = useState(null) // order id whose receive-panel is open
+  const [receiveDraft, setReceiveDraft] = useState({ commission_percent: '', payout_amount: '', note: '' })
+  const [confirmingReceiveId, setConfirmingReceiveId] = useState(null)
+
   async function loadOrders() {
     setLoading(true)
     setError('')
@@ -46,8 +61,25 @@ export default function AdminOrdersPage() {
     setLoading(false)
   }
 
+  async function loadCommissionConfig() {
+    try {
+      const [cats, settings] = await Promise.all([
+        supabaseFetch('categories?select=id,commission_percent'),
+        supabaseFetch('app_settings?select=value&key=eq.default_commission_percent'),
+      ])
+      const map = {}
+      ;(cats || []).forEach(c => { map[c.id] = c.commission_percent })
+      setCategoryCommissions(map)
+      const def = settings && settings[0] ? Number(settings[0].value) : 10
+      setDefaultCommission(isNaN(def) ? 10 : def)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   useEffect(() => {
     loadOrders()
+    loadCommissionConfig()
   }, [])
 
   const toggleExpand = async (order) => {
@@ -113,6 +145,89 @@ export default function AdminOrdersPage() {
     setSavingCourierId(null)
   }
 
+  const openReceivePanel = async (order) => {
+    setError('')
+    setReceivingId(order.id)
+    try {
+      // Need product_id -> category_id for each line item to compute a weighted commission %.
+      const items = orderItems[order.id] || await (async () => {
+        const data = await supabaseFetch(`order_items?select=*&order_id=eq.${order.id}`)
+        setOrderItems(prev => ({ ...prev, [order.id]: data || [] }))
+        return data || []
+      })()
+
+      const productIds = [...new Set(items.map(i => i.product_id).filter(Boolean))]
+      let productCategoryMap = {}
+      if (productIds.length > 0) {
+        const products = await supabaseFetch(`products?select=id,category_id&id=in.(${productIds.join(',')})`)
+        ;(products || []).forEach(p => { productCategoryMap[p.id] = p.category_id })
+      }
+
+      let weightedSum = 0
+      let totalValue = 0
+      items.forEach(item => {
+        const catId = productCategoryMap[item.product_id]
+        const catPercent = catId ? categoryCommissions[catId] : null
+        const percent = (catPercent === null || catPercent === undefined) ? defaultCommission : catPercent
+        const value = Number(item.total_price) || 0
+        weightedSum += percent * value
+        totalValue += value
+      })
+      const suggestedPercent = totalValue > 0 ? (weightedSum / totalValue) : defaultCommission
+      const suggestedPayout = (Number(order.total) || 0) * (1 - suggestedPercent / 100)
+
+      setReceiveDraft({
+        commission_percent: suggestedPercent.toFixed(2),
+        payout_amount: suggestedPayout.toFixed(2),
+        note: '',
+      })
+    } catch (e) {
+      console.error(e)
+      setError('Failed to calculate suggested payout')
+      setReceiveDraft({ commission_percent: String(defaultCommission), payout_amount: '', note: '' })
+    }
+  }
+
+  const closeReceivePanel = () => {
+    setReceivingId(null)
+    setReceiveDraft({ commission_percent: '', payout_amount: '', note: '' })
+  }
+
+  const confirmReceive = async (order) => {
+    if (!receiveDraft.payout_amount || isNaN(Number(receiveDraft.payout_amount))) {
+      setError('Enter a valid payout amount')
+      return
+    }
+    setConfirmingReceiveId(order.id)
+    setError('')
+    try {
+      const nowIso = new Date().toISOString()
+      const history = Array.isArray(order.tracking_history) ? order.tracking_history : []
+      const updatedHistory = [
+        ...history,
+        { status: 'received_at_warehouse', note: statusLabels.received_at_warehouse, time: nowIso },
+      ]
+      await supabaseFetch(`orders?id=eq.${order.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          status: 'received_at_warehouse',
+          tracking_history: updatedHistory,
+          warehouse_received_at: nowIso,
+          warehouse_paid_at: nowIso,
+          commission_percent_applied: Number(receiveDraft.commission_percent) || 0,
+          merchant_payout_amount: Number(receiveDraft.payout_amount),
+          warehouse_note: receiveDraft.note.trim() || null,
+        }),
+      })
+      closeReceivePanel()
+      await loadOrders()
+    } catch (e) {
+      console.error(e)
+      setError('Failed to confirm receive & payout')
+    }
+    setConfirmingReceiveId(null)
+  }
+
   const filteredOrders = filter === 'all' ? orders : orders.filter(o => o.status === filter)
 
   const filterOptions = [
@@ -120,6 +235,9 @@ export default function AdminOrdersPage() {
     { key: 'pending', label: 'New' },
     { key: 'confirmed', label: 'Confirmed' },
     { key: 'processing', label: 'Preparing' },
+    { key: 'packed', label: 'Packed' },
+    { key: 'shipped_to_warehouse', label: 'Shipped to Warehouse' },
+    { key: 'received_at_warehouse', label: 'Received & Paid' },
     { key: 'out_for_delivery', label: 'Out for delivery' },
     { key: 'delivered', label: 'Delivered' },
     { key: 'cancelled', label: 'Cancelled' },
@@ -168,8 +286,8 @@ export default function AdminOrdersPage() {
             const colors = statusColors[order.status] || statusColors.pending
             const isExpanded = expandedId === order.id
             const isCancelled = order.status === 'cancelled'
-            const nextStatusIndex = statusOrder.indexOf(order.status) + 1
-            const nextStatus = statusOrder[nextStatusIndex]
+            const genericIdx = genericNextStatusOrder.indexOf(order.status)
+            const nextStatus = genericIdx >= 0 ? genericNextStatusOrder[genericIdx + 1] : (order.status === 'received_at_warehouse' ? 'out_for_delivery' : undefined)
 
             return (
               <div key={order.id} style={{
@@ -233,7 +351,7 @@ export default function AdminOrdersPage() {
 
                     {/* Courier / carrier */}
                     <div style={{ background: '#f9f9f9', borderRadius: '8px', padding: '12px', marginBottom: '14px' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Courier / Carrier</div>
+                      <div style={{ fontSize: '12px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Courier / Carrier (final delivery to buyer — set this once out for delivery)</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
                         <input
                           value={getCourierDraft(order).courier_name}
@@ -265,8 +383,81 @@ export default function AdminOrdersPage() {
                         }}>{savingCourierId === order.id ? 'Saving...' : 'Save courier info'}</button>
                     </div>
 
+                    {/* Warehouse payout — shown once received */}
+                    {order.warehouse_received_at && (
+                      <div style={{ background: '#e0f7fa', borderRadius: '8px', padding: '12px', marginBottom: '14px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: '#00838f', marginBottom: '6px' }}>Warehouse Payout</div>
+                        <div style={{ fontSize: '13px', color: '#333' }}>
+                          Commission: {order.commission_percent_applied}% · Merchant payout: <strong>৳{order.merchant_payout_amount}</strong> · Paid {order.warehouse_paid_at ? new Date(order.warehouse_paid_at).toLocaleString('en-US') : ''}
+                        </div>
+                        {order.warehouse_note && <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>Note: {order.warehouse_note}</div>}
+                      </div>
+                    )}
+
+                    {/* Receive & Pay panel — only actionable once merchant has shipped to warehouse */}
+                    {order.status === 'shipped_to_warehouse' && (
+                      <div style={{ background: '#fff8e1', border: '1px solid #ffe082', borderRadius: '8px', padding: '12px', marginBottom: '14px' }}>
+                        {receivingId !== order.id ? (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); openReceivePanel(order) }}
+                            style={{
+                              background: '#f4a300', color: 'white', border: 'none', borderRadius: '8px',
+                              padding: '9px 16px', fontSize: '13px', fontWeight: '700'
+                            }}>📦 Mark Received & Pay Merchant</button>
+                        ) : (
+                          <div>
+                            <div style={{ fontSize: '12px', fontWeight: '700', color: '#8a6d00', marginBottom: '8px' }}>
+                              Confirm warehouse receipt & payout
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                              <div>
+                                <label style={{ fontSize: '11px', color: '#8a6d00' }}>Commission %</label>
+                                <input
+                                  value={receiveDraft.commission_percent}
+                                  onChange={e => { e.stopPropagation(); setReceiveDraft(d => ({ ...d, commission_percent: e.target.value })) }}
+                                  onClick={e => e.stopPropagation()}
+                                  type="number" step="0.1"
+                                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1.5px solid #d4b106', fontSize: '13px', boxSizing: 'border-box' }}
+                                />
+                              </div>
+                              <div>
+                                <label style={{ fontSize: '11px', color: '#8a6d00' }}>Payout Amount (৳)</label>
+                                <input
+                                  value={receiveDraft.payout_amount}
+                                  onChange={e => { e.stopPropagation(); setReceiveDraft(d => ({ ...d, payout_amount: e.target.value })) }}
+                                  onClick={e => e.stopPropagation()}
+                                  type="number" step="0.01"
+                                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1.5px solid #d4b106', fontSize: '13px', boxSizing: 'border-box' }}
+                                />
+                              </div>
+                            </div>
+                            <input
+                              value={receiveDraft.note}
+                              onChange={e => { e.stopPropagation(); setReceiveDraft(d => ({ ...d, note: e.target.value })) }}
+                              onClick={e => e.stopPropagation()}
+                              placeholder="Note (optional) — e.g. cash paid in hand at warehouse"
+                              style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1.5px solid #d4b106', fontSize: '13px', boxSizing: 'border-box', marginBottom: '8px' }}
+                            />
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); confirmReceive(order) }}
+                                disabled={confirmingReceiveId === order.id}
+                                style={{
+                                  background: '#163a2c', color: 'white', border: 'none', borderRadius: '8px',
+                                  padding: '9px 16px', fontSize: '13px', fontWeight: '700'
+                                }}>{confirmingReceiveId === order.id ? 'Saving...' : '✓ Confirm Received & Paid'}</button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); closeReceivePanel() }}
+                                style={{ background: '#f0f0f0', color: '#555', border: 'none', borderRadius: '8px', padding: '9px 16px', fontSize: '13px' }}
+                              >Cancel</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {/* Status actions */}
-                    {!isCancelled && order.status !== 'delivered' && (
+                    {!isCancelled && order.status !== 'delivered' && order.status !== 'shipped_to_warehouse' && (
                       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         {nextStatus && (
                           <button

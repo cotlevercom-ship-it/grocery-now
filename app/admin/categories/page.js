@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
-const emptyForm = { name: '', slug: '', parent_id: '', image_url: '', sort_order: '0', is_active: true }
+const emptyForm = { name: '', slug: '', parent_id: '', image_url: '', sort_order: '0', is_active: true, commission_percent: '' }
 
 function slugify(text) {
   return text.trim().toLowerCase()
@@ -67,6 +67,7 @@ export default function AdminCategoriesPage() {
       image_url: c.image_url || '',
       sort_order: String(c.sort_order ?? '0'),
       is_active: c.is_active !== false,
+      commission_percent: c.commission_percent === null || c.commission_percent === undefined ? '' : String(c.commission_percent),
     })
     setSlugTouched(true)
     setShowForm(true)
@@ -99,6 +100,7 @@ export default function AdminCategoriesPage() {
         image_url: form.image_url.trim() || null,
         sort_order: Number(form.sort_order) || 0,
         is_active: form.is_active,
+        commission_percent: form.commission_percent.trim() === '' ? null : Number(form.commission_percent),
       }
       if (editingId) {
         await supabaseFetch(`categories?id=eq.${editingId}`, { method: 'PATCH', body: JSON.stringify(payload) })
@@ -221,6 +223,19 @@ export default function AdminCategoriesPage() {
             <input style={inputStyle} value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
           </div>
 
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>Merchant Commission % (warehouse buy-back)</label>
+            <input
+              style={inputStyle} type="number" min="0" max="100" step="0.1"
+              value={form.commission_percent}
+              onChange={e => setForm({ ...form, commission_percent: e.target.value })}
+              placeholder={`Leave blank to use site default`}
+            />
+            <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
+              When Cot Lever receives a product of this category at the warehouse, this % is deducted from the sale price to calculate the merchant&apos;s payout. Leave blank to use the site-wide default (set in Settings).
+            </div>
+          </div>
+
           <div style={{ display: 'flex', gap: '10px', marginBottom: '14px', alignItems: 'center' }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Sort Order</label>
@@ -263,7 +278,9 @@ export default function AdminCategoriesPage() {
                   {c.depth > 0 && <span style={{ color: '#bbb', marginRight: '6px' }}>└</span>}
                   {c.name} {!c.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(Inactive)</span>}
                 </div>
-                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>/{c.slug} · Order: {c.sort_order}</div>
+                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                  /{c.slug} · Order: {c.sort_order} · Commission: {c.commission_percent === null || c.commission_percent === undefined ? 'default' : `${c.commission_percent}%`}
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '6px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                 <button onClick={() => openNewForm(c.id)} style={{
