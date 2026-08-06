@@ -9,7 +9,6 @@ import AgreementCheckbox from '@/components/AgreementCheckbox'
 export default function CheckoutPage() {
   const router = useRouter()
   const [shopCarts, setShopCarts] = useState([]) // [{ shopId, shopName, items }]
-  const [pickupShop, setPickupShop] = useState(null) // only fetched/used when cart has exactly 1 shop
   const [loaded, setLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -18,13 +17,12 @@ export default function CheckoutPage() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
-  const [country, setCountry] = useState('Bangladesh')
+  const [country, setCountry] = useState('')
   const [shippingRules, setShippingRules] = useState([])
   const [selectedRuleId, setSelectedRuleId] = useState(null)
   const [areaId, setAreaId] = useState(null)
   const [areaName, setAreaName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cod')
-  const [deliveryMethod, setDeliveryMethod] = useState('delivery') // 'delivery' | 'pickup'
   const [note, setNote] = useState('')
   const [agreed, setAgreed] = useState(false)
 
@@ -41,17 +39,6 @@ export default function CheckoutPage() {
           return
         }
         setShopCarts(carts)
-
-        // Pickup only makes sense when checking out from a single shop —
-        // fetch that shop's pickup details in that case.
-        if (carts.length === 1) {
-          try {
-            const shops = await supabaseFetch(`shops?select=*&id=eq.${carts[0].shopId}`)
-            if (shops && shops.length > 0) setPickupShop(shops[0])
-          } catch (e) {
-            console.error(e)
-          }
-        }
 
         // fetch platform shipping rules (Cot Lever sets these centrally, not the merchant)
         try {
@@ -92,7 +79,7 @@ export default function CheckoutPage() {
             const defaultAddr = (addrRows || []).find(a => a.is_default) || (addrRows || [])[0]
             if (defaultAddr) {
               setSelectedAddressId(defaultAddr.id)
-              if (defaultAddr.country) setCountry(defaultAddr.country)
+              if (defaultAddr.country && defaultAddr.country.toLowerCase() !== 'bangladesh') setCountry(defaultAddr.country)
             }
           } catch (e) {
             console.error(e)
@@ -107,25 +94,20 @@ export default function CheckoutPage() {
   }, [router])
 
   useEffect(() => {
-    if (deliveryMethod === 'pickup') return
     const countryMatches = shippingRules.filter(r => r.country.toLowerCase() === country.trim().toLowerCase())
     const options = countryMatches.length > 0 ? countryMatches : shippingRules.filter(r => r.country === 'OTHER')
     if (options.length > 0 && !options.some(r => r.id === selectedRuleId)) {
       setSelectedRuleId(options[0].id)
     }
-  }, [country, deliveryMethod, shippingRules, selectedRuleId])
+  }, [country, shippingRules, selectedRuleId])
 
   if (!loaded || shopCarts.length === 0) {
     return null
   }
 
-  const canPickup = shopCarts.length === 1 && pickupShop?.pickup_available
-
-  // A country can have several rules (one per courier, e.g. EMS vs Bangladesh Post Office).
+  // A country can have several rules (one per courier, e.g. EMS vs DHL).
   const countryMatches = shippingRules.filter(r => r.country.toLowerCase() === country.trim().toLowerCase())
-  const matchedRules = deliveryMethod === 'pickup' ? [] : (
-    countryMatches.length > 0 ? countryMatches : shippingRules.filter(r => r.country === 'OTHER')
-  )
+  const matchedRules = countryMatches.length > 0 ? countryMatches : shippingRules.filter(r => r.country === 'OTHER')
   const selectedRule = matchedRules.find(r => r.id === selectedRuleId) || matchedRules[0] || null
 
   // Delivery charge is computed PER SHOP — each merchant ships its own parcel,
@@ -140,7 +122,7 @@ export default function CheckoutPage() {
     const subtotal = sc.items.reduce((a, b) => a + b.qty * b.price, 0)
     const weightKg = sc.items.reduce((a, b) => a + ((b.weightGrams || 0) * b.qty), 0) / 1000
     const itemCount = sc.items.reduce((a, b) => a + b.qty, 0)
-    const deliveryCharge = deliveryMethod === 'pickup' || !selectedRule ? 0 : ruleChargeFor(selectedRule, weightKg, itemCount)
+    const deliveryCharge = !selectedRule ? 0 : ruleChargeFor(selectedRule, weightKg, itemCount)
     return { ...sc, subtotal, weightKg, itemCount, deliveryCharge }
   })
 
@@ -150,28 +132,31 @@ export default function CheckoutPage() {
   const totalItems = shopBreakdown.reduce((a, b) => a + b.itemCount, 0)
 
   // Country dropdown options come from whatever countries admin has set up shipping rules for.
+  // Cot Lever ships internationally only — Bangladesh is never a valid delivery destination.
   const countryOptions = Array.from(new Set([
     ...shippingRules.map(r => r.country),
     country,
-  ].filter(Boolean))).sort((a, b) => {
+  ].filter(Boolean))).filter(c => c.toLowerCase() !== 'bangladesh').sort((a, b) => {
     if (a === 'OTHER') return 1
     if (b === 'OTHER') return -1
     return a.localeCompare(b)
   })
 
-  const usingSavedAddress = deliveryMethod === 'delivery' && selectedAddressId !== 'new'
+  const usingSavedAddress = selectedAddressId !== 'new'
   const selectedAddress = usingSavedAddress ? savedAddresses.find(a => a.id === selectedAddressId) : null
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    const deliveryAddressText = deliveryMethod === 'pickup'
-      ? (pickupShop?.pickup_address || '')
-      : (usingSavedAddress ? (selectedAddress?.address || '') : address.trim())
+    const deliveryAddressText = usingSavedAddress ? (selectedAddress?.address || '') : address.trim()
 
-    if (!name.trim() || !phone.trim() || (deliveryMethod === 'delivery' && !deliveryAddressText.trim())) {
+    if (!name.trim() || !phone.trim() || !deliveryAddressText.trim()) {
       setError('Name, phone number and address are required')
+      return
+    }
+    if (country.trim().toLowerCase() === 'bangladesh') {
+      setError('Cot Lever ships internationally only — delivery within Bangladesh is not available')
       return
     }
     if (!agreed) {
@@ -197,10 +182,10 @@ export default function CheckoutPage() {
             area_id: areaId,
             delivery_name: name.trim(),
             delivery_phone: phone.trim(),
-            delivery_address: deliveryMethod === 'pickup' ? (pickupShop?.pickup_address || null) : deliveryAddressText,
-            delivery_method: deliveryMethod,
-            delivery_country: deliveryMethod === 'pickup' ? null : country.trim(),
-            courier_name: deliveryMethod === 'pickup' ? null : (selectedRule?.courier_name || null),
+            delivery_address: deliveryAddressText,
+            delivery_method: 'delivery',
+            delivery_country: country.trim(),
+            courier_name: selectedRule?.courier_name || null,
             subtotal: sc.subtotal,
             delivery_charge: sc.deliveryCharge,
             discount: 0,
@@ -253,7 +238,7 @@ export default function CheckoutPage() {
       }
 
       // save a freshly-typed address to the address book (best-effort, ignore failures)
-      if (session?.user?.id && deliveryMethod === 'delivery' && !usingSavedAddress && saveNewAddress && address.trim()) {
+      if (session?.user?.id && !usingSavedAddress && saveNewAddress && address.trim()) {
         try {
           await supabaseFetch('user_addresses', {
             method: 'POST',
@@ -326,51 +311,13 @@ export default function CheckoutPage() {
             {/* Left column: all form sections */}
             <div className="checkout-left" style={{ flex: 1, minWidth: 0 }}>
 
-              {/* Delivery method */}
-              {canPickup && (
-                <div style={{
-                  background: 'white', marginBottom: '14px', borderRadius: '6px',
-                  border: '1px solid #e5e5e5', padding: '16px'
-                }}>
-                  <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '12px', color: '#1a1a1a' }}>
-                    Delivery method
-                  </div>
-                  <label style={{
-                    display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                    border: `1px solid ${deliveryMethod === 'delivery' ? '#0a0a0a' : '#ddd'}`,
-                    borderRadius: '6px', marginBottom: '8px', cursor: 'pointer'
-                  }}>
-                    <input
-                      type="radio"
-                      name="deliveryMethod"
-                      checked={deliveryMethod === 'delivery'}
-                      onChange={() => setDeliveryMethod('delivery')}
-                    />
-                    <span style={{ fontSize: '14px' }}>Home delivery</span>
-                  </label>
-                  <label style={{
-                    display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                    border: `1px solid ${deliveryMethod === 'pickup' ? '#0a0a0a' : '#ddd'}`,
-                    borderRadius: '6px', cursor: 'pointer'
-                  }}>
-                    <input
-                      type="radio"
-                      name="deliveryMethod"
-                      checked={deliveryMethod === 'pickup'}
-                      onChange={() => setDeliveryMethod('pickup')}
-                    />
-                    <span style={{ fontSize: '14px' }}>Store pickup (no delivery charge)</span>
-                  </label>
-                </div>
-              )}
-
               {/* Delivery info */}
               <div style={{
                 background: 'white', marginBottom: '14px', borderRadius: '6px',
                 border: '1px solid #e5e5e5', padding: '16px'
               }}>
                 <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '12px', color: '#1a1a1a' }}>
-                  {deliveryMethod === 'pickup' ? 'Pickup person details' : 'Delivery details'}
+                  Delivery details
                 </div>
 
                 <div className="form-row" style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
@@ -403,25 +350,15 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {deliveryMethod === 'pickup' ? (
-                  <div>
-                    <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Pickup address</label>
+                {areaName && (
+                  <div style={{ marginBottom: '12px' }}>
+                    <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Area</label>
                     <div style={{
                       padding: '10px 12px', borderRadius: '6px', background: '#f5f5f5',
                       fontSize: '14px', color: '#333'
-                    }}>{pickupShop?.pickup_address || 'Store address will be shared soon'}</div>
+                    }}>{areaName}</div>
                   </div>
-                ) : (
-                  <>
-                    {areaName && (
-                      <div style={{ marginBottom: '12px' }}>
-                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Area</label>
-                        <div style={{
-                          padding: '10px 12px', borderRadius: '6px', background: '#f5f5f5',
-                          fontSize: '14px', color: '#333'
-                        }}>{areaName}</div>
-                      </div>
-                    )}
+                )}
 
                     <div style={{ marginBottom: '12px' }}>
                       <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Delivery country *</label>
@@ -476,7 +413,7 @@ export default function CheckoutPage() {
                               type="radio"
                               name="savedAddress"
                               checked={selectedAddressId === addr.id}
-                              onChange={() => { setSelectedAddressId(addr.id); if (addr.country) setCountry(addr.country) }}
+                              onChange={() => { setSelectedAddressId(addr.id); if (addr.country && addr.country.toLowerCase() !== 'bangladesh') setCountry(addr.country) }}
                               style={{ marginTop: '3px' }}
                             />
                             <div>
@@ -501,33 +438,31 @@ export default function CheckoutPage() {
                       </div>
                     )}
 
-                    {selectedAddressId === 'new' && (
-                      <div>
-                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Full address *</label>
-                        <textarea
-                          value={address}
-                          onChange={(e) => setAddress(e.target.value)}
-                          placeholder="House/flat number, road, area name"
-                          rows={3}
-                          style={{
-                            width: '100%', padding: '10px 12px', borderRadius: '6px',
-                            border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
-                            resize: 'none', fontFamily: 'inherit'
-                          }}
+                {selectedAddressId === 'new' && (
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Full address *</label>
+                    <textarea
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="House/flat number, road, area name"
+                      rows={3}
+                      style={{
+                        width: '100%', padding: '10px 12px', borderRadius: '6px',
+                        border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box',
+                        resize: 'none', fontFamily: 'inherit'
+                      }}
+                    />
+                    {session?.user?.id && (
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', fontSize: '12px', color: '#666', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={saveNewAddress}
+                          onChange={(e) => setSaveNewAddress(e.target.checked)}
                         />
-                        {session?.user?.id && (
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', fontSize: '12px', color: '#666', cursor: 'pointer' }}>
-                            <input
-                              type="checkbox"
-                              checked={saveNewAddress}
-                              onChange={(e) => setSaveNewAddress(e.target.checked)}
-                            />
-                            Save this address for next time
-                          </label>
-                        )}
-                      </div>
+                        Save this address for next time
+                      </label>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
 

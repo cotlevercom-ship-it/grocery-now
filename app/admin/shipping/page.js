@@ -65,6 +65,7 @@ export default function AdminShippingPage() {
     e.preventDefault()
     setError('')
     if (!form.country.trim()) return setError('Please enter a country name (or OTHER for the fallback rate)')
+    if (form.country.trim().toLowerCase() === 'bangladesh') return setError('Cot Lever ships internationally only — Bangladesh cannot be a delivery destination')
 
     setSaving(true)
     try {
@@ -159,7 +160,7 @@ export default function AdminShippingPage() {
 
           <div style={{ marginBottom: '14px' }}>
             <label style={labelStyle}>Country *</label>
-            <input style={inputStyle} value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} placeholder="e.g. Bangladesh, India, or OTHER for fallback" />
+            <input style={inputStyle} value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} placeholder="e.g. India, UK, USA, or OTHER for fallback" />
           </div>
 
           <div style={{ marginBottom: '14px' }}>

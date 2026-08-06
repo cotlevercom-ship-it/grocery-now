@@ -11,8 +11,10 @@ const COUNTRIES = [
   'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Sweden',
   'Pakistan', 'Sri Lanka', 'Myanmar', 'South Africa', 'Other',
 ]
+// Cot Lever ships internationally only — Bangladesh is never a valid delivery destination.
+const DESTINATION_COUNTRIES = COUNTRIES.filter(c => c !== 'Bangladesh')
 
-const emptyCalc = { mode: 'international', from: 'Bangladesh', to: '', weight_kg: '', unit: 'kg', shipment_type: 'parcel' }
+const emptyCalc = { from: 'Bangladesh', to: '', weight_kg: '', unit: 'kg', shipment_type: 'parcel' }
 const emptyContact = {
   sender_name: '', sender_phone: '', sender_address: '',
   receiver_name: '', receiver_phone: '', receiver_address: '',
@@ -61,8 +63,8 @@ export default function ShipPage() {
   const handleCalculate = async (e) => {
     e.preventDefault()
     setError('')
-    if (calc.mode === 'domestic') return setError('Domestic rates are coming soon — please use International for now.')
     if (!calc.to) return setError('Please select a destination country')
+    if (calc.to.toLowerCase() === 'bangladesh') return setError('Cot Lever ships internationally only')
     const weight = Number(calc.weight_kg)
     if (!weight || weight <= 0) return setError('Please enter a valid weight')
 
@@ -155,26 +157,6 @@ export default function ShipPage() {
             Shipping Rates
           </h1>
 
-          <div style={{
-            display: 'flex', borderRadius: '999px', border: '1.5px solid #f4a300',
-            overflow: 'hidden', marginBottom: '26px'
-          }}>
-            {[
-              { key: 'international', label: 'International', icon: '✈️' },
-              { key: 'domestic', label: 'Domestic', icon: '🚚' },
-            ].map(m => (
-              <button key={m.key} type="button" onClick={() => setCalc({ ...calc, mode: m.key })} style={{
-                flex: 1, padding: '13px 10px', border: 'none', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                fontSize: '15px', fontWeight: '600',
-                background: calc.mode === m.key ? '#f4a300' : 'white',
-                color: calc.mode === m.key ? '#0a0a0a' : '#f4a300',
-              }}>
-                <span>{m.icon}</span> {m.label}
-              </button>
-            ))}
-          </div>
-
           {error && (
             <div style={{
               margin: '0 0 18px', padding: '10px 12px',
@@ -182,18 +164,6 @@ export default function ShipPage() {
             }}>{error}</div>
           )}
 
-          {calc.mode === 'domestic' ? (
-            <div style={{
-              textAlign: 'center', padding: '48px 20px', background: '#fdf1d9',
-              borderRadius: '12px', color: '#5c4600'
-            }}>
-              <div style={{ fontSize: '36px', marginBottom: '10px' }}>🚚</div>
-              <div style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px' }}>Domestic shipping coming soon</div>
-              <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
-                District-to-district delivery within Bangladesh isn't available yet. Use International for cross-border shipments.
-              </div>
-            </div>
-          ) : (
           <form onSubmit={handleCalculate}>
             <div style={{ marginBottom: '22px' }}>
               <label style={labelStyle}>From{required}</label>
@@ -206,7 +176,7 @@ export default function ShipPage() {
               <label style={labelStyle}>To{required}</label>
               <select style={inputStyle} value={calc.to} onChange={e => setCalc({ ...calc, to: e.target.value })}>
                 <option value="">Start typing the country name</option>
-                {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {DESTINATION_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
 
@@ -238,7 +208,6 @@ export default function ShipPage() {
               }}>{loadingRates ? 'Calculating...' : 'Calculate'}</button>
             </div>
           </form>
-          )}
         </>
       )}
 
