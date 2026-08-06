@@ -83,14 +83,19 @@ export default function ProductGrid({ products, categories = [] }) {
                   textDecoration: 'none', overflow: 'hidden',
                 }}
               >
-                <div style={{ position: 'relative', width: '100%', aspectRatio: '1', background: '#f0f0f0' }}>
-                  {p.image_url && (
+                <div style={{
+                  position: 'relative', width: '100%', aspectRatio: '1', background: '#f0f0f0',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {p.image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={p.image_url}
                       alt={p.name}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
+                  ) : (
+                    <span style={{ fontSize: '28px', opacity: 0.35 }}>🛍️</span>
                   )}
                 </div>
                 <div style={{ padding: '10px' }}>
@@ -154,8 +159,14 @@ export default function ProductGrid({ products, categories = [] }) {
         }
         .products-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 15vw, 210px), 1fr));
-          gap: clamp(10px, 1.2vw, 20px);
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+        @media (min-width: 640px) {
+          .products-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        }
+        @media (min-width: 1024px) {
+          .products-grid { grid-template-columns: repeat(5, 1fr); gap: 20px; }
         }
       `}</style>
     </>

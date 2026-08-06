@@ -39,13 +39,15 @@ export default function CategorySections({ products, categories = [] }) {
               return (
                 <Link key={p.id} href={`/products/${p.id}`} className="cat-card">
                   <div className="cat-card-img">
-                    {p.image_url && (
+                    {p.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={p.image_url}
                         alt={p.name}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
+                    ) : (
+                      <span style={{ fontSize: '24px', opacity: 0.35 }}>🛍️</span>
                     )}
                   </div>
                   <div style={{ padding: '8px' }}>
@@ -86,10 +88,16 @@ export default function CategorySections({ products, categories = [] }) {
           text-decoration: none;
           overflow: hidden;
         }
+        @media (min-width: 1024px) {
+          .cat-card { width: 180px; }
+        }
         .cat-card-img {
           width: 100%;
           aspect-ratio: 1;
           background: #f0f0f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
     </div>
