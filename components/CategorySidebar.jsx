@@ -28,7 +28,7 @@ export default async function CategorySidebar() {
         </a>
       ))}
 
-      <style jsx>{`
+      <style>{`
         .cat-sidebar {
           display: none;
         }

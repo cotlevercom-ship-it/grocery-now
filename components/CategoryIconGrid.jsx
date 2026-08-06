@@ -30,7 +30,7 @@ export default async function CategoryIconGrid() {
         ))}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .icon-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
