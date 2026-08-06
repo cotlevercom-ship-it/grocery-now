@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabaseFetch } from '@/lib/supabase'
+import { supabaseFetch, getSession, verifyPassword } from '@/lib/supabase'
 
 const emptyForm = { name: '', slug: '', parent_id: '', image_url: '', sort_order: '0', is_active: true, commission_percent: '' }
 
@@ -36,6 +36,10 @@ export default function AdminCategoriesPage() {
   const [saving, setSaving] = useState(false)
   const [slugTouched, setSlugTouched] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(null) // the category pending deletion
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [confirmError, setConfirmError] = useState('')
+  const [verifying, setVerifying] = useState(false)
 
   async function loadCategories() {
     setLoading(true)
@@ -120,12 +124,43 @@ export default function AdminCategoriesPage() {
     setSaving(false)
   }
 
-  const handleDelete = async (c) => {
-    const hasChildren = categories.some(x => x.parent_id === c.id)
-    const msg = hasChildren
-      ? 'This category has subcategories, which will also be deleted. Products in any of these will become uncategorized. Continue?'
-      : 'Delete this category? Products in it will become uncategorized.'
-    if (!confirm(msg)) return
+  const requestDelete = (c) => {
+    const hasChildrenFlag = categories.some(x => x.parent_id === c.id)
+    setConfirmDelete({ ...c, hasChildrenFlag })
+    setConfirmPassword('')
+    setConfirmError('')
+  }
+
+  const cancelDelete = () => {
+    setConfirmDelete(null)
+    setConfirmPassword('')
+    setConfirmError('')
+  }
+
+  const confirmAndDelete = async (e) => {
+    e.preventDefault()
+    if (!confirmPassword) { setConfirmError('Enter your admin password'); return }
+    setVerifying(true)
+    setConfirmError('')
+    try {
+      const email = getSession()?.user?.email
+      const ok = email ? await verifyPassword(email, confirmPassword) : false
+      if (!ok) {
+        setConfirmError('Incorrect password')
+        setVerifying(false)
+        return
+      }
+    } catch (e) {
+      console.error(e)
+      setConfirmError('Could not verify password, try again')
+      setVerifying(false)
+      return
+    }
+
+    const c = confirmDelete
+    setVerifying(false)
+    setConfirmDelete(null)
+    setConfirmPassword('')
     setDeletingId(c.id)
     try {
       await supabaseFetch(`categories?id=eq.${c.id}`, { method: 'DELETE' })
@@ -337,13 +372,57 @@ export default function AdminCategoriesPage() {
                   background: '#fff3e0', color: '#f4a300', border: 'none',
                   borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
                 }}>{c.is_active ? 'Deactivate' : 'Activate'}</button>
-                <button onClick={() => handleDelete(c)} disabled={deletingId === c.id} style={{
+                <button onClick={() => requestDelete(c)} disabled={deletingId === c.id} style={{
                   background: '#ffebee', color: '#c62828', border: 'none',
                   borderRadius: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: '500'
                 }}>{deletingId === c.id ? 'Deleting...' : 'Delete'}</button>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {confirmDelete && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px',
+        }}>
+          <form onSubmit={confirmAndDelete} style={{
+            background: 'white', borderRadius: '12px', padding: '22px', maxWidth: '380px', width: '100%',
+          }}>
+            <div style={{ fontSize: '15px', fontWeight: '700', color: '#0a0a0a', marginBottom: '8px' }}>
+              Delete "{confirmDelete.name}"?
+            </div>
+            <p style={{ fontSize: '13px', color: '#666', marginBottom: '14px', lineHeight: 1.5 }}>
+              {confirmDelete.hasChildrenFlag
+                ? 'This category has subcategories, which will also be deleted. Products in any of these will become uncategorized.'
+                : 'Products in this category will become uncategorized.'} Enter your admin password to confirm.
+            </p>
+            <input
+              type="password"
+              autoFocus
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              placeholder="Admin password"
+              style={{
+                width: '100%', padding: '10px 12px', borderRadius: '8px',
+                border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box', marginBottom: '10px'
+              }}
+            />
+            {confirmError && (
+              <div style={{ color: '#c62828', fontSize: '13px', marginBottom: '10px' }}>{confirmError}</div>
+            )}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button type="submit" disabled={verifying} style={{
+                background: verifying ? '#a9a9a9' : '#c62828', color: 'white', border: 'none',
+                borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '600'
+              }}>{verifying ? 'Verifying...' : 'Delete'}</button>
+              <button type="button" onClick={cancelDelete} style={{
+                background: '#f0f0f0', color: '#555', border: 'none',
+                borderRadius: '8px', padding: '10px 20px', fontSize: '14px'
+              }}>Cancel</button>
+            </div>
+          </form>
         </div>
       )}
     </div>
