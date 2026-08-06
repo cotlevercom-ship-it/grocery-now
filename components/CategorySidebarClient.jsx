@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { guessCategoryEmoji } from '@/lib/categoryEmoji'
 
 function renderIcon(c) {
@@ -11,15 +12,15 @@ function renderIcon(c) {
 
 // Renders one category row, and (if expanded) recurses into its children —
 // works for any depth, not just top-level + direct children.
-function CategoryNode({ category, categories, depth, topId, expanded, toggle }) {
+function CategoryNode({ category, categories, depth, expanded, toggle }) {
   const children = categories.filter(c => c.parent_id === category.id)
   const isOpen = expanded.has(category.id)
 
   return (
     <div className="cat-sidebar-row">
       <div className="cat-sidebar-item">
-        <a
-          href={`/?cat=${topId}#products-grid`}
+        <Link
+          href={`/category/${category.id}`}
           className="cat-sidebar-link"
           style={{
             paddingLeft: `${14 + depth * 24}px`,
@@ -39,7 +40,7 @@ function CategoryNode({ category, categories, depth, topId, expanded, toggle }) 
               minWidth: 0,
             }}
           >{category.name}</span>
-        </a>
+        </Link>
         {children.length > 0 && (
           <button
             type="button"
@@ -60,7 +61,6 @@ function CategoryNode({ category, categories, depth, topId, expanded, toggle }) 
               category={child}
               categories={categories}
               depth={depth + 1}
-              topId={topId}
               expanded={expanded}
               toggle={toggle}
             />
@@ -94,7 +94,6 @@ export default function CategorySidebarClient({ categories }) {
           category={c}
           categories={categories}
           depth={0}
-          topId={c.id}
           expanded={expanded}
           toggle={toggle}
         />
