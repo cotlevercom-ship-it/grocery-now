@@ -28,6 +28,7 @@ export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [expanded, setExpanded] = useState(new Set())
 
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
@@ -109,6 +110,9 @@ export default function AdminCategoriesPage() {
       }
       closeForm()
       await loadCategories()
+      if (payload.parent_id) {
+        setExpanded(prev => new Set(prev).add(payload.parent_id))
+      }
     } catch (e) {
       console.error(e)
       setError('Failed to save. Check that the slug is unique.')
@@ -149,7 +153,29 @@ export default function AdminCategoriesPage() {
   }
   const labelStyle = { fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }
 
+  const toggleExpand = (id) => {
+    setExpanded(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+  const hasChildren = (id) => categories.some(c => c.parent_id === id)
+
   const flatList = flattenTree(categories)
+  // Only show a row if it's top-level, or its parent is currently visible AND expanded.
+  const visibleList = []
+  const visibleIds = new Set()
+  for (const c of flatList) {
+    if (c.depth === 0) {
+      visibleList.push(c)
+      visibleIds.add(c.id)
+    } else if (visibleIds.has(c.parent_id) && expanded.has(c.parent_id)) {
+      visibleList.push(c)
+      visibleIds.add(c.id)
+    }
+  }
   // A category can't be its own parent, and can't be moved under one of its own descendants.
   const descendantIds = (id) => {
     const ids = new Set()
@@ -266,20 +292,36 @@ export default function AdminCategoriesPage() {
         <div style={{ color: '#999', fontSize: '13px' }}>No categories yet</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '760px' }}>
-          {flatList.map(c => (
+          {visibleList.map(c => (
             <div key={c.id} style={{
               background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
               padding: '12px 16px', opacity: c.is_active ? 1 : 0.6,
               marginLeft: `${c.depth * 24}px`,
               display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px'
             }}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#0a0a0a' }}>
-                  {c.depth > 0 && <span style={{ color: '#bbb', marginRight: '6px' }}>└</span>}
-                  {c.name} {!c.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(Inactive)</span>}
-                </div>
-                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                  /{c.slug} · Order: {c.sort_order} · Commission: {c.commission_percent === null || c.commission_percent === undefined ? 'default' : `${c.commission_percent}%`}
+              <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {hasChildren(c.id) ? (
+                  <button
+                    onClick={() => toggleExpand(c.id)}
+                    aria-label={expanded.has(c.id) ? 'Collapse' : 'Expand'}
+                    style={{
+                      flexShrink: 0, width: '24px', height: '24px', borderRadius: '6px',
+                      border: '1px solid #ddd', background: '#fafafa', color: '#555',
+                      fontSize: '15px', fontWeight: '700', lineHeight: 1, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >{expanded.has(c.id) ? '−' : '+'}</button>
+                ) : (
+                  <span style={{ flexShrink: 0, width: '24px' }} />
+                )}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: '14px', fontWeight: '700', color: '#0a0a0a' }}>
+                    {c.depth > 0 && <span style={{ color: '#bbb', marginRight: '6px' }}>└</span>}
+                    {c.name} {!c.is_active && <span style={{ fontSize: '11px', color: '#c62828', fontWeight: '600' }}>(Inactive)</span>}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                    /{c.slug} · Order: {c.sort_order} · Commission: {c.commission_percent === null || c.commission_percent === undefined ? 'default' : `${c.commission_percent}%`}
+                  </div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '6px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
