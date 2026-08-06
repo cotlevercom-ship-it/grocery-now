@@ -1,5 +1,4 @@
 import Hero from '@/components/Hero'
-import HomeSearch from '@/components/HomeSearch'
 import CategorySidebar from '@/components/CategorySidebar'
 import CategoryIconGrid from '@/components/CategoryIconGrid'
 import PopularProducts from '@/components/PopularProducts'
@@ -12,8 +11,6 @@ export const dynamic = 'force-dynamic'
 export default function Home() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <HomeSearch />
-
       <div className="home-layout">
         <CategorySidebar />
         <div className="home-main">

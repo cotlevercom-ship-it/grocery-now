@@ -1,14 +1,16 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { getSession } from '@/lib/supabase'
 import Logo from './Logo'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
   const [cartCount, setCartCount] = useState(0)
+  const [q, setQ] = useState('')
   const pathname = usePathname()
+  const router = useRouter()
   const isMerchantArea = pathname?.startsWith('/merchant')
 
   useEffect(() => {
@@ -48,6 +50,11 @@ export default function Navbar() {
 
   const customerName = session?.user?.email ? session.user.email.split('@')[0] : ''
 
+  const submitSearch = (e) => {
+    e.preventDefault()
+    if (q.trim()) router.push(`/search?q=${encodeURIComponent(q.trim())}`)
+  }
+
   return (
     <>
       <div className="navbar-bar" style={{
@@ -65,6 +72,33 @@ export default function Navbar() {
         <Link href="/" className="navbar-logo-text" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
           <Logo variant="light" size="1em" />
         </Link>
+
+        {!isMerchantArea && (
+          <form onSubmit={submitSearch} className="navbar-search" style={{
+            flex: 1, maxWidth: '520px', display: 'flex', alignItems: 'center',
+            background: 'rgba(255,255,255,0.1)', borderRadius: '7px', overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              placeholder="Search products..."
+              style={{
+                flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
+                color: '#faf7f0', padding: '8px 10px', fontSize: '13px',
+              }}
+            />
+            <button type="submit" aria-label="Search" style={{
+              background: 'none', border: 'none', color: '#faf7f0', padding: '0 10px',
+              display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0,
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+            </button>
+          </form>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           <Link href="/cart" style={{
