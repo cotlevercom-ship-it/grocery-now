@@ -44,7 +44,7 @@ export default function CategorySections({ products, categories = [], soldCounts
                       <img
                         src={p.image_url}
                         alt={p.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '100%', maxWidth: '100%', maxHeight: '100%', objectFit: 'cover', display: 'block' }}
                       />
                     ) : (
                       <span style={{ fontSize: '24px', opacity: 0.35 }}>🛍️</span>
@@ -95,12 +95,18 @@ export default function CategorySections({ products, categories = [], soldCounts
           .cat-card { width: 180px; }
         }
         .cat-card-img {
-          width: 100%;
-          aspect-ratio: 1;
+          width: 132px;
+          height: 132px;
+          max-width: 100%;
+          max-height: 132px;
           background: #f0f0f0;
           display: flex;
           align-items: center;
           justify-content: center;
+          overflow: hidden;
+        }
+        @media (min-width: 1024px) {
+          .cat-card-img { width: 180px; height: 180px; max-height: 180px; }
         }
       `}</style>
     </div>

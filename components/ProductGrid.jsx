@@ -85,14 +85,14 @@ export default function ProductGrid({ products, categories = [], soldCounts = {}
               >
                 <div style={{
                   position: 'relative', width: '100%', aspectRatio: '1', background: '#f0f0f0',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
                 }}>
                   {p.image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={p.image_url}
                       alt={p.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      style={{ width: '100%', height: '100%', maxWidth: '100%', maxHeight: '100%', objectFit: 'cover', display: 'block' }}
                     />
                   ) : (
                     <span style={{ fontSize: '28px', opacity: 0.35 }}>🛍️</span>
