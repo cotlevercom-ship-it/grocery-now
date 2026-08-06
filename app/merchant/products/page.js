@@ -25,6 +25,7 @@ const emptyProductForm = {
   lead_time: '',
   payment_terms: '',
   sample_available: false,
+  category_id: '',
 }
 const emptyVariant = { id: null, name: '', price: '', sale_price: '', stock: 0, sku: '', is_available: true }
 const emptyTier = { min_qty: '', max_qty: '', price: '' }
@@ -48,6 +49,8 @@ export default function MerchantProductsPage() {
   const slotFileInputRef = useRef(null)
   const [variants, setVariants] = useState([]) // [{id, name, price, sale_price, stock, sku, is_available}]
   const [tierPricing, setTierPricing] = useState([]) // [{min_qty, max_qty, price}]
+  const [categories, setCategories] = useState([]) // global category tree, flat with parent_id
+  const [categoryPath, setCategoryPath] = useState([]) // array of category ids, root -> chosen leaf
   const [savingProduct, setSavingProduct] = useState(false)
   const [uploading, setUploading] = useState(false)
 
@@ -92,6 +95,37 @@ export default function MerchantProductsPage() {
     if (shopId) loadShopData(shopId)
   }, [shopId])
 
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const rows = await supabaseFetch('categories?select=*&is_active=eq.true&order=sort_order')
+        setCategories(rows || [])
+      } catch (e) {
+        console.error(e)
+        setCategories([])
+      }
+    }
+    loadCategories()
+  }, [])
+
+  const childrenOf = (parentId) => categories.filter(c => (c.parent_id || null) === (parentId || null))
+  const pathToCategory = (id) => {
+    const path = []
+    let current = categories.find(c => c.id === id)
+    while (current) {
+      path.unshift(current.id)
+      current = current.parent_id ? categories.find(c => c.id === current.parent_id) : null
+    }
+    return path
+  }
+  const handleCategoryLevelChange = (levelIdx, value) => {
+    setCategoryPath(prev => {
+      const next = prev.slice(0, levelIdx)
+      if (value) next.push(value)
+      return next
+    })
+  }
+
   // ---------- Product handlers ----------
   const atProductLimit = maxProducts != null && products.length >= maxProducts
   const makeSlotId = () => `slot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -106,6 +140,7 @@ export default function MerchantProductsPage() {
     setImageSlots([{ id: makeSlotId(), file: null, url: null }])
     setVariants([])
     setTierPricing([])
+    setCategoryPath([])
     setShowProductForm(true)
   }
   const openEditProduct = async (p) => {
@@ -132,7 +167,9 @@ export default function MerchantProductsPage() {
       lead_time: p.lead_time || '',
       payment_terms: p.payment_terms || '',
       sample_available: !!p.sample_available,
+      category_id: p.category_id || '',
     })
+    setCategoryPath(p.category_id ? pathToCategory(p.category_id) : [])
     const existingUrls = [p.image_url, ...(p.image_urls || [])].filter(Boolean)
     setImageSlots(existingUrls.length > 0
       ? existingUrls.map(url => ({ id: makeSlotId(), file: null, url }))
@@ -159,6 +196,7 @@ export default function MerchantProductsPage() {
     setImageSlots([])
     setVariants([])
     setTierPricing([])
+    setCategoryPath([])
   }
   const handleProductFieldChange = (field, value) => {
     setProductForm((prev) => ({ ...prev, [field]: value }))
@@ -237,6 +275,7 @@ export default function MerchantProductsPage() {
         image_url: imageUrl,
         image_urls: finalExtraImageUrls,
         is_available: !!productForm.is_available,
+        category_id: categoryPath.length ? categoryPath[categoryPath.length - 1] : null,
         sku: productForm.sku.trim() || null,
         brand: productForm.brand.trim() || null,
         weight_grams: productForm.weight_grams ? Number(productForm.weight_grams) : null,
@@ -439,6 +478,43 @@ export default function MerchantProductsPage() {
                   <div style={{ marginBottom: '14px' }}>
                     <label style={labelStyle}>Product Name *</label>
                     <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
+                  </div>
+
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={labelStyle}>Category <span style={{ color: '#aaa', fontWeight: '400' }}>— optional, pick from the site&apos;s category list</span></label>
+                    {categories.length === 0 ? (
+                      <div style={{ fontSize: '12px', color: '#999' }}>No categories set up yet</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {(() => {
+                          // Render one dropdown per level: level 0 is always shown; each further level
+                          // only appears once its parent level has a selection with children.
+                          const levels = []
+                          let parentId = null
+                          for (let i = 0; ; i++) {
+                            const options = childrenOf(parentId)
+                            if (options.length === 0) break
+                            levels.push({ idx: i, options })
+                            const selected = categoryPath[i]
+                            if (!selected) break
+                            parentId = selected
+                          }
+                          return levels.map(level => (
+                            <select
+                              key={level.idx}
+                              style={inputStyle}
+                              value={categoryPath[level.idx] || ''}
+                              onChange={e => handleCategoryLevelChange(level.idx, e.target.value)}
+                            >
+                              <option value="">{level.idx === 0 ? '— Select category —' : '— None —'}</option>
+                              {level.options.map(c => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                              ))}
+                            </select>
+                          ))
+                        })()}
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
