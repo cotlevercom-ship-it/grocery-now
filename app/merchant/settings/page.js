@@ -101,10 +101,6 @@ export default function MerchantSettingsPage() {
       setError('Please enter a shop name')
       return
     }
-    if (form.pickup_available && !form.pickup_address.trim()) {
-      setError('Please enter a pickup address')
-      return
-    }
     if (!form.whatsapp_number.trim() && !form.contact_email.trim()) {
       setError('Please add a WhatsApp number or an email so buyers can contact you')
       return
@@ -307,27 +303,6 @@ export default function MerchantSettingsPage() {
             value={form.description} onChange={e => handleFieldChange('description', e.target.value)} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-          <div>
-            <label style={labelStyle}>Min Delivery Time (minutes)</label>
-            <input type="number" style={inputStyle} value={form.delivery_time_min} onChange={e => handleFieldChange('delivery_time_min', e.target.value)} />
-          </div>
-          <div>
-            <label style={labelStyle}>Max Delivery Time (minutes)</label>
-            <input type="number" style={inputStyle} value={form.delivery_time_max} onChange={e => handleFieldChange('delivery_time_max', e.target.value)} />
-          </div>
-        </div>
-
-        <div style={{ marginBottom: '14px' }}>
-          <div>
-            <label style={labelStyle}>Minimum Order Amount (৳)</label>
-            <input type="number" style={inputStyle} value={form.min_order_amount} onChange={e => handleFieldChange('min_order_amount', e.target.value)} />
-          </div>
-          <div style={{ fontSize: '12px', color: '#888', marginTop: '6px' }}>
-            Delivery charge is now set centrally by Cot Lever (based on the buyer's country, order weight, and item count) — it's no longer set per shop.
-          </div>
-        </div>
-
         <div style={{ marginBottom: '6px' }}>
           <div style={{ fontSize: '13px', fontWeight: '700', color: '#0a0a0a' }}>Buyer Contact</div>
           <div style={{ fontSize: '12px', color: '#888', marginTop: '2px', marginBottom: '10px' }}>
@@ -344,49 +319,6 @@ export default function MerchantSettingsPage() {
             <input type="email" style={inputStyle} value={form.contact_email} onChange={e => handleFieldChange('contact_email', e.target.value)} placeholder="e.g. shop@example.com" />
           </div>
         </div>
-
-        {/* Pickup option */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 14px', borderRadius: '8px', marginBottom: form.pickup_available ? '12px' : '20px',
-          background: '#f5f5f5', border: '1px solid #e0e0e0'
-        }}>
-          <div>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>
-              Store Pickup Available
-            </div>
-            <div style={{ fontSize: '12px', color: '#777', marginTop: '2px' }}>
-              Let customers pick up their order from your store (no delivery charge)
-            </div>
-          </div>
-          <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', flexShrink: 0 }}>
-            <input
-              type="checkbox"
-              checked={form.pickup_available}
-              onChange={e => handleFieldChange('pickup_available', e.target.checked)}
-              style={{ opacity: 0, width: 0, height: 0 }}
-            />
-            <span style={{
-              position: 'absolute', cursor: 'pointer', inset: 0,
-              background: form.pickup_available ? '#2d6a4f' : '#ccc',
-              borderRadius: '24px', transition: '0.2s'
-            }}>
-              <span style={{
-                position: 'absolute', height: '18px', width: '18px', left: form.pickup_available ? '23px' : '3px',
-                bottom: '3px', background: 'white', borderRadius: '50%', transition: '0.2s'
-              }} />
-            </span>
-          </label>
-        </div>
-
-        {form.pickup_available && (
-          <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>Pickup Address *</label>
-            <textarea rows={2} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
-              value={form.pickup_address} onChange={e => handleFieldChange('pickup_address', e.target.value)}
-              placeholder="Full address customers should visit to pick up their order" />
-          </div>
-        )}
 
         <button type="submit" disabled={saving} style={{
           background: saving ? '#9ca3af' : '#163a2c', color: 'white', border: 'none',
