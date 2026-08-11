@@ -53,13 +53,6 @@ export default function Navbar() {
           padding: '9px 10px', display: 'none'
         }} className="nav-resources-link">Resources</Link>
 
-        <Link href="/listings/new" style={{
-          display: 'flex', alignItems: 'center', gap: '4px',
-          background: theme.brass, color: '#fff',
-          borderRadius: '7px', padding: '9px 16px',
-          fontSize: '13.5px', fontWeight: '600', whiteSpace: 'nowrap', textDecoration: 'none'
-        }}>List Your Business</Link>
-
         {session ? (
           <Link href="/account" style={{
             display: 'flex', alignItems: 'center', gap: '4px',
