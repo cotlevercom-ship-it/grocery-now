@@ -87,8 +87,8 @@ export default function Footer() {
         }
         .footer-link-row {
           display: flex;
-          flex-wrap: wrap;
-          gap: 8px 18px;
+          flex-direction: column;
+          gap: 8px;
         }
         .footer-link {
           font-size: 13.5px;
