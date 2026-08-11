@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
-// type: 'merchant' | 'customer' | 'ship'
+// type: 'merchant' | 'customer'
 // checked / onChange: controlled checkbox state
 // accent: hex color for the checkbox + links (defaults to site amber)
 export default function AgreementCheckbox({ type, checked, onChange, accent = '#f4a300' }) {
