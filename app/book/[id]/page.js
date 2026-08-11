@@ -69,7 +69,7 @@ export default function BookDetailPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
         }}>
           {book.image_url ? (
-            <img src={book.image_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={book.image_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           ) : <span style={{ fontSize: '48px' }}>📕</span>}
         </div>
 

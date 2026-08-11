@@ -89,7 +89,7 @@ export default function BookShopHome() {
             <Link key={book.id} href={`/book/${book.id}`} className="book-card">
               <div className="book-card-image">
                 {book.image_url ? (
-                  <img src={book.image_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={book.image_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 ) : <span style={{ fontSize: '32px' }}>📕</span>}
               </div>
               <div style={{ padding: '12px' }}>
@@ -142,7 +142,7 @@ export default function BookShopHome() {
           box-shadow: 0 8px 18px rgba(22, 58, 44, 0.1);
         }
         .book-card-image {
-          height: clamp(140px, 16vw, 220px);
+          height: clamp(200px, 26vw, 320px);
           background: #f5f5f5;
           display: flex;
           align-items: center;
