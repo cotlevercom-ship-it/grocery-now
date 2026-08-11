@@ -26,7 +26,7 @@ export default function AffiliatePage() {
   const [copied, setCopied] = useState(false)
 
   const referralLink = result
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/merchant/login?ref=${result.referral_code}`
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/merchant?ref=${result.referral_code}`
     : ''
 
   const handleCopy = async () => {

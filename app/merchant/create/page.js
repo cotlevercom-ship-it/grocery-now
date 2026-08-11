@@ -35,7 +35,7 @@ function CreateShopForm() {
     async function init() {
       const session = getSession()
       if (!session?.user) {
-        router.replace('/merchant/login?next=/merchant/create')
+        router.replace('/login?next=/merchant/create')
         return
       }
       setEmail(session.user.email || '')

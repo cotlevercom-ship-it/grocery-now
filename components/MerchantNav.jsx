@@ -26,7 +26,7 @@ export default function MerchantNav({ children }) {
     async function check() {
       const session = getSession()
       if (!session?.user) {
-        router.replace(`/merchant/login?next=${pathname}`)
+        router.replace(`/login?next=${pathname}`)
         if (!cancelled) setChecking(false)
         return
       }
@@ -44,7 +44,7 @@ export default function MerchantNav({ children }) {
         }
       } catch (e) {
         console.error(e)
-        router.replace('/merchant/login')
+        router.replace('/login')
       }
       if (!cancelled) setChecking(false)
     }
@@ -58,7 +58,7 @@ export default function MerchantNav({ children }) {
 
   const handleLogout = () => {
     signOut()
-    router.replace('/merchant/login')
+    router.replace('/login')
   }
 
   if (checking) {

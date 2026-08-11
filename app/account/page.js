@@ -20,6 +20,8 @@ export default function AccountPage() {
   const [loaded, setLoaded] = useState(false)
   const [profile, setProfile] = useState(null)
   const [addressCount, setAddressCount] = useState(0)
+  const [shop, setShop] = useState(null)
+  const [shopChecked, setShopChecked] = useState(false)
 
   const handleLogout = () => {
     signOut()
@@ -48,6 +50,14 @@ export default function AccountPage() {
       } catch (e) {
         console.error(e)
       }
+
+      try {
+        const shops = await supabaseFetch(`shops?select=id,name&owner_id=eq.${session.user.id}`)
+        setShop(shops?.[0] || null)
+      } catch (e) {
+        console.error(e)
+      }
+      setShopChecked(true)
 
       setLoaded(true)
     }
@@ -78,6 +88,13 @@ export default function AccountPage() {
       title: 'My Addresses',
       subtitle: addressCount > 0 ? `${addressCount} saved address${addressCount > 1 ? 'es' : ''}` : 'No address saved',
       tag: addressCount > 0 ? String(addressCount) : null,
+    },
+    {
+      href: shop ? '/merchant/dashboard' : '/merchant/create',
+      icon: '🏪',
+      title: shop ? 'My Shop' : 'Add Shop',
+      subtitle: shop ? shop.name : 'List products or services — it\'s free',
+      tag: shop ? null : 'New',
     },
   ]
 

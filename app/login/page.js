@@ -2,7 +2,7 @@
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn, signUp, signOut, setAccountType, verifyAccountType, supabaseFetch } from '@/lib/supabase'
+import { signIn, signUp, setAccountType, supabaseFetch } from '@/lib/supabase'
 import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 export default function LoginPage() {
@@ -78,13 +78,6 @@ function LoginForm() {
         router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=signup&next=${encodeURIComponent(nextUrl)}`)
       } else {
         await signIn(email.trim(), password)
-        const ok = await verifyAccountType('customer')
-        if (!ok) {
-          signOut()
-          setError('This email is registered as a merchant account. Please use the merchant login instead.')
-          setSubmitting(false)
-          return
-        }
         router.push(nextUrl)
       }
     } catch (err) {
@@ -208,12 +201,12 @@ function LoginForm() {
         </form>
       </div>
 
-      {/* Merchant login */}
+      {/* Sell on Cot Lever */}
       <div style={{ width: '100%', maxWidth: '420px', marginTop: '18px' }}>
-        <Link href="/merchant/login" style={{
+        <Link href="/merchant" style={{
           display: 'block', textAlign: 'center', color: '#666',
           padding: '10px', fontSize: '13px', textDecoration: 'none'
-        }}>Own a shop? Merchant Login →</Link>
+        }}>Want to sell on Cot Lever? →</Link>
       </div>
 
       <style jsx>{`
