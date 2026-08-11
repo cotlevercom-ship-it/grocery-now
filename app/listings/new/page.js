@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
+import { theme } from '@/lib/theme'
 
 const TYPES = [
   { value: 'co_founder', label: 'Co-founder' },
@@ -23,9 +24,7 @@ export default function NewListingPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    setSession(getSession())
-  }, [])
+  useEffect(() => { setSession(getSession()) }, [])
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
 
@@ -41,7 +40,6 @@ export default function NewListingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-
     if (!form.business_name.trim()) { setError('Enter your business name'); return }
     if (form.listing_types.length === 0) { setError('Select at least one category'); return }
     if (!form.contact_phone.trim() && !form.contact_email.trim()) { setError('Provide at least a phone or email'); return }
@@ -71,95 +69,105 @@ export default function NewListingPage() {
   }
 
   const inputStyle = {
-    width: '100%', padding: '11px 13px', borderRadius: '8px',
-    border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+    width: '100%', padding: '12px 14px', borderRadius: '8px',
+    border: `1px solid ${theme.line}`, fontSize: '14.5px', boxSizing: 'border-box',
+    fontFamily: theme.fontBody, background: theme.surface, color: theme.ink,
   }
-  const labelStyle = { fontSize: '12.5px', color: '#555', display: 'block', marginBottom: '5px', fontWeight: '600' }
+  const labelStyle = { fontSize: '12.5px', color: theme.inkSoft, display: 'block', marginBottom: '6px', fontWeight: '600' }
 
   if (session === undefined) return null
 
   if (session === null) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <p style={{ color: '#666', marginBottom: '16px' }}>Log in to create a listing</p>
+      <div style={{ background: theme.paper, minHeight: '60vh', padding: '60px 20px', textAlign: 'center' }}>
+        <p style={{ color: theme.inkSoft, marginBottom: '18px', fontSize: '15px' }}>Log in to create a listing</p>
         <Link href="/login" style={{
-          display: 'inline-block', background: '#163a2c', color: 'white',
-          borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '700'
+          display: 'inline-block', background: theme.brass, color: 'white',
+          borderRadius: '8px', padding: '12px 24px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
         }}>Log In</Link>
       </div>
     )
   }
 
   return (
-    <div style={{ padding: 'clamp(16px, 3vw, 40px)', maxWidth: '620px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: '800', marginBottom: '6px' }}>List Your Business</h1>
-      <p style={{ fontSize: '13.5px', color: '#888', marginBottom: '22px' }}>
-        Fill in your details, then pay to activate the listing.
-      </p>
+    <div style={{ background: theme.paper, minHeight: '70vh' }}>
+      <div style={{ maxWidth: '620px', margin: '0 auto', padding: 'clamp(20px,4vw,48px) clamp(16px,3vw,24px)' }}>
+        <div style={{
+          fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
+          color: theme.brassDark, marginBottom: '10px', fontWeight: '600'
+        }}>New Listing</div>
+        <h1 style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(22px,2.8vw,30px)', fontWeight: '600', color: theme.ink, marginBottom: '8px' }}>
+          List Your Business
+        </h1>
+        <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '28px' }}>
+          Fill in your details, then pay to activate the listing.
+        </p>
 
-      {error && (
-        <div style={{ marginBottom: '16px', padding: '10px 12px', background: '#ffebee', color: '#c62828', borderRadius: '8px', fontSize: '13px' }}>
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} style={{ background: 'white', borderRadius: '12px', border: '1px solid #e5e5e5', padding: '20px' }}>
-        <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>Business Name *</label>
-          <input style={inputStyle} value={form.business_name} onChange={e => handleChange('business_name', e.target.value)} placeholder="Your business name" />
-        </div>
-
-        <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>Description</label>
-          <textarea style={{ ...inputStyle, minHeight: '90px', resize: 'vertical' }} value={form.description} onChange={e => handleChange('description', e.target.value)} placeholder="Briefly describe your business" />
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-          <div>
-            <label style={labelStyle}>Industry</label>
-            <input style={inputStyle} value={form.industry} onChange={e => handleChange('industry', e.target.value)} placeholder="e.g. Tech, Fashion" />
+        {error && (
+          <div style={{ marginBottom: '16px', padding: '11px 14px', background: theme.dangerSoft, color: theme.danger, borderRadius: '8px', fontSize: '13.5px' }}>
+            {error}
           </div>
-          <div>
-            <label style={labelStyle}>Location</label>
-            <input style={inputStyle} value={form.location} onChange={e => handleChange('location', e.target.value)} placeholder="Dhaka" />
+        )}
+
+        <form onSubmit={handleSubmit} style={{ background: theme.surface, borderRadius: '12px', border: `1px solid ${theme.line}`, padding: 'clamp(20px,3vw,28px)' }}>
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Business Name *</label>
+            <input style={inputStyle} value={form.business_name} onChange={e => handleChange('business_name', e.target.value)} placeholder="Your business name" />
           </div>
-        </div>
 
-        <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>What are you looking for? (select multiple) *</label>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {TYPES.map(t => (
-              <button key={t.value} type="button" onClick={() => toggleType(t.value)} style={{
-                padding: '8px 16px', borderRadius: '20px', border: '1px solid #ddd', fontSize: '13px', fontWeight: '600',
-                background: form.listing_types.includes(t.value) ? '#163a2c' : 'white',
-                color: form.listing_types.includes(t.value) ? 'white' : '#444'
-              }}>{t.label}</button>
-            ))}
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Description</label>
+            <textarea style={{ ...inputStyle, minHeight: '90px', resize: 'vertical' }} value={form.description} onChange={e => handleChange('description', e.target.value)} placeholder="Briefly describe your business" />
           </div>
-        </div>
 
-        <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>Phone Number</label>
-          <input style={inputStyle} value={form.contact_phone} onChange={e => handleChange('contact_phone', e.target.value)} placeholder="01XXXXXXXXX" />
-        </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '18px' }}>
+            <div>
+              <label style={labelStyle}>Industry</label>
+              <input style={inputStyle} value={form.industry} onChange={e => handleChange('industry', e.target.value)} placeholder="e.g. Tech, Fashion" />
+            </div>
+            <div>
+              <label style={labelStyle}>Location</label>
+              <input style={inputStyle} value={form.location} onChange={e => handleChange('location', e.target.value)} placeholder="Dhaka" />
+            </div>
+          </div>
 
-        <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>Email</label>
-          <input style={inputStyle} value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" />
-        </div>
+          <div style={{ marginBottom: '22px' }}>
+            <label style={labelStyle}>What are you looking for? (select multiple) *</label>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {TYPES.map(t => (
+                <button key={t.value} type="button" onClick={() => toggleType(t.value)} style={{
+                  padding: '9px 16px', borderRadius: '20px', border: `1px solid ${form.listing_types.includes(t.value) ? theme.ink : theme.line}`,
+                  fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
+                  background: form.listing_types.includes(t.value) ? theme.ink : theme.surface,
+                  color: form.listing_types.includes(t.value) ? theme.paper : theme.inkSoft
+                }}>{t.label}</button>
+              ))}
+            </div>
+          </div>
 
-        <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>Website (optional)</label>
-          <input style={inputStyle} value={form.website} onChange={e => handleChange('website', e.target.value)} placeholder="https://..." />
-        </div>
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Phone Number</label>
+            <input style={inputStyle} value={form.contact_phone} onChange={e => handleChange('contact_phone', e.target.value)} placeholder="01XXXXXXXXX" />
+          </div>
 
-        <button type="submit" disabled={submitting} style={{
-          width: '100%', background: submitting ? '#9ca3af' : '#163a2c', color: 'white',
-          borderRadius: '10px', padding: '14px', fontSize: '15px', fontWeight: '700'
-        }}>
-          {submitting ? 'Creating...' : 'Next: Payment'}
-        </button>
-      </form>
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Email</label>
+            <input style={inputStyle} value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" />
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={labelStyle}>Website (optional)</label>
+            <input style={inputStyle} value={form.website} onChange={e => handleChange('website', e.target.value)} placeholder="https://..." />
+          </div>
+
+          <button type="submit" disabled={submitting} style={{
+            width: '100%', background: submitting ? '#B8B2A0' : theme.brass, color: 'white',
+            borderRadius: '8px', padding: '14px', fontSize: '15px', fontWeight: '600', border: 'none', fontFamily: theme.fontBody
+          }}>
+            {submitting ? 'Creating...' : 'Next: Payment'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

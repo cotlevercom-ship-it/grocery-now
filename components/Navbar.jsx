@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getSession } from '@/lib/supabase'
-import Logo from './Logo'
+import { theme } from '@/lib/theme'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
@@ -26,8 +26,9 @@ export default function Navbar() {
   if (isAdminArea) return null
 
   return (
-    <div className="navbar-bar" style={{
-      background: '#000000',
+    <div style={{
+      background: theme.paper,
+      borderBottom: `1px solid ${theme.line}`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -35,28 +36,35 @@ export default function Navbar() {
       position: 'sticky',
       top: 0,
       zIndex: 40,
-      padding: '14px 16px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
+      padding: 'clamp(12px,1.6vw,18px) clamp(16px,3vw,56px)',
     }}>
-      <Link href="/" className="navbar-logo-text" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, textDecoration: 'none', flexShrink: 0 }}>
-        <Logo variant="light" size="1em" />
+      <Link href="/" style={{
+        fontFamily: theme.fontDisplay, fontSize: 'clamp(18px,1.6vw,22px)', fontWeight: '600',
+        color: theme.ink, textDecoration: 'none', flexShrink: 0
+      }}>
+        Cot<span style={{ color: theme.brass }}>Lever</span>
       </Link>
 
       <div style={{ flex: 1 }} />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+        <Link href="/resources" style={{
+          fontSize: '13.5px', fontWeight: '600', color: theme.inkSoft, textDecoration: 'none',
+          padding: '9px 10px', display: 'none'
+        }} className="nav-resources-link">Resources</Link>
+
         <Link href="/listings/new" style={{
           display: 'flex', alignItems: 'center', gap: '4px',
-          background: '#f4a300', color: '#0a0a0a',
-          borderRadius: '8px', padding: '7px 14px',
-          fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap'
-        }}>+ List Business</Link>
+          background: theme.brass, color: '#fff',
+          borderRadius: '7px', padding: '9px 16px',
+          fontSize: '13.5px', fontWeight: '600', whiteSpace: 'nowrap', textDecoration: 'none'
+        }}>List Your Business</Link>
 
         {session ? (
           <Link href="/account" style={{
             display: 'flex', alignItems: 'center', gap: '4px',
-            background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-            borderRadius: '8px', padding: '7px 12px',
+            background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
+            borderRadius: '7px', padding: '8px 12px',
             fontSize: '13px', whiteSpace: 'nowrap', textDecoration: 'none',
             maxWidth: '120px', overflow: 'hidden'
           }}>
@@ -69,19 +77,14 @@ export default function Navbar() {
             </span>
           </Link>
         ) : (
-          <Link href="/login">
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-              borderRadius: '8px', padding: '7px 14px',
-              fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap'
-            }}>
-              Log In
-            </div>
-          </Link>
+          <Link href="/login" style={{
+            display: 'flex', alignItems: 'center', gap: '4px',
+            background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
+            borderRadius: '7px', padding: '9px 14px',
+            fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', textDecoration: 'none'
+          }}>Log In</Link>
         )}
       </div>
-
     </div>
   )
 }

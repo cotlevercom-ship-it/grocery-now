@@ -65,6 +65,7 @@ export default function AdminLayout({ children }) {
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     { href: '/admin/listings', label: 'Listings', icon: '🏢' },
+    { href: '/admin/resources', label: 'Resources', icon: '📰' },
     { href: '/admin/banners', label: 'Banners', icon: '🖼️' },
     { href: '/admin/pages', label: 'Page Management', icon: '📄' },
     { href: '/admin/agreements', label: 'Agreements', icon: '📜' },

@@ -12,10 +12,10 @@ const TABS = [
 ]
 
 const COLORS = {
-  ink: '#0a0a0a',
-  gold: '#f4a300',
-  textMuted: '#777',
-  line: '#eee',
+  ink: '#14213D',
+  gold: '#B8874B',
+  textMuted: '#4A5578',
+  line: '#E1DCCF',
 }
 
 export default function AboutPage() {
