@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { supabaseFetch } from '@/lib/supabase'
 
 function normalizeWhatsApp(number) {
   if (!number) return null
@@ -46,6 +47,14 @@ export default function ProductDetailClient({ product, shop }) {
     ? `mailto:${shop.contact_email}?subject=${encodeURIComponent(`Inquiry: ${product.name}`)}&body=${encodeURIComponent(contactMessage)}`
     : null
   const hasContact = !!(waHref || emailHref)
+
+  const logInquiry = (method) => {
+    // Fire-and-forget: never block or break the contact action if this fails.
+    supabaseFetch('inquiries', {
+      method: 'POST',
+      body: JSON.stringify({ shop_id: shop.id, product_id: product.id, contact_method: method }),
+    }).catch(() => {})
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: 'calc(90px + env(safe-area-inset-bottom))' }}>
@@ -180,7 +189,7 @@ export default function ProductDetailClient({ product, shop }) {
               {hasContact ? (
                 <div style={{ display: 'flex', gap: '10px' }}>
                   {waHref && (
-                    <a href={waHref} target="_blank" rel="noopener noreferrer" style={{
+                    <a href={waHref} target="_blank" rel="noopener noreferrer" onClick={() => logInquiry('whatsapp')} style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                       background: '#25D366', color: 'white',
                       padding: '12px', borderRadius: '8px', fontSize: '14px', fontWeight: '700', textDecoration: 'none'
@@ -190,7 +199,7 @@ export default function ProductDetailClient({ product, shop }) {
                     </a>
                   )}
                   {emailHref && (
-                    <a href={emailHref} style={{
+                    <a href={emailHref} onClick={() => logInquiry('email')} style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                       background: 'white', color: '#0a0a0a', border: '2px solid #0a0a0a',
                       padding: '11px', borderRadius: '8px', fontSize: '14px', fontWeight: '700', textDecoration: 'none'
@@ -330,7 +339,7 @@ export default function ProductDetailClient({ product, shop }) {
         {hasContact ? (
           <>
             {waHref && (
-              <a href={waHref} target="_blank" rel="noopener noreferrer" style={{
+              <a href={waHref} target="_blank" rel="noopener noreferrer" onClick={() => logInquiry('whatsapp')} style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                 background: '#25D366', color: 'white',
                 padding: '12px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700', textDecoration: 'none'
@@ -340,7 +349,7 @@ export default function ProductDetailClient({ product, shop }) {
               </a>
             )}
             {emailHref && (
-              <a href={emailHref} style={{
+              <a href={emailHref} onClick={() => logInquiry('email')} style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                 background: 'white', color: '#0a0a0a', border: '2px solid #0a0a0a',
                 padding: '11px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700', textDecoration: 'none'
