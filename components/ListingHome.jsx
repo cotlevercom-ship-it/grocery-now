@@ -27,6 +27,7 @@ function ConnectionDiagram() {
   ]
   const cx = 150, cy = 145
   const lineLength = (n) => Math.hypot(n.x - cx, n.y - cy)
+  const pathFor = (n) => `M ${cx} ${cy} L ${n.x} ${n.y}`
 
   return (
     <svg viewBox="0 0 320 320" width="100%" height="100%" style={{ maxWidth: '360px', overflow: 'visible' }}>
@@ -37,16 +38,23 @@ function ConnectionDiagram() {
           animation: cd-draw 0.7s ease-out forwards;
           animation-delay: var(--delay);
         }
-        .cd-node {
+        .cd-node-g {
           opacity: 0;
-          transform-origin: var(--ox) var(--oy);
-          animation: cd-pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.3) forwards;
-          animation-delay: calc(var(--delay) + 0.35s);
+          animation: cd-pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.3) forwards, cd-float var(--float-dur) ease-in-out infinite;
+          animation-delay: calc(var(--delay) + 0.35s), calc(var(--delay) + 1.4s);
+          transform-box: fill-box;
+          transform-origin: center;
         }
-        .cd-center {
-          animation: cd-pulse 2.6s ease-in-out infinite;
-          animation-delay: 1.6s;
-          transform-origin: ${cx}px ${cy}px;
+        .cd-pulse-dot {
+          opacity: 0;
+          animation: cd-fade-in 0.3s ease-out forwards;
+          animation-delay: calc(var(--delay) + 0.75s);
+        }
+        .cd-glow {
+          transform-box: fill-box;
+          transform-origin: center;
+          animation: cd-glow 2.6s ease-in-out infinite;
+          animation-delay: 1.5s;
         }
         @keyframes cd-draw {
           to { stroke-dashoffset: 0; }
@@ -55,31 +63,63 @@ function ConnectionDiagram() {
           0% { opacity: 0; transform: scale(0.4); }
           100% { opacity: 1; transform: scale(1); }
         }
-        @keyframes cd-pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.045); }
+        @keyframes cd-float {
+          0%, 100% { translate: 0 0; }
+          50% { translate: 0 -4px; }
+        }
+        @keyframes cd-fade-in {
+          to { opacity: 1; }
+        }
+        @keyframes cd-glow {
+          0%, 100% { transform: scale(1); opacity: 0.35; }
+          50% { transform: scale(1.35); opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .cd-line, .cd-node, .cd-center { animation: none !important; opacity: 1 !important; stroke-dashoffset: 0 !important; }
+          .cd-line, .cd-node-g, .cd-pulse-dot, .cd-glow { animation: none !important; }
+          .cd-line { opacity: 1; stroke-dashoffset: 0 !important; }
+          .cd-node-g, .cd-pulse-dot { opacity: 1 !important; }
+          .cd-glow { display: none; }
         }
       `}</style>
 
       {nodes.map((n, i) => (
-        <line
-          key={i} x1={cx} y1={cy} x2={n.x} y2={n.y}
+        <path
+          key={`line-${i}`} id={`cd-path-${i}`} d={pathFor(n)} fill="none"
           stroke={theme.line} strokeWidth="1.5" className="cd-line"
           style={{ '--len': lineLength(n), '--delay': `${i * 0.09}s` }}
         />
       ))}
 
-      <g className="cd-center">
+      {/* soft glow ring pulsing outward behind the center node */}
+      <circle cx={cx} cy={cy} r="34" fill="none" stroke={theme.brass} strokeWidth="2" className="cd-glow" />
+
+      <g>
         <circle cx={cx} cy={cy} r="34" fill={theme.ink} />
         <text x={cx} y={cy - 3} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">YOUR</text>
         <text x={cx} y={cy + 10} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">BUSINESS</text>
       </g>
 
+      {/* traveling signal pulses — a small dot ping-pongs along each connection line */}
       {nodes.map((n, i) => (
-        <g key={i} className="cd-node" style={{ '--delay': `${i * 0.09}s`, '--ox': `${n.x}px`, '--oy': `${n.y}px` }}>
+        <circle key={`pulse-${i}`} r="3.5" fill={theme.brass} className="cd-pulse-dot" style={{ '--delay': `${i * 0.09}s` }}>
+          <animateMotion
+            dur={`${2.2 + (i % 3) * 0.35}s`}
+            repeatCount="indefinite"
+            keyPoints="0;1;0"
+            keyTimes="0;0.5;1"
+            calcMode="linear"
+            begin={`${0.9 + i * 0.09}s`}
+          >
+            <mpath href={`#cd-path-${i}`} />
+          </animateMotion>
+        </circle>
+      ))}
+
+      {nodes.map((n, i) => (
+        <g
+          key={`node-${i}`} className="cd-node-g"
+          style={{ '--delay': `${i * 0.09}s`, '--float-dur': `${3.4 + (i % 3) * 0.4}s` }}
+        >
           <circle cx={n.x} cy={n.y} r="26" fill={theme.surface} stroke={theme.brass} strokeWidth="1.5" />
           <text x={n.x} y={n.y + 4} textAnchor="middle" fill={theme.ink} fontSize="9" fontFamily={theme.fontBody} fontWeight="600">{n.label}</text>
         </g>
