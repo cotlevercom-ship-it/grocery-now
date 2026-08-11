@@ -6,19 +6,17 @@ import Logo from './Logo'
 
 export default function Footer() {
   const [infoPages, setInfoPages] = useState([])
-  const [partnerPages, setPartnerPages] = useState([])
-  const [settings, setSettings] = useState({ contact_email: '', whatsapp_number: '', facebook_url: '' })
+  const [settings, setSettings] = useState({ facebook_url: '' })
 
   useEffect(() => {
     async function load() {
       try {
         const [pages, settingRows] = await Promise.all([
           supabaseFetch(`site_pages?select=*&is_active=eq.true&order=sort_order`),
-          supabaseFetch(`app_settings?select=key,value&key=in.(contact_email,whatsapp_number,facebook_url)`),
+          supabaseFetch(`app_settings?select=key,value&key=in.(facebook_url)`),
         ])
         setInfoPages((pages || []).filter(p => p.section === 'info'))
-        setPartnerPages((pages || []).filter(p => p.section === 'partner'))
-        const map = { contact_email: '', whatsapp_number: '', facebook_url: '' }
+        const map = { facebook_url: '' }
         ;(settingRows || []).forEach(r => { map[r.key] = r.value || '' })
         setSettings(map)
       } catch (e) {
@@ -34,48 +32,30 @@ export default function Footer() {
   const contactUs = findInfo('contact-us')
   const privacy = findInfo('privacy-policy')
   const terms = findInfo('terms-and-conditions')
-  const whatsappHref = settings.whatsapp_number
-    ? `https://wa.me/88${settings.whatsapp_number.replace(/^0/, '')}`
-    : ''
 
   return (
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="footer-top">
-          <div className="footer-brand">
+          <div className="footer-left">
             <Logo variant="dark" size={20} />
-            <p className="tagline">Where founders go to meet their co-founder.</p>
+            <nav className="footer-link-row">
+              {aboutUs && <Link href={linkHref(aboutUs)} className="footer-link">About Us</Link>}
+              {contactUs && <Link href={linkHref(contactUs)} className="footer-link">Contact Us</Link>}
+              {terms && <Link href={linkHref(terms)} className="footer-link">Terms of Service</Link>}
+              {privacy && <Link href={linkHref(privacy)} className="footer-link">Privacy Policy</Link>}
+            </nav>
           </div>
 
-          <div className="footer-columns">
-            <div className="footer-col">
-              <span className="col-label">About</span>
-              {aboutUs && <Link href={linkHref(aboutUs)} className="footer-link">About Us</Link>}
-              {partnerPages.map(p => (
-                <Link key={p.id} href={linkHref(p)} className="footer-link">{p.title}</Link>
-              ))}
-            </div>
-
-            <div className="footer-col">
-              <span className="col-label">Contact</span>
-              {contactUs && <Link href={linkHref(contactUs)} className="footer-link">Contact Us</Link>}
-              {settings.contact_email && (
-                <a href={`mailto:${settings.contact_email}`} className="footer-link">{settings.contact_email}</a>
-              )}
-              {whatsappHref && (
-                <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="footer-link">WhatsApp</a>
-              )}
-              {settings.facebook_url && (
-                <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="footer-link">Facebook</a>
-              )}
-            </div>
-
-            <div className="footer-col">
-              <span className="col-label">Legal</span>
-              <Link href="/help" className="footer-link">Help Center</Link>
-              {privacy && <Link href={linkHref(privacy)} className="footer-link">Privacy Policy</Link>}
-              {terms && <Link href={linkHref(terms)} className="footer-link">Terms of Service</Link>}
-            </div>
+          <div className="footer-right">
+            {settings.facebook_url && (
+              <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Cot Lever on Facebook" className="fb-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94Z"/>
+                </svg>
+              </a>
+            )}
+            <Link href="/help" className="footer-link">Help Center</Link>
           </div>
         </div>
 
@@ -92,40 +72,23 @@ export default function Footer() {
         .footer-inner {
           max-width: 1100px;
           margin: 0 auto;
-          padding: 40px 20px 0;
+          padding: 32px 20px 0;
         }
         .footer-top {
           display: flex;
           flex-direction: column;
-          gap: 32px;
-          padding-bottom: 28px;
+          gap: 20px;
+          padding-bottom: 24px;
         }
-        .footer-brand {
-          max-width: 320px;
-        }
-        .tagline {
-          margin: 8px 0 0;
-          font-size: 13px;
-          color: #8a8a85;
-          line-height: 1.5;
-        }
-        .footer-columns {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-        }
-        .footer-col {
+        .footer-left {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 14px;
         }
-        .col-label {
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: #a3a39d;
-          margin-bottom: 2px;
+        .footer-link-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px 18px;
         }
         .footer-link {
           font-size: 13.5px;
@@ -134,6 +97,26 @@ export default function Footer() {
           width: fit-content;
         }
         .footer-link:hover {
+          color: #f4a300;
+        }
+        .footer-right {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .fb-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: #ececea;
+          color: #3a3a36;
+          flex-shrink: 0;
+        }
+        .fb-icon:hover {
+          background: #0a0a0a;
           color: #f4a300;
         }
         .footer-bottom {
@@ -151,11 +134,7 @@ export default function Footer() {
           .footer-top {
             flex-direction: row;
             justify-content: space-between;
-            gap: 40px;
-          }
-          .footer-columns {
-            gap: 56px;
-            flex-shrink: 0;
+            align-items: center;
           }
         }
       `}</style>
