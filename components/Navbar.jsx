@@ -49,11 +49,6 @@ export default function Navbar() {
         <Logo variant="light" size="1em" />
       </Link>
 
-      <Link href="/browse" className="navbar-browse-link" style={{
-        color: '#faf7f0', fontSize: '13px', fontWeight: '600', textDecoration: 'none',
-        flexShrink: 0, whiteSpace: 'nowrap'
-      }}>Browse Founders</Link>
-
       <form onSubmit={submitSearch} className="navbar-search" style={{
         flex: 1, maxWidth: '420px', display: 'flex', alignItems: 'center',
         background: 'rgba(255,255,255,0.1)', borderRadius: '7px', overflow: 'hidden',
@@ -111,9 +106,6 @@ export default function Navbar() {
       </div>
 
       <style jsx>{`
-        @media (max-width: 640px) {
-          .navbar-browse-link { display: none; }
-        }
         @media (max-width: 480px) {
           .navbar-search { display: none; }
         }
