@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
 const TYPE_LABELS = {
-  founder: { label: 'Founder Profile Agreement', desc: 'Not yet shown anywhere — /profile/create has no agreement checkbox wired in' },
   customer: { label: 'Customer Registration', desc: 'Shown at /login during signup' },
 }
 

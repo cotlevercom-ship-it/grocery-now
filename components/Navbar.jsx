@@ -7,10 +7,9 @@ import Logo from './Logo'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
-  const [q, setQ] = useState('')
   const pathname = usePathname()
-  const router = useRouter()
   const isAdminArea = pathname?.startsWith('/admin')
+  const isHome = pathname === '/'
 
   useEffect(() => {
     setSession(getSession())
@@ -25,12 +24,7 @@ export default function Navbar() {
 
   const customerName = session?.user?.email ? session.user.email.split('@')[0] : ''
 
-  const submitSearch = (e) => {
-    e.preventDefault()
-    if (q.trim()) router.push(`/browse?q=${encodeURIComponent(q.trim())}`)
-  }
-
-  if (isAdminArea) return null
+  if (isAdminArea || isHome) return null
 
   return (
     <div className="navbar-bar" style={{
@@ -49,30 +43,7 @@ export default function Navbar() {
         <Logo variant="light" size="1em" />
       </Link>
 
-      <form onSubmit={submitSearch} className="navbar-search" style={{
-        flex: 1, maxWidth: '420px', display: 'flex', alignItems: 'center',
-        background: 'rgba(255,255,255,0.1)', borderRadius: '7px', overflow: 'hidden',
-      }}>
-        <input
-          type="text"
-          value={q}
-          onChange={e => setQ(e.target.value)}
-          placeholder="Search by skill, role, or location..."
-          style={{
-            flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
-            color: '#faf7f0', padding: '8px 10px', fontSize: '13px',
-          }}
-        />
-        <button type="submit" aria-label="Search" style={{
-          background: 'none', border: 'none', color: '#faf7f0', padding: '0 10px',
-          display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0,
-        }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
-        </button>
-      </form>
+      <div style={{ flex: 1 }} />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
         {session ? (
@@ -105,11 +76,6 @@ export default function Navbar() {
         )}
       </div>
 
-      <style jsx>{`
-        @media (max-width: 480px) {
-          .navbar-search { display: none; }
-        }
-      `}</style>
     </div>
   )
 }

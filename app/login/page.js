@@ -112,7 +112,7 @@ function LoginForm() {
             {mode === 'login' ? 'Log In' : 'Create Account'}
           </div>
           <div style={{ fontSize: '13px', color: '#888' }}>
-            {mode === 'login' ? 'Welcome back! Log in to continue' : 'Create an account to start connecting with founders'}
+            {mode === 'login' ? 'Welcome back! Log in to continue' : 'Create an account to get started'}
           </div>
         </div>
 
@@ -198,14 +198,6 @@ function LoginForm() {
             )}
           </div>
         </form>
-      </div>
-
-      {/* Browse without signing up */}
-      <div style={{ width: '100%', maxWidth: '420px', marginTop: '18px' }}>
-        <Link href="/browse" style={{
-          display: 'block', textAlign: 'center', color: '#666',
-          padding: '10px', fontSize: '13px', textDecoration: 'none'
-        }}>Just want to look around? Browse founders →</Link>
       </div>
 
       <style jsx>{`

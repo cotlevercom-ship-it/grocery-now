@@ -19,7 +19,6 @@ export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const [profile, setProfile] = useState(null)
-  const [founderProfile, setFounderProfile] = useState(null)
 
   const handleLogout = () => {
     signOut()
@@ -40,13 +39,6 @@ export default function AccountPage() {
       } catch (e) {
         console.error(e)
         setProfile({ id: session.user.id, full_name: '', phone: '' })
-      }
-
-      try {
-        const rows = await supabaseFetch(`founder_profiles?select=id,full_name,headline&owner_id=eq.${session.user.id}`)
-        setFounderProfile(rows?.[0] || null)
-      } catch (e) {
-        console.error(e)
       }
 
       setLoaded(true)
@@ -71,13 +63,6 @@ export default function AccountPage() {
       title: 'Edit Profile',
       subtitle: 'Name and phone number',
       tag: null,
-    },
-    {
-      href: '/profile/create',
-      icon: '🤝',
-      title: founderProfile ? 'My Founder Profile' : 'Create Founder Profile',
-      subtitle: founderProfile ? founderProfile.headline : 'Let other founders find you — it\'s free',
-      tag: founderProfile ? null : 'New',
     },
   ]
 
