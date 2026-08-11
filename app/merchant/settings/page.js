@@ -15,6 +15,8 @@ export default function MerchantSettingsPage() {
     category: '',
     location: '',
     phone: '',
+    whatsapp_number: '',
+    contact_email: '',
     description: '',
     image_url: '',
     banner_url: '',
@@ -47,6 +49,8 @@ export default function MerchantSettingsPage() {
             category: shop.category || '',
             location: shop.location || '',
             phone: shop.phone || '',
+            whatsapp_number: shop.whatsapp_number || '',
+            contact_email: shop.contact_email || '',
             description: shop.description || '',
             image_url: shop.image_url || '',
             banner_url: shop.banner_url || '',
@@ -101,6 +105,10 @@ export default function MerchantSettingsPage() {
       setError('Please enter a pickup address')
       return
     }
+    if (!form.whatsapp_number.trim() && !form.contact_email.trim()) {
+      setError('Please add a WhatsApp number or an email so buyers can contact you')
+      return
+    }
 
     setSaving(true)
     try {
@@ -122,6 +130,8 @@ export default function MerchantSettingsPage() {
         category: form.category.trim() || 'general',
         location: form.location.trim() || null,
         phone: form.phone.trim() || null,
+        whatsapp_number: form.whatsapp_number.trim() || null,
+        contact_email: form.contact_email.trim() || null,
         description: form.description.trim() || null,
         image_url: imageUrl || null,
         banner_url: bannerUrl || null,
@@ -315,6 +325,23 @@ export default function MerchantSettingsPage() {
           </div>
           <div style={{ fontSize: '12px', color: '#888', marginTop: '6px' }}>
             Delivery charge is now set centrally by Cot Lever (based on the buyer's country, order weight, and item count) — it's no longer set per shop.
+          </div>
+        </div>
+
+        <div style={{ marginBottom: '6px' }}>
+          <div style={{ fontSize: '13px', fontWeight: '700', color: '#0a0a0a' }}>Buyer Contact</div>
+          <div style={{ fontSize: '12px', color: '#888', marginTop: '2px', marginBottom: '10px' }}>
+            Buyers will see these on your products to message you directly — add at least one.
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+          <div>
+            <label style={labelStyle}>WhatsApp Number</label>
+            <input style={inputStyle} value={form.whatsapp_number} onChange={e => handleFieldChange('whatsapp_number', e.target.value)} placeholder="e.g. 8801712345678" />
+          </div>
+          <div>
+            <label style={labelStyle}>Contact Email</label>
+            <input type="email" style={inputStyle} value={form.contact_email} onChange={e => handleFieldChange('contact_email', e.target.value)} placeholder="e.g. shop@example.com" />
           </div>
         </div>
 
