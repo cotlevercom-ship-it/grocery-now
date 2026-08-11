@@ -103,7 +103,7 @@ function ConnectionDiagram() {
       {nodes.map((n, i) => (
         <circle key={`pulse-${i}`} r="3.5" fill={theme.brass} className="cd-pulse-dot" style={{ '--delay': `${i * 0.09}s` }}>
           <animateMotion
-            dur={`${2.2 + (i % 3) * 0.35}s`}
+            dur={`${4.4 + (i % 3) * 0.7}s`}
             repeatCount="indefinite"
             keyPoints="0;1;0"
             keyTimes="0;0.5;1"
@@ -118,7 +118,7 @@ function ConnectionDiagram() {
       {nodes.map((n, i) => (
         <g
           key={`node-${i}`} className="cd-node-g"
-          style={{ '--delay': `${i * 0.09}s`, '--float-dur': `${3.4 + (i % 3) * 0.4}s` }}
+          style={{ '--delay': `${i * 0.09}s`, '--float-dur': `${5.2 + (i % 3) * 0.6}s` }}
         >
           <circle cx={n.x} cy={n.y} r="26" fill={theme.surface} stroke={theme.brass} strokeWidth="1.5" />
           <text x={n.x} y={n.y + 4} textAnchor="middle" fill={theme.ink} fontSize="9" fontFamily={theme.fontBody} fontWeight="600">{n.label}</text>
