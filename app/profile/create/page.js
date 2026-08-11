@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 const STAGES = [
   { value: 'idea', label: 'Just an idea' },
@@ -31,6 +32,7 @@ export default function CreateFounderProfilePage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -95,6 +97,9 @@ export default function CreateFounderProfilePage() {
     if (!form.headline.trim()) { setError('Please enter a short headline'); return }
     if (!form.whatsapp_number.trim() && !form.contact_email.trim()) {
       setError('Please add a WhatsApp number or an email so people can reach you'); return
+    }
+    if (!editingId && !agreedToTerms) {
+      setError('Please agree to the Founder Profile Agreement to continue'); return
     }
 
     setSaving(true)
@@ -265,6 +270,12 @@ export default function CreateFounderProfilePage() {
             <input style={inputStyle} value={form.portfolio_url} onChange={e => set('portfolio_url', e.target.value)} placeholder="https://..." />
           </div>
         </div>
+
+        {!editingId && (
+          <div style={{ marginBottom: '18px' }}>
+            <AgreementCheckbox type="founder" checked={agreedToTerms} onChange={setAgreedToTerms} />
+          </div>
+        )}
 
         <button type="submit" disabled={saving || uploading} style={{
           background: saving ? '#9ca3af' : '#f4a300', color: '#0a0a0a', border: 'none',
