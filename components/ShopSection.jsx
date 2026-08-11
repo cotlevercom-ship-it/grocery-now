@@ -6,23 +6,19 @@ export const dynamic = 'force-dynamic'
 export default async function ShopSection() {
   let shops = []
   try {
-    shops = await supabaseFetch(`shops?select=*&is_active=eq.true&order=is_featured.desc,created_at.desc`)
+    shops = await supabaseFetch(`shops?select=*&is_active=eq.true&order=is_featured.desc,created_at.desc&limit=12`)
   } catch (e) {
     console.error(e)
   }
 
-  if (!shops || shops.length === 0) {
-    return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
-        <div style={{ fontSize: '40px', marginBottom: '10px' }}>🏪</div>
-        <p>No shops available right now</p>
-      </div>
-    )
-  }
+  if (!shops || shops.length === 0) return null
 
   return (
-    <section style={{ padding: '28px 16px 8px' }}>
+    <section className="shops-section">
       <ShopGrid shops={shops} />
+      <style>{`
+        .shops-section { background: #eef0ee; padding: 6px 16px 30px; }
+      `}</style>
     </section>
   )
 }

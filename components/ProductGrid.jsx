@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
-export default function ProductGrid({ products, categories = [], soldCounts = {} }) {
+export default function ProductGrid({ products, categories = [] }) {
   const searchParams = useSearchParams()
   const [selectedCat, setSelectedCat] = useState('all')
 
@@ -82,18 +82,8 @@ export default function ProductGrid({ products, categories = [], soldCounts = {}
             const discount = p.sale_price && Number(p.sale_price) < Number(p.price)
 
             return (
-              <Link
-                key={p.id}
-                href={`/products/${p.id}`}
-                style={{
-                  display: 'block', background: 'white', border: '1px solid #eee',
-                  textDecoration: 'none', overflow: 'hidden',
-                }}
-              >
-                <div style={{
-                  position: 'relative', width: '100%', aspectRatio: '1', background: '#f0f0f0',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-                }}>
+              <Link key={p.id} href={`/products/${p.id}`} className="product-tile">
+                <div className="product-tile-img">
                   {p.image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -105,33 +95,18 @@ export default function ProductGrid({ products, categories = [], soldCounts = {}
                     <span style={{ fontSize: '28px', opacity: 0.35 }}>🛍️</span>
                   )}
                 </div>
-                <div style={{ padding: '10px' }}>
-                  <div style={{
-                    fontSize: '12.5px', fontWeight: '400', color: '#333',
-                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden', lineHeight: '1.4', minHeight: '35px',
-                  }}>{p.name}</div>
+                <div className="product-tile-body">
+                  <div className="product-tile-price">
+                    ৳{price}
+                    {discount && <span className="product-tile-strike">৳{p.price}</span>}
+                  </div>
+                  <div className="product-tile-name">{p.name}</div>
 
                   {p.moq > 1 && (
-                    <div style={{ fontSize: '10.5px', color: '#2d6a4f', marginTop: '4px', fontWeight: '500' }}>
-                      ✓ MOQ {p.moq} {p.unit}
-                    </div>
+                    <div className="product-tile-moq">✓ MOQ {p.moq} {p.unit}</div>
                   )}
 
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
-                    <span style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a1a' }}>৳{price}</span>
-                    {discount && (
-                      <span style={{ fontSize: '11px', color: '#aaa', textDecoration: 'line-through' }}>৳{p.price}</span>
-                    )}
-                  </div>
-
-                  <div style={{
-                    fontSize: '11px', color: '#999', marginTop: '4px',
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px',
-                  }}>
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.shops?.name || ''}</span>
-                    {soldCounts[p.id] > 0 && <span style={{ flexShrink: 0 }}>SOLD: {soldCounts[p.id]}</span>}
-                  </div>
+                  <div className="product-tile-shop">{p.shops?.name || ''}</div>
                 </div>
               </Link>
             )
@@ -154,29 +129,91 @@ export default function ProductGrid({ products, categories = [], soldCounts = {}
         .cat-chip {
           flex-shrink: 0;
           background: white;
-          border: 1px solid #f4a300;
+          border: 1px solid #e4e4e1;
           border-radius: 999px;
           padding: 8px 16px;
           font-size: 13px;
           font-weight: 600;
-          color: #a06c00;
-          white-space: nowrap;
+          color: #55554f;
         }
         .cat-chip.active {
-          background: #f4a300;
-          border-color: #f4a300;
-          color: #0a0a0a;
+          background: #0a0a0a;
+          border-color: #0a0a0a;
+          color: #f4a300;
         }
         .products-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
+          gap: 12px;
         }
         @media (min-width: 640px) {
           .products-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
         }
         @media (min-width: 1024px) {
-          .products-grid { grid-template-columns: repeat(5, 1fr); gap: 20px; }
+          .products-grid { grid-template-columns: repeat(5, 1fr); gap: 18px; }
+        }
+        .product-tile {
+          display: block;
+          background: white;
+          border: 1px solid #ececea;
+          border-radius: 12px;
+          overflow: hidden;
+          text-decoration: none;
+          transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+        .product-tile:hover {
+          box-shadow: 0 6px 18px rgba(10,10,10,0.08);
+          transform: translateY(-1px);
+        }
+        .product-tile-img {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1;
+          background: #f6f6f4;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+        .product-tile-body { padding: 10px 12px 12px; }
+        .product-tile-price {
+          font-size: 16px;
+          font-weight: 800;
+          color: #0a0a0a;
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+        }
+        .product-tile-strike {
+          font-size: 11px;
+          font-weight: 500;
+          color: #b3b3ac;
+          text-decoration: line-through;
+        }
+        .product-tile-name {
+          font-size: 12.5px;
+          color: #333;
+          margin-top: 4px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          line-height: 1.4;
+          min-height: 35px;
+        }
+        .product-tile-moq {
+          font-size: 10.5px;
+          color: #2d6a4f;
+          font-weight: 500;
+          margin-top: 2px;
+        }
+        .product-tile-shop {
+          font-size: 11px;
+          color: #999;
+          margin-top: 6px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       `}</style>
     </>

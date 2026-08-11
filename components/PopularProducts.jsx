@@ -17,27 +17,19 @@ export default async function PopularProducts() {
 
   if (!products || products.length === 0) return null
 
-  let soldCounts = {}
-  try {
-    const ids = products.map(p => p.id).join(',')
-    const items = await supabaseFetch(`order_items?select=product_id,quantity&product_id=in.(${ids})`)
-    soldCounts = (items || []).reduce((acc, item) => {
-      acc[item.product_id] = (acc[item.product_id] || 0) + (item.quantity || 0)
-      return acc
-    }, {})
-  } catch (e) {
-    console.error(e)
-  }
-
   return (
-    <div id="products-grid" style={{ background: '#f5f5f5', padding: '24px 16px 24px', scrollMarginTop: '70px' }}>
-      <div>
-        <h2 className="shop-heading" style={{ fontWeight: '800', color: '#0a0a0a', marginBottom: '14px' }}>
-          Popular Products
-        </h2>
-
-        <ProductGrid products={products} categories={categories || []} soldCounts={soldCounts} />
+    <div id="products-grid" className="picks-section" style={{ scrollMarginTop: '70px' }}>
+      <div className="picks-header">
+        <h2 className="shop-heading picks-title">Today's picks</h2>
+        <p className="picks-subtitle">Message a seller directly — no checkout, no waiting.</p>
       </div>
+      <ProductGrid products={products} categories={categories || []} />
+      <style>{`
+        .picks-section { background: #eef0ee; padding: 22px 16px 26px; }
+        .picks-header { margin-bottom: 14px; }
+        .picks-title { font-weight: 800; color: #0a0a0a; margin: 0 0 4px; }
+        .picks-subtitle { font-size: 12.5px; color: #767672; margin: 0; }
+      `}</style>
     </div>
   )
 }
