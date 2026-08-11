@@ -2,14 +2,12 @@
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
-const KEYS = ['bkash_number', 'contact_email', 'whatsapp_number', 'facebook_url', 'default_commission_percent']
+const KEYS = ['contact_email', 'whatsapp_number', 'facebook_url']
 
 const FIELD_META = {
-  bkash_number: { label: 'bKash Number (Merchant)', placeholder: '01XXXXXXXXX' },
   contact_email: { label: 'Support Email', placeholder: 'support@example.com' },
   whatsapp_number: { label: 'WhatsApp Number (without country code, e.g. 01XXXXXXXXX)', placeholder: '01XXXXXXXXX' },
   facebook_url: { label: 'Facebook Page Link', placeholder: 'https://facebook.com/yourpage' },
-  default_commission_percent: { label: 'Default Merchant Commission % (warehouse buy-back, used when a category has no commission % of its own)', placeholder: '10' },
 }
 
 export default function AdminSettingsPage() {

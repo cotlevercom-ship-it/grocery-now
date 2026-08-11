@@ -2,7 +2,7 @@
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn, signUp, setAccountType, supabaseFetch } from '@/lib/supabase'
+import { signIn, signUp, supabaseFetch } from '@/lib/supabase'
 import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 export default function LoginPage() {
@@ -53,7 +53,6 @@ function LoginForm() {
     try {
       if (mode === 'signup') {
         const data = await signUp(email.trim(), password)
-        await setAccountType('customer')
         if (data?.user?.id) {
           try {
             await supabaseFetch('user_profiles', {
