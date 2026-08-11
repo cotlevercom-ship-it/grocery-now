@@ -7,7 +7,6 @@ import Logo from './Logo'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
-  const [cartCount, setCartCount] = useState(0)
   const [q, setQ] = useState('')
   const pathname = usePathname()
   const router = useRouter()
@@ -21,30 +20,6 @@ export default function Navbar() {
     return () => {
       window.removeEventListener('auth-changed', onAuthChanged)
       window.removeEventListener('storage', onAuthChanged)
-    }
-  }, [])
-
-  useEffect(() => {
-    const readCart = () => {
-      try {
-        const saved = localStorage.getItem('cart')
-        if (!saved) { setCartCount(0); return }
-        const parsed = JSON.parse(saved)
-        const shopsObj = parsed.shops || (parsed.shopId ? { [parsed.shopId]: parsed } : {})
-        const count = Object.values(shopsObj).reduce(
-          (sum, s) => sum + (s.items || []).reduce((a, b) => a + (b.qty || 0), 0), 0
-        )
-        setCartCount(count)
-      } catch (e) {
-        setCartCount(0)
-      }
-    }
-    readCart()
-    window.addEventListener('cart-changed', readCart)
-    window.addEventListener('storage', readCart)
-    return () => {
-      window.removeEventListener('cart-changed', readCart)
-      window.removeEventListener('storage', readCart)
     }
   }, [])
 
@@ -101,28 +76,20 @@ export default function Navbar() {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-          <Link href="/cart" style={{
-            position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
-            borderRadius: '8px', width: '36px', height: '36px', flexShrink: 0
-          }}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
-            {cartCount > 0 && (
-              <span style={{
-                position: 'absolute', top: '-4px', right: '-4px',
-                background: '#f4a300', color: '#1a1a1a', fontSize: '10px', fontWeight: '700',
-                borderRadius: '999px', minWidth: '16px', height: '16px', padding: '0 3px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                lineHeight: 1, border: '2px solid #000'
-              }}>
-                {cartCount > 99 ? '99+' : cartCount}
-              </span>
-            )}
-          </Link>
+          {!isMerchantArea && (
+            <Link href="/merchant" className="navbar-sell-link" style={{
+              display: 'flex', alignItems: 'center', gap: '5px',
+              background: '#f4a300', color: '#0a0a0a',
+              borderRadius: '8px', padding: '7px 12px',
+              fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', textDecoration: 'none',
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span className="navbar-sell-text">List item</span>
+            </Link>
+          )}
 
           {session ? (
             <Link href="/account" style={{
@@ -158,6 +125,13 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 480px) {
+          .navbar-sell-text { display: none; }
+          .navbar-sell-link { padding: 7px 9px !important; }
+        }
+      `}</style>
     </>
   )
 }
