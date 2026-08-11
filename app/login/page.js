@@ -112,7 +112,7 @@ function LoginForm() {
             {mode === 'login' ? 'Log In' : 'Create Account'}
           </div>
           <div style={{ fontSize: '13px', color: '#888' }}>
-            {mode === 'login' ? 'Welcome back! Log in to continue' : 'Create an account to start shopping'}
+            {mode === 'login' ? 'Welcome back! Log in to continue' : 'Create an account to start connecting with founders'}
           </div>
         </div>
 
