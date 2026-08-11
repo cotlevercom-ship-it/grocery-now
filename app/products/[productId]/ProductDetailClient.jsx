@@ -2,7 +2,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getShopCart, setShopCart } from '@/lib/cart'
+
+function normalizeWhatsApp(number) {
+  if (!number) return null
+  let digits = number.replace(/[^\d]/g, '')
+  if (digits.startsWith('0')) digits = '880' + digits.slice(1)
+  if (!digits.startsWith('880') && digits.length <= 11) digits = '880' + digits
+  return digits
+}
 
 export default function ProductDetailClient({ product, shop }) {
   const router = useRouter()
@@ -18,8 +25,6 @@ export default function ProductDetailClient({ product, shop }) {
   const [selectedVariantId, setSelectedVariantId] = useState(
     availableVariants.length > 0 ? availableVariants[0].id : null
   )
-  const [qty, setQty] = useState(1)
-  const [added, setAdded] = useState(false)
 
   const selectedVariant = variants.find(v => v.id === selectedVariantId) || null
   const price = selectedVariant
@@ -34,34 +39,13 @@ export default function ProductDetailClient({ product, shop }) {
     ? (!selectedVariant || selectedVariant.is_available === false)
     : product.is_available === false
 
-  const handleAddToCart = () => {
-    if (outOfStock) return
-    const cartKey = selectedVariant ? `${product.id}:${selectedVariant.id}` : product.id
-    const existing = getShopCart(shop.id)
-    const already = existing.find(i => i.cartKey === cartKey)
-    const newItems = already
-      ? existing.map(i => i.cartKey === cartKey ? { ...i, qty: i.qty + qty } : i)
-      : [...existing, {
-          cartKey,
-          id: product.id,
-          variantId: selectedVariant?.id || null,
-          name: product.name,
-          variantName: selectedVariant?.name || null,
-          price,
-          unit: product.unit,
-          weightGrams: product.weight_grams || 0,
-          image_url: images[0] || product.image_url,
-          qty,
-        }]
-    setShopCart(shop.id, shop.name, newItems)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1800)
-  }
-
-  const handleBuyNow = () => {
-    handleAddToCart()
-    router.push('/cart')
-  }
+  const contactMessage = `Hi, I'm interested in "${product.name}"${selectedVariant ? ` (${selectedVariant.name})` : ''} on Cot Lever. Is it available?`
+  const waNumber = normalizeWhatsApp(shop.whatsapp_number)
+  const waHref = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(contactMessage)}` : null
+  const emailHref = shop.contact_email
+    ? `mailto:${shop.contact_email}?subject=${encodeURIComponent(`Inquiry: ${product.name}`)}&body=${encodeURIComponent(contactMessage)}`
+    : null
+  const hasContact = !!(waHref || emailHref)
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: 'calc(90px + env(safe-area-inset-bottom))' }}>
@@ -186,34 +170,43 @@ export default function ProductDetailClient({ product, shop }) {
               </div>
             )}
 
-            {/* Quantity + Add to cart (desktop inline) */}
-            <div className="desktop-cart-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '20px' }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                border: '1px solid #ddd', borderRadius: '8px', padding: '8px 12px'
-              }}>
-                <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ fontSize: '16px', color: '#0a0a0a', width: '20px', background: 'none', border: 'none' }}>-</button>
-                <span style={{ fontSize: '14px', fontWeight: '600', minWidth: '18px', textAlign: 'center' }}>{qty}</span>
-                <button onClick={() => setQty(q => q + 1)} style={{ fontSize: '16px', color: '#0a0a0a', width: '20px', background: 'none', border: 'none' }}>+</button>
-              </div>
-              <button
-                onClick={handleAddToCart}
-                disabled={outOfStock}
-                style={{
-                  flex: 1, background: outOfStock ? '#ccc' : 'white', color: '#0a0a0a',
-                  padding: '12px', borderRadius: '8px', fontSize: '14px', fontWeight: '700',
-                  border: '2px solid #0a0a0a'
-                }}
-              >{added ? '✓ Added' : 'Add to cart'}</button>
-              <button
-                onClick={handleBuyNow}
-                disabled={outOfStock}
-                style={{
-                  flex: 1, background: outOfStock ? '#ccc' : '#f4a300', color: '#1a1a1a',
-                  padding: '12px', borderRadius: '8px', fontSize: '14px', fontWeight: '700', border: 'none'
-                }}
-              >Buy now</button>
+            {/* Contact Seller (desktop inline) */}
+            <div className="desktop-cart-actions" style={{ marginTop: '20px' }}>
+              {outOfStock && (
+                <div style={{ marginBottom: '10px', fontSize: '12.5px', color: '#888' }}>
+                  Ask the seller if this is back in stock.
+                </div>
+              )}
+              {hasContact ? (
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {waHref && (
+                    <a href={waHref} target="_blank" rel="noopener noreferrer" style={{
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                      background: '#25D366', color: 'white',
+                      padding: '12px', borderRadius: '8px', fontSize: '14px', fontWeight: '700', textDecoration: 'none'
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.9 8.9 0 0 0-7.7 13.35L3 20.6l3.35-1.32a8.9 8.9 0 0 0 5.7 2.05h.01a8.9 8.9 0 0 0 8.9-8.9 8.86 8.86 0 0 0-3.36-6.11ZM12.05 19.9h-.01a7.4 7.4 0 0 1-3.77-1.03l-.27-.16-2.8 1.1.94-2.73-.18-.28a7.4 7.4 0 1 1 6.1 3.1Zm4.06-5.54c-.22-.11-1.3-.64-1.5-.72-.2-.07-.35-.11-.5.11s-.58.72-.71.87-.26.16-.48.05a6.06 6.06 0 0 1-1.78-1.1 6.66 6.66 0 0 1-1.23-1.53c-.13-.22 0-.34.1-.45.1-.1.22-.26.33-.39.11-.13.14-.22.22-.37a.4.4 0 0 1-.02-.39c-.05-.11-.5-1.2-.68-1.64-.18-.43-.36-.37-.5-.38h-.43a.82.82 0 0 0-.6.28 2.5 2.5 0 0 0-.77 1.85c0 1.09.79 2.14.9 2.29.11.15 1.55 2.37 3.76 3.32a12.6 12.6 0 0 0 1.26.47c.53.17 1.01.14 1.39.09.42-.06 1.3-.53 1.48-1.05.18-.51.18-.95.13-1.05-.05-.1-.2-.16-.42-.27Z"/></svg>
+                      WhatsApp Seller
+                    </a>
+                  )}
+                  {emailHref && (
+                    <a href={emailHref} style={{
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                      background: 'white', color: '#0a0a0a', border: '2px solid #0a0a0a',
+                      padding: '11px', borderRadius: '8px', fontSize: '14px', fontWeight: '700', textDecoration: 'none'
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                      Email Seller
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <div style={{ fontSize: '13px', color: '#999' }}>This seller hasn't added contact details yet.</div>
+              )}
             </div>
+
 
             {product.description && (
               <div style={{ marginTop: '24px' }}>
@@ -334,31 +327,36 @@ export default function ProductDetailClient({ product, shop }) {
         padding: '10px 16px calc(10px + env(safe-area-inset-bottom))',
         display: 'flex', alignItems: 'center', gap: '10px'
       }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '8px',
-          border: '1px solid #ddd', borderRadius: '8px', padding: '6px 10px', flexShrink: 0
-        }}>
-          <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ fontSize: '16px', color: '#0a0a0a', width: '18px', background: 'none', border: 'none' }}>-</button>
-          <span style={{ fontSize: '13px', fontWeight: '600', minWidth: '16px', textAlign: 'center' }}>{qty}</span>
-          <button onClick={() => setQty(q => q + 1)} style={{ fontSize: '16px', color: '#0a0a0a', width: '18px', background: 'none', border: 'none' }}>+</button>
-        </div>
-        <button
-          onClick={handleAddToCart}
-          disabled={outOfStock}
-          style={{
-            flex: 1, background: outOfStock ? '#ccc' : 'white', color: '#0a0a0a',
-            padding: '12px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700',
-            border: '2px solid #0a0a0a'
-          }}
-        >{added ? '✓ Added' : 'Add to cart'}</button>
-        <button
-          onClick={handleBuyNow}
-          disabled={outOfStock}
-          style={{
-            flex: 1, background: outOfStock ? '#ccc' : '#f4a300', color: '#1a1a1a',
-            padding: '12px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700', border: 'none'
-          }}
-        >Buy now</button>
+        {hasContact ? (
+          <>
+            {waHref && (
+              <a href={waHref} target="_blank" rel="noopener noreferrer" style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                background: '#25D366', color: 'white',
+                padding: '12px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700', textDecoration: 'none'
+              }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.9 8.9 0 0 0-7.7 13.35L3 20.6l3.35-1.32a8.9 8.9 0 0 0 5.7 2.05h.01a8.9 8.9 0 0 0 8.9-8.9 8.86 8.86 0 0 0-3.36-6.11ZM12.05 19.9h-.01a7.4 7.4 0 0 1-3.77-1.03l-.27-.16-2.8 1.1.94-2.73-.18-.28a7.4 7.4 0 1 1 6.1 3.1Zm4.06-5.54c-.22-.11-1.3-.64-1.5-.72-.2-.07-.35-.11-.5.11s-.58.72-.71.87-.26.16-.48.05a6.06 6.06 0 0 1-1.78-1.1 6.66 6.66 0 0 1-1.23-1.53c-.13-.22 0-.34.1-.45.1-.1.22-.26.33-.39.11-.13.14-.22.22-.37a.4.4 0 0 1-.02-.39c-.05-.11-.5-1.2-.68-1.64-.18-.43-.36-.37-.5-.38h-.43a.82.82 0 0 0-.6.28 2.5 2.5 0 0 0-.77 1.85c0 1.09.79 2.14.9 2.29.11.15 1.55 2.37 3.76 3.32a12.6 12.6 0 0 0 1.26.47c.53.17 1.01.14 1.39.09.42-.06 1.3-.53 1.48-1.05.18-.51.18-.95.13-1.05-.05-.1-.2-.16-.42-.27Z"/></svg>
+                WhatsApp
+              </a>
+            )}
+            {emailHref && (
+              <a href={emailHref} style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                background: 'white', color: '#0a0a0a', border: '2px solid #0a0a0a',
+                padding: '11px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700', textDecoration: 'none'
+              }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                Email
+              </a>
+            )}
+          </>
+        ) : (
+          <div style={{ flex: 1, textAlign: 'center', fontSize: '13px', color: '#999', padding: '10px 0' }}>
+            This seller hasn't added contact details yet.
+          </div>
+        )}
       </div>
 
       <style jsx>{`
