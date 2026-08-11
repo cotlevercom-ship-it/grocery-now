@@ -26,16 +26,60 @@ function ConnectionDiagram() {
     { label: 'Buyer', x: 250, y: 265 },
   ]
   const cx = 150, cy = 145
+  const lineLength = (n) => Math.hypot(n.x - cx, n.y - cy)
+
   return (
-    <svg viewBox="0 0 320 320" width="100%" height="100%" style={{ maxWidth: '360px' }}>
+    <svg viewBox="0 0 320 320" width="100%" height="100%" style={{ maxWidth: '360px', overflow: 'visible' }}>
+      <style>{`
+        .cd-line {
+          stroke-dasharray: var(--len);
+          stroke-dashoffset: var(--len);
+          animation: cd-draw 0.7s ease-out forwards;
+          animation-delay: var(--delay);
+        }
+        .cd-node {
+          opacity: 0;
+          transform-origin: var(--ox) var(--oy);
+          animation: cd-pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.3) forwards;
+          animation-delay: calc(var(--delay) + 0.35s);
+        }
+        .cd-center {
+          animation: cd-pulse 2.6s ease-in-out infinite;
+          animation-delay: 1.6s;
+          transform-origin: ${cx}px ${cy}px;
+        }
+        @keyframes cd-draw {
+          to { stroke-dashoffset: 0; }
+        }
+        @keyframes cd-pop {
+          0% { opacity: 0; transform: scale(0.4); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes cd-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.045); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .cd-line, .cd-node, .cd-center { animation: none !important; opacity: 1 !important; stroke-dashoffset: 0 !important; }
+        }
+      `}</style>
+
       {nodes.map((n, i) => (
-        <line key={i} x1={cx} y1={cy} x2={n.x} y2={n.y} stroke={theme.line} strokeWidth="1.5" />
+        <line
+          key={i} x1={cx} y1={cy} x2={n.x} y2={n.y}
+          stroke={theme.line} strokeWidth="1.5" className="cd-line"
+          style={{ '--len': lineLength(n), '--delay': `${i * 0.09}s` }}
+        />
       ))}
-      <circle cx={cx} cy={cy} r="34" fill={theme.ink} />
-      <text x={cx} y={cy - 3} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">YOUR</text>
-      <text x={cx} y={cy + 10} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">BUSINESS</text>
+
+      <g className="cd-center">
+        <circle cx={cx} cy={cy} r="34" fill={theme.ink} />
+        <text x={cx} y={cy - 3} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">YOUR</text>
+        <text x={cx} y={cy + 10} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">BUSINESS</text>
+      </g>
+
       {nodes.map((n, i) => (
-        <g key={i}>
+        <g key={i} className="cd-node" style={{ '--delay': `${i * 0.09}s`, '--ox': `${n.x}px`, '--oy': `${n.y}px` }}>
           <circle cx={n.x} cy={n.y} r="26" fill={theme.surface} stroke={theme.brass} strokeWidth="1.5" />
           <text x={n.x} y={n.y + 4} textAnchor="middle" fill={theme.ink} fontSize="9" fontFamily={theme.fontBody} fontWeight="600">{n.label}</text>
         </g>
