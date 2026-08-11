@@ -75,7 +75,6 @@ export default function AdminLayout({ children }) {
     { href: '/admin/package-requests', label: 'Payment Requests', icon: '💳' },
     { href: '/admin/merchant-packages', label: 'Merchant Packages', icon: '🏷️' },
     { href: '/admin/revenue', label: 'Revenue', icon: '💰' },
-    { href: '/admin/affiliates', label: 'Affiliates', icon: '🤝' },
     { href: '/admin/pages', label: 'Page Management', icon: '📄' },
     { href: '/admin/agreements', label: 'Agreements', icon: '📜' },
     { href: '/admin/help', label: 'Help Center', icon: '❓' },

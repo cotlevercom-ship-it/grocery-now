@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabaseFetch, createReferralIfNeeded } from '@/lib/supabase'
+import { supabaseFetch } from '@/lib/supabase'
 
 export default function AdminPackageRequestsPage() {
   const [requests, setRequests] = useState([])
@@ -14,7 +14,7 @@ export default function AdminPackageRequestsPage() {
     setError('')
     try {
       const data = await supabaseFetch(
-        `package_payment_requests?select=*,shops(name,phone,ref_code),seller_packages(name,price)&order=created_at.desc`
+        `package_payment_requests?select=*,shops(name,phone),seller_packages(name,price)&order=created_at.desc`
       )
       setRequests(data || [])
     } catch (e) {
@@ -38,9 +38,6 @@ export default function AdminPackageRequestsPage() {
         method: 'PATCH',
         body: JSON.stringify({ package_id: req.package_id, is_active: true }),
       })
-      if (req.shops?.ref_code) {
-        await createReferralIfNeeded(req.shop_id, req.shops.ref_code)
-      }
       await loadData()
     } catch (e) {
       console.error(e)

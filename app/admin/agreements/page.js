@@ -5,7 +5,6 @@ import { supabaseFetch } from '@/lib/supabase'
 const TYPE_LABELS = {
   merchant: { label: 'Merchant Registration', desc: 'Shown at /merchant/create during shop signup' },
   customer: { label: 'Customer Registration', desc: 'Shown at /login during signup' },
-  affiliate: { label: 'Affiliate Registration', desc: 'Shown at /affiliate during signup' },
   ship: { label: 'Ship a Parcel', desc: 'Shown at /ship before booking a shipment' },
 }
 

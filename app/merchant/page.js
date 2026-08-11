@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 
 const COLORS = {
@@ -21,9 +21,7 @@ export default function MerchantLandingPage() {
 
 function MerchantLandingInner() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const refCode = searchParams.get('ref') || ''
-  const createHref = refCode ? `/merchant/create?ref=${encodeURIComponent(refCode)}` : '/merchant/create'
+  const createHref = '/merchant/create'
 
   const [checking, setChecking] = useState(true)
   const [ctaHref, setCtaHref] = useState(`/login?next=${encodeURIComponent(createHref)}`)

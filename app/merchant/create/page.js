@@ -2,14 +2,13 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { getSession, supabaseFetch, createReferralIfNeeded } from '@/lib/supabase'
+import { getSession, supabaseFetch } from '@/lib/supabase'
 
 function CreateShopForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planParam = searchParams.get('plan')
   const pkgParam = searchParams.get('pkg')
-  const refCode = searchParams.get('ref') || ''
 
   const [checking, setChecking] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -112,7 +111,6 @@ function CreateShopForm() {
         min_order_amount: 0,
         package_id: selectedPkgId || null,
         is_active: !withPayment,
-        ref_code: refCode || null,
       }),
     })
     return Array.isArray(rows) ? rows[0] : rows
@@ -138,10 +136,7 @@ function CreateShopForm() {
     // Free package: create the shop immediately
     setSubmitting(true)
     try {
-      const shop = await createShop({ withPayment: false })
-      if (shop?.id && refCode) {
-        await createReferralIfNeeded(shop.id, refCode)
-      }
+      await createShop({ withPayment: false })
       router.push('/merchant/dashboard')
     } catch (err) {
       console.error(err)

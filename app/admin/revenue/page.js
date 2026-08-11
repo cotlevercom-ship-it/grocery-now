@@ -5,12 +5,10 @@ import { supabaseFetch } from '@/lib/supabase'
 export default function AdminRevenuePage() {
   const [requests, setRequests] = useState([])
   const [packages, setPackages] = useState([])
-  const [referralMap, setReferralMap] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   const [packageFilter, setPackageFilter] = useState('all')
-  const [sourceFilter, setSourceFilter] = useState('all')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
 
@@ -18,20 +16,14 @@ export default function AdminRevenuePage() {
     setLoading(true)
     setError('')
     try {
-      const [reqData, pkgData, refData] = await Promise.all([
+      const [reqData, pkgData] = await Promise.all([
         supabaseFetch(
           `package_payment_requests?select=*,shops(name,phone),seller_packages(name,price)&order=created_at.desc`
         ),
         supabaseFetch(`seller_packages?select=id,name,price&order=sort_order`),
-        supabaseFetch(`referrals?select=shop_id,affiliates(name,phone)`),
       ])
       setRequests(reqData || [])
       setPackages(pkgData || [])
-      const map = {}
-      ;(refData || []).forEach(r => {
-        if (r.shop_id) map[r.shop_id] = r.affiliates?.name || 'Affiliate'
-      })
-      setReferralMap(map)
     } catch (e) {
       console.error(e)
       setError('Failed to load revenue data')
@@ -80,20 +72,6 @@ export default function AdminRevenuePage() {
     return Object.values(map).sort((a, b) => b.total - a.total)
   }, [approved])
 
-  const revenueBySource = useMemo(() => {
-    let affiliateTotal = 0, affiliateCount = 0, directTotal = 0, directCount = 0
-    approved.forEach(r => {
-      if (referralMap[r.shop_id]) {
-        affiliateTotal += Number(r.amount || 0)
-        affiliateCount += 1
-      } else {
-        directTotal += Number(r.amount || 0)
-        directCount += 1
-      }
-    })
-    return { affiliateTotal, affiliateCount, directTotal, directCount }
-  }, [approved, referralMap])
-
   const last6Months = useMemo(() => {
     const months = []
     const now = new Date()
@@ -119,23 +97,20 @@ export default function AdminRevenuePage() {
   const filteredApproved = useMemo(() => {
     return approved.filter(r => {
       if (packageFilter !== 'all' && String(r.package_id) !== packageFilter) return false
-      if (sourceFilter === 'affiliate' && !referralMap[r.shop_id]) return false
-      if (sourceFilter === 'direct' && referralMap[r.shop_id]) return false
       const d = new Date(r.reviewed_at || r.created_at)
       if (fromDate && d < new Date(fromDate)) return false
       if (toDate && d > new Date(toDate + 'T23:59:59')) return false
       return true
     })
-  }, [approved, packageFilter, sourceFilter, referralMap, fromDate, toDate])
+  }, [approved, packageFilter, fromDate, toDate])
 
   const handleExportCsv = () => {
-    const header = ['Shop', 'Phone', 'Package', 'Amount', 'Source', 'Payer Number', 'Trx ID', 'Date']
+    const header = ['Shop', 'Phone', 'Package', 'Amount', 'Payer Number', 'Trx ID', 'Date']
     const rows = filteredApproved.map(r => [
       r.shops?.name || '',
       r.shops?.phone || '',
       r.seller_packages?.name || '',
       r.amount || 0,
-      referralMap[r.shop_id] ? `Affiliate: ${referralMap[r.shop_id]}` : 'Direct',
       r.payer_number || '',
       r.trx_id || '',
       new Date(r.reviewed_at || r.created_at).toLocaleString('en-US'),
@@ -179,7 +154,6 @@ export default function AdminRevenuePage() {
         <div>Generated: {new Date().toLocaleString('en-US')}</div>
         <div>
           Package: {packageFilter === 'all' ? 'All' : (packages.find(p => String(p.id) === packageFilter)?.name || 'All')}
-          {' · '}Source: {sourceFilter === 'all' ? 'All' : sourceFilter === 'affiliate' ? 'Via Affiliate' : 'Direct'}
           {(fromDate || toDate) ? ` · Date: ${fromDate || '...'} to ${toDate || '...'}` : ''}
         </div>
       </div>
@@ -227,28 +201,6 @@ export default function AdminRevenuePage() {
         </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '15px', fontWeight: '700', color: '#163a2c', marginBottom: '10px' }}>
-          Revenue by Source
-        </h2>
-        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-          <div style={cardStyle}>
-            <div style={labelStyle}>Via Affiliate</div>
-            <div style={valueStyle}>৳{revenueBySource.affiliateTotal.toLocaleString('en-US')}</div>
-            <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
-              {revenueBySource.affiliateCount} payment{revenueBySource.affiliateCount !== 1 ? 's' : ''}
-            </div>
-          </div>
-          <div style={cardStyle}>
-            <div style={labelStyle}>Direct (No Affiliate)</div>
-            <div style={valueStyle}>৳{revenueBySource.directTotal.toLocaleString('en-US')}</div>
-            <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
-              {revenueBySource.directCount} payment{revenueBySource.directCount !== 1 ? 's' : ''}
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div style={{
         background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0',
         padding: '20px', marginBottom: '20px'
@@ -281,11 +233,6 @@ export default function AdminRevenuePage() {
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
-        <select style={inputStyle} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}>
-          <option value="all">All Sources</option>
-          <option value="affiliate">Via Affiliate</option>
-          <option value="direct">Direct</option>
-        </select>
         <input type="date" style={inputStyle} value={fromDate} onChange={e => setFromDate(e.target.value)} />
         <span style={{ color: '#999', fontSize: '13px' }}>to</span>
         <input type="date" style={inputStyle} value={toDate} onChange={e => setToDate(e.target.value)} />
@@ -309,13 +256,12 @@ export default function AdminRevenuePage() {
         </div>
       ) : (
         <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', overflow: 'hidden', overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', minWidth: '720px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', minWidth: '620px' }}>
             <thead>
               <tr style={{ background: '#f7f7f7', textAlign: 'left' }}>
                 <th style={{ padding: '10px 14px' }}>Shop</th>
                 <th style={{ padding: '10px 14px' }}>Package</th>
                 <th style={{ padding: '10px 14px' }}>Amount</th>
-                <th style={{ padding: '10px 14px' }}>Source</th>
                 <th style={{ padding: '10px 14px' }}>Trx ID</th>
                 <th style={{ padding: '10px 14px' }}>Date</th>
               </tr>
@@ -326,16 +272,6 @@ export default function AdminRevenuePage() {
                   <td style={{ padding: '10px 14px', fontWeight: '600' }}>{r.shops?.name || 'Unknown'}</td>
                   <td style={{ padding: '10px 14px' }}>{r.seller_packages?.name || '-'}</td>
                   <td style={{ padding: '10px 14px' }}>৳{Number(r.amount || 0).toLocaleString('en-US')}</td>
-                  <td style={{ padding: '10px 14px' }}>
-                    {referralMap[r.shop_id] ? (
-                      <span style={{
-                        fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '10px',
-                        background: '#f5f5f5', color: '#2d6a4f'
-                      }}>{referralMap[r.shop_id]}</span>
-                    ) : (
-                      <span style={{ fontSize: '12px', color: '#999' }}>Direct</span>
-                    )}
-                  </td>
                   <td style={{ padding: '10px 14px', fontFamily: 'monospace' }}>{r.trx_id || '-'}</td>
                   <td style={{ padding: '10px 14px', color: '#888' }}>
                     {new Date(r.reviewed_at || r.created_at).toLocaleDateString('en-US')}
