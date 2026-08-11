@@ -1,8 +1,7 @@
-import AgencyLanding from '@/components/AgencyLanding'
+import BookShopHome from '@/components/BookShopHome'
 
 export const dynamic = 'force-dynamic'
-// redeploy trigger
 
 export default function Home() {
-  return <AgencyLanding />
+  return <BookShopHome />
 }
