@@ -4,13 +4,13 @@ import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 
 const TYPES = [
-  { value: 'all', label: 'সব', icon: '🔍' },
-  { value: 'co_founder', label: 'কো-ফাউন্ডার', icon: '🤝' },
-  { value: 'partner', label: 'পার্টনার', icon: '👥' },
-  { value: 'investor', label: 'ইনভেস্টর', icon: '💰' },
-  { value: 'employee', label: 'কর্মী', icon: '💼' },
-  { value: 'supplier', label: 'সাপ্লায়ার', icon: '📦' },
-  { value: 'buyer', label: 'বায়ার', icon: '🛒' },
+  { value: 'all', label: 'All', icon: '🔍' },
+  { value: 'co_founder', label: 'Co-founder', icon: '🤝' },
+  { value: 'partner', label: 'Partner', icon: '👥' },
+  { value: 'investor', label: 'Investor', icon: '💰' },
+  { value: 'employee', label: 'Employee', icon: '💼' },
+  { value: 'supplier', label: 'Supplier', icon: '📦' },
+  { value: 'buyer', label: 'Buyer', icon: '🛒' },
 ]
 
 const TYPE_LABEL = Object.fromEntries(TYPES.map(t => [t.value, t.label]))
@@ -46,15 +46,15 @@ export default function ListingHome() {
         borderRadius: '16px', padding: 'clamp(24px, 4vw, 44px)', marginBottom: '28px', color: 'white'
       }}>
         <h1 style={{ fontSize: 'clamp(22px, 3vw, 32px)', fontWeight: '800', marginBottom: '8px' }}>
-          ব্যবসার জন্য সঠিক মানুষ খুঁজুন
+          Find the right people for your business
         </h1>
         <p style={{ fontSize: 'clamp(13px, 1.2vw, 16px)', color: 'rgba(255,255,255,0.85)', maxWidth: '540px', marginBottom: '18px' }}>
-          কো-ফাউন্ডার, পার্টনার, ইনভেস্টর, কর্মী, সাপ্লায়ার বা বায়ার — যাই খুঁজুন না কেন, আপনার বিজনেস লিস্ট করুন।
+          Co-founder, partner, investor, employee, supplier, or buyer — whatever you're looking for, list your business here.
         </p>
         <Link href="/listings/new" style={{
           display: 'inline-block', background: '#f4a300', color: '#0a0a0a',
           borderRadius: '10px', padding: '12px 22px', fontSize: '14px', fontWeight: '700'
-        }}>+ আপনার বিজনেস লিস্ট করুন</Link>
+        }}>+ List Your Business</Link>
       </div>
 
       {/* Type filter */}
@@ -70,14 +70,14 @@ export default function ListingHome() {
       </div>
 
       {loading ? (
-        <div style={{ color: '#888', fontSize: '14px', textAlign: 'center', padding: '40px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px', textAlign: 'center', padding: '40px' }}>Loading...</div>
       ) : filtered.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '60px 20px', color: '#999',
           background: 'white', borderRadius: '12px', border: '1px solid #e5e5e5'
         }}>
           <div style={{ fontSize: '40px', marginBottom: '10px' }}>🏢</div>
-          <p>এই মুহূর্তে কোনো লিস্টিং নেই</p>
+          <p>No listings right now</p>
         </div>
       ) : (
         <div style={{
@@ -93,7 +93,7 @@ export default function ListingHome() {
                 {listing.business_name}
               </div>
               <div style={{ fontSize: '12.5px', color: '#888', marginBottom: '10px' }}>
-                {listing.industry || 'শিল্প উল্লেখ নেই'}{listing.location ? ` · ${listing.location}` : ''}
+                {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
               </div>
               <p style={{
                 fontSize: '12.5px', color: '#555', marginBottom: '12px',

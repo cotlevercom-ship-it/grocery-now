@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 
 export const metadata = {
   title: 'Cot Lever',
-  description: 'কো-ফাউন্ডার, পার্টনার, ইনভেস্টর, কর্মী, সাপ্লায়ার বা বায়ার খুঁজুন — আপনার বিজনেস লিস্ট করুন।',
+  description: 'Find a co-founder, partner, investor, employee, supplier, or buyer — list your business today.',
 }
 
 export const viewport = {

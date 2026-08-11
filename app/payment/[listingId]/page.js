@@ -41,7 +41,7 @@ export default function PaymentPage() {
     e.preventDefault()
     setError('')
     if (!senderNumber.trim() || !trxId.trim()) {
-      setError('আপনার bKash নম্বর ও ট্রানজেকশন আইডি দিন')
+      setError('Enter your bKash number and transaction ID')
       return
     }
     setSubmitting(true)
@@ -62,7 +62,7 @@ export default function PaymentPage() {
       setDone(true)
     } catch (e) {
       console.error(e)
-      setError('সাবমিট করতে সমস্যা হয়েছে, আবার চেষ্টা করুন')
+      setError('Submission failed, please try again')
     }
     setSubmitting(false)
   }
@@ -73,21 +73,21 @@ export default function PaymentPage() {
   }
   const labelStyle = { fontSize: '12.5px', color: '#555', display: 'block', marginBottom: '5px', fontWeight: '600' }
 
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>লোড হচ্ছে...</div>
+  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>Loading...</div>
 
   if (done) {
     return (
       <div style={{ padding: 'clamp(16px, 3vw, 40px)', maxWidth: '500px', margin: '0 auto', textAlign: 'center' }}>
         <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #e5e5e5', padding: '40px 24px', marginTop: '30px' }}>
           <div style={{ fontSize: '48px', marginBottom: '14px' }}>✅</div>
-          <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#163a2c', marginBottom: '8px' }}>পেমেন্ট জমা হয়েছে</h1>
+          <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#163a2c', marginBottom: '8px' }}>Payment Submitted</h1>
           <p style={{ fontSize: '14px', color: '#666', marginBottom: '18px' }}>
-            যাচাই করার পর আপনার লিস্টিং একটিভ হয়ে যাবে (সাধারণত কয়েক ঘণ্টার মধ্যে)।
+            Your listing will be activated after verification (usually within a few hours).
           </p>
           <a href="/" style={{
             display: 'inline-block', background: '#163a2c', color: 'white',
             borderRadius: '8px', padding: '11px 22px', fontSize: '14px', fontWeight: '700'
-          }}>হোমে ফিরে যান</a>
+          }}>Back to Home</a>
         </div>
       </div>
     )
@@ -95,7 +95,7 @@ export default function PaymentPage() {
 
   return (
     <div style={{ padding: 'clamp(16px, 3vw, 40px)', maxWidth: '560px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: '800', marginBottom: '20px' }}>পেমেন্ট করুন</h1>
+      <h1 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: '800', marginBottom: '20px' }}>Make Payment</h1>
 
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         {['monthly', 'yearly'].map(p => (
@@ -105,7 +105,7 @@ export default function PaymentPage() {
             background: plan === p ? '#163a2c' : 'white',
             color: plan === p ? 'white' : '#333', textAlign: 'left'
           }}>
-            <div style={{ fontSize: '13px', fontWeight: '700' }}>{p === 'monthly' ? 'মাসিক' : 'বাৎসরিক'}</div>
+            <div style={{ fontSize: '13px', fontWeight: '700' }}>{p === 'monthly' ? 'Monthly' : 'Yearly'}</div>
             <div style={{ fontSize: '20px', fontWeight: '800', marginTop: '4px' }}>
               ৳{p === 'monthly' ? prices.monthly : prices.yearly}
             </div>
@@ -120,19 +120,19 @@ export default function PaymentPage() {
       )}
 
       <div style={{ background: '#fff8e6', border: '1px solid #f4a300', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
-        <div style={{ fontSize: '13px', fontWeight: '700', color: '#8a6200', marginBottom: '6px' }}>bKash-এ পেমেন্ট করুন</div>
+        <div style={{ fontSize: '13px', fontWeight: '700', color: '#8a6200', marginBottom: '6px' }}>Pay via bKash</div>
         <div style={{ fontSize: '15px', color: '#333' }}>
-          Send Money করুন: <strong>{prices.bkashNumber || 'অ্যাডমিন নম্বর সেট করেনি'}</strong> নম্বরে, পরিমাণ ৳{price}
+          Send Money to: <strong>{prices.bkashNumber || 'Admin has not set a number yet'}</strong>, amount ৳{price}
         </div>
       </div>
 
       <form onSubmit={handleSubmit} style={{ background: 'white', borderRadius: '12px', border: '1px solid #e5e5e5', padding: '20px' }}>
         <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>আপনার bKash নম্বর *</label>
+          <label style={labelStyle}>Your bKash Number *</label>
           <input style={inputStyle} value={senderNumber} onChange={e => setSenderNumber(e.target.value)} placeholder="01XXXXXXXXX" />
         </div>
         <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>ট্রানজেকশন আইডি (TrxID) *</label>
+          <label style={labelStyle}>Transaction ID (TrxID) *</label>
           <input style={inputStyle} value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="8N7A6B5C4D" />
         </div>
 
@@ -140,7 +140,7 @@ export default function PaymentPage() {
           width: '100%', background: submitting ? '#9ca3af' : '#163a2c', color: 'white',
           borderRadius: '10px', padding: '14px', fontSize: '15px', fontWeight: '700'
         }}>
-          {submitting ? 'সাবমিট হচ্ছে...' : 'পেমেন্ট সাবমিট করুন'}
+          {submitting ? 'Submitting...' : 'Submit Payment'}
         </button>
       </form>
     </div>

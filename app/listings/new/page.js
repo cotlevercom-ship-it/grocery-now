@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 
 const TYPES = [
-  { value: 'co_founder', label: 'কো-ফাউন্ডার' },
-  { value: 'partner', label: 'পার্টনার' },
-  { value: 'investor', label: 'ইনভেস্টর' },
-  { value: 'employee', label: 'কর্মী' },
-  { value: 'supplier', label: 'সাপ্লায়ার' },
-  { value: 'buyer', label: 'বায়ার' },
+  { value: 'co_founder', label: 'Co-founder' },
+  { value: 'partner', label: 'Partner' },
+  { value: 'investor', label: 'Investor' },
+  { value: 'employee', label: 'Employee' },
+  { value: 'supplier', label: 'Supplier' },
+  { value: 'buyer', label: 'Buyer' },
 ]
 
 export default function NewListingPage() {
@@ -42,9 +42,9 @@ export default function NewListingPage() {
     e.preventDefault()
     setError('')
 
-    if (!form.business_name.trim()) { setError('বিজনেসের নাম দিন'); return }
-    if (form.listing_types.length === 0) { setError('অন্তত একটি ক্যাটেগরি বেছে নিন'); return }
-    if (!form.contact_phone.trim() && !form.contact_email.trim()) { setError('ফোন বা ইমেইল অন্তত একটি দিন'); return }
+    if (!form.business_name.trim()) { setError('Enter your business name'); return }
+    if (form.listing_types.length === 0) { setError('Select at least one category'); return }
+    if (!form.contact_phone.trim() && !form.contact_email.trim()) { setError('Provide at least a phone or email'); return }
 
     setSubmitting(true)
     try {
@@ -65,7 +65,7 @@ export default function NewListingPage() {
       router.push(`/payment/${listing.id}`)
     } catch (e) {
       console.error(e)
-      setError('লিস্টিং তৈরি করতে সমস্যা হয়েছে')
+      setError('Could not create the listing')
     }
     setSubmitting(false)
   }
@@ -81,20 +81,20 @@ export default function NewListingPage() {
   if (session === null) {
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
-        <p style={{ color: '#666', marginBottom: '16px' }}>লিস্টিং তৈরি করতে লগ ইন করুন</p>
+        <p style={{ color: '#666', marginBottom: '16px' }}>Log in to create a listing</p>
         <Link href="/login" style={{
           display: 'inline-block', background: '#163a2c', color: 'white',
           borderRadius: '8px', padding: '10px 22px', fontSize: '14px', fontWeight: '700'
-        }}>লগ ইন করুন</Link>
+        }}>Log In</Link>
       </div>
     )
   }
 
   return (
     <div style={{ padding: 'clamp(16px, 3vw, 40px)', maxWidth: '620px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: '800', marginBottom: '6px' }}>আপনার বিজনেস লিস্ট করুন</h1>
+      <h1 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: '800', marginBottom: '6px' }}>List Your Business</h1>
       <p style={{ fontSize: '13.5px', color: '#888', marginBottom: '22px' }}>
-        তথ্য দিন, এরপর পেমেন্ট করে লিস্টিং একটিভ করুন।
+        Fill in your details, then pay to activate the listing.
       </p>
 
       {error && (
@@ -105,28 +105,28 @@ export default function NewListingPage() {
 
       <form onSubmit={handleSubmit} style={{ background: 'white', borderRadius: '12px', border: '1px solid #e5e5e5', padding: '20px' }}>
         <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>বিজনেসের নাম *</label>
-          <input style={inputStyle} value={form.business_name} onChange={e => handleChange('business_name', e.target.value)} placeholder="আপনার বিজনেসের নাম" />
+          <label style={labelStyle}>Business Name *</label>
+          <input style={inputStyle} value={form.business_name} onChange={e => handleChange('business_name', e.target.value)} placeholder="Your business name" />
         </div>
 
         <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>বিবরণ</label>
-          <textarea style={{ ...inputStyle, minHeight: '90px', resize: 'vertical' }} value={form.description} onChange={e => handleChange('description', e.target.value)} placeholder="আপনার বিজনেস সম্পর্কে সংক্ষেপে লিখুন" />
+          <label style={labelStyle}>Description</label>
+          <textarea style={{ ...inputStyle, minHeight: '90px', resize: 'vertical' }} value={form.description} onChange={e => handleChange('description', e.target.value)} placeholder="Briefly describe your business" />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
           <div>
-            <label style={labelStyle}>শিল্প/ইন্ডাস্ট্রি</label>
-            <input style={inputStyle} value={form.industry} onChange={e => handleChange('industry', e.target.value)} placeholder="যেমন: টেক, ফ্যাশন" />
+            <label style={labelStyle}>Industry</label>
+            <input style={inputStyle} value={form.industry} onChange={e => handleChange('industry', e.target.value)} placeholder="e.g. Tech, Fashion" />
           </div>
           <div>
-            <label style={labelStyle}>লোকেশন</label>
-            <input style={inputStyle} value={form.location} onChange={e => handleChange('location', e.target.value)} placeholder="ঢাকা" />
+            <label style={labelStyle}>Location</label>
+            <input style={inputStyle} value={form.location} onChange={e => handleChange('location', e.target.value)} placeholder="Dhaka" />
           </div>
         </div>
 
         <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>কী খুঁজছেন? (একাধিক বেছে নিতে পারেন) *</label>
+          <label style={labelStyle}>What are you looking for? (select multiple) *</label>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {TYPES.map(t => (
               <button key={t.value} type="button" onClick={() => toggleType(t.value)} style={{
@@ -139,17 +139,17 @@ export default function NewListingPage() {
         </div>
 
         <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>ফোন নম্বর</label>
+          <label style={labelStyle}>Phone Number</label>
           <input style={inputStyle} value={form.contact_phone} onChange={e => handleChange('contact_phone', e.target.value)} placeholder="01XXXXXXXXX" />
         </div>
 
         <div style={{ marginBottom: '14px' }}>
-          <label style={labelStyle}>ইমেইল</label>
+          <label style={labelStyle}>Email</label>
           <input style={inputStyle} value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" />
         </div>
 
         <div style={{ marginBottom: '18px' }}>
-          <label style={labelStyle}>ওয়েবসাইট (ঐচ্ছিক)</label>
+          <label style={labelStyle}>Website (optional)</label>
           <input style={inputStyle} value={form.website} onChange={e => handleChange('website', e.target.value)} placeholder="https://..." />
         </div>
 
@@ -157,7 +157,7 @@ export default function NewListingPage() {
           width: '100%', background: submitting ? '#9ca3af' : '#163a2c', color: 'white',
           borderRadius: '10px', padding: '14px', fontSize: '15px', fontWeight: '700'
         }}>
-          {submitting ? 'তৈরি হচ্ছে...' : 'পরবর্তী ধাপ: পেমেন্ট'}
+          {submitting ? 'Creating...' : 'Next: Payment'}
         </button>
       </form>
     </div>

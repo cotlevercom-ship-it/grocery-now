@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 
 const TYPE_LABEL = {
-  co_founder: 'কো-ফাউন্ডার খুঁজছে', partner: 'পার্টনার খুঁজছে', investor: 'ইনভেস্টর খুঁজছে',
-  employee: 'কর্মী খুঁজছে', supplier: 'সাপ্লায়ার খুঁজছে', buyer: 'বায়ার খুঁজছে',
+  co_founder: 'Looking for Co-founder', partner: 'Looking for Partner', investor: 'Looking for Investor',
+  employee: 'Looking for Employee', supplier: 'Looking for Supplier', buyer: 'Looking for Buyer',
 }
 
 export default function ListingDetailPage() {
@@ -28,19 +28,19 @@ export default function ListingDetailPage() {
     if (id) load()
   }, [id])
 
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>লোড হচ্ছে...</div>
+  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>Loading...</div>
 
   if (!listing) {
     return (
       <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>
-        লিস্টিং পাওয়া যায়নি। <Link href="/" style={{ color: '#2d6a4f', fontWeight: '600' }}>হোমে ফিরে যান</Link>
+        Listing not found. <Link href="/" style={{ color: '#2d6a4f', fontWeight: '600' }}>Back to home</Link>
       </div>
     )
   }
 
   return (
     <div style={{ padding: 'clamp(16px, 3vw, 40px)', maxWidth: '700px', margin: '0 auto' }}>
-      <Link href="/" style={{ fontSize: '13px', color: '#666', display: 'inline-block', marginBottom: '16px' }}>← সব লিস্টিং</Link>
+      <Link href="/" style={{ fontSize: '13px', color: '#666', display: 'inline-block', marginBottom: '16px' }}>← All listings</Link>
 
       <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #e5e5e5', padding: 'clamp(20px,3vw,32px)' }}>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
@@ -56,7 +56,7 @@ export default function ListingDetailPage() {
           {listing.business_name}
         </h1>
         <div style={{ fontSize: '14px', color: '#888', marginBottom: '20px' }}>
-          {listing.industry || 'শিল্প উল্লেখ নেই'}{listing.location ? ` · ${listing.location}` : ''}
+          {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
         </div>
 
         {listing.description && (
@@ -66,7 +66,7 @@ export default function ListingDetailPage() {
         )}
 
         <div style={{ borderTop: '1px solid #eee', paddingTop: '20px' }}>
-          <div style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c', marginBottom: '10px' }}>যোগাযোগ করুন</div>
+          <div style={{ fontSize: '13px', fontWeight: '700', color: '#163a2c', marginBottom: '10px' }}>Contact</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {listing.contact_phone && (
               <a href={`tel:${listing.contact_phone}`} style={{ fontSize: '14px', color: '#2d6a4f', fontWeight: '600' }}>

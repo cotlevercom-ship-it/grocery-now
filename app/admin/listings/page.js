@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
 const TYPE_LABEL = {
-  co_founder: 'কো-ফাউন্ডার', partner: 'পার্টনার', investor: 'ইনভেস্টর',
-  employee: 'কর্মী', supplier: 'সাপ্লায়ার', buyer: 'বায়ার',
+  co_founder: 'Co-founder', partner: 'Partner', investor: 'Investor',
+  employee: 'Employee', supplier: 'Supplier', buyer: 'Buyer',
 }
 
 function addDuration(plan) {
@@ -38,7 +38,7 @@ export default function AdminListingsPage() {
       }
     } catch (e) {
       console.error(e)
-      setError('লোড করতে সমস্যা হয়েছে')
+      setError('Failed to load')
     }
     setLoading(false)
   }
@@ -60,7 +60,7 @@ export default function AdminListingsPage() {
       await load()
     } catch (e) {
       console.error(e)
-      setError('অ্যাপ্রুভ করতে সমস্যা হয়েছে')
+      setError('Failed to approve')
     }
     setActingId(null)
   }
@@ -75,7 +75,7 @@ export default function AdminListingsPage() {
       await load()
     } catch (e) {
       console.error(e)
-      setError('রিজেক্ট করতে সমস্যা হয়েছে')
+      setError('Failed to reject')
     }
     setActingId(null)
   }
@@ -86,7 +86,7 @@ export default function AdminListingsPage() {
     <div>
       <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '4px' }}>Listings & Payments</h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        পেমেন্ট যাচাই করে লিস্টিং একটিভ করুন।
+        Verify payments and activate listings.
       </p>
 
       {error && (
@@ -106,11 +106,11 @@ export default function AdminListingsPage() {
       </div>
 
       {loading ? (
-        <div style={{ color: '#888', fontSize: '14px' }}>লোড হচ্ছে...</div>
+        <div style={{ color: '#888', fontSize: '14px' }}>Loading...</div>
       ) : filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '50px 20px', color: '#999', background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0' }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>📋</div>
-          <p>কিছু নেই</p>
+          <p>Nothing here</p>
         </div>
       ) : (
         <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', overflow: 'hidden' }}>
@@ -127,7 +127,7 @@ export default function AdminListingsPage() {
                       {(listing?.listing_types || []).map(t => TYPE_LABEL[t] || t).join(', ')}
                     </div>
                     <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                      {sub.plan === 'monthly' ? 'মাসিক' : 'বাৎসরিক'} · ৳{sub.amount} · bKash: {sub.payment_reference}
+                      {sub.plan === 'monthly' ? 'Monthly' : 'Yearly'} · ৳{sub.amount} · bKash: {sub.payment_reference}
                     </div>
                   </div>
                   {sub.status === 'pending' && (
