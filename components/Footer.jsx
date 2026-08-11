@@ -40,6 +40,7 @@ export default function Footer() {
           <div className="footer-left">
             <Logo variant="dark" size={17} />
             <nav className="footer-link-row">
+              <Link href="/how-it-works" className="footer-link">How It Works</Link>
               {aboutUs && <Link href={linkHref(aboutUs)} className="footer-link">About Us</Link>}
               {contactUs && <Link href={linkHref(contactUs)} className="footer-link">Contact Us</Link>}
               {terms && <Link href={linkHref(terms)} className="footer-link">Terms of Service</Link>}

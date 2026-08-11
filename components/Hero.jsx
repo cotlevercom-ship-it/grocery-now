@@ -55,6 +55,8 @@ export default function Hero() {
             <Link href={checking ? '#' : primaryHref} className="btn-primary">{checking ? '...' : primaryLabel}</Link>
             <Link href="/browse" className="btn-secondary">Browse Founders</Link>
           </div>
+
+          <Link href="/how-it-works" className="how-link">How it works →</Link>
         </div>
 
         <div className="hero-photos">
@@ -124,6 +126,16 @@ export default function Hero() {
           font-size: 14.5px;
           font-weight: 700;
           text-decoration: none;
+        }
+        .how-link {
+          display: inline-block;
+          margin-top: 16px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #666;
+          text-decoration: none;
+          border-bottom: 2px solid #f4a300;
+          padding-bottom: 2px;
         }
         .hero-photos {
           display: flex;
