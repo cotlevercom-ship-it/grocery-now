@@ -2,8 +2,8 @@ import './globals.css'
 import Navbar from '@/components/Navbar'
 
 export const metadata = {
-  title: 'Cot Lever Books',
-  description: 'পুরাতন বই অনলাইনে কিনুন — উপন্যাস, ফিকশন, নন-ফিকশন, ম্যাগাজিন ও একাডেমিক বই।',
+  title: 'Cot Lever',
+  description: 'কো-ফাউন্ডার, পার্টনার, ইনভেস্টর, কর্মী, সাপ্লায়ার বা বায়ার খুঁজুন — আপনার বিজনেস লিস্ট করুন।',
 }
 
 export const viewport = {

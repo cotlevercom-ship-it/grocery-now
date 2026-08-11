@@ -3,12 +3,10 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getSession } from '@/lib/supabase'
-import { getCartCount } from '@/lib/cart'
 import Logo from './Logo'
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
-  const [cartCount, setCartCount] = useState(0)
   const pathname = usePathname()
   const isAdminArea = pathname?.startsWith('/admin')
 
@@ -20,17 +18,6 @@ export default function Navbar() {
     return () => {
       window.removeEventListener('auth-changed', onAuthChanged)
       window.removeEventListener('storage', onAuthChanged)
-    }
-  }, [])
-
-  useEffect(() => {
-    setCartCount(getCartCount())
-    const onCartChanged = () => setCartCount(getCartCount())
-    window.addEventListener('cart-changed', onCartChanged)
-    window.addEventListener('storage', onCartChanged)
-    return () => {
-      window.removeEventListener('cart-changed', onCartChanged)
-      window.removeEventListener('storage', onCartChanged)
     }
   }, [])
 
@@ -58,24 +45,12 @@ export default function Navbar() {
       <div style={{ flex: 1 }} />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-        <Link href="/cart" style={{
-          position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(255,255,255,0.12)'
-        }}>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="9" cy="21" r="1" />
-            <circle cx="20" cy="21" r="1" />
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-          </svg>
-          {cartCount > 0 && (
-            <span style={{
-              position: 'absolute', top: '-5px', right: '-5px',
-              background: '#f4a300', color: '#0a0a0a', fontSize: '10px', fontWeight: '800',
-              borderRadius: '50%', width: '17px', height: '17px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>{cartCount}</span>
-          )}
-        </Link>
+        <Link href="/listings/new" style={{
+          display: 'flex', alignItems: 'center', gap: '4px',
+          background: '#f4a300', color: '#0a0a0a',
+          borderRadius: '8px', padding: '7px 14px',
+          fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap'
+        }}>+ List Business</Link>
 
         {session ? (
           <Link href="/account" style={{
@@ -97,7 +72,7 @@ export default function Navbar() {
           <Link href="/login">
             <div style={{
               display: 'flex', alignItems: 'center', gap: '4px',
-              background: '#f4a300', color: '#0a0a0a',
+              background: 'rgba(255,255,255,0.12)', color: '#faf7f0',
               borderRadius: '8px', padding: '7px 14px',
               fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap'
             }}>
