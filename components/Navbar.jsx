@@ -76,21 +76,6 @@ export default function Navbar() {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-          {!isMerchantArea && (
-            <Link href="/merchant" className="navbar-sell-link" style={{
-              display: 'flex', alignItems: 'center', gap: '5px',
-              background: '#f4a300', color: '#0a0a0a',
-              borderRadius: '8px', padding: '7px 12px',
-              fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', textDecoration: 'none',
-            }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span className="navbar-sell-text">List item</span>
-            </Link>
-          )}
-
           {session ? (
             <Link href="/account" style={{
               display: 'flex', alignItems: 'center', gap: '4px',
