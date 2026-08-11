@@ -7,7 +7,7 @@ import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
 const navItems = [
   { href: '/merchant/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/merchant/products', label: 'Products', icon: '📦' },
-  { href: '/merchant/orders', label: 'Orders', icon: '🧾' },
+  { href: '/merchant/orders', label: 'Inquiries', icon: '🧾' },
   { href: '/merchant/package', label: 'Package', icon: '💎' },
   { href: '/merchant/settings', label: 'Settings', icon: '⚙️' },
 ]

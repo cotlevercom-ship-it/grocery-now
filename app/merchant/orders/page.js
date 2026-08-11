@@ -220,9 +220,9 @@ function MerchantOrdersInner() {
   return (
     <MerchantNav>
     <div>
-      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Orders</h1>
+      <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#163a2c', marginBottom: '8px' }}>Inquiries</h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        View and update the status of orders placed at your shop.
+        See who's messaging you about your listings, and any past orders from before Cot Lever moved to direct buyer contact.
       </p>
 
       {/* Inquiry stats */}
@@ -264,6 +264,12 @@ function MerchantOrdersInner() {
           </div>
         )}
       </div>
+
+      {orders.length > 0 && (
+        <div style={{ fontSize: '13px', fontWeight: '700', color: '#a3a39d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
+          Past Orders (legacy)
+        </div>
+      )}
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>

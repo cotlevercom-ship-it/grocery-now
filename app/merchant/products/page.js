@@ -4,6 +4,7 @@ import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import MerchantNav from '@/components/MerchantNav'
 
 const emptyProductForm = {
+  listing_type: 'product',
   name: '',
   price: '',
   sale_price: '',
@@ -146,6 +147,7 @@ export default function MerchantProductsPage() {
   const openEditProduct = async (p) => {
     setEditingProductId(p.id)
     setProductForm({
+      listing_type: p.listing_type || 'product',
       name: p.name || '',
       price: p.price ?? '',
       sale_price: p.sale_price ?? '',
@@ -265,13 +267,14 @@ export default function MerchantProductsPage() {
 
       const payload = {
         shop_id: shopId,
+        listing_type: productForm.listing_type,
         name: productForm.name.trim(),
         description: productForm.description.trim() || null,
         price: Number(productForm.price),
         sale_price: productForm.sale_price ? Number(productForm.sale_price) : null,
         cost_price: productForm.cost_price ? Number(productForm.cost_price) : null,
-        unit: productForm.unit.trim() || 'pcs',
-        stock: Number(productForm.stock) || 0,
+        unit: productForm.listing_type === 'service' ? null : (productForm.unit.trim() || 'pcs'),
+        stock: productForm.listing_type === 'service' ? null : (Number(productForm.stock) || 0),
         image_url: imageUrl,
         image_urls: finalExtraImageUrls,
         is_available: !!productForm.is_available,
@@ -475,8 +478,29 @@ export default function MerchantProductsPage() {
 
                 <div style={sectionBoxStyle}>
                   <div style={sectionTitleStyle}>Basic Info</div>
+
                   <div style={{ marginBottom: '14px' }}>
-                    <label style={labelStyle}>Product Name *</label>
+                    <label style={labelStyle}>Listing Type</label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      {['product', 'service'].map(t => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => handleProductFieldChange('listing_type', t)}
+                          style={{
+                            flex: 1, padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: '700',
+                            border: `1.5px solid ${productForm.listing_type === t ? '#0a0a0a' : '#ddd'}`,
+                            background: productForm.listing_type === t ? '#0a0a0a' : 'white',
+                            color: productForm.listing_type === t ? 'white' : '#555',
+                            textTransform: 'capitalize',
+                          }}
+                        >{t === 'product' ? '📦 Product' : '🛠️ Service'}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={labelStyle}>{productForm.listing_type === 'service' ? 'Service Name *' : 'Product Name *'}</label>
                     <input style={inputStyle} value={productForm.name} onChange={e => handleProductFieldChange('name', e.target.value)} />
                   </div>
 
@@ -517,7 +541,7 @@ export default function MerchantProductsPage() {
                     )}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: productForm.listing_type === 'service' ? '1fr 1fr' : '1fr 1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                     <div>
                       <label style={labelStyle}>Price (৳) *</label>
                       <input type="number" style={inputStyle} value={productForm.price} onChange={e => handleProductFieldChange('price', e.target.value)} />
@@ -526,10 +550,12 @@ export default function MerchantProductsPage() {
                       <label style={labelStyle}>Sale Price (৳)</label>
                       <input type="number" style={inputStyle} value={productForm.sale_price} onChange={e => handleProductFieldChange('sale_price', e.target.value)} placeholder="optional" />
                     </div>
-                    <div>
-                      <label style={labelStyle}>Unit</label>
-                      <input style={inputStyle} value={productForm.unit} onChange={e => handleProductFieldChange('unit', e.target.value)} placeholder="e.g. kg, pcs" />
-                    </div>
+                    {productForm.listing_type !== 'service' && (
+                      <div>
+                        <label style={labelStyle}>Unit</label>
+                        <input style={inputStyle} value={productForm.unit} onChange={e => handleProductFieldChange('unit', e.target.value)} placeholder="e.g. kg, pcs" />
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
@@ -554,11 +580,13 @@ export default function MerchantProductsPage() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label style={labelStyle}>Stock</label>
-                      <input type="number" style={inputStyle} value={productForm.stock} onChange={e => handleProductFieldChange('stock', e.target.value)} />
-                    </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: productForm.listing_type === 'service' ? '1fr' : '1fr 1fr', gap: '12px' }}>
+                    {productForm.listing_type !== 'service' && (
+                      <div>
+                        <label style={labelStyle}>Stock</label>
+                        <input type="number" style={inputStyle} value={productForm.stock} onChange={e => handleProductFieldChange('stock', e.target.value)} />
+                      </div>
+                    )}
                     <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
                         <input type="checkbox" checked={productForm.is_available} onChange={e => handleProductFieldChange('is_available', e.target.checked)} />
@@ -736,9 +764,17 @@ export default function MerchantProductsPage() {
                       ) : '🛍️'}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{p.name}</div>
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {p.name}
+                        {p.listing_type === 'service' && (
+                          <span style={{
+                            fontSize: '10px', fontWeight: '700', color: '#a06c00', background: '#fff3d6',
+                            padding: '2px 7px', borderRadius: '5px', flexShrink: 0
+                          }}>SERVICE</span>
+                        )}
+                      </div>
                       <div style={{ fontSize: '12px', color: '#888' }}>
-                        {p.unit} · Stock {p.stock}
+                        {p.listing_type === 'service' ? '' : `${p.unit} · Stock ${p.stock}`}
                         {p.brand ? ` · ${p.brand}` : ''}
                         {p.sku ? ` · SKU ${p.sku}` : ''}
                         {p.product_variants?.[0]?.count > 0 ? ` · ${p.product_variants[0].count} variant${p.product_variants[0].count !== 1 ? 's' : ''}` : ''}
