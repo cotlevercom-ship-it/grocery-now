@@ -64,20 +64,6 @@ export default async function CategoryPage({ params }) {
     console.error(e)
   }
 
-  let soldCounts = {}
-  if (products.length > 0) {
-    try {
-      const ids = products.map(p => p.id).join(',')
-      const items = await supabaseFetch(`order_items?select=product_id,quantity&product_id=in.(${ids})`)
-      soldCounts = (items || []).reduce((acc, item) => {
-        acc[item.product_id] = (acc[item.product_id] || 0) + (item.quantity || 0)
-        return acc
-      }, {})
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   const renderIcon = (c) => (
     c.image_url ? (
       // eslint-disable-next-line @next/next/no-img-element
@@ -178,10 +164,9 @@ export default async function CategoryPage({ params }) {
 
                     <div style={{
                       fontSize: '11px', color: '#999', marginTop: '4px',
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.shops?.name || ''}</span>
-                      {soldCounts[p.id] > 0 && <span style={{ flexShrink: 0 }}>SOLD: {soldCounts[p.id]}</span>}
+                      {p.shops?.name || ''}
                     </div>
                   </div>
                 </Link>

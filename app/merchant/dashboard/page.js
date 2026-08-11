@@ -7,8 +7,7 @@ export default function MerchantDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [shop, setShop] = useState(null)
   const [productCount, setProductCount] = useState(0)
-  const [orderCount, setOrderCount] = useState(0)
-  const [pendingOrderCount, setPendingOrderCount] = useState(0)
+  const [inquiryCount, setInquiryCount] = useState(0)
 
   useEffect(() => {
     async function load() {
@@ -24,9 +23,8 @@ export default function MerchantDashboardPage() {
         if (myShop) {
           const products = await supabaseFetch(`products?select=id&shop_id=eq.${myShop.id}`)
           setProductCount(products?.length || 0)
-          const orders = await supabaseFetch(`orders?select=id,status&shop_id=eq.${myShop.id}`)
-          setOrderCount(orders?.length || 0)
-          setPendingOrderCount((orders || []).filter(o => o.status === 'pending').length)
+          const inquiries = await supabaseFetch(`inquiries?select=id&shop_id=eq.${myShop.id}`)
+          setInquiryCount(inquiries?.length || 0)
         }
       } catch (e) {
         console.error(e)
@@ -61,8 +59,7 @@ export default function MerchantDashboardPage() {
       value: maxProducts != null ? `${productCount}/${maxProducts}` : productCount,
       icon: '📦', color: '#0a0a0a', href: '/merchant/products'
     },
-    { label: 'Total Orders', value: orderCount, icon: '🧾', color: '#1565c0', href: '/merchant/orders' },
-    { label: 'Pending Orders', value: pendingOrderCount, icon: '⏳', color: '#f4a300', href: '/merchant/orders?status=pending' },
+    { label: 'Buyer Inquiries', value: inquiryCount, icon: '💬', color: '#1565c0', href: '/merchant/orders' },
   ]
 
   return (
