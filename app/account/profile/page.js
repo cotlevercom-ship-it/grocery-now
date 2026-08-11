@@ -121,20 +121,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div style={{ margin: '0 16px 14px' }}>
-            <Link href="/account/addresses" style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              background: '#fffdf8', border: '1px dashed #e6ded0', borderRadius: '4px',
-              padding: '14px 16px', textDecoration: 'none'
-            }}>
-              <div>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>Delivery Address</div>
-                <div style={{ fontSize: '11px', color: '#9a9182', marginTop: '2px' }}>Go here to add or edit addresses</div>
-              </div>
-              <span style={{ color: '#b91c1c', fontSize: '15px' }}>›</span>
-            </Link>
-          </div>
-
           {error && (
             <div style={{
               margin: '0 16px 14px', padding: '11px 13px', background: '#fbe9e4',
