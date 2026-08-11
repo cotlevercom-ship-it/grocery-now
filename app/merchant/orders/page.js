@@ -67,7 +67,9 @@ function MerchantOrdersInner() {
           const shops = await supabaseFetch(`shops?select=id,package_id&owner_id=eq.${session.user.id}`)
           if (shops && shops.length > 0) {
             setShopId(shops[0].id)
-            setIsSubscribed(!!shops[0].package_id)
+            // Package subscriptions are free for everyone right now (pivot decision, 2026-08-11) —
+            // package_id is still fetched/stored for future reuse, but no longer gates access here.
+            setIsSubscribed(true)
           }
         }
       } catch (e) {
@@ -198,22 +200,6 @@ function MerchantOrdersInner() {
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
         View and update the status of orders placed at your shop.
       </p>
-
-      {!isSubscribed && (
-        <div style={{
-          maxWidth: '700px', marginBottom: '20px', padding: '14px 16px', borderRadius: '10px',
-          background: '#fff3e0', border: '1px solid #ffe0b2', display: 'flex',
-          alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap'
-        }}>
-          <div style={{ fontSize: '13px', color: '#8a5a00' }}>
-            🔒 Subscribe to a package to view your customers' order details and manage orders.
-          </div>
-          <a href="/merchant/package" style={{
-            background: '#f4a300', color: 'white', borderRadius: '8px', padding: '8px 16px',
-            fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', textDecoration: 'none'
-          }}>Subscribe now</a>
-        </div>
-      )}
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
