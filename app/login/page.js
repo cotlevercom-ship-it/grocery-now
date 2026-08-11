@@ -201,12 +201,12 @@ function LoginForm() {
         </form>
       </div>
 
-      {/* Sell on Cot Lever */}
+      {/* Browse without signing up */}
       <div style={{ width: '100%', maxWidth: '420px', marginTop: '18px' }}>
-        <Link href="/merchant" style={{
+        <Link href="/browse" style={{
           display: 'block', textAlign: 'center', color: '#666',
           padding: '10px', fontSize: '13px', textDecoration: 'none'
-        }}>Want to sell on Cot Lever? →</Link>
+        }}>Just want to look around? Browse founders →</Link>
       </div>
 
       <style jsx>{`

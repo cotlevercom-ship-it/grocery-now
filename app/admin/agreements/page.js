@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
 const TYPE_LABELS = {
-  merchant: { label: 'Merchant Registration', desc: 'Shown at /merchant/create during shop signup' },
+  merchant: { label: 'Merchant Registration', desc: 'Legacy — from the old merchant signup flow, no longer shown anywhere' },
   customer: { label: 'Customer Registration', desc: 'Shown at /login during signup' },
 }
 

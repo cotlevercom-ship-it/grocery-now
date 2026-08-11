@@ -297,7 +297,7 @@ export default function AdminPagesPage() {
               <label style={labelStyle}>External URL *</label>
               <input style={inputStyle} value={form.external_url}
                 onChange={e => setForm({ ...form, external_url: e.target.value })}
-                placeholder="/merchant/login or https://..." />
+                placeholder="/browse or https://..." />
             </div>
           )}
 

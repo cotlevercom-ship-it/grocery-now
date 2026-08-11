@@ -64,9 +64,7 @@ export default function AdminLayout({ children }) {
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
-    { href: '/admin/shops', label: 'Shops', icon: '🏪' },
-    { href: '/admin/categories', label: 'Categories', icon: '📚' },
-    { href: '/admin/products', label: 'Products', icon: '📦' },
+    { href: '/admin/founders', label: 'Founders', icon: '🧑‍💼' },
     { href: '/admin/banners', label: 'Banners', icon: '🖼️' },
     { href: '/admin/pages', label: 'Page Management', icon: '📄' },
     { href: '/admin/agreements', label: 'Agreements', icon: '📜' },
@@ -87,7 +85,7 @@ export default function AdminLayout({ children }) {
           <span /><span /><span />
         </button>
         <div className="topbar-brand">
-          <span style={{ fontSize: '18px' }}>🧺</span>
+          <span style={{ fontSize: '18px' }}>🤝</span>
           <span style={{ fontWeight: 700, fontSize: '14px' }}>Cot Lever Admin</span>
         </div>
       </div>
@@ -97,7 +95,7 @@ export default function AdminLayout({ children }) {
       <div className={`admin-sidebar ${navOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '20px' }}>🧺</span>
+            <span style={{ fontSize: '20px' }}>🤝</span>
             <span style={{ fontWeight: '700', fontSize: '15px' }}>Cot Lever Admin</span>
           </div>
           <button className="close-btn" onClick={() => setNavOpen(false)} aria-label="Close menu">✕</button>

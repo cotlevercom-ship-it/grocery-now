@@ -44,7 +44,7 @@ export default function Footer() {
         <div className="footer-top">
           <div className="footer-brand">
             <Logo variant="dark" size={20} />
-            <p className="tagline">List it. Buyers message you directly.</p>
+            <p className="tagline">Where founders go to meet their co-founder.</p>
           </div>
 
           <div className="footer-columns">

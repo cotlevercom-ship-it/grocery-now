@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 
 export const metadata = {
   title: 'Cot Lever',
-  description: 'Shop from merchants across the country and beyond',
+  description: 'Where founders in Bangladesh go to meet their co-founder',
 }
 
 export const viewport = {
