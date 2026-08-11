@@ -32,7 +32,7 @@ export default function Footer() {
           <div style={{ fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '12px' }}>Platform</div>
           <FooterLink href="/">Browse Listings</FooterLink>
           <FooterLink href="/listings/new">List Your Business</FooterLink>
-          <FooterLink href="/about">How It Works</FooterLink>
+          <FooterLink href="/how-it-works">How It Works</FooterLink>
         </div>
 
         <div>

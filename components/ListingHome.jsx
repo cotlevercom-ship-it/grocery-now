@@ -184,7 +184,7 @@ export default function ListingHome() {
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>List Your Business</Link>
-            <Link href="/about" style={{
+            <Link href="/how-it-works" style={{
               display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>How It Works</Link>
