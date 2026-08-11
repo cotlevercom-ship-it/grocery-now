@@ -17,7 +17,7 @@ export default function MerchantDashboardPage() {
         return
       }
       try {
-        const shops = await supabaseFetch(`shops?select=*,areas(name),seller_packages(name_bn,max_products)&owner_id=eq.${session.user.id}`)
+        const shops = await supabaseFetch(`shops?select=*,areas(name)&owner_id=eq.${session.user.id}`)
         const myShop = shops?.[0]
         setShop(myShop || null)
         if (myShop) {
@@ -50,15 +50,8 @@ export default function MerchantDashboardPage() {
     )
   }
 
-  const pkg = shop.seller_packages || null
-  const maxProducts = pkg?.max_products ?? null
-
   const statCards = [
-    {
-      label: 'Total Products',
-      value: maxProducts != null ? `${productCount}/${maxProducts}` : productCount,
-      icon: '📦', color: '#0a0a0a', href: '/merchant/products'
-    },
+    { label: 'Total Products', value: productCount, icon: '📦', color: '#0a0a0a', href: '/merchant/products' },
     { label: 'Buyer Inquiries', value: inquiryCount, icon: '💬', color: '#1565c0', href: '/merchant/orders' },
   ]
 
@@ -68,20 +61,6 @@ export default function MerchantDashboardPage() {
       <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#163a2c', margin: '0 0 6px' }}>
         {shop.name}
       </h1>
-      <div style={{ marginBottom: '10px' }}>
-        {pkg ? (
-          <span style={{
-            display: 'inline-block', padding: '3px 10px', borderRadius: '12px',
-            fontSize: '12px', fontWeight: '600', background: '#f3e8fd', color: '#8e24aa'
-          }}>💎 {pkg.name_bn} Package</span>
-        ) : (
-          <a href="/merchant/package" style={{
-            display: 'inline-block', padding: '3px 10px', borderRadius: '12px',
-            fontSize: '12px', fontWeight: '600', background: '#fff3e0', color: '#f4a300',
-            textDecoration: 'none'
-          }}>Not subscribed — Choose a package →</a>
-        )}
-      </div>
       <div style={{ fontSize: '13px', color: '#777', marginBottom: '24px' }}>
         {shop.areas?.name ? `📍 ${shop.areas.name}` : ''}
         {'  '}

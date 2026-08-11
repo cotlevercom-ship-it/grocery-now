@@ -15,12 +15,10 @@ const emptyForm = {
   min_order_amount: 0,
   is_featured: false,
   is_active: true,
-  package_id: '',
 }
 
 export default function AdminShopsPage() {
   const [shops, setShops] = useState([])
-  const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -42,12 +40,8 @@ export default function AdminShopsPage() {
     setLoading(true)
     setError('')
     try {
-      const [shopsData, packagesData] = await Promise.all([
-        supabaseFetch('shops?select=*,seller_packages(name_bn)&order=created_at.desc'),
-        supabaseFetch('seller_packages?select=*&order=sort_order'),
-      ])
+      const shopsData = await supabaseFetch('shops?select=*&order=created_at.desc')
       setShops(shopsData || [])
-      setPackages(packagesData || [])
     } catch (e) {
       console.error(e)
       setError('Failed to load data')
@@ -83,7 +77,6 @@ export default function AdminShopsPage() {
       min_order_amount: shop.min_order_amount ?? 0,
       is_featured: !!shop.is_featured,
       is_active: !!shop.is_active,
-      package_id: shop.package_id || '',
     })
     setImageFile(null)
     setImagePreview(shop.image_url || '')
@@ -141,7 +134,6 @@ export default function AdminShopsPage() {
         min_order_amount: Number(form.min_order_amount) || 0,
         is_featured: !!form.is_featured,
         is_active: !!form.is_active,
-        package_id: form.package_id || null,
       }
 
       if (editingId) {
@@ -295,18 +287,6 @@ export default function AdminShopsPage() {
             </div>
           </div>
 
-          <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>Subscription Package</label>
-            <select style={inputStyle} value={form.package_id} onChange={e => handleFieldChange('package_id', e.target.value)}>
-              <option value="">Not set</option>
-              {packages.map(pkg => (
-                <option key={pkg.id} value={pkg.id}>
-                  {pkg.name_bn} {pkg.max_products != null ? `(max ${pkg.max_products} products)` : '(Unlimited)'}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div style={{ display: 'flex', gap: '20px', marginBottom: '18px' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#444' }}>
               <input type="checkbox" checked={form.is_featured} onChange={e => handleFieldChange('is_featured', e.target.checked)} />
@@ -402,12 +382,6 @@ export default function AdminShopsPage() {
               </div>
 
               <div style={{ display: 'flex', gap: '6px' }}>
-                {shop.seller_packages?.name_bn && (
-                  <span style={{
-                    fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
-                    background: '#ede7f6', color: '#5e35b1'
-                  }}>{shop.seller_packages.name_bn}</span>
-                )}
                 {shop.is_featured && (
                   <span style={{
                     fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
