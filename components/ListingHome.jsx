@@ -16,6 +16,41 @@ const TYPES = [
 
 const TYPE_LABEL = Object.fromEntries(TYPES.map(t => [t.value, t.label]))
 
+const TYPE_ICON = {
+  co_founder: '🤝', partner: '🔗', investor: '💰',
+  employee: '👥', supplier: '📦', buyer: '🛒',
+}
+
+// The single most useful field to surface on the card for each listing type,
+// so a browsing visitor sees the key number/detail without opening the listing.
+const HIGHLIGHT_FIELD = {
+  investor: { key: 'amount_needed', icon: '💰' },
+  employee: { key: 'position', icon: '💼' },
+  co_founder: { key: 'skills_needed', icon: '🧩' },
+  partner: { key: 'partnership_type', icon: '🔗' },
+  supplier: { key: 'product', icon: '📦' },
+  buyer: { key: 'product', icon: '🛒' },
+}
+
+function highlightFor(listing) {
+  for (const type of listing.listing_types || []) {
+    const cfg = HIGHLIGHT_FIELD[type]
+    const val = listing.extra_fields?.[type]?.[cfg?.key]
+    if (val) return { icon: cfg.icon, text: val }
+  }
+  return null
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return null
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24))
+  if (days <= 0) return 'Today'
+  if (days === 1) return '1 day ago'
+  if (days < 30) return `${days} days ago`
+  const months = Math.floor(days / 30)
+  return `${months} mo ago`
+}
+
 function ConnectionDiagram() {
   const nodes = [
     { label: 'Co-founder', x: 40, y: 30 },
@@ -236,36 +271,58 @@ export default function ListingHome() {
             display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(240px,25vw,300px),1fr))',
             gap: 'clamp(14px, 1.6vw, 22px)'
           }}>
-            {filtered.map((listing, i) => (
-              <Link key={listing.id} href={`/listing/${listing.id}`} style={{
-                background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`,
-                padding: '20px', display: 'block', textDecoration: 'none'
-              }}>
-                <div style={{
-                  fontFamily: theme.fontMono, fontSize: '11px', color: theme.inkSoft, marginBottom: '10px'
-                }}>{String(i + 1).padStart(2, '0')}</div>
+            {filtered.map((listing, i) => {
+              const highlight = highlightFor(listing)
+              const freshness = timeAgo(listing.created_at)
+              return (
+                <Link key={listing.id} href={`/listing/${listing.id}`} style={{
+                  background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`,
+                  padding: '20px', display: 'block', textDecoration: 'none'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ fontFamily: theme.fontMono, fontSize: '11px', color: theme.inkSoft }}>{String(i + 1).padStart(2, '0')}</div>
+                    {freshness && (
+                      <div style={{ fontSize: '10.5px', color: theme.inkSoft }}>{freshness}</div>
+                    )}
+                  </div>
 
-                <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
-                  {listing.business_name}
-                </div>
-                <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginBottom: '12px' }}>
-                  {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
-                </div>
-                <p style={{
-                  fontSize: '12.5px', color: theme.inkSoft, marginBottom: '14px', lineHeight: '1.5',
-                  overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                  WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minHeight: '32px'
-                }}>{listing.description || ''}</p>
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  {(listing.listing_types || []).map(t => (
-                    <span key={t} style={{
-                      fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '5px',
-                      background: theme.signalSoft, color: theme.signal
-                    }}>{TYPE_LABEL[t] || t}</span>
-                  ))}
-                </div>
-              </Link>
-            ))}
+                  <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
+                    {listing.business_name}
+                  </div>
+                  <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginBottom: '10px' }}>
+                    {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
+                  </div>
+
+                  {highlight && (
+                    <div style={{
+                      fontSize: '12.5px', fontWeight: '600', color: theme.ink, marginBottom: '10px',
+                      display: 'flex', alignItems: 'flex-start', gap: '6px', lineHeight: '1.4'
+                    }}>
+                      <span>{highlight.icon}</span>
+                      <span style={{
+                        overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+                        WebkitLineClamp: 1, WebkitBoxOrient: 'vertical'
+                      }}>{highlight.text}</span>
+                    </div>
+                  )}
+
+                  <p style={{
+                    fontSize: '12.5px', color: theme.inkSoft, marginBottom: '14px', lineHeight: '1.5',
+                    overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+                    WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minHeight: '32px'
+                  }}>{listing.description || ''}</p>
+
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {(listing.listing_types || []).map(t => (
+                      <span key={t} style={{
+                        fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '5px',
+                        background: theme.signalSoft, color: theme.signal, display: 'inline-flex', alignItems: 'center', gap: '4px'
+                      }}><span>{TYPE_ICON[t] || ''}</span>{TYPE_LABEL[t] || t}</span>
+                    ))}
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         )}
       </div>
