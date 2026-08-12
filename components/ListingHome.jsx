@@ -141,11 +141,7 @@ export default function ListingHome() {
                       width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
                       background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                      {listing.logo_url ? (
-                        <img src={listing.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>{initial}</span>
-                      )}
+                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>{initial}</span>
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
