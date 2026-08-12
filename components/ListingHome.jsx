@@ -133,7 +133,8 @@ export default function ListingHome() {
               return (
                 <Link key={listing.id} href={`/listing/${listing.id}`} style={{
                   background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`,
-                  padding: '20px', display: 'block', textDecoration: 'none'
+                  padding: '20px', textDecoration: 'none',
+                  display: 'flex', flexDirection: 'column', minHeight: '270px'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
                     <div style={{
@@ -161,23 +162,27 @@ export default function ListingHome() {
                     </div>
                   </div>
 
-                  {highlight && (
-                    <div style={{
-                      fontSize: '12.5px', fontWeight: '600', color: theme.ink, marginBottom: '10px',
-                      display: 'flex', alignItems: 'flex-start', gap: '6px', lineHeight: '1.4'
-                    }}>
-                      <span>{highlight.icon}</span>
-                      <span style={{
-                        overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                        WebkitLineClamp: 1, WebkitBoxOrient: 'vertical'
-                      }}>{highlight.text}</span>
-                    </div>
-                  )}
+                  {/* Fixed-height slot reserved whether or not a highlight exists, so
+                      cards line up regardless of which listings have extra_fields data. */}
+                  <div style={{
+                    fontSize: '12.5px', fontWeight: '600', color: theme.ink, marginBottom: '10px',
+                    display: 'flex', alignItems: 'flex-start', gap: '6px', lineHeight: '1.4', minHeight: '18px'
+                  }}>
+                    {highlight && (
+                      <>
+                        <span>{highlight.icon}</span>
+                        <span style={{
+                          overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+                          WebkitLineClamp: 1, WebkitBoxOrient: 'vertical'
+                        }}>{highlight.text}</span>
+                      </>
+                    )}
+                  </div>
 
                   <p style={{
                     fontSize: '12.5px', color: theme.inkSoft, marginBottom: '14px', lineHeight: '1.5',
                     overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                    WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minHeight: '32px'
+                    WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1
                   }}>{listing.description || ''}</p>
 
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
