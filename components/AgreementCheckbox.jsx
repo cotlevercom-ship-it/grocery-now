@@ -51,47 +51,51 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
 
       {showModal && (
         <div
-          onClick={() => setShowModal(false)}
           style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000,
-            display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+            position: 'fixed', inset: 0, background: 'white', zIndex: 1000,
+            display: 'flex', flexDirection: 'column',
           }}
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: 'white', width: '100%', maxWidth: '520px', maxHeight: '80vh',
-              borderRadius: '16px 16px 0 0', display: 'flex', flexDirection: 'column',
-              overflow: 'hidden',
-            }}
-          >
-            <div style={{
-              padding: '16px 18px', borderBottom: '1px solid #eee',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <div style={{ fontSize: '15px', fontWeight: '800', color: '#0a0a0a' }}>{title}</div>
+          <div style={{
+            padding: '16px 18px', borderBottom: '1px solid #eee',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
+          }}>
+            <div style={{ fontSize: '16px', fontWeight: '800', color: '#0a0a0a' }}>{title}</div>
+            <button
+              onClick={() => setShowModal(false)}
+              style={{ background: 'none', border: 'none', fontSize: '24px', color: '#999', cursor: 'pointer', lineHeight: 1, padding: '4px' }}
+            >×</button>
+          </div>
+          <div style={{ display: 'flex', borderBottom: '1px solid #eee', flexShrink: 0 }}>
+            {[['bn', 'বাংলা'], ['en', 'English']].map(([key, label]) => (
               <button
-                onClick={() => setShowModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '20px', color: '#999', cursor: 'pointer', lineHeight: 1 }}
-              >×</button>
-            </div>
-            <div style={{ display: 'flex', borderBottom: '1px solid #eee', flexShrink: 0 }}>
-              {[['bn', 'বাংলা'], ['en', 'English']].map(([key, label]) => (
-                <button
-                  key={key}
-                  onClick={() => setLang(key)}
-                  style={{
-                    flex: 1, padding: '11px', border: 'none', background: 'none', cursor: 'pointer',
-                    fontSize: '13.5px', fontWeight: '700',
-                    color: lang === key ? '#0a0a0a' : '#999',
-                    borderBottom: lang === key ? `2px solid ${accent}` : '2px solid transparent',
-                  }}
-                >{label}</button>
-              ))}
-            </div>
-            <div style={{ padding: '18px', overflowY: 'auto', fontSize: '13.5px', color: '#333', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
-              {(lang === 'bn' ? agreement?.content_bn : agreement?.content_en) || 'Loading...'}
-            </div>
+                key={key}
+                onClick={() => setLang(key)}
+                style={{
+                  flex: 1, padding: '11px', border: 'none', background: 'none', cursor: 'pointer',
+                  fontSize: '13.5px', fontWeight: '700',
+                  color: lang === key ? '#0a0a0a' : '#999',
+                  borderBottom: lang === key ? `2px solid ${accent}` : '2px solid transparent',
+                }}
+              >{label}</button>
+            ))}
+          </div>
+          <div style={{
+            flex: 1, overflowY: 'auto', padding: '20px 18px 40px',
+            maxWidth: '640px', width: '100%', margin: '0 auto', boxSizing: 'border-box',
+            fontSize: '14px', color: '#333', lineHeight: 1.75, whiteSpace: 'pre-wrap'
+          }}>
+            {(lang === 'bn' ? agreement?.content_bn : agreement?.content_en) || 'Loading...'}
+          </div>
+          <div style={{ padding: '14px 18px', borderTop: '1px solid #eee', flexShrink: 0 }}>
+            <button
+              onClick={() => setShowModal(false)}
+              style={{
+                width: '100%', maxWidth: '640px', margin: '0 auto', display: 'block',
+                background: accent, color: 'white', border: 'none', borderRadius: '10px',
+                padding: '13px', fontSize: '14.5px', fontWeight: '700', cursor: 'pointer'
+              }}
+            >Done</button>
           </div>
         </div>
       )}
