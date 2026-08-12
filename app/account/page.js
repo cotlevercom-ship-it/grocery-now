@@ -58,6 +58,13 @@ export default function AccountPage() {
 
   const rows = [
     {
+      href: '/account/listings',
+      icon: '📋',
+      title: 'My Listings',
+      subtitle: 'View your listings and subscription status',
+      tag: null,
+    },
+    {
       href: '/account/profile',
       icon: '👤',
       title: 'Edit Profile',
