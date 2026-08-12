@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
+import { EXTRA_FIELD_CONFIG } from '@/lib/listingExtraFields'
 
 const TYPE_LABEL = {
   co_founder: 'Co-founder', partner: 'Partner', investor: 'Investor',
@@ -176,6 +177,21 @@ export default function AdminListingsPage() {
                           <div style={{ fontSize: '13px', color: '#333' }}>{listing?.website || '—'}</div>
                         </div>
                       </div>
+                      {(listing?.listing_types || []).map(type => {
+                        const config = EXTRA_FIELD_CONFIG[type]
+                        const values = listing?.extra_fields?.[type]
+                        if (!config || !values || Object.keys(values).length === 0) return null
+                        return (
+                          <div key={type} style={{ marginBottom: '10px' }}>
+                            <div style={{ fontSize: '11px', color: '#999', fontWeight: '600', marginBottom: '3px' }}>{config.label.toUpperCase()}</div>
+                            <div style={{ fontSize: '13px', color: '#333', lineHeight: '1.6' }}>
+                              {config.fields.map(f => values[f.key] ? (
+                                <div key={f.key}><span style={{ color: '#888' }}>{f.label}: </span>{values[f.key]}</div>
+                              ) : null)}
+                            </div>
+                          </div>
+                        )
+                      })}
                       {listing?.id && (
                         <a href={`/listing/${listing.id}`} target="_blank" rel="noopener noreferrer" style={{
                           display: 'inline-block', fontSize: '12.5px', fontWeight: '600', color: '#163a2c',

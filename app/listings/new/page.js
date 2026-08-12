@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import { EXTRA_FIELD_CONFIG, cleanExtraFieldsForType } from '@/lib/listingExtraFields'
 
 const TYPES = [
   { value: 'co_founder', label: 'Co-founder' },
@@ -42,6 +43,7 @@ export default function NewListingPage() {
     business_name: '', description: '', industry: '', location: '',
     website: '', contact_email: '', listing_types: [],
   })
+  const [extra, setExtra] = useState({}) // { [type]: { [fieldKey]: value } }
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -54,6 +56,11 @@ export default function NewListingPage() {
   }, [])
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
+
+  const handleExtraChange = (type, key, value) => setExtra(prev => ({
+    ...prev,
+    [type]: { ...(prev[type] || {}), [key]: value }
+  }))
 
   const toggleType = (value) => {
     setForm(prev => ({
@@ -73,6 +80,12 @@ export default function NewListingPage() {
 
     setSubmitting(true)
     try {
+      const extra_fields = {}
+      form.listing_types.forEach(type => {
+        const cleaned = cleanExtraFieldsForType(type, extra[type])
+        if (cleaned) extra_fields[type] = cleaned
+      })
+
       const payload = {
         owner_id: session.user.id,
         business_name: form.business_name.trim(),
@@ -82,6 +95,7 @@ export default function NewListingPage() {
         website: form.website.trim() || null,
         contact_email: form.contact_email.trim() || null,
         listing_types: form.listing_types,
+        extra_fields,
         status: 'inactive',
       }
       const res = await supabaseFetch('listings', { method: 'POST', body: JSON.stringify(payload) })
@@ -173,6 +187,51 @@ export default function NewListingPage() {
               ))}
             </div>
           </div>
+
+          {form.listing_types.map(type => {
+            const config = EXTRA_FIELD_CONFIG[type]
+            if (!config) return null
+            return (
+              <div key={type} style={{
+                marginBottom: '20px', padding: '16px', borderRadius: '10px',
+                background: theme.paper, border: `1px solid ${theme.line}`
+              }}>
+                <div style={{
+                  fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                  color: theme.brassDark, marginBottom: '12px', fontWeight: '600'
+                }}>{config.label}</div>
+                {config.fields.map(f => (
+                  <div key={f.key} style={{ marginBottom: '12px' }}>
+                    <label style={labelStyle}>{f.label}</label>
+                    {f.type === 'textarea' ? (
+                      <textarea
+                        style={{ ...inputStyle, minHeight: '70px', resize: 'vertical' }}
+                        value={extra[type]?.[f.key] || ''}
+                        onChange={e => handleExtraChange(type, f.key, e.target.value)}
+                        placeholder={f.placeholder || ''}
+                      />
+                    ) : f.type === 'select' ? (
+                      <select
+                        style={inputStyle}
+                        value={extra[type]?.[f.key] || ''}
+                        onChange={e => handleExtraChange(type, f.key, e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        {f.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    ) : (
+                      <input
+                        style={inputStyle}
+                        value={extra[type]?.[f.key] || ''}
+                        onChange={e => handleExtraChange(type, f.key, e.target.value)}
+                        placeholder={f.placeholder || ''}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          })}
 
           <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Contact Email *</label>

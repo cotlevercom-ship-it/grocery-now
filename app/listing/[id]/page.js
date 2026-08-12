@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import { EXTRA_FIELD_CONFIG } from '@/lib/listingExtraFields'
 
 const TYPE_LABEL = {
   co_founder: 'Looking for Co-founder', partner: 'Looking for Partner', investor: 'Looking for Investor',
@@ -66,6 +67,35 @@ export default function ListingDetailPage() {
               {listing.description}
             </p>
           )}
+
+          {(listing.listing_types || []).map(type => {
+            const config = EXTRA_FIELD_CONFIG[type]
+            const values = listing.extra_fields?.[type]
+            if (!config || !values || Object.keys(values).length === 0) return null
+            return (
+              <div key={type} style={{
+                marginBottom: '20px', padding: '16px 18px', borderRadius: '10px',
+                background: theme.paper, border: `1px solid ${theme.line}`
+              }}>
+                <div style={{
+                  fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                  color: theme.brassDark, marginBottom: '10px', fontWeight: '600'
+                }}>{config.label}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {config.fields.map(f => {
+                    const v = values[f.key]
+                    if (!v) return null
+                    return (
+                      <div key={f.key} style={{ fontSize: '13.5px', color: theme.ink }}>
+                        <span style={{ color: theme.inkSoft }}>{f.label}: </span>
+                        <span style={{ fontWeight: '600' }}>{v}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
 
           <div style={{ borderTop: `1px solid ${theme.line}`, paddingTop: '22px' }}>
             <div style={{ fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: '600', color: theme.brassDark, marginBottom: '12px' }}>Contact</div>
