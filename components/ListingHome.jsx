@@ -35,16 +35,15 @@ function timeAgo(dateStr) {
   return `${months} mo ago`
 }
 
-function ConnectionDiagram() {
-  const nodes = [
-    { label: 'Co-founder', x: 40, y: 30 },
-    { label: 'Investor', x: 260, y: 20 },
-    { label: 'Partner', x: 20, y: 150 },
-    { label: 'Supplier', x: 280, y: 150 },
-    { label: 'Employee', x: 60, y: 260 },
-    { label: 'Buyer', x: 250, y: 265 },
-  ]
-  const cx = 150, cy = 145
+function ConnectionDiagram({ types }) {
+  const cx = 150, cy = 145, radius = 105
+  const labels = (types && types.length ? types.map(t => t.label) : ['Co-founder', 'Investor'])
+  // Arrange nodes evenly around the center hub — adapts automatically as admin
+  // activates/deactivates listing types, instead of a fixed 6-node layout.
+  const nodes = labels.map((label, i) => {
+    const angle = (2 * Math.PI * i) / labels.length - Math.PI / 2
+    return { label, x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) }
+  })
   const lineLength = (n) => Math.hypot(n.x - cx, n.y - cy)
   const pathFor = (n) => `M ${cx} ${cy} L ${n.x} ${n.y}`
 
@@ -202,8 +201,9 @@ export default function ListingHome() {
             fontSize: 'clamp(14.5px,1.3vw,17px)', lineHeight: '1.6', color: theme.inkSoft,
             maxWidth: '480px', marginBottom: '28px'
           }}>
-            Co-founder, partner, investor, employee, supplier, or buyer — list your business
-            once and let the right people find you. Every listing is reviewed before it goes live.
+            {activeTypeOptions.length > 0
+              ? `${activeTypeOptions.map(t => t.label).join(' or ')} — list your business once and let the right people find you.`
+              : 'List your business once and let the right people find you.'} Every listing is reviewed before it goes live.
           </p>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -219,7 +219,7 @@ export default function ListingHome() {
         </div>
 
         <div style={{ flex: '0 1 320px', display: 'flex', justifyContent: 'center' }}>
-          <ConnectionDiagram />
+          <ConnectionDiagram types={activeTypeOptions} />
         </div>
       </div>
 
