@@ -162,13 +162,13 @@ export default function MemberProfileFormPage() {
             <label style={labelStyle}>Photo</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div style={{
-                width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+                width: '84px', height: '84px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
                 background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
                 {displayedPhoto ? (
                   <img src={displayedPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <span style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: theme.paper }}>
+                  <span style={{ fontFamily: theme.fontDisplay, fontSize: '28px', fontWeight: '600', color: theme.paper }}>
                     {(form.display_name || '?').trim().charAt(0).toUpperCase()}
                   </span>
                 )}

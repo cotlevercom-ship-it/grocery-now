@@ -61,26 +61,24 @@ export default function MembersBrowsePage() {
               return (
                 <div key={m.user_id} style={{
                   background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`,
-                  padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '270px'
+                  padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '320px'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '14px' }}>
                     <div style={{
-                      width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-                      background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      width: '92px', height: '92px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+                      background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px'
                     }}>
                       {m.photo_url ? (
                         <img src={m.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
-                        <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>{initial}</span>
+                        <span style={{ fontFamily: theme.fontDisplay, fontSize: '32px', fontWeight: '600', color: theme.paper }}>{initial}</span>
                       )}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: theme.fontDisplay, fontSize: '16.5px', fontWeight: '600', color: theme.ink, lineHeight: '1.25' }}>
-                        {m.display_name}
-                      </div>
-                      <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginTop: '2px' }}>
-                        {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
-                      </div>
+                    <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, lineHeight: '1.25' }}>
+                      {m.display_name}
+                    </div>
+                    <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginTop: '3px' }}>
+                      {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
                     </div>
                   </div>
 
