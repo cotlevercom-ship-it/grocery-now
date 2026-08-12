@@ -73,26 +73,12 @@ export default function ListingHome() {
         maxWidth: '1200px', margin: '0 auto', padding: 'clamp(28px,5vw,64px) clamp(16px,3vw,56px)',
       }}>
         <div style={{ maxWidth: '640px' }}>
-          <div style={{
-            fontFamily: theme.fontMono, fontSize: '11.5px', letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: theme.brassDark, marginBottom: '16px', fontWeight: '600'
-          }}>Business Directory · Bangladesh</div>
-
           <h1 style={{
             fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(32px,4.2vw,52px)',
-            lineHeight: '1.08', color: theme.ink, marginBottom: '20px', letterSpacing: '-0.01em'
+            lineHeight: '1.08', color: theme.ink, marginBottom: '28px', letterSpacing: '-0.01em'
           }}>
             Find the right people for your business.
           </h1>
-
-          <p style={{
-            fontSize: 'clamp(14.5px,1.3vw,17px)', lineHeight: '1.6', color: theme.inkSoft,
-            maxWidth: '480px', marginBottom: '28px'
-          }}>
-            {activeTypeOptions.length > 0
-              ? `${activeTypeOptions.map(t => t.label).join(' or ')} — list your business once and let the right people find you.`
-              : 'List your business once and let the right people find you.'} Every listing is reviewed before it goes live.
-          </p>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/listings/new" style={{
