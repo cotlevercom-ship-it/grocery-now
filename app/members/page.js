@@ -59,9 +59,9 @@ export default function MembersBrowsePage() {
             {members.map(m => {
               const initial = (m.display_name || '?').trim().charAt(0).toUpperCase()
               return (
-                <div key={m.user_id} style={{
+                <Link key={m.user_id} href={`/members/${m.user_id}`} style={{
                   background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`,
-                  padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '320px'
+                  padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '320px', textDecoration: 'none'
                 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '14px' }}>
                     <div style={{
@@ -94,7 +94,7 @@ export default function MembersBrowsePage() {
                     WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1
                   }}>{m.bio || ''}</p>
 
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: m.contact_email ? '14px' : '0' }}>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     {(m.skills || []).slice(0, 4).map(s => (
                       <span key={s} style={{
                         fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '5px',
@@ -102,13 +102,7 @@ export default function MembersBrowsePage() {
                       }}>{s}</span>
                     ))}
                   </div>
-
-                  {m.contact_email && (
-                    <a href={`mailto:${m.contact_email}`} style={{
-                      fontSize: '13px', fontWeight: '600', color: theme.brassDark, textDecoration: 'none'
-                    }}>Contact</a>
-                  )}
-                </div>
+                </Link>
               )
             })}
           </div>
