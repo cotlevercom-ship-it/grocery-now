@@ -70,11 +70,6 @@ export default function ListingDetailPage() {
           <div style={{ borderTop: `1px solid ${theme.line}`, paddingTop: '22px' }}>
             <div style={{ fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: '600', color: theme.brassDark, marginBottom: '12px' }}>Contact</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {listing.contact_phone && (
-                <a href={`tel:${listing.contact_phone}`} style={{ fontSize: '14.5px', color: theme.ink, fontWeight: '600', textDecoration: 'none' }}>
-                  📞 {listing.contact_phone}
-                </a>
-              )}
               {listing.contact_email && (
                 <a href={`mailto:${listing.contact_email}`} style={{ fontSize: '14.5px', color: theme.ink, fontWeight: '600', textDecoration: 'none' }}>
                   ✉️ {listing.contact_email}

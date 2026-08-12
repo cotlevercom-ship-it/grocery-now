@@ -19,7 +19,7 @@ export default function NewListingPage() {
   const [session, setSession] = useState(undefined)
   const [form, setForm] = useState({
     business_name: '', description: '', industry: '', location: '',
-    website: '', contact_email: '', contact_phone: '', listing_types: [],
+    website: '', contact_email: '', listing_types: [],
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -42,7 +42,7 @@ export default function NewListingPage() {
     setError('')
     if (!form.business_name.trim()) { setError('Enter your business name'); return }
     if (form.listing_types.length === 0) { setError('Select at least one category'); return }
-    if (!form.contact_phone.trim() && !form.contact_email.trim()) { setError('Provide at least a phone or email'); return }
+    if (!form.contact_email.trim()) { setError('Provide a contact email'); return }
 
     setSubmitting(true)
     try {
@@ -54,7 +54,6 @@ export default function NewListingPage() {
         location: form.location.trim() || null,
         website: form.website.trim() || null,
         contact_email: form.contact_email.trim() || null,
-        contact_phone: form.contact_phone.trim() || null,
         listing_types: form.listing_types,
         status: 'inactive',
       }
@@ -146,12 +145,7 @@ export default function NewListingPage() {
           </div>
 
           <div style={{ marginBottom: '18px' }}>
-            <label style={labelStyle}>Phone Number</label>
-            <input style={inputStyle} value={form.contact_phone} onChange={e => handleChange('contact_phone', e.target.value)} placeholder="01XXXXXXXXX" />
-          </div>
-
-          <div style={{ marginBottom: '18px' }}>
-            <label style={labelStyle}>Email</label>
+            <label style={labelStyle}>Email *</label>
             <input style={inputStyle} value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" />
           </div>
 
