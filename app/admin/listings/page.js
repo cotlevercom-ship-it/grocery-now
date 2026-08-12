@@ -22,6 +22,7 @@ export default function AdminListingsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actingId, setActingId] = useState(null)
+  const [expandedId, setExpandedId] = useState(null)
 
   async function load() {
     setLoading(true)
@@ -116,13 +117,19 @@ export default function AdminListingsPage() {
         <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', overflow: 'hidden' }}>
           {filtered.map((sub, i) => {
             const listing = listingsById[sub.listing_id]
+            const isOpen = expandedId === sub.id
             return (
               <div key={sub.id} style={{
-                padding: '14px 16px', borderBottom: i < filtered.length - 1 ? '1px solid #eee' : 'none'
+                borderBottom: i < filtered.length - 1 ? '1px solid #eee' : 'none'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                <div
+                  onClick={() => setExpandedId(isOpen ? null : sub.id)}
+                  style={{ padding: '14px 16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}
+                >
                   <div>
-                    <div style={{ fontSize: '13.5px', fontWeight: '700' }}>{listing?.business_name || 'Unknown'}</div>
+                    <div style={{ fontSize: '13.5px', fontWeight: '700' }}>
+                      {listing?.business_name || 'Unknown'} <span style={{ color: '#aaa', fontWeight: '400' }}>{isOpen ? '▲' : '▼'}</span>
+                    </div>
                     <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
                       {(listing?.listing_types || []).map(t => TYPE_LABEL[t] || t).join(', ')}
                     </div>
@@ -131,7 +138,7 @@ export default function AdminListingsPage() {
                     </div>
                   </div>
                   {sub.status === 'pending' && (
-                    <div style={{ display: 'flex', gap: '8px', alignSelf: 'center' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignSelf: 'center' }} onClick={(e) => e.stopPropagation()}>
                       <button disabled={actingId === sub.id} onClick={() => handleApprove(sub)} style={{
                         background: '#2d6a4f', color: 'white', borderRadius: '6px', padding: '8px 14px', fontSize: '12.5px', fontWeight: '600'
                       }}>Approve</button>
@@ -141,6 +148,43 @@ export default function AdminListingsPage() {
                     </div>
                   )}
                 </div>
+
+                {isOpen && (
+                  <div style={{ padding: '4px 16px 18px', background: '#fafaf8' }}>
+                    <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '14px 16px' }}>
+                      {listing?.description && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <div style={{ fontSize: '11px', color: '#999', fontWeight: '600', marginBottom: '3px' }}>DESCRIPTION</div>
+                          <div style={{ fontSize: '13px', color: '#333', lineHeight: '1.5' }}>{listing.description}</div>
+                        </div>
+                      )}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', marginBottom: '10px' }}>
+                        <div>
+                          <div style={{ fontSize: '11px', color: '#999', fontWeight: '600', marginBottom: '3px' }}>INDUSTRY</div>
+                          <div style={{ fontSize: '13px', color: '#333' }}>{listing?.industry || '—'}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '11px', color: '#999', fontWeight: '600', marginBottom: '3px' }}>LOCATION</div>
+                          <div style={{ fontSize: '13px', color: '#333' }}>{listing?.location || '—'}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '11px', color: '#999', fontWeight: '600', marginBottom: '3px' }}>CONTACT EMAIL</div>
+                          <div style={{ fontSize: '13px', color: '#333' }}>{listing?.contact_email || '—'}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '11px', color: '#999', fontWeight: '600', marginBottom: '3px' }}>WEBSITE</div>
+                          <div style={{ fontSize: '13px', color: '#333' }}>{listing?.website || '—'}</div>
+                        </div>
+                      </div>
+                      {listing?.id && (
+                        <a href={`/listing/${listing.id}`} target="_blank" rel="noopener noreferrer" style={{
+                          display: 'inline-block', fontSize: '12.5px', fontWeight: '600', color: '#163a2c',
+                          textDecoration: 'none', borderBottom: '1px solid #163a2c', marginTop: '4px'
+                        }}>View Full Listing Page ↗</a>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )
           })}
