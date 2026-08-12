@@ -85,23 +85,7 @@ export default function ListingHome() {
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>List Your Business</Link>
-            <Link href="/how-it-works" style={{
-              display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
-              borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
-            }}>How It Works</Link>
           </div>
-        </div>
-      </div>
-
-      {/* Trust bar */}
-      <div style={{ borderTop: `1px solid ${theme.line}`, borderBottom: `1px solid ${theme.line}` }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto', padding: '18px clamp(16px,3vw,56px)',
-          display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap', fontSize: '13px', color: theme.inkSoft
-        }}>
-          <span>✓ Listings reviewed before going live</span>
-          <span>✓ Contact details go straight to you</span>
-          <span>✓ Simple monthly or yearly listing fee</span>
         </div>
       </div>
 
