@@ -1,10 +1,26 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
 export default function Footer() {
   const pathname = usePathname()
+  const [facebookUrl, setFacebookUrl] = useState('')
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const rows = await supabaseFetch('app_settings?select=key,value&key=eq.facebook_url')
+        setFacebookUrl(rows?.[0]?.value || '')
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    load()
+  }, [])
+
   if (pathname?.startsWith('/admin')) return null
 
   const year = new Date().getFullYear()
@@ -27,22 +43,23 @@ export default function Footer() {
         <div className="footer-links-grid">
           <div>
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Platform</div>
-            <FooterLink href="/">Browse Listings</FooterLink>
-            <FooterLink href="/listings/new">List Your Business</FooterLink>
-            <FooterLink href="/how-it-works">How It Works</FooterLink>
-          </div>
-
-          <div>
-            <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Resources</div>
-            <FooterLink href="/resources">Articles</FooterLink>
             <FooterLink href="/about?tab=about-us">About Us</FooterLink>
-            <FooterLink href="/about?tab=contact-us">Contact</FooterLink>
+            <FooterLink href="/how-it-works">How It Works</FooterLink>
+            <FooterLink href="/about?tab=contact-us">Contact Us</FooterLink>
+            {facebookUrl && (
+              <a href={facebookUrl} target="_blank" rel="noopener noreferrer" style={{
+                display: 'block', fontSize: '12.5px', color: 'rgba(237,234,224,0.8)',
+                marginBottom: '6px', textDecoration: 'none',
+              }}>Follow us on Facebook</a>
+            )}
           </div>
 
           <div>
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Legal</div>
             <FooterLink href="/about?tab=privacy-policy">Privacy Policy</FooterLink>
             <FooterLink href="/about?tab=terms-and-conditions">Terms & Conditions</FooterLink>
+            <FooterLink href="/about?tab=payment-policy">Payment Policy</FooterLink>
+            <FooterLink href="/about?tab=user-agreement">User Agreement</FooterLink>
           </div>
         </div>
       </div>

@@ -9,6 +9,8 @@ const TABS = [
   { slug: 'contact-us', label: 'Contact Us' },
   { slug: 'privacy-policy', label: 'Privacy Policy' },
   { slug: 'terms-and-conditions', label: 'Terms & Conditions' },
+  { slug: 'payment-policy', label: 'Payment Policy' },
+  { slug: 'user-agreement', label: 'User Agreement' },
 ]
 
 const COLORS = {
