@@ -220,7 +220,7 @@ function LoginForm() {
           )}
 
           <div style={{ marginBottom: mode === 'signup' ? '10px' : '16px' }}>
-            <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Email</label>
+            <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>{mode === 'signup' ? 'Business Email' : 'Email'}</label>
 
             {mode === 'signup' ? (
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -228,7 +228,7 @@ function LoginForm() {
                   type="email"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); resetOtpState() }}
-                  placeholder="you@example.com"
+                  placeholder="Enter your business e-mail"
                   className="login-input"
                   disabled={otpSent}
                   style={otpSent ? { opacity: 0.6 } : undefined}
@@ -263,6 +263,12 @@ function LoginForm() {
                 placeholder="you@example.com"
                 className="login-input"
               />
+            )}
+
+            {mode === 'signup' && !otpSent && (
+              <div style={{ fontSize: '11.5px', color: '#999', marginTop: '6px' }}>
+                This will be the contact email visitors see on your listing.
+              </div>
             )}
 
             {mode === 'signup' && otpSent && !emailVerified && (

@@ -24,7 +24,13 @@ export default function NewListingPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  useEffect(() => { setSession(getSession()) }, [])
+  useEffect(() => {
+    const s = getSession()
+    setSession(s)
+    if (s?.user?.email) {
+      setForm(prev => ({ ...prev, contact_email: s.user.email }))
+    }
+  }, [])
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
 
@@ -145,8 +151,11 @@ export default function NewListingPage() {
           </div>
 
           <div style={{ marginBottom: '18px' }}>
-            <label style={labelStyle}>Email *</label>
-            <input style={inputStyle} value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" />
+            <label style={labelStyle}>Contact Email *</label>
+            <input style={{ ...inputStyle, background: '#F2F0EA', color: theme.inkSoft, cursor: 'not-allowed' }} value={form.contact_email} readOnly />
+            <div style={{ fontSize: '11.5px', color: theme.inkSoft, marginTop: '5px' }}>
+              This is your account email — visitors will use it to reach you.
+            </div>
           </div>
 
           <div style={{ marginBottom: '24px' }}>
