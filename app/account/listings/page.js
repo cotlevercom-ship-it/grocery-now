@@ -4,11 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
-
-const TYPE_LABEL = {
-  co_founder: 'Co-founder', partner: 'Partner', investor: 'Investor',
-  employee: 'Employee', supplier: 'Supplier', buyer: 'Buyer',
-}
+import { fetchListingTypes } from '@/lib/listingTypes'
 
 const SUB_STATUS_STYLE = {
   active: { bg: theme.signalSoft, color: theme.signal, label: 'Active' },
@@ -30,6 +26,12 @@ export default function MyListingsPage() {
   const [subsByListing, setSubsByListing] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive), for label lookup
+  const TYPE_LABEL = Object.fromEntries(typeOptions.map(t => [t.key, t.label]))
+
+  useEffect(() => {
+    fetchListingTypes().then(setTypeOptions).catch(e => console.error(e))
+  }, [])
 
   useEffect(() => {
     async function load() {
