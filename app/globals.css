@@ -116,3 +116,15 @@ input {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(22, 58, 44, 0.08);
 }
+
+.footer-links-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 620px) {
+  .footer-links-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
