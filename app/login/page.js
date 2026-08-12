@@ -1,5 +1,5 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, signUp, supabaseFetch } from '@/lib/supabase'
@@ -27,6 +27,88 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
+  // Inline email OTP verification (signup only)
+  const [otpSent, setOtpSent] = useState(false)
+  const [otpCode, setOtpCode] = useState('')
+  const [sendingOtp, setSendingOtp] = useState(false)
+  const [verifyingOtp, setVerifyingOtp] = useState(false)
+  const [emailVerified, setEmailVerified] = useState(false)
+  const [otpError, setOtpError] = useState('')
+  const [cooldown, setCooldown] = useState(0)
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const t = setTimeout(() => setCooldown(cooldown - 1), 1000)
+    return () => clearTimeout(t)
+  }, [cooldown])
+
+  const isValidEmail = (val) => /\S+@\S+\.\S+/.test(val)
+
+  const resetOtpState = () => {
+    setOtpSent(false)
+    setOtpCode('')
+    setEmailVerified(false)
+    setOtpError('')
+  }
+
+  const handleSendOtp = async () => {
+    setOtpError('')
+    if (!isValidEmail(email.trim())) {
+      setOtpError('Enter a valid email first')
+      return
+    }
+    setSendingOtp(true)
+    try {
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), purpose: 'signup' }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setOtpError(data.error || 'Failed to send code')
+      } else {
+        setOtpSent(true)
+        setOtpCode('')
+        setCooldown(30)
+      }
+    } catch (err) {
+      console.error(err)
+      setOtpError('Failed to send code')
+    }
+    setSendingOtp(false)
+  }
+
+  const handleVerifyOtp = async (codeValue) => {
+    setOtpError('')
+    setVerifyingOtp(true)
+    try {
+      const res = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), code: codeValue, purpose: 'signup' }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setOtpError(data.error || 'Incorrect code')
+      } else {
+        setEmailVerified(true)
+      }
+    } catch (err) {
+      console.error(err)
+      setOtpError('Verification failed, please try again')
+    }
+    setVerifyingOtp(false)
+  }
+
+  // Auto-verify as soon as 6 digits are entered
+  useEffect(() => {
+    if (mode === 'signup' && otpSent && !emailVerified && otpCode.length === 6 && !verifyingOtp) {
+      handleVerifyOtp(otpCode)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otpCode])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -34,6 +116,10 @@ function LoginForm() {
 
     if (mode === 'signup' && !name.trim()) {
       setError('Please enter your name')
+      return
+    }
+    if (mode === 'signup' && !emailVerified) {
+      setError('Please verify your email first')
       return
     }
     if (mode === 'signup' && !agreed) {
@@ -64,17 +150,8 @@ function LoginForm() {
             console.error('profile save failed', profileErr)
           }
         }
-        // Send email OTP and require verification before continuing
-        try {
-          await fetch('/api/otp/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email.trim(), purpose: 'signup' }),
-          })
-        } catch (otpErr) {
-          console.error('otp send failed', otpErr)
-        }
-        router.push(`/verify-otp?email=${encodeURIComponent(email.trim())}&purpose=signup&next=${encodeURIComponent(nextUrl)}`)
+        // Email was already verified inline above — go straight through.
+        router.push(nextUrl)
       } else {
         await signIn(email.trim(), password)
         router.push(nextUrl)
@@ -130,15 +207,77 @@ function LoginForm() {
             </div>
           )}
 
-          <div style={{ marginBottom: '16px' }}>
+          <div style={{ marginBottom: mode === 'signup' ? '10px' : '16px' }}>
             <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="login-input"
-            />
+
+            {mode === 'signup' ? (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); resetOtpState() }}
+                  placeholder="you@example.com"
+                  className="login-input"
+                  disabled={otpSent}
+                  style={otpSent ? { opacity: 0.6 } : undefined}
+                />
+                {emailVerified ? (
+                  <div style={{
+                    flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px',
+                    padding: '0 14px', borderRadius: '10px', background: '#e8f3ee',
+                    color: '#2d6a4f', fontSize: '12.5px', fontWeight: '700', whiteSpace: 'nowrap'
+                  }}>✓ Verified</div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={sendingOtp || (otpSent && cooldown > 0)}
+                    style={{
+                      flexShrink: 0, padding: '0 16px', borderRadius: '10px', border: 'none',
+                      background: (sendingOtp || (otpSent && cooldown > 0)) ? '#ccc' : '#000000',
+                      color: 'white', fontSize: '12.5px', fontWeight: '700', whiteSpace: 'nowrap',
+                      cursor: (sendingOtp || (otpSent && cooldown > 0)) ? 'default' : 'pointer'
+                    }}
+                  >
+                    {sendingOtp ? 'Sending...' : otpSent ? (cooldown > 0 ? `Resend (${cooldown}s)` : 'Resend OTP') : 'Send OTP'}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="login-input"
+              />
+            )}
+
+            {mode === 'signup' && otpSent && !emailVerified && (
+              <div style={{ marginTop: '10px' }}>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                  placeholder="Enter 6-digit code"
+                  autoFocus
+                  style={{
+                    width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1.5px solid #e0e0e0',
+                    fontSize: '18px', fontWeight: '700', textAlign: 'center', letterSpacing: '6px',
+                    boxSizing: 'border-box', background: '#fafafa'
+                  }}
+                />
+                <div style={{ fontSize: '11.5px', color: '#999', marginTop: '6px', textAlign: 'center' }}>
+                  {verifyingOtp ? 'Verifying...' : `Code sent to ${email.trim()}`}
+                </div>
+              </div>
+            )}
+
+            {otpError && (
+              <div style={{ fontSize: '12px', color: '#c62828', marginTop: '6px' }}>{otpError}</div>
+            )}
           </div>
 
           <div style={{ marginBottom: '8px' }}>
@@ -180,11 +319,12 @@ function LoginForm() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || (mode === 'signup' && !emailVerified)}
             style={{
-              width: '100%', marginTop: '18px', background: submitting ? '#555555' : '#000000',
+              width: '100%', marginTop: '18px',
+              background: (submitting || (mode === 'signup' && !emailVerified)) ? '#999999' : '#000000',
               color: 'white', padding: '13px', borderRadius: '10px', fontSize: '15px',
-              fontWeight: '700', border: 'none', cursor: submitting ? 'default' : 'pointer',
+              fontWeight: '700', border: 'none', cursor: (submitting || (mode === 'signup' && !emailVerified)) ? 'default' : 'pointer',
               boxShadow: submitting ? 'none' : '0 4px 12px rgba(0,0,0,0.28)'
             }}>
             {submitting ? 'Please wait...' : (mode === 'login' ? 'Log In' : 'Create Account')}
@@ -192,9 +332,9 @@ function LoginForm() {
 
           <div style={{ textAlign: 'center', marginTop: '18px', fontSize: '13px', color: '#666' }}>
             {mode === 'login' ? (
-              <>Don't have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice('') }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
+              <>Don't have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice(''); resetOtpState() }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
             ) : (
-              <>Already have an account? <button type="button" onClick={() => { setMode('login'); setError(''); setNotice('') }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Log In</button></>
+              <>Already have an account? <button type="button" onClick={() => { setMode('login'); setError(''); setNotice(''); resetOtpState() }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Log In</button></>
             )}
           </div>
         </form>
