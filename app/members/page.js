@@ -87,7 +87,7 @@ export default function MembersBrowsePage() {
                   <div style={{
                     fontSize: '12.5px', fontWeight: '600', color: theme.ink, marginBottom: '10px', minHeight: '18px'
                   }}>
-                    {m.looking_for && <span>🎯 Looking for: {m.looking_for}</span>}
+                    {m.looking_for && <span>Looking for: {m.looking_for}</span>}
                   </div>
 
                   <p style={{
@@ -108,7 +108,7 @@ export default function MembersBrowsePage() {
                   {m.contact_email && (
                     <a href={`mailto:${m.contact_email}`} style={{
                       fontSize: '13px', fontWeight: '600', color: theme.brassDark, textDecoration: 'none'
-                    }}>✉️ Contact</a>
+                    }}>Contact</a>
                   )}
                 </div>
               )
