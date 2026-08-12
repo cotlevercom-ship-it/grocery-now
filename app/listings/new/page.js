@@ -14,6 +14,27 @@ const TYPES = [
   { value: 'buyer', label: 'Buyer' },
 ]
 
+const INDUSTRIES = [
+  'Technology / Software',
+  'E-commerce',
+  'F-Commerce',
+  'Fashion & Apparel',
+  'Food & Beverage',
+  'Agriculture',
+  'Manufacturing',
+  'Retail',
+  'Real Estate',
+  'Healthcare',
+  'Education',
+  'Finance & Banking',
+  'Logistics & Transportation',
+  'Media & Entertainment',
+  'Tourism & Hospitality',
+  'Construction',
+  'Textile & Garments',
+  'Consulting',
+]
+
 export default function NewListingPage() {
   const router = useRouter()
   const [session, setSession] = useState(undefined)
@@ -128,7 +149,10 @@ export default function NewListingPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '18px' }}>
             <div>
               <label style={labelStyle}>Industry</label>
-              <input style={inputStyle} value={form.industry} onChange={e => handleChange('industry', e.target.value)} placeholder="e.g. Tech, Fashion" />
+              <select style={inputStyle} value={form.industry} onChange={e => handleChange('industry', e.target.value)}>
+                <option value="">Select industry</option>
+                {INDUSTRIES.map(ind => <option key={ind} value={ind}>{ind}</option>)}
+              </select>
             </div>
             <div>
               <label style={labelStyle}>Location</label>
