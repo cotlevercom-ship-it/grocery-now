@@ -59,6 +59,18 @@ function LoginForm() {
     }
     setSendingOtp(true)
     try {
+      const checkRes = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      const checkData = await checkRes.json()
+      if (checkRes.ok && checkData.exists) {
+        setOtpError('This email is already registered. Please log in instead.')
+        setSendingOtp(false)
+        return
+      }
+
       const res = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
