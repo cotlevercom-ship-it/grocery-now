@@ -114,8 +114,8 @@ export default function MyListingsPage() {
             {listings.map(listing => {
               const sub = subsByListing[listing.id]
               const subStyle = sub ? (SUB_STATUS_STYLE[sub.status] || SUB_STATUS_STYLE.cancelled) : null
-              const needsPayment = !sub || sub.status === 'rejected'
-              const isExpired = sub?.status === 'active' && sub.ends_at && new Date(sub.ends_at) < new Date()
+              const needsPayment = !sub || sub.status === 'rejected' || sub.status === 'expired'
+              const isExpired = sub?.status === 'expired' || (sub?.status === 'active' && sub.ends_at && new Date(sub.ends_at) < new Date())
 
               return (
                 <div key={listing.id} style={{
@@ -163,6 +163,11 @@ export default function MyListingsPage() {
                   {sub && sub.status === 'rejected' && (
                     <div style={{ fontSize: '12.5px', color: theme.danger, marginBottom: '14px' }}>
                       Your last payment was rejected. Please submit payment again.
+                    </div>
+                  )}
+                  {sub && sub.status === 'expired' && (
+                    <div style={{ fontSize: '12.5px', color: theme.danger, marginBottom: '14px' }}>
+                      {sub.ends_at ? `Subscription ended ${formatDate(sub.ends_at)}. ` : ''}Renew to make this listing active again.
                     </div>
                   )}
 
