@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
@@ -30,7 +31,82 @@ const STEPS = [
   },
 ]
 
+function TimelineStep({ step, index, isLast, onVisible }) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisible(true)
+            onVisible(index)
+          }
+        })
+      },
+      { threshold: 0.4, rootMargin: '0px 0px -10% 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [index, onVisible])
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        display: 'flex', gap: '24px', marginBottom: isLast ? 0 : '40px', position: 'relative',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(18px)',
+        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+      }}
+    >
+      <div style={{
+        flexShrink: 0, width: '48px', height: '48px', borderRadius: '50%',
+        background: visible ? theme.ink : theme.surface,
+        color: visible ? theme.paper : theme.inkSoft,
+        border: visible ? `4px solid ${theme.paper}` : `1.5px solid ${theme.line}`,
+        boxShadow: visible ? `0 0 0 1.5px ${theme.brass}` : 'none',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: theme.fontMono, fontSize: '13px', fontWeight: '600', zIndex: 1,
+        transition: 'background 0.4s ease-out, color 0.4s ease-out, box-shadow 0.4s ease-out, border 0.4s ease-out',
+      }}>{step.n}</div>
+
+      <div style={{ paddingTop: '8px' }}>
+        <h2 style={{
+          fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600',
+          color: theme.ink, marginBottom: '6px'
+        }}>{step.title}</h2>
+        <p style={{ fontSize: '14px', color: theme.inkSoft, lineHeight: '1.65', maxWidth: '480px' }}>
+          {step.body}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function HowItWorksPage() {
+  const [furthestVisible, setFurthestVisible] = useState(-1)
+  const trackRef = useRef(null)
+  const [fillHeight, setFillHeight] = useState(0)
+
+  const handleVisible = (index) => {
+    setFurthestVisible((prev) => (index > prev ? index : prev))
+  }
+
+  useEffect(() => {
+    if (furthestVisible < 0 || !trackRef.current) return
+    const stepEls = trackRef.current.querySelectorAll('[data-step]')
+    const target = stepEls[furthestVisible]
+    if (target) {
+      const trackTop = trackRef.current.getBoundingClientRect().top
+      const targetCenter = target.getBoundingClientRect().top - trackTop + 24
+      setFillHeight(targetCenter)
+    }
+  }, [furthestVisible])
+
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'clamp(28px,4vw,56px) clamp(16px,3vw,24px)' }}>
@@ -48,32 +124,23 @@ export default function HowItWorksPage() {
           From listing your business to getting contacted by the right person — five steps, start to finish.
         </p>
 
-        <div style={{ position: 'relative' }}>
-          {/* connecting line */}
+        <div ref={trackRef} style={{ position: 'relative' }}>
+          {/* base connecting line */}
           <div style={{
             position: 'absolute', left: '23px', top: '10px', bottom: '10px', width: '1.5px',
             background: theme.line,
           }} />
+          {/* fill line — grows as you scroll through the steps */}
+          <div style={{
+            position: 'absolute', left: '23px', top: '10px', width: '1.5px',
+            height: `${fillHeight}px`,
+            background: theme.brass,
+            transition: 'height 0.5s ease-out',
+          }} />
 
           {STEPS.map((step, i) => (
-            <div key={step.n} style={{ display: 'flex', gap: '24px', marginBottom: i < STEPS.length - 1 ? '40px' : 0, position: 'relative' }}>
-              <div style={{
-                flexShrink: 0, width: '48px', height: '48px', borderRadius: '50%',
-                background: theme.ink, color: theme.paper,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: theme.fontMono, fontSize: '13px', fontWeight: '600', zIndex: 1,
-                border: `4px solid ${theme.paper}`,
-              }}>{step.n}</div>
-
-              <div style={{ paddingTop: '8px' }}>
-                <h2 style={{
-                  fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600',
-                  color: theme.ink, marginBottom: '6px'
-                }}>{step.title}</h2>
-                <p style={{ fontSize: '14px', color: theme.inkSoft, lineHeight: '1.65', maxWidth: '480px' }}>
-                  {step.body}
-                </p>
-              </div>
+            <div key={step.n} data-step>
+              <TimelineStep step={step} index={i} isLast={i === STEPS.length - 1} onVisible={handleVisible} />
             </div>
           ))}
         </div>
