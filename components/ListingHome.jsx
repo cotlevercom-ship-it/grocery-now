@@ -243,23 +243,26 @@ export default function ListingHome() {
       </div>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px)' }}>
-        {/* Type filter — only admin-active types are selectable here */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', flexWrap: 'wrap' }}>
-          <button onClick={() => setFilterType('all')} style={{
-            padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === 'all' ? theme.ink : theme.line}`,
-            fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
-            background: filterType === 'all' ? theme.ink : theme.surface,
-            color: filterType === 'all' ? theme.paper : theme.inkSoft,
-          }}>All</button>
-          {activeTypeOptions.map(t => (
-            <button key={t.key} onClick={() => setFilterType(t.key)} style={{
-              padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === t.key ? theme.ink : theme.line}`,
+        {/* Type filter — hidden entirely when there's only one (or zero) active type,
+            since filtering wouldn't change what's shown */}
+        {activeTypeOptions.length > 1 && (
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', flexWrap: 'wrap' }}>
+            <button onClick={() => setFilterType('all')} style={{
+              padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === 'all' ? theme.ink : theme.line}`,
               fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
-              background: filterType === t.key ? theme.ink : theme.surface,
-              color: filterType === t.key ? theme.paper : theme.inkSoft,
-            }}>{t.label}</button>
-          ))}
-        </div>
+              background: filterType === 'all' ? theme.ink : theme.surface,
+              color: filterType === 'all' ? theme.paper : theme.inkSoft,
+            }}>All</button>
+            {activeTypeOptions.map(t => (
+              <button key={t.key} onClick={() => setFilterType(t.key)} style={{
+                padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === t.key ? theme.ink : theme.line}`,
+                fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
+                background: filterType === t.key ? theme.ink : theme.surface,
+                color: filterType === t.key ? theme.paper : theme.inkSoft,
+              }}>{t.label}</button>
+            ))}
+          </div>
+        )}
 
         {loading ? (
           <div style={{ color: theme.inkSoft, fontSize: '14px', textAlign: 'center', padding: '60px' }}>Loading listings…</div>
