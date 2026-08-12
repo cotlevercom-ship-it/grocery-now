@@ -40,10 +40,17 @@ function ConnectionDiagram({ types }) {
   const labels = (types && types.length ? types.map(t => t.label) : ['Co-founder', 'Investor'])
   // Arrange nodes evenly around the center hub — adapts automatically as admin
   // activates/deactivates listing types, instead of a fixed 6-node layout.
-  const nodes = labels.map((label, i) => {
-    const angle = (2 * Math.PI * i) / labels.length - Math.PI / 2
-    return { label, x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) }
-  })
+  // 2 nodes look better as a diagonal left/right pair than stacked top/bottom;
+  // 3+ nodes fan out evenly around the hub like before.
+  const nodes = labels.length === 2
+    ? [
+        { label: labels[0], x: cx - 112, y: cy - 30 },
+        { label: labels[1], x: cx + 112, y: cy + 30 },
+      ]
+    : labels.map((label, i) => {
+        const angle = (2 * Math.PI * i) / labels.length - Math.PI / 2
+        return { label, x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) }
+      })
   const lineLength = (n) => Math.hypot(n.x - cx, n.y - cy)
   const pathFor = (n) => `M ${cx} ${cy} L ${n.x} ${n.y}`
 
