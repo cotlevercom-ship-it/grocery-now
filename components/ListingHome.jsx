@@ -35,124 +35,6 @@ function timeAgo(dateStr) {
   return `${months} mo ago`
 }
 
-function ConnectionDiagram({ types }) {
-  const cx = 150, cy = 145, radius = 105
-  const labels = (types && types.length ? types.map(t => t.label) : ['Co-founder', 'Investor'])
-  // Arrange nodes evenly around the center hub — adapts automatically as admin
-  // activates/deactivates listing types, instead of a fixed 6-node layout.
-  // 2 nodes look better as a diagonal left/right pair than stacked top/bottom;
-  // 3+ nodes fan out evenly around the hub like before.
-  const nodes = labels.length === 2
-    ? [
-        { label: labels[0], x: cx - 112, y: cy - 30 },
-        { label: labels[1], x: cx + 112, y: cy + 30 },
-      ]
-    : labels.map((label, i) => {
-        const angle = (2 * Math.PI * i) / labels.length - Math.PI / 2
-        return { label, x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) }
-      })
-  const lineLength = (n) => Math.hypot(n.x - cx, n.y - cy)
-  const pathFor = (n) => `M ${cx} ${cy} L ${n.x} ${n.y}`
-
-  return (
-    <svg viewBox="0 0 320 320" width="100%" height="100%" style={{ maxWidth: '360px', overflow: 'visible' }}>
-      <style>{`
-        .cd-line {
-          stroke-dasharray: var(--len);
-          stroke-dashoffset: var(--len);
-          animation: cd-draw 0.7s ease-out forwards;
-          animation-delay: var(--delay);
-        }
-        .cd-node-g {
-          opacity: 0;
-          animation: cd-pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.3) forwards, cd-float var(--float-dur) ease-in-out infinite;
-          animation-delay: calc(var(--delay) + 0.35s), calc(var(--delay) + 1.4s);
-          transform-box: fill-box;
-          transform-origin: center;
-        }
-        .cd-pulse-dot {
-          opacity: 0;
-          animation: cd-fade-in 0.3s ease-out forwards;
-          animation-delay: calc(var(--delay) + 0.75s);
-        }
-        .cd-glow {
-          transform-box: fill-box;
-          transform-origin: center;
-          animation: cd-glow 2.6s ease-in-out infinite;
-          animation-delay: 1.5s;
-        }
-        @keyframes cd-draw {
-          to { stroke-dashoffset: 0; }
-        }
-        @keyframes cd-pop {
-          0% { opacity: 0; transform: scale(0.4); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes cd-float {
-          0%, 100% { translate: 0 0; }
-          50% { translate: 0 -4px; }
-        }
-        @keyframes cd-fade-in {
-          to { opacity: 1; }
-        }
-        @keyframes cd-glow {
-          0%, 100% { transform: scale(1); opacity: 0.35; }
-          50% { transform: scale(1.35); opacity: 0; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .cd-line, .cd-node-g, .cd-pulse-dot, .cd-glow { animation: none !important; }
-          .cd-line { opacity: 1; stroke-dashoffset: 0 !important; }
-          .cd-node-g, .cd-pulse-dot { opacity: 1 !important; }
-          .cd-glow { display: none; }
-        }
-      `}</style>
-
-      {nodes.map((n, i) => (
-        <path
-          key={`line-${i}`} id={`cd-path-${i}`} d={pathFor(n)} fill="none"
-          stroke={theme.line} strokeWidth="1.5" className="cd-line"
-          style={{ '--len': lineLength(n), '--delay': `${i * 0.09}s` }}
-        />
-      ))}
-
-      {/* soft glow ring pulsing outward behind the center node */}
-      <circle cx={cx} cy={cy} r="34" fill="none" stroke={theme.brass} strokeWidth="2" className="cd-glow" />
-
-      <g>
-        <circle cx={cx} cy={cy} r="34" fill={theme.ink} />
-        <text x={cx} y={cy - 3} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">YOUR</text>
-        <text x={cx} y={cy + 10} textAnchor="middle" fill="#F6F4EF" fontSize="10" fontFamily={theme.fontMono} fontWeight="600">BUSINESS</text>
-      </g>
-
-      {/* traveling signal pulses — a small dot ping-pongs along each connection line */}
-      {nodes.map((n, i) => (
-        <circle key={`pulse-${i}`} r="3.5" fill={theme.brass} className="cd-pulse-dot" style={{ '--delay': `${i * 0.09}s` }}>
-          <animateMotion
-            dur={`${4.4 + (i % 3) * 0.7}s`}
-            repeatCount="indefinite"
-            keyPoints="0;1;0"
-            keyTimes="0;0.5;1"
-            calcMode="linear"
-            begin={`${0.9 + i * 0.09}s`}
-          >
-            <mpath href={`#cd-path-${i}`} />
-          </animateMotion>
-        </circle>
-      ))}
-
-      {nodes.map((n, i) => (
-        <g
-          key={`node-${i}`} className="cd-node-g"
-          style={{ '--delay': `${i * 0.09}s`, '--float-dur': `${5.2 + (i % 3) * 0.6}s` }}
-        >
-          <circle cx={n.x} cy={n.y} r="26" fill={theme.surface} stroke={theme.brass} strokeWidth="1.5" />
-          <text x={n.x} y={n.y + 4} textAnchor="middle" fill={theme.ink} fontSize="9" fontFamily={theme.fontBody} fontWeight="600">{n.label}</text>
-        </g>
-      ))}
-    </svg>
-  )
-}
-
 export default function ListingHome() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
@@ -189,9 +71,8 @@ export default function ListingHome() {
       {/* Hero */}
       <div style={{
         maxWidth: '1200px', margin: '0 auto', padding: 'clamp(28px,5vw,64px) clamp(16px,3vw,56px)',
-        display: 'flex', gap: 'clamp(24px,4vw,60px)', alignItems: 'center', flexWrap: 'wrap',
       }}>
-        <div style={{ flex: '1 1 400px', minWidth: '280px' }}>
+        <div style={{ maxWidth: '640px' }}>
           <div style={{
             fontFamily: theme.fontMono, fontSize: '11.5px', letterSpacing: '0.1em', textTransform: 'uppercase',
             color: theme.brassDark, marginBottom: '16px', fontWeight: '600'
@@ -223,10 +104,6 @@ export default function ListingHome() {
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>How It Works</Link>
           </div>
-        </div>
-
-        <div style={{ flex: '0 1 320px', display: 'flex', justifyContent: 'center' }}>
-          <ConnectionDiagram types={activeTypeOptions} />
         </div>
       </div>
 
