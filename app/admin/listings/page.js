@@ -2,11 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 import { EXTRA_FIELD_CONFIG } from '@/lib/listingExtraFields'
-
-const TYPE_LABEL = {
-  co_founder: 'Co-founder', partner: 'Partner', investor: 'Investor',
-  employee: 'Employee', supplier: 'Supplier', buyer: 'Buyer',
-}
+import { fetchListingTypes } from '@/lib/listingTypes'
 
 function addDuration(plan) {
   const now = new Date()
@@ -24,13 +20,19 @@ export default function AdminListingsPage() {
   const [error, setError] = useState('')
   const [actingId, setActingId] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
+  const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive), for label lookup
+  const TYPE_LABEL = Object.fromEntries(typeOptions.map(t => [t.key, t.label]))
 
   async function load() {
     setLoading(true)
     setError('')
     try {
-      const subData = await supabaseFetch('listing_subscriptions?select=*&order=created_at.desc')
+      const [subData, types] = await Promise.all([
+        supabaseFetch('listing_subscriptions?select=*&order=created_at.desc'),
+        fetchListingTypes(),
+      ])
       setSubs(subData || [])
+      setTypeOptions(types)
       const ids = [...new Set((subData || []).map(s => s.listing_id))]
       if (ids.length) {
         const listingData = await supabaseFetch(`listings?select=*&id=in.(${ids.join(',')})`)

@@ -5,16 +5,7 @@ import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { EXTRA_FIELD_CONFIG } from '@/lib/listingExtraFields'
-
-const TYPE_LABEL = {
-  co_founder: 'Looking for Co-founder', partner: 'Looking for Partner', investor: 'Looking for Investor',
-  employee: 'Looking for Employee', supplier: 'Looking for Supplier', buyer: 'Looking for Buyer',
-}
-
-const TYPE_ICON = {
-  co_founder: '🤝', partner: '🔗', investor: '💰',
-  employee: '👥', supplier: '📦', buyer: '🛒',
-}
+import { fetchListingTypes } from '@/lib/listingTypes'
 
 // Small icon per extra-field key so metric cards feel like a data sheet, not a plain list.
 const FIELD_ICON = {
@@ -44,6 +35,13 @@ export default function ListingDetailPage() {
   const [verified, setVerified] = useState(false)
   const [related, setRelated] = useState([])
   const [loading, setLoading] = useState(true)
+  const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive), for label/icon lookup on saved listings
+  const TYPE_LABEL = Object.fromEntries(typeOptions.map(t => [t.key, `Looking for ${t.label}`]))
+  const TYPE_ICON = Object.fromEntries(typeOptions.map(t => [t.key, t.icon]))
+
+  useEffect(() => {
+    fetchListingTypes().then(setTypeOptions).catch(e => console.error(e))
+  }, [])
 
   useEffect(() => {
     async function load() {

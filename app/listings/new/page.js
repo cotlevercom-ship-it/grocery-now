@@ -5,15 +5,7 @@ import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { EXTRA_FIELD_CONFIG, cleanExtraFieldsForType } from '@/lib/listingExtraFields'
-
-const TYPES = [
-  { value: 'co_founder', label: 'Co-founder' },
-  { value: 'partner', label: 'Partner' },
-  { value: 'investor', label: 'Investor' },
-  { value: 'employee', label: 'Employee' },
-  { value: 'supplier', label: 'Supplier' },
-  { value: 'buyer', label: 'Buyer' },
-]
+import { fetchListingTypes } from '@/lib/listingTypes'
 
 const INDUSTRIES = [
   'Technology / Software',
@@ -46,6 +38,7 @@ export default function NewListingPage() {
   const [extra, setExtra] = useState({}) // { [type]: { [fieldKey]: value } }
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [types, setTypes] = useState([]) // active listing type options, admin-managed
 
   useEffect(() => {
     const s = getSession()
@@ -53,6 +46,7 @@ export default function NewListingPage() {
     if (s?.user?.email) {
       setForm(prev => ({ ...prev, contact_email: s.user.email }))
     }
+    fetchListingTypes({ activeOnly: true }).then(setTypes).catch(e => console.error(e))
   }, [])
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
@@ -177,13 +171,13 @@ export default function NewListingPage() {
           <div style={{ marginBottom: '22px' }}>
             <label style={labelStyle}>What are you looking for? (select multiple) *</label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {TYPES.map(t => (
-                <button key={t.value} type="button" onClick={() => toggleType(t.value)} style={{
-                  padding: '9px 16px', borderRadius: '20px', border: `1px solid ${form.listing_types.includes(t.value) ? theme.ink : theme.line}`,
+              {types.map(t => (
+                <button key={t.key} type="button" onClick={() => toggleType(t.key)} style={{
+                  padding: '9px 16px', borderRadius: '20px', border: `1px solid ${form.listing_types.includes(t.key) ? theme.ink : theme.line}`,
                   fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
-                  background: form.listing_types.includes(t.value) ? theme.ink : theme.surface,
-                  color: form.listing_types.includes(t.value) ? theme.paper : theme.inkSoft
-                }}>{t.label}</button>
+                  background: form.listing_types.includes(t.key) ? theme.ink : theme.surface,
+                  color: form.listing_types.includes(t.key) ? theme.paper : theme.inkSoft
+                }}>{t.icon} {t.label}</button>
               ))}
             </div>
           </div>

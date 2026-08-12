@@ -3,23 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
-
-const TYPES = [
-  { value: 'all', label: 'All' },
-  { value: 'co_founder', label: 'Co-founder' },
-  { value: 'partner', label: 'Partner' },
-  { value: 'investor', label: 'Investor' },
-  { value: 'employee', label: 'Employee' },
-  { value: 'supplier', label: 'Supplier' },
-  { value: 'buyer', label: 'Buyer' },
-]
-
-const TYPE_LABEL = Object.fromEntries(TYPES.map(t => [t.value, t.label]))
-
-const TYPE_ICON = {
-  co_founder: '🤝', partner: '🔗', investor: '💰',
-  employee: '👥', supplier: '📦', buyer: '🛒',
-}
+import { fetchListingTypes } from '@/lib/listingTypes'
 
 // The single most useful field to surface on the card for each listing type,
 // so a browsing visitor sees the key number/detail without opening the listing.
@@ -167,13 +151,21 @@ export default function ListingHome() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
   const [filterType, setFilterType] = useState('all')
+  const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive) — for label/icon lookups
+  const TYPE_LABEL = Object.fromEntries(typeOptions.map(t => [t.key, t.label]))
+  const TYPE_ICON = Object.fromEntries(typeOptions.map(t => [t.key, t.icon]))
+  const activeTypeOptions = typeOptions.filter(t => t.is_active)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
       try {
-        const data = await supabaseFetch('listings?select=*&status=eq.active&order=created_at.desc')
+        const [data, types] = await Promise.all([
+          supabaseFetch('listings?select=*&status=eq.active&order=created_at.desc'),
+          fetchListingTypes(),
+        ])
         setListings(data || [])
+        setTypeOptions(types)
       } catch (e) {
         console.error(e)
       }
@@ -244,14 +236,20 @@ export default function ListingHome() {
       </div>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px)' }}>
-        {/* Type filter */}
+        {/* Type filter — only admin-active types are selectable here */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', flexWrap: 'wrap' }}>
-          {TYPES.map(t => (
-            <button key={t.value} onClick={() => setFilterType(t.value)} style={{
-              padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === t.value ? theme.ink : theme.line}`,
+          <button onClick={() => setFilterType('all')} style={{
+            padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === 'all' ? theme.ink : theme.line}`,
+            fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
+            background: filterType === 'all' ? theme.ink : theme.surface,
+            color: filterType === 'all' ? theme.paper : theme.inkSoft,
+          }}>All</button>
+          {activeTypeOptions.map(t => (
+            <button key={t.key} onClick={() => setFilterType(t.key)} style={{
+              padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === t.key ? theme.ink : theme.line}`,
               fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
-              background: filterType === t.value ? theme.ink : theme.surface,
-              color: filterType === t.value ? theme.paper : theme.inkSoft,
+              background: filterType === t.key ? theme.ink : theme.surface,
+              color: filterType === t.key ? theme.paper : theme.inkSoft,
             }}>{t.label}</button>
           ))}
         </div>
