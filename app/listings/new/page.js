@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { getSession, supabaseFetch } from '@/lib/supabase'
+import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { EXTRA_FIELD_CONFIG, cleanExtraFieldsForType } from '@/lib/listingExtraFields'
 import { fetchListingTypes } from '@/lib/listingTypes'
@@ -37,8 +37,11 @@ export default function NewListingPage() {
   })
   const [extra, setExtra] = useState({}) // { [type]: { [fieldKey]: value } }
   const [submitting, setSubmitting] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [types, setTypes] = useState([]) // active listing type options, admin-managed
+  const [logoFile, setLogoFile] = useState(null)
+  const [logoPreview, setLogoPreview] = useState('')
 
   useEffect(() => {
     const s = getSession()
@@ -50,6 +53,13 @@ export default function NewListingPage() {
   }, [])
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLogoFile(file)
+    setLogoPreview(URL.createObjectURL(file))
+  }
 
   const handleExtraChange = (type, key, value) => setExtra(prev => ({
     ...prev,
@@ -74,6 +84,17 @@ export default function NewListingPage() {
 
     setSubmitting(true)
     try {
+      let logo_url = null
+      if (logoFile) {
+        setUploading(true)
+        try {
+          logo_url = await uploadImage(logoFile, 'listings')
+        } catch (e) {
+          console.error(e)
+        }
+        setUploading(false)
+      }
+
       const extra_fields = {}
       form.listing_types.forEach(type => {
         const cleaned = cleanExtraFieldsForType(type, extra[type])
@@ -90,6 +111,7 @@ export default function NewListingPage() {
         contact_email: form.contact_email.trim() || null,
         listing_types: form.listing_types,
         extra_fields,
+        logo_url,
         status: 'inactive',
       }
       const res = await supabaseFetch('listings', { method: 'POST', body: JSON.stringify(payload) })
@@ -144,6 +166,30 @@ export default function NewListingPage() {
         )}
 
         <form onSubmit={handleSubmit} style={{ background: theme.surface, borderRadius: '12px', border: `1px solid ${theme.line}`, padding: 'clamp(20px,3vw,28px)' }}>
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Business Logo (optional)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+                background: theme.paper, border: `1px solid ${theme.line}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {logoPreview ? (
+                  <img src={logoPreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ fontSize: '20px', color: theme.inkSoft }}>🏢</span>
+                )}
+              </div>
+              <label style={{
+                display: 'inline-block', background: theme.paper, color: theme.ink, border: `1px solid ${theme.line}`,
+                borderRadius: '8px', padding: '9px 16px', fontSize: '13px', fontWeight: '600', cursor: 'pointer'
+              }}>
+                {logoPreview ? 'Change photo' : 'Upload photo'}
+                <input type="file" accept="image/*" onChange={handleLogoChange} style={{ display: 'none' }} />
+              </label>
+            </div>
+          </div>
+
           <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Business Name *</label>
             <input style={inputStyle} value={form.business_name} onChange={e => handleChange('business_name', e.target.value)} placeholder="Your business name" />
@@ -244,7 +290,7 @@ export default function NewListingPage() {
             width: '100%', background: submitting ? '#B8B2A0' : theme.brass, color: 'white',
             borderRadius: '8px', padding: '14px', fontSize: '15px', fontWeight: '600', border: 'none', fontFamily: theme.fontBody
           }}>
-            {submitting ? 'Creating...' : 'Next: Payment'}
+            {uploading ? 'Uploading photo...' : submitting ? 'Creating...' : 'Next: Payment'}
           </button>
         </form>
       </div>

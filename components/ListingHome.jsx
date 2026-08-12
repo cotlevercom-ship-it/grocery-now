@@ -129,23 +129,36 @@ export default function ListingHome() {
             {filtered.map((listing, i) => {
               const highlight = highlightFor(listing)
               const freshness = timeAgo(listing.created_at)
+              const initial = (listing.business_name || '?').trim().charAt(0).toUpperCase()
               return (
                 <Link key={listing.id} href={`/listing/${listing.id}`} style={{
                   background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`,
                   padding: '20px', display: 'block', textDecoration: 'none'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <div style={{ fontFamily: theme.fontMono, fontSize: '11px', color: theme.inkSoft }}>{String(i + 1).padStart(2, '0')}</div>
-                    {freshness && (
-                      <div style={{ fontSize: '10.5px', color: theme.inkSoft }}>{freshness}</div>
-                    )}
-                  </div>
-
-                  <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
-                    {listing.business_name}
-                  </div>
-                  <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginBottom: '10px' }}>
-                    {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
+                    <div style={{
+                      width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+                      background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                      {listing.logo_url ? (
+                        <img src={listing.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>{initial}</span>
+                      )}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                        <div style={{ fontFamily: theme.fontDisplay, fontSize: '16.5px', fontWeight: '600', color: theme.ink, lineHeight: '1.25' }}>
+                          {listing.business_name}
+                        </div>
+                        {freshness && (
+                          <div style={{ fontSize: '10.5px', color: theme.inkSoft, whiteSpace: 'nowrap', flexShrink: 0, paddingTop: '2px' }}>{freshness}</div>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginTop: '2px' }}>
+                        {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
+                      </div>
+                    </div>
                   </div>
 
                   {highlight && (

@@ -62,7 +62,7 @@ export default function ListingDetailPage() {
           if (item.listing_types?.length) {
             try {
               const orFilter = item.listing_types.map(t => `listing_types.cs.{${t}}`).join(',')
-              const rel = await supabaseFetch(`listings?select=id,business_name,industry,location,listing_types&status=eq.active&id=neq.${id}&or=(${orFilter})&limit=3`)
+              const rel = await supabaseFetch(`listings?select=id,business_name,industry,location,listing_types,logo_url&status=eq.active&id=neq.${id}&or=(${orFilter})&limit=3`)
               setRelated(rel || [])
             } catch (e) { /* non-fatal */ }
           }
@@ -119,7 +119,22 @@ export default function ListingDetailPage() {
             )}
           </div>
 
-          <h1 style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,2.8vw,32px)', fontWeight: '600', color: theme.ink, marginBottom: '18px' }}>
+          <h1 style={{
+            fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,2.8vw,32px)', fontWeight: '600', color: theme.ink,
+            marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '14px'
+          }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+              background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              {listing.logo_url ? (
+                <img src={listing.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>
+                  {(listing.business_name || '?').trim().charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
             {listing.business_name}
           </h1>
 
@@ -209,9 +224,25 @@ export default function ListingDetailPage() {
                     background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
                     padding: '16px', height: '100%'
                   }}>
-                    <div style={{ fontSize: '14.5px', fontWeight: '700', color: theme.ink, marginBottom: '4px' }}>{r.business_name}</div>
-                    <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginBottom: '8px' }}>
-                      {r.industry || 'Industry not specified'}{r.location ? ` · ${r.location}` : ''}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                      <div style={{
+                        width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+                        background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        {r.logo_url ? (
+                          <img src={r.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <span style={{ fontFamily: theme.fontDisplay, fontSize: '13px', fontWeight: '600', color: theme.paper }}>
+                            {(r.business_name || '?').trim().charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: '14.5px', fontWeight: '700', color: theme.ink }}>{r.business_name}</div>
+                        <div style={{ fontSize: '12px', color: theme.inkSoft }}>
+                          {r.industry || 'Industry not specified'}{r.location ? ` · ${r.location}` : ''}
+                        </div>
+                      </div>
                     </div>
                     <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                       {(r.listing_types || []).slice(0, 2).map(t => (
