@@ -1,10 +1,8 @@
 import { redirect } from 'next/navigation'
 
-// The old standalone co-founder profile browser (member_profiles table) is
-// retired — it was disconnected from the listing system's co_founder purpose
-// type, so it showed every discoverable user regardless of what they'd
-// actually listed for. Co-founder browsing now happens on the homepage,
-// filtered to listings where the owner selected "co_founder" as a purpose.
+// Retired: the old standalone co-founder profile browser (member_profiles
+// table) was already disconnected from the listing system. Co-founder
+// discovery is now its own free, separate flow at /cofounder.
 export default function MembersPage() {
-  redirect('/?type=co_founder')
+  redirect('/cofounder')
 }

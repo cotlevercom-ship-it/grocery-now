@@ -54,8 +54,8 @@ export default function ListingHome() {
   const [filterType, setFilterType] = useState(searchParams.get('type') || 'all')
   const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive) — for label/icon lookups
 
-  // Keep filter in sync with ?type= — e.g. the "Find a Co-founder" link navigating
-  // back to "/" with a different type while this component is already mounted.
+  // Keep filter in sync with ?type= — e.g. a type-filtered link (partner,
+  // investor, etc.) navigating back to "/" while this component is mounted.
   useEffect(() => {
     setFilterType(searchParams.get('type') || 'all')
   }, [searchParams])
@@ -127,7 +127,7 @@ export default function ListingHome() {
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>List Your Business</Link>
-            <Link href="/?type=co_founder" style={{
+            <Link href="/cofounder" style={{
               display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>Find a Co-founder</Link>

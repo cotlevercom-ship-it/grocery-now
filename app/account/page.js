@@ -60,9 +60,16 @@ export default function AccountPage() {
     {
       href: '/account/listings',
       icon: '📋',
-      title: 'My Listings',
-      subtitle: 'View your listings and subscription status',
+      title: 'Add Business',
+      subtitle: 'List your business and manage subscription',
       tag: null,
+    },
+    {
+      href: '/account/cofounder',
+      icon: '🧩',
+      title: 'Find Co-founder',
+      subtitle: 'Post your idea, free',
+      tag: 'FREE',
     },
     {
       href: '/account/profile',
