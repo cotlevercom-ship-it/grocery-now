@@ -16,6 +16,15 @@ const FIELD_ICON = {
   product: '📦', volume: '📦',
 }
 
+function verifiedCheckmark(size = 18) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="10" fill="currentColor" />
+      <path d="M6 10.2l2.4 2.4L14 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return null
   const diffMs = Date.now() - new Date(dateStr).getTime()
@@ -99,37 +108,40 @@ export default function ListingDetailPage() {
 
         <div style={{ background: theme.surface, borderRadius: '12px', border: `1px solid ${theme.line}`, padding: 'clamp(24px,3.5vw,36px)' }}>
 
-          {/* Type chips + verified badge */}
+          {/* Type chips — labeled plainly so it's unambiguous what this business wants */}
+          <div style={{ fontSize: '10.5px', fontWeight: '700', letterSpacing: '0.07em', textTransform: 'uppercase', color: theme.inkSoft, marginBottom: '8px' }}>
+            Looking for
+          </div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '16px' }}>
             {(listing.listing_types || []).map(t => (
               <span key={t} style={{
                 fontSize: '11.5px', fontWeight: '600', padding: '5px 11px', borderRadius: '20px',
                 background: theme.signalSoft, color: theme.signal, display: 'inline-flex', alignItems: 'center', gap: '5px'
               }}>
-                <span>{TYPE_ICON[t] || '•'}</span>{TYPE_LABEL[t] || t}
+                <span>{TYPE_ICON[t] || '•'}</span>{(TYPE_LABEL[t] || t).replace(/^Looking for /, '')}
               </span>
             ))}
-            {verified && (
-              <span style={{
-                fontSize: '11.5px', fontWeight: '700', padding: '5px 11px', borderRadius: '20px',
-                background: theme.ink, color: theme.paper, display: 'inline-flex', alignItems: 'center', gap: '5px'
-              }}>
-                ✓ Verified Listing
-              </span>
-            )}
           </div>
 
           <h1 style={{
             fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,2.8vw,32px)', fontWeight: '600', color: theme.ink,
             marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '14px'
           }}>
-            <div style={{
-              width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-              background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>
-                {(listing.business_name || '?').trim().charAt(0).toUpperCase()}
-              </span>
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{
+                width: '48px', height: '48px', borderRadius: '10px', overflow: 'hidden',
+                background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>
+                  {(listing.business_name || '?').trim().charAt(0).toUpperCase()}
+                </span>
+              </div>
+              {verified && (
+                <div style={{
+                  position: 'absolute', bottom: '-3px', right: '-3px', color: theme.signal,
+                  background: theme.surface, borderRadius: '50%', lineHeight: 0
+                }}>{verifiedCheckmark(18)}</div>
+              )}
             </div>
             {listing.business_name}
           </h1>

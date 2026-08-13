@@ -25,18 +25,18 @@ function highlightFor(listing) {
   return null
 }
 
-function timeAgo(dateStr) {
-  if (!dateStr) return null
-  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24))
-  if (days <= 0) return 'Today'
-  if (days === 1) return '1 day ago'
-  if (days < 30) return `${days} days ago`
-  const months = Math.floor(days / 30)
-  return `${months} mo ago`
+function verifiedCheckmark(size = 15) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="10" fill="currentColor" />
+      <path d="M6 10.2l2.4 2.4L14 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
 }
 
 export default function ListingHome() {
   const [listings, setListings] = useState([])
+  const [verifiedIds, setVerifiedIds] = useState(new Set())
   const [loading, setLoading] = useState(true)
   const [filterType, setFilterType] = useState('all')
   const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive) — for label/icon lookups
@@ -54,6 +54,18 @@ export default function ListingHome() {
         ])
         setListings(data || [])
         setTypeOptions(types)
+
+        // Verified = has a currently active (paid + approved, not expired) subscription —
+        // same rule as the listing detail page's verified badge.
+        const ids = (data || []).map(l => l.id)
+        if (ids.length) {
+          try {
+            const subs = await supabaseFetch(`listing_subscriptions?select=listing_id,ends_at&status=eq.active&listing_id=in.(${ids.join(',')})`)
+            const now = new Date()
+            const verified = new Set((subs || []).filter(s => !s.ends_at || new Date(s.ends_at) > now).map(s => s.listing_id))
+            setVerifiedIds(verified)
+          } catch (e) { /* non-fatal */ }
+        }
       } catch (e) {
         console.error(e)
       }
@@ -132,31 +144,29 @@ export default function ListingHome() {
           }}>
             {filtered.map((listing, i) => {
               const highlight = highlightFor(listing)
-              const freshness = timeAgo(listing.created_at)
               const initial = (listing.business_name || '?').trim().charAt(0).toUpperCase()
               const types = listing.listing_types || []
+              const isVerified = verifiedIds.has(listing.id)
               return (
                 <Link key={listing.id} href={`/listing/${listing.id}`} className="listing-card" style={{
-                  background: theme.surface, border: `1px solid ${theme.line}`,
+                  background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
                   textDecoration: 'none', display: 'flex', flexDirection: 'column',
                   padding: '20px 20px 16px', position: 'relative'
                 }}>
-                  {freshness && (
-                    <div style={{
-                      position: 'absolute', top: '14px', right: '18px',
-                      fontFamily: theme.fontMono, fontSize: '9.5px', letterSpacing: '0.05em',
-                      color: theme.line, textTransform: 'uppercase'
-                    }}>{freshness}</div>
-                  )}
-
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '14px', paddingRight: '48px' }}>
-                    {/* Folded corner tag — small notch, letter stays clear of the cut */}
-                    <div style={{
-                      width: '40px', height: '40px', flexShrink: 0,
-                      background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      clipPath: 'polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%)'
-                    }}>
-                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: theme.brass }}>{initial}</span>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '14px' }}>
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
+                      <div style={{
+                        width: '40px', height: '40px', borderRadius: '8px',
+                        background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <span style={{ fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: theme.brass }}>{initial}</span>
+                      </div>
+                      {isVerified && (
+                        <div style={{
+                          position: 'absolute', bottom: '-3px', right: '-3px', color: theme.signal,
+                          background: theme.surface, borderRadius: '50%', lineHeight: 0
+                        }}>{verifiedCheckmark(15)}</div>
+                      )}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.ink, lineHeight: '1.2' }}>
@@ -186,22 +196,23 @@ export default function ListingHome() {
                     }}>"{listing.description}"</p>
                   )}
 
-                  {/* Wire row — small nodes strung on a brass thread, the same connective
-                      language as the hero's business↔role diagram, shrunk to card scale */}
-                  <div style={{ display: 'flex', alignItems: 'center', marginTop: 'auto', paddingTop: '14px' }}>
-                    {types.map((t, idx) => (
-                      <span key={t} style={{ display: 'flex', alignItems: 'center' }}>
-                        {idx > 0 && <span style={{ width: '10px', height: '1px', background: theme.line, flexShrink: 0 }} />}
-                        <span style={{
+                  {/* Purpose row — labeled plainly so it's unambiguous what this business wants */}
+                  <div style={{ marginTop: 'auto', paddingTop: '14px' }}>
+                    <div style={{
+                      fontSize: '9.5px', fontWeight: '700', letterSpacing: '0.07em', textTransform: 'uppercase',
+                      color: theme.inkSoft, marginBottom: '6px'
+                    }}>Looking for</div>
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                      {types.map(t => (
+                        <span key={t} style={{
                           display: 'inline-flex', alignItems: 'center', gap: '5px',
                           fontSize: '10.5px', fontWeight: '600', color: theme.signal, whiteSpace: 'nowrap',
-                          padding: '3px 8px 3px 6px', border: `1px solid ${theme.signalSoft}`, borderRadius: '20px'
+                          padding: '3px 9px', background: theme.signalSoft, borderRadius: '20px'
                         }}>
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: theme.signal, flexShrink: 0 }} />
                           {TYPE_ICON[t] || ''} {TYPE_LABEL[t] || t}
                         </span>
-                      </span>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </Link>
               )
