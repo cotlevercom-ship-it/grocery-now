@@ -189,11 +189,17 @@ export default function ListingHome() {
                       <div style={{ fontSize: '12px', color: theme.inkSoft, marginTop: '3px' }}>
                         {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
                       </div>
-                      {ownerNames[listing.owner_id] && (
-                        <div
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/members/${listing.owner_id}`) }}
-                          style={{ fontSize: '11.5px', color: theme.brassDark, fontWeight: '600', marginTop: '3px' }}
-                        >by {ownerNames[listing.owner_id]}</div>
+                      {(listing.owner_name || ownerNames[listing.owner_id]) && (
+                        ownerNames[listing.owner_id] ? (
+                          <div
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/members/${listing.owner_id}`) }}
+                            style={{ fontSize: '11.5px', color: theme.brassDark, fontWeight: '600', marginTop: '3px' }}
+                          >by {listing.owner_name || ownerNames[listing.owner_id]}</div>
+                        ) : (
+                          <div style={{ fontSize: '11.5px', color: theme.inkSoft, fontWeight: '600', marginTop: '3px' }}>
+                            by {listing.owner_name}
+                          </div>
+                        )
                       )}
                     </div>
                   </div>

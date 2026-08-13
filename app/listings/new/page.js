@@ -32,7 +32,7 @@ export default function NewListingPage() {
   const router = useRouter()
   const [session, setSession] = useState(undefined)
   const [form, setForm] = useState({
-    business_name: '', description: '', industry: '', location: '',
+    business_name: '', owner_name: '', description: '', industry: '', location: '',
     website: '', contact_email: '', listing_types: [],
   })
   const [extra, setExtra] = useState({}) // { [type]: { [fieldKey]: value } }
@@ -69,6 +69,7 @@ export default function NewListingPage() {
     e.preventDefault()
     setError('')
     if (!form.business_name.trim()) { setError('Enter your business name'); return }
+    if (!form.owner_name.trim()) { setError('Enter the owner/founder name'); return }
     if (form.listing_types.length === 0) { setError('Select at least one category'); return }
     if (!form.contact_email.trim()) { setError('Provide a contact email'); return }
 
@@ -83,6 +84,7 @@ export default function NewListingPage() {
       const payload = {
         owner_id: session.user.id,
         business_name: form.business_name.trim(),
+        owner_name: form.owner_name.trim(),
         description: form.description.trim() || null,
         industry: form.industry.trim() || null,
         location: form.location.trim() || null,
@@ -147,6 +149,11 @@ export default function NewListingPage() {
           <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Business Name *</label>
             <input style={inputStyle} value={form.business_name} onChange={e => handleChange('business_name', e.target.value)} placeholder="Your business name" />
+          </div>
+
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Owner / Founder Name *</label>
+            <input style={inputStyle} value={form.owner_name} onChange={e => handleChange('owner_name', e.target.value)} placeholder="Your name — shown as 'by [Name]' on the listing" />
           </div>
 
           <div style={{ marginBottom: '18px' }}>
