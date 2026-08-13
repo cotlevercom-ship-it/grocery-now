@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { fetchListingTypes } from '@/lib/listingTypes'
@@ -36,7 +35,6 @@ function verifiedCheckmark(size = 15) {
 }
 
 export default function ListingHome() {
-  const router = useRouter()
   const [listings, setListings] = useState([])
   const [verifiedIds, setVerifiedIds] = useState(new Set())
   const [ownerNames, setOwnerNames] = useState({})
@@ -162,9 +160,9 @@ export default function ListingHome() {
               const types = listing.listing_types || []
               const isVerified = verifiedIds.has(listing.id)
               return (
-                <Link key={listing.id} href={`/listing/${listing.id}`} className="listing-card" style={{
+                <div key={listing.id} className="listing-card" style={{
                   background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
-                  textDecoration: 'none', display: 'flex', flexDirection: 'column',
+                  display: 'flex', flexDirection: 'column',
                   padding: '20px 20px 16px', position: 'relative'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '14px' }}>
@@ -190,10 +188,10 @@ export default function ListingHome() {
                         {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
                       </div>
                       {(listing.owner_name || ownerNames[listing.owner_id]) && (
-                        <div
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/members/${listing.owner_id}`) }}
-                          style={{ fontSize: '11.5px', color: theme.brassDark, fontWeight: '600', marginTop: '3px' }}
-                        >by {listing.owner_name || ownerNames[listing.owner_id]}</div>
+                        <Link
+                          href={`/members/${listing.owner_id}`}
+                          style={{ display: 'inline-block', fontSize: '11.5px', color: theme.brassDark, fontWeight: '600', marginTop: '3px', textDecoration: 'none' }}
+                        >by {listing.owner_name || ownerNames[listing.owner_id]}</Link>
                       )}
                     </div>
                   </div>
@@ -222,7 +220,7 @@ export default function ListingHome() {
                       fontSize: '9.5px', fontWeight: '700', letterSpacing: '0.07em', textTransform: 'uppercase',
                       color: theme.inkSoft, marginBottom: '6px'
                     }}>Looking for</div>
-                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px', marginBottom: '14px' }}>
                       {types.map(t => (
                         <span key={t} style={{
                           display: 'inline-flex', alignItems: 'center', gap: '5px',
@@ -233,8 +231,12 @@ export default function ListingHome() {
                         </span>
                       ))}
                     </div>
+                    <Link href={`/listing/${listing.id}`} style={{
+                      display: 'block', textAlign: 'center', fontSize: '12.5px', fontWeight: '600', color: theme.ink,
+                      textDecoration: 'none', border: `1px solid ${theme.line}`, borderRadius: '7px', padding: '9px'
+                    }}>View Business →</Link>
                   </div>
-                </Link>
+                </div>
               )
             })}
             <style jsx>{`
