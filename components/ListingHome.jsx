@@ -150,13 +150,13 @@ export default function ListingHome() {
                   )}
 
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '14px', paddingRight: '48px' }}>
-                    {/* Notched seal — the card's connection point to the network, echoing the hero diagram's node marks */}
+                    {/* Folded corner tag — small notch, letter stays clear of the cut */}
                     <div style={{
                       width: '40px', height: '40px', flexShrink: 0,
                       background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      clipPath: 'polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 70%)'
+                      clipPath: 'polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%)'
                     }}>
-                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: theme.brass, marginBottom: '4px' }}>{initial}</span>
+                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: theme.brass }}>{initial}</span>
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.ink, lineHeight: '1.2' }}>
