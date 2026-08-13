@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
 export default function PaymentPage() {
   const { listingId } = useParams()
+  const router = useRouter()
   const [prices, setPrices] = useState({ monthly: '', yearly: '', bkashNumber: '' })
   const [plan, setPlan] = useState('monthly')
   const [senderNumber, setSenderNumber] = useState('')
@@ -17,6 +18,11 @@ export default function PaymentPage() {
 
   useEffect(() => {
     async function load() {
+      const s = getSession()
+      if (!s?.user?.id) {
+        router.replace(`/login?next=/payment/${listingId}`)
+        return
+      }
       setLoading(true)
       try {
         const rows = await supabaseFetch('app_settings?select=key,value&key=in.(listing_price_monthly,listing_price_yearly,bkash_payment_number)')
