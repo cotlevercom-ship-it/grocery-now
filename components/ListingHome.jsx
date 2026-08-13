@@ -20,9 +20,19 @@ function highlightFor(listing) {
   for (const type of listing.listing_types || []) {
     const cfg = HIGHLIGHT_FIELD[type]
     const val = listing.extra_fields?.[type]?.[cfg?.key]
-    if (val) return { icon: cfg.icon, text: val }
+    if (val) {
+      const text = type === 'investor' ? `৳${val} needed` : val
+      return { icon: cfg.icon, text }
+    }
   }
   return null
+}
+
+function investorReturnLine(listing) {
+  const inv = listing.extra_fields?.investor
+  if (!inv) return null
+  const parts = [inv.roi_details && `${inv.roi_details} ROI`, inv.investment_duration].filter(Boolean)
+  return parts.length ? parts.join(' · ') : null
 }
 
 function verifiedCheckmark(size = 15) {
@@ -156,6 +166,7 @@ export default function ListingHome() {
           }}>
             {filtered.map((listing, i) => {
               const highlight = highlightFor(listing)
+              const returnLine = investorReturnLine(listing)
               const initial = (listing.business_name || '?').trim().charAt(0).toUpperCase()
               const types = listing.listing_types || []
               const isVerified = verifiedIds.has(listing.id)
@@ -196,13 +207,22 @@ export default function ListingHome() {
                     </div>
                   </div>
 
-                  {highlight && (
-                    <div style={{
-                      fontFamily: theme.fontDisplay, fontSize: '15px', fontWeight: '600', color: theme.brassDark,
-                      marginBottom: '8px', lineHeight: '1.3',
-                      overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                      WebkitLineClamp: 1, WebkitBoxOrient: 'vertical'
-                    }}>{highlight.icon} {highlight.text}</div>
+                  {(highlight || returnLine) && (
+                    <div style={{ marginBottom: '8px' }}>
+                      {highlight && (
+                        <div style={{
+                          fontFamily: theme.fontDisplay, fontSize: '15px', fontWeight: '600', color: theme.brassDark,
+                          lineHeight: '1.3',
+                          overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+                          WebkitLineClamp: 1, WebkitBoxOrient: 'vertical'
+                        }}>{highlight.icon} {highlight.text}</div>
+                      )}
+                      {returnLine && (
+                        <div style={{ fontSize: '12px', fontWeight: '600', color: theme.inkSoft, lineHeight: '1.3', marginTop: '2px' }}>
+                          📈 {returnLine}
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   {listing.description && (

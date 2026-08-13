@@ -9,7 +9,7 @@ import { fetchListingTypes } from '@/lib/listingTypes'
 
 // Small icon per extra-field key so metric cards feel like a data sheet, not a plain list.
 const FIELD_ICON = {
-  amount_needed: '💰', investment_type: '📄', return_type: '📈', roi_details: '💹', stage: '📈', monthly_revenue: '📊',
+  amount_needed: '💰', investment_type: '📄', return_type: '📈', roi_details: '💹', investment_duration: '⏳', stage: '📈', monthly_revenue: '📊',
   skills_needed: '🧩', equity_offered: '📄', equity_percent: '📄', commitment: '⏱️',
   partnership_type: '🔗', expectation: '🎯',
   position: '💼', openings: '🔢', salary_range: '💵', employment_type: '⏱️',
