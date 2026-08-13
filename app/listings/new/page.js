@@ -72,6 +72,12 @@ export default function NewListingPage() {
     if (!form.owner_name.trim()) { setError('Enter the owner/founder name'); return }
     if (form.listing_types.length === 0) { setError('Select at least one category'); return }
     if (!form.contact_email.trim()) { setError('Provide a contact email'); return }
+    for (const type of form.listing_types) {
+      const config = EXTRA_FIELD_CONFIG[type]
+      if (!config) continue
+      const missing = config.fields.find(f => f.required && !(extra[type]?.[f.key] || '').toString().trim())
+      if (missing) { setError(`Please fill "${missing.label}" (${config.label})`); return }
+    }
 
     setSubmitting(true)
     try {
@@ -203,7 +209,7 @@ export default function NewListingPage() {
                 }}>{config.label}</div>
                 {config.fields.map(f => (
                   <div key={f.key} style={{ marginBottom: '12px' }}>
-                    <label style={labelStyle}>{f.label}</label>
+                    <label style={labelStyle}>{f.label}{f.required ? ' *' : ''}</label>
                     {f.type === 'textarea' ? (
                       <textarea
                         style={{ ...inputStyle, minHeight: '70px', resize: 'vertical' }}
