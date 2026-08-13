@@ -68,8 +68,8 @@ export default function AccountPage() {
       href: '/account/cofounder',
       icon: '🧩',
       title: 'Find Co-founder',
-      subtitle: 'Post your idea, free',
-      tag: 'FREE',
+      subtitle: 'Post your idea — first month free',
+      tag: null,
     },
     {
       href: '/account/profile',

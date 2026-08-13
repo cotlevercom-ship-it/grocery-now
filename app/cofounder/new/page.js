@@ -40,7 +40,7 @@ export default function NewCofounderPostPage() {
     if (!form.description.trim()) { setError('Add a short description'); return }
     setSubmitting(true)
     try {
-      await supabaseFetch('cofounder_posts', {
+      const created = await supabaseFetch('cofounder_posts', {
         method: 'POST',
         body: JSON.stringify({
           owner_id: session.user.id,
@@ -53,7 +53,30 @@ export default function NewCofounderPostPage() {
           contact_email: form.contact_email.trim() || null,
         }),
       })
-      router.push('/account/cofounder')
+      const post = created?.[0]
+
+      // First-ever post for this account gets a free 30-day trial —
+      // check whether they've ever had a cofounder subscription before.
+      const priorSubs = await supabaseFetch(`cofounder_subscriptions?select=id&user_id=eq.${session.user.id}&limit=1`)
+      const trialEligible = !(priorSubs && priorSubs.length)
+
+      if (trialEligible && post?.id) {
+        await supabaseFetch('cofounder_subscriptions', {
+          method: 'POST',
+          body: JSON.stringify({
+            post_id: post.id,
+            user_id: session.user.id,
+            plan: 'trial',
+            amount: 0,
+            status: 'pending',
+          }),
+        })
+        router.push('/account/cofounder')
+      } else if (post?.id) {
+        router.push(`/payment/cofounder/${post.id}`)
+      } else {
+        router.push('/account/cofounder')
+      }
     } catch (e) {
       console.error(e)
       setError('Could not submit — please try again')
@@ -77,12 +100,12 @@ export default function NewCofounderPostPage() {
         <div style={{
           fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
           color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
-        }}>Free</div>
+        }}>৳2000/year · First Month Free</div>
         <h1 style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(22px,2.8vw,30px)', fontWeight: '600', color: theme.ink, marginBottom: '8px' }}>
           Post Your Idea
         </h1>
         <p style={{ fontSize: '13.5px', color: theme.inkSoft, marginBottom: '26px', lineHeight: '1.6' }}>
-          No payment needed. Your post goes live after a quick review.
+          Your first post gets a 30-day free trial — no payment needed now. After that (or for additional posts), it's ৳2000/year.
         </p>
 
         {error && (

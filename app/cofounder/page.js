@@ -42,7 +42,7 @@ export default function CofounderBrowsePage() {
             <div style={{
               fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
               color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
-            }}>Free</div>
+            }}>৳2000/year · First Month Free</div>
             <h1 style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,3vw,32px)', fontWeight: '600', color: theme.ink }}>
               Find a Co-founder
             </h1>
@@ -53,7 +53,7 @@ export default function CofounderBrowsePage() {
           }}>+ Post Your Idea</Link>
         </div>
         <p style={{ fontSize: '14.5px', color: theme.inkSoft, marginBottom: '28px', lineHeight: '1.6' }}>
-          Ideas and early businesses looking for a co-founder to join them — free to post, free to browse.
+          Ideas and early businesses looking for a co-founder to join them. First post free for 30 days, then ৳2000/year.
         </p>
 
         {loading ? (
