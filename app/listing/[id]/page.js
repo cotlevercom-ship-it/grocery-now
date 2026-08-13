@@ -212,6 +212,15 @@ export default function ListingDetailPage() {
                     </div>
                   ))}
                 </div>
+                {type === 'investor' && (
+                  <div style={{
+                    marginTop: '10px', padding: '11px 14px', borderRadius: '8px',
+                    background: theme.paper, border: `1px dashed ${theme.line}`,
+                    fontSize: '12px', color: theme.inkSoft, lineHeight: '1.5'
+                  }}>
+                    ⚠️ Return type, ROI, and duration shown here are the business owner's stated intent, not a guarantee. Cotlever does not hold funds or enforce these terms — investors and business owners should formalize the agreed terms in a written agreement before transferring money.
+                  </div>
+                )}
               </div>
             )
           })}
