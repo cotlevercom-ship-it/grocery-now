@@ -134,68 +134,91 @@ export default function ListingHome() {
               const highlight = highlightFor(listing)
               const freshness = timeAgo(listing.created_at)
               const initial = (listing.business_name || '?').trim().charAt(0).toUpperCase()
+              const primaryType = (listing.listing_types || [])[0]
+              const regNo = String(listing.id).replace(/-/g, '').slice(0, 6).toUpperCase()
               return (
-                <Link key={listing.id} href={`/listing/${listing.id}`} style={{
-                  background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`,
-                  padding: '20px', textDecoration: 'none',
-                  display: 'flex', flexDirection: 'column', minHeight: '270px'
+                <Link key={listing.id} href={`/listing/${listing.id}`} className="listing-card" style={{
+                  background: theme.surface, borderRadius: '3px', border: `1px solid ${theme.line}`,
+                  textDecoration: 'none', display: 'flex', flexDirection: 'column', minHeight: '278px',
+                  position: 'relative', overflow: 'hidden'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
+                  {/* Registry stripe — a filed-document tab in the primary type's identity */}
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '100%', background: theme.brass }} />
+
+                  <div style={{ padding: '18px 20px 16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    {/* Eyebrow row — registry-card header: file number + date stamped, mono type */}
                     <div style={{
-                      width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-                      background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+                      fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.06em',
+                      color: theme.inkSoft, marginBottom: '16px', borderBottom: `1px solid ${theme.lineSoft}`, paddingBottom: '10px'
                     }}>
-                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.paper }}>{initial}</span>
+                      <span>NO. {regNo}</span>
+                      {freshness && <span>{freshness === 'Today' ? 'FILED TODAY' : freshness.toUpperCase()}</span>}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-                        <div style={{ fontFamily: theme.fontDisplay, fontSize: '16.5px', fontWeight: '600', color: theme.ink, lineHeight: '1.25' }}>
+
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '14px' }}>
+                      <div style={{
+                        width: '42px', height: '42px', flexShrink: 0, overflow: 'hidden',
+                        background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        border: `1px solid ${theme.brass}`
+                      }}>
+                        <span style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.paper }}>{initial}</span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, lineHeight: '1.25' }}>
                           {listing.business_name}
                         </div>
-                        {freshness && (
-                          <div style={{ fontSize: '10.5px', color: theme.inkSoft, whiteSpace: 'nowrap', flexShrink: 0, paddingTop: '2px' }}>{freshness}</div>
-                        )}
-                      </div>
-                      <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginTop: '2px' }}>
-                        {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
+                        <div style={{ fontSize: '12px', color: theme.inkSoft, marginTop: '3px' }}>
+                          {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Fixed-height slot reserved whether or not a highlight exists, so
-                      cards line up regardless of which listings have extra_fields data. */}
-                  <div style={{
-                    fontSize: '12.5px', fontWeight: '600', color: theme.ink, marginBottom: '10px',
-                    display: 'flex', alignItems: 'flex-start', gap: '6px', lineHeight: '1.4', minHeight: '18px'
-                  }}>
-                    {highlight && (
-                      <>
-                        <span>{highlight.icon}</span>
-                        <span style={{
-                          overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                          WebkitLineClamp: 1, WebkitBoxOrient: 'vertical'
-                        }}>{highlight.text}</span>
-                      </>
-                    )}
-                  </div>
+                    {/* Fixed-height slot reserved whether or not a highlight exists, so
+                        cards line up regardless of which listings have extra_fields data. */}
+                    <div style={{
+                      fontSize: '12.5px', fontWeight: '600', color: theme.brassDark, marginBottom: '10px',
+                      display: 'flex', alignItems: 'flex-start', gap: '6px', lineHeight: '1.4', minHeight: '18px'
+                    }}>
+                      {highlight && (
+                        <>
+                          <span>{highlight.icon}</span>
+                          <span style={{
+                            overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+                            WebkitLineClamp: 1, WebkitBoxOrient: 'vertical'
+                          }}>{highlight.text}</span>
+                        </>
+                      )}
+                    </div>
 
-                  <p style={{
-                    fontSize: '12.5px', color: theme.inkSoft, marginBottom: '14px', lineHeight: '1.5',
-                    overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                    WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1
-                  }}>{listing.description || ''}</p>
+                    <p style={{
+                      fontSize: '12.5px', color: theme.inkSoft, marginBottom: '16px', lineHeight: '1.55',
+                      overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+                      WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1
+                    }}>{listing.description || ''}</p>
 
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {(listing.listing_types || []).map(t => (
-                      <span key={t} style={{
-                        fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '5px',
-                        background: theme.signalSoft, color: theme.signal, display: 'inline-flex', alignItems: 'center', gap: '4px'
-                      }}><span>{TYPE_ICON[t] || ''}</span>{TYPE_LABEL[t] || t}</span>
-                    ))}
+                    <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', borderTop: `1px solid ${theme.lineSoft}`, paddingTop: '12px' }}>
+                      {(listing.listing_types || []).map(t => (
+                        <span key={t} style={{
+                          fontSize: '11px', fontWeight: '600', color: theme.signal,
+                          display: 'inline-flex', alignItems: 'center', gap: '5px', letterSpacing: '0.01em'
+                        }}><span>{TYPE_ICON[t] || ''}</span>{TYPE_LABEL[t] || t}</span>
+                      ))}
+                    </div>
                   </div>
                 </Link>
               )
             })}
+            <style jsx>{`
+              .listing-card {
+                transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+              }
+              .listing-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px -8px rgba(20, 33, 61, 0.18);
+                border-color: ${theme.brass};
+              }
+            `}</style>
           </div>
         )}
       </div>
