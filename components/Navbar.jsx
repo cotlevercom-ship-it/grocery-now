@@ -48,7 +48,7 @@ export default function Navbar() {
       <div style={{ flex: 1 }} />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        <Link href="/members" style={{
+        <Link href="/?type=co_founder" style={{
           fontSize: '13.5px', fontWeight: '600', color: theme.inkSoft, textDecoration: 'none',
           padding: '9px 10px'
         }}>Find Co-founders</Link>
