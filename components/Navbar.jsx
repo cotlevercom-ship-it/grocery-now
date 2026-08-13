@@ -48,16 +48,6 @@ export default function Navbar() {
       <div style={{ flex: 1 }} />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        <Link href="/?type=co_founder" style={{
-          fontSize: '13.5px', fontWeight: '600', color: theme.inkSoft, textDecoration: 'none',
-          padding: '9px 10px'
-        }}>Find Co-founders</Link>
-
-        <Link href="/resources" style={{
-          fontSize: '13.5px', fontWeight: '600', color: theme.inkSoft, textDecoration: 'none',
-          padding: '9px 10px', display: 'none'
-        }} className="nav-resources-link">Resources</Link>
-
         {session ? (
           <Link href="/account" style={{
             display: 'flex', alignItems: 'center', gap: '4px',
