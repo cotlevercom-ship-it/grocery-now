@@ -156,11 +156,7 @@ export default function ListingDetailPage() {
           </h1>
           {(listing.owner_name || ownerName) && (
             <div style={{ fontSize: '13.5px', color: theme.inkSoft, marginTop: '-12px', marginBottom: '22px', paddingLeft: '62px' }}>
-              by {ownerName ? (
-                <Link href={`/members/${listing.owner_id}`} style={{ color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>{listing.owner_name || ownerName}</Link>
-              ) : (
-                <span style={{ color: theme.ink, fontWeight: '600' }}>{listing.owner_name}</span>
-              )}
+              by <Link href={`/members/${listing.owner_id}`} style={{ color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>{listing.owner_name || ownerName}</Link>
             </div>
           )}
 
