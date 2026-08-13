@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { fetchListingTypes } from '@/lib/listingTypes'
@@ -35,8 +36,10 @@ function verifiedCheckmark(size = 15) {
 }
 
 export default function ListingHome() {
+  const router = useRouter()
   const [listings, setListings] = useState([])
   const [verifiedIds, setVerifiedIds] = useState(new Set())
+  const [ownerNames, setOwnerNames] = useState({})
   const [loading, setLoading] = useState(true)
   const [filterType, setFilterType] = useState('all')
   const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive) — for label/icon lookups
@@ -64,6 +67,17 @@ export default function ListingHome() {
             const now = new Date()
             const verified = new Set((subs || []).filter(s => !s.ends_at || new Date(s.ends_at) > now).map(s => s.listing_id))
             setVerifiedIds(verified)
+          } catch (e) { /* non-fatal */ }
+        }
+
+        // Owner display names — shown as "Business Name by Owner" on each card.
+        const ownerIds = [...new Set((data || []).map(l => l.owner_id).filter(Boolean))]
+        if (ownerIds.length) {
+          try {
+            const owners = await supabaseFetch(`member_profiles?select=user_id,display_name&user_id=in.(${ownerIds.join(',')})`)
+            const map = {}
+            ;(owners || []).forEach(o => { map[o.user_id] = o.display_name })
+            setOwnerNames(map)
           } catch (e) { /* non-fatal */ }
         }
       } catch (e) {
@@ -175,6 +189,12 @@ export default function ListingHome() {
                       <div style={{ fontSize: '12px', color: theme.inkSoft, marginTop: '3px' }}>
                         {listing.industry || 'Industry not specified'}{listing.location ? ` · ${listing.location}` : ''}
                       </div>
+                      {ownerNames[listing.owner_id] && (
+                        <div
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/members/${listing.owner_id}`) }}
+                          style={{ fontSize: '11.5px', color: theme.brassDark, fontWeight: '600', marginTop: '3px' }}
+                        >by {ownerNames[listing.owner_id]}</div>
+                      )}
                     </div>
                   </div>
 

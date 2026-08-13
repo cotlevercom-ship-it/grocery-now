@@ -8,6 +8,7 @@ import { theme } from '@/lib/theme'
 export default function MemberDetailPage() {
   const { userId } = useParams()
   const [member, setMember] = useState(null)
+  const [businessListingId, setBusinessListingId] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -16,6 +17,12 @@ export default function MemberDetailPage() {
       try {
         const data = await supabaseFetch(`member_profiles?select=*&user_id=eq.${userId}&is_discoverable=eq.true`)
         setMember(data?.[0] || null)
+
+        // If this member also owns an active business listing, link to it.
+        try {
+          const listings = await supabaseFetch(`listings?select=id&owner_id=eq.${userId}&status=eq.active&limit=1`)
+          setBusinessListingId(listings?.[0]?.id || null)
+        } catch (e) { /* non-fatal */ }
       } catch (e) {
         console.error(e)
       }
@@ -60,6 +67,12 @@ export default function MemberDetailPage() {
             <div style={{ fontSize: '14px', color: theme.inkSoft, marginTop: '4px' }}>
               {member.role_title || 'Role not specified'}{member.location ? ` · ${member.location}` : ''}
             </div>
+            {businessListingId && (
+              <Link href={`/listing/${businessListingId}`} style={{
+                display: 'inline-block', marginTop: '14px', fontSize: '13px', fontWeight: '600', color: theme.brassDark,
+                textDecoration: 'none', border: `1px solid ${theme.line}`, borderRadius: '8px', padding: '8px 16px'
+              }}>View Business Profile →</Link>
+            )}
           </div>
 
           {(member.looking_for || member.commitment) && (

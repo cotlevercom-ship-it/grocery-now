@@ -41,6 +41,7 @@ function timeAgo(dateStr) {
 export default function ListingDetailPage() {
   const { id } = useParams()
   const [listing, setListing] = useState(null)
+  const [ownerName, setOwnerName] = useState(null)
   const [verified, setVerified] = useState(false)
   const [related, setRelated] = useState([])
   const [loading, setLoading] = useState(true)
@@ -66,6 +67,14 @@ export default function ListingDetailPage() {
             const subs = await supabaseFetch(`listing_subscriptions?select=status&listing_id=eq.${id}&status=eq.active&limit=1`)
             setVerified((subs?.length || 0) > 0)
           } catch (e) { /* non-fatal */ }
+
+          // Owner name — shown as "Business Name by Owner" and links to their member profile.
+          if (item.owner_id) {
+            try {
+              const owner = await supabaseFetch(`member_profiles?select=display_name&user_id=eq.${item.owner_id}&limit=1`)
+              setOwnerName(owner?.[0]?.display_name || null)
+            } catch (e) { /* non-fatal */ }
+          }
 
           // Related listings: other active listings sharing at least one purpose type.
           if (item.listing_types?.length) {
@@ -145,6 +154,11 @@ export default function ListingDetailPage() {
             </div>
             {listing.business_name}
           </h1>
+          {ownerName && (
+            <div style={{ fontSize: '13.5px', color: theme.inkSoft, marginTop: '-12px', marginBottom: '22px', paddingLeft: '62px' }}>
+              by <Link href={`/members/${listing.owner_id}`} style={{ color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>{ownerName}</Link>
+            </div>
+          )}
 
           {/* Stats bar — Crunchbase-style compact row of key facts */}
           <div style={{
