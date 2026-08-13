@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { fetchListingTypes } from '@/lib/listingTypes'
@@ -45,12 +46,19 @@ function verifiedCheckmark(size = 15) {
 }
 
 export default function ListingHome() {
+  const searchParams = useSearchParams()
   const [listings, setListings] = useState([])
   const [verifiedIds, setVerifiedIds] = useState(new Set())
   const [ownerNames, setOwnerNames] = useState({})
   const [loading, setLoading] = useState(true)
-  const [filterType, setFilterType] = useState('all')
+  const [filterType, setFilterType] = useState(searchParams.get('type') || 'all')
   const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive) — for label/icon lookups
+
+  // Keep filter in sync with ?type= — e.g. the "Find a Co-founder" link navigating
+  // back to "/" with a different type while this component is already mounted.
+  useEffect(() => {
+    setFilterType(searchParams.get('type') || 'all')
+  }, [searchParams])
   const TYPE_LABEL = Object.fromEntries(typeOptions.map(t => [t.key, t.label]))
   const TYPE_ICON = Object.fromEntries(typeOptions.map(t => [t.key, t.icon]))
   const activeTypeOptions = typeOptions.filter(t => t.is_active)
@@ -119,7 +127,7 @@ export default function ListingHome() {
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>List Your Business</Link>
-            <Link href="/members" style={{
+            <Link href="/?type=co_founder" style={{
               display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
               borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
             }}>Find a Co-founder</Link>
