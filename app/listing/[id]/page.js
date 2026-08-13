@@ -62,7 +62,7 @@ export default function ListingDetailPage() {
           if (item.listing_types?.length) {
             try {
               const orFilter = item.listing_types.map(t => `listing_types.cs.{${t}}`).join(',')
-              const rel = await supabaseFetch(`listings?select=id,business_name,industry,location,listing_types&status=eq.active&id=neq.${id}&or=(${orFilter})&limit=3`)
+              const rel = await supabaseFetch(`listings?select=id,business_name,industry,location,listing_types&status=eq.active&is_filled=eq.false&id=neq.${id}&or=(${orFilter})&limit=3`)
               setRelated(rel || [])
             } catch (e) { /* non-fatal */ }
           }
@@ -88,7 +88,7 @@ export default function ListingDetailPage() {
   const stats = [
     { label: 'Industry', value: listing.industry || '—' },
     { label: 'Location', value: listing.location || '—' },
-    { label: 'Status', value: listing.status === 'active' ? 'Active' : listing.status },
+    { label: 'Status', value: listing.is_filled ? 'Filled' : (listing.status === 'active' ? 'Active' : listing.status) },
     { label: 'Listed', value: timeAgo(listing.created_at) || '—' },
   ]
 

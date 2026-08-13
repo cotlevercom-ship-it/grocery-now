@@ -28,6 +28,7 @@ export default function MyListingsPage() {
   const [error, setError] = useState('')
   const [typeOptions, setTypeOptions] = useState([]) // all types (active + inactive), for label lookup
   const TYPE_LABEL = Object.fromEntries(typeOptions.map(t => [t.key, t.label]))
+  const [togglingId, setTogglingId] = useState(null)
 
   useEffect(() => {
     fetchListingTypes().then(setTypeOptions).catch(e => console.error(e))
@@ -63,6 +64,22 @@ export default function MyListingsPage() {
     }
     load()
   }, [router])
+
+  const handleToggleFilled = async (listing) => {
+    setTogglingId(listing.id)
+    try {
+      const next = !listing.is_filled
+      await supabaseFetch(`listings?id=eq.${listing.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_filled: next }),
+      })
+      setListings(prev => prev.map(l => l.id === listing.id ? { ...l, is_filled: next } : l))
+    } catch (e) {
+      console.error(e)
+      setError('Could not update listing')
+    }
+    setTogglingId(null)
+  }
 
   if (session === undefined || loading) {
     return (
@@ -135,12 +152,20 @@ export default function MyListingsPage() {
                         {listing.industry || 'Industry not set'}{listing.location ? ` · ${listing.location}` : ''}
                       </div>
                     </div>
-                    {subStyle && (
-                      <div style={{
-                        fontSize: '11px', fontWeight: '700', color: subStyle.color, background: subStyle.bg,
-                        padding: '4px 10px', borderRadius: '20px', whiteSpace: 'nowrap'
-                      }}>{isExpired ? 'Expired' : subStyle.label}</div>
-                    )}
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      {listing.is_filled && (
+                        <div style={{
+                          fontSize: '11px', fontWeight: '700', color: theme.inkSoft, background: theme.lineSoft,
+                          padding: '4px 10px', borderRadius: '20px', whiteSpace: 'nowrap'
+                        }}>Filled</div>
+                      )}
+                      {subStyle && (
+                        <div style={{
+                          fontSize: '11px', fontWeight: '700', color: subStyle.color, background: subStyle.bg,
+                          padding: '4px 10px', borderRadius: '20px', whiteSpace: 'nowrap'
+                        }}>{isExpired ? 'Expired' : subStyle.label}</div>
+                      )}
+                    </div>
                   </div>
 
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
@@ -183,6 +208,18 @@ export default function MyListingsPage() {
                         fontSize: '13px', fontWeight: '600', color: 'white', textDecoration: 'none',
                         background: theme.brass, borderRadius: '7px', padding: '8px 14px'
                       }}>{isExpired ? 'Renew' : 'Pay Now'}</Link>
+                    )}
+                    {(listing.listing_types || []).includes('employee') && (
+                      <button
+                        onClick={() => handleToggleFilled(listing)}
+                        disabled={togglingId === listing.id}
+                        style={{
+                          fontSize: '13px', fontWeight: '600', color: listing.is_filled ? theme.signal : theme.inkSoft,
+                          background: 'transparent', border: `1px solid ${theme.line}`, borderRadius: '7px',
+                          padding: '8px 14px', cursor: togglingId === listing.id ? 'default' : 'pointer',
+                          opacity: togglingId === listing.id ? 0.6 : 1
+                        }}
+                      >{listing.is_filled ? 'Mark as Open' : 'Mark as Filled'}</button>
                     )}
                   </div>
                 </div>

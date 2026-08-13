@@ -49,7 +49,7 @@ export default function ListingHome() {
       setLoading(true)
       try {
         const [data, types] = await Promise.all([
-          supabaseFetch('listings?select=*&status=eq.active&order=created_at.desc'),
+          supabaseFetch('listings?select=*&status=eq.active&is_filled=eq.false&order=created_at.desc'),
           fetchListingTypes(),
         ])
         setListings(data || [])
