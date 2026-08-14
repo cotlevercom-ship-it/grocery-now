@@ -16,7 +16,7 @@ import { theme } from '@/lib/theme'
 // would keep Google from ever indexing them. The *browse* pages
 // (/listings, /cofounder) and everything else (create forms, account,
 // payment, members) stay login-gated as originally requested.
-const PUBLIC_PATHS = ['/', '/login', '/forgot-password', '/reset-password', '/verify-otp', '/about', '/how-it-works', '/contact', '/privacy-policy', '/terms', '/payment-policy', '/user-agreement']
+const PUBLIC_PATHS = ['/', '/login', '/forgot-password', '/reset-password', '/verify-otp', '/about', '/how-it-works', '/contact', '/privacy-policy', '/terms', '/payment-policy', '/user-agreement', '/why-use-cotlever', '/pricing']
 const PUBLIC_PREFIXES = ['/resources', '/listing/'] // /listing/[id] — distinct path from /listings (gated browse page)
 
 // /cofounder/[id] is public (SEO detail page), but /cofounder/new (the

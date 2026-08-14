@@ -1,0 +1,93 @@
+'use client'
+import Link from 'next/link'
+import { theme } from '@/lib/theme'
+
+const PLANS = [
+  {
+    name: 'Add Business',
+    tagline: 'List your business for partners, investors, employees, suppliers, or buyers.',
+    options: [
+      { label: 'Monthly', regular: '৳500', discount: '৳350' },
+      { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
+    ],
+    cta: { label: 'List Your Business', href: '/listings/new' },
+  },
+  {
+    name: 'Find Co-founder',
+    tagline: 'Post your idea and find someone to build it with.',
+    options: [
+      { label: 'Yearly', regular: '৳2000', discount: null },
+    ],
+    note: 'Your first-ever post gets a 30-day free trial (still reviewed before going live).',
+    cta: { label: 'Find a Co-founder', href: '/cofounder/new' },
+  },
+]
+
+export default function PricingPage() {
+  return (
+    <div style={{ background: theme.paper, minHeight: '70vh' }}>
+      <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(28px,4vw,56px) clamp(16px,3vw,24px)' }}>
+        <div style={{
+          fontFamily: theme.fontMono, fontSize: '11.5px', letterSpacing: '0.1em', textTransform: 'uppercase',
+          color: theme.brassDark, marginBottom: '10px', fontWeight: '600'
+        }}>Pricing</div>
+
+        <h1 style={{
+          fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(28px,3.6vw,40px)',
+          color: theme.ink, marginBottom: '16px', lineHeight: '1.15'
+        }}>Simple, one-time pricing</h1>
+
+        <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '44px', maxWidth: '520px' }}>
+          Pay via bKash. Every listing is reviewed by our team before it goes live.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {PLANS.map((plan) => (
+            <div key={plan.name} style={{
+              padding: 'clamp(22px,3.5vw,32px)', background: theme.surface,
+              borderRadius: '12px', border: `1px solid ${theme.line}`,
+            }}>
+              <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600', color: theme.ink, marginBottom: '6px' }}>
+                {plan.name}
+              </h2>
+              <p style={{ fontSize: '13.5px', color: theme.inkSoft, marginBottom: '18px' }}>{plan.tagline}</p>
+
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: plan.note ? '12px' : '20px' }}>
+                {plan.options.map((opt) => (
+                  <div key={opt.label} style={{
+                    flex: '1 1 160px', border: `1px solid ${theme.line}`, borderRadius: '10px',
+                    padding: '14px 16px',
+                  }}>
+                    <div style={{ fontSize: '12px', color: theme.inkSoft, marginBottom: '4px' }}>{opt.label}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '700', color: theme.ink }}>
+                        {opt.discount || opt.regular}
+                      </span>
+                      {opt.discount && (
+                        <span style={{ fontSize: '13px', color: theme.inkSoft, textDecoration: 'line-through' }}>{opt.regular}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {plan.note && (
+                <p style={{ fontSize: '12.5px', color: theme.brassDark, marginBottom: '20px' }}>{plan.note}</p>
+              )}
+
+              <Link href={plan.cta.href} style={{
+                display: 'inline-block', background: theme.brass, color: 'white',
+                borderRadius: '8px', padding: '11px 20px', fontSize: '13.5px', fontWeight: '600', textDecoration: 'none',
+              }}>{plan.cta.label}</Link>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ fontSize: '13px', color: theme.inkSoft, marginTop: '28px', lineHeight: '1.6' }}>
+          Full terms and refund details are in our{' '}
+          <Link href="/payment-policy" style={{ color: theme.brass, fontWeight: '600' }}>Payment Policy</Link>.
+        </p>
+      </div>
+    </div>
+  )
+}

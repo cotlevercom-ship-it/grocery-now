@@ -1,9 +1,72 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+
+const MENU_LINKS = [
+  { href: '/why-use-cotlever', label: 'Why Use Cot Lever' },
+  { href: '/how-it-works', label: 'How It Works' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/resources', label: 'Articles' },
+]
+
+function NavMenu() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '5px',
+          background: 'none', border: 'none', cursor: 'pointer',
+          color: theme.ink, fontSize: '13.5px', fontWeight: '600',
+          padding: '8px 6px', fontFamily: theme.fontBody,
+        }}
+      >
+        Menu
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease' }}>
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 6px)', left: 0, minWidth: '200px',
+          background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
+          boxShadow: '0 8px 24px rgba(20,33,61,0.12)', overflow: 'hidden', zIndex: 50,
+        }}>
+          {MENU_LINKS.map((link, i) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              style={{
+                display: 'block', padding: '11px 16px', fontSize: '13.5px',
+                color: theme.ink, textDecoration: 'none',
+                borderBottom: i === MENU_LINKS.length - 1 ? 'none' : `1px solid ${theme.line}`,
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
@@ -44,6 +107,8 @@ export default function Navbar() {
       }}>
         Cot<span style={{ color: theme.brass }}>Lever</span>
       </Link>
+
+      <NavMenu />
 
       <div style={{ flex: 1 }} />
 
