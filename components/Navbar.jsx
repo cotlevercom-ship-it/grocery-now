@@ -42,19 +42,19 @@ function NavMenu() {
 
       {open && (
         <div style={{
-          position: 'absolute', top: 'calc(100% + 6px)', left: 0, minWidth: '200px',
-          background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
-          boxShadow: '0 8px 24px rgba(20,33,61,0.12)', overflow: 'hidden', zIndex: 50,
+          position: 'absolute', top: 'calc(100% + 10px)', left: 0, minWidth: '176px',
+          background: theme.surface, borderRadius: '8px',
+          boxShadow: '0 4px 16px rgba(20,33,61,0.08)', overflow: 'hidden', zIndex: 50,
+          padding: '6px',
         }}>
-          {MENU_LINKS.map((link, i) => (
+          {MENU_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
               style={{
-                display: 'block', padding: '11px 16px', fontSize: '13.5px',
-                color: theme.ink, textDecoration: 'none',
-                borderBottom: i === MENU_LINKS.length - 1 ? 'none' : `1px solid ${theme.line}`,
+                display: 'block', padding: '9px 10px', borderRadius: '6px',
+                fontSize: '13px', color: theme.inkSoft, textDecoration: 'none',
               }}
             >
               {link.label}
