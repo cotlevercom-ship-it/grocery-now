@@ -6,9 +6,10 @@ import { theme } from '@/lib/theme'
 
 // Pages reachable without logging in — the auth/onboarding flow itself,
 // plus everything linked from the footer (About/Legal tabs live under
-// /about, How It Works is its own page). /admin has its own independent
-// gate (AdminLayout) so it's excluded here entirely.
-const PUBLIC_PATHS = ['/login', '/forgot-password', '/reset-password', '/verify-otp', '/about', '/how-it-works']
+// /about, How It Works is its own page), plus the homepage itself (it
+// shows a marketing view when logged out, via HomeGate). /admin has its
+// own independent gate (AdminLayout) so it's excluded here entirely.
+const PUBLIC_PATHS = ['/', '/login', '/forgot-password', '/reset-password', '/verify-otp', '/about', '/how-it-works']
 
 export default function SiteAuthGate({ children }) {
   const router = useRouter()
