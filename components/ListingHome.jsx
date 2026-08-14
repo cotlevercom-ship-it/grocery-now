@@ -7,7 +7,7 @@ import { theme } from '@/lib/theme'
 // two entry points into those.
 export default function ListingHome() {
   return (
-    <div style={{ background: theme.paper, minHeight: '70vh' }}>
+    <div style={{ background: theme.paper }}>
       <div style={{
         maxWidth: '1200px', margin: '0 auto', padding: 'clamp(28px,5vw,64px) clamp(16px,3vw,56px)',
       }}>
@@ -35,18 +35,18 @@ export default function ListingHome() {
       {/* Resources teaser */}
       <div style={{ borderTop: `1px solid ${theme.line}` }}>
         <div style={{
-          maxWidth: '1200px', margin: '0 auto', padding: 'clamp(28px,4vw,48px) clamp(16px,3vw,56px)',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'
+          maxWidth: '1200px', margin: '0 auto', padding: 'clamp(18px,3vw,32px) clamp(16px,3vw,56px)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px'
         }}>
           <div>
-            <div style={{ fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
+            <div style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.ink, marginBottom: '3px' }}>
               Resources for founders
             </div>
-            <p style={{ fontSize: '13.5px', color: theme.inkSoft }}>Short, practical reads on finding co-founders, investors, and partners.</p>
+            <p style={{ fontSize: '13px', color: theme.inkSoft }}>Short, practical reads on finding co-founders, investors, and partners.</p>
           </div>
           <Link href="/resources" style={{
             display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
-            borderRadius: '8px', padding: '11px 20px', fontSize: '13.5px', fontWeight: '600', textDecoration: 'none', whiteSpace: 'nowrap'
+            borderRadius: '8px', padding: '10px 18px', fontSize: '13px', fontWeight: '600', textDecoration: 'none', whiteSpace: 'nowrap'
           }}>Browse Articles →</Link>
         </div>
       </div>
