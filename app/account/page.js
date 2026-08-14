@@ -33,6 +33,21 @@ export default function AccountPage() {
         return
       }
 
+      // Enforce the signup-time payment step: if this account has never
+      // submitted any subscription (pending or active), send them to pay
+      // before they can use the dashboard. Prevents skipping the payment
+      // page (e.g. by closing the tab right after signup) and landing
+      // straight on /account with nothing on file.
+      try {
+        const subs = await supabaseFetch(`listing_subscriptions?select=id&user_id=eq.${session.user.id}&limit=1`)
+        if (!subs || subs.length === 0) {
+          router.replace('/account/subscribe')
+          return
+        }
+      } catch (e) {
+        console.error(e)
+      }
+
       try {
         const profiles = await supabaseFetch(`user_profiles?select=*&id=eq.${session.user.id}`)
         setProfile(profiles?.[0] || { id: session.user.id, full_name: '', phone: '' })
