@@ -1,4 +1,4 @@
-import ListingHome from '@/components/ListingHome'
+import HomeTabs from '@/components/HomeTabs'
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -15,7 +15,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ListingHome />
+      <HomeTabs />
     </>
   )
 }

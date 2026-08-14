@@ -2,6 +2,7 @@ import './globals.css'
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import SiteAuthGate from '@/components/SiteAuthGate'
 
 // Self-hosted via Next.js font optimization instead of a render-blocking
 // <link> to fonts.googleapis.com — removes the extra DNS/connect/fetch
@@ -50,7 +51,7 @@ export default function RootLayout({ children }) {
       <body>
         <div className="app-container">
           <Navbar />
-          {children}
+          <SiteAuthGate>{children}</SiteAuthGate>
           <Footer />
         </div>
       </body>

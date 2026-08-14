@@ -45,7 +45,7 @@ function verifiedCheckmark(size = 15) {
   )
 }
 
-export default function ListingBrowse() {
+export default function ListingBrowse({ embedded = false }) {
   const searchParams = useSearchParams()
   const [listings, setListings] = useState([])
   const [verifiedIds, setVerifiedIds] = useState(new Set())
@@ -111,13 +111,17 @@ export default function ListingBrowse() {
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px)' }}>
-        <Link href="/" style={{ fontSize: '13px', color: theme.inkSoft, textDecoration: 'none', display: 'inline-block', marginBottom: '10px' }}>← Home</Link>
-        <h1 style={{
-          fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(24px,3vw,34px)',
-          color: theme.ink, marginBottom: '22px', letterSpacing: '-0.01em'
-        }}>
-          Listed Businesses
-        </h1>
+        {!embedded && (
+          <>
+            <Link href="/" style={{ fontSize: '13px', color: theme.inkSoft, textDecoration: 'none', display: 'inline-block', marginBottom: '10px' }}>← Home</Link>
+            <h1 style={{
+              fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(24px,3vw,34px)',
+              color: theme.ink, marginBottom: '22px', letterSpacing: '-0.01em'
+            }}>
+              Listed Businesses
+            </h1>
+          </>
+        )}
 
         {/* Type filter — hidden entirely when there's only one (or zero) active type,
             since filtering wouldn't change what's shown */}
