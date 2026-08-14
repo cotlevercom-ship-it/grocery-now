@@ -6,7 +6,6 @@ const PLAN = {
   name: 'List on Cot Lever',
   tagline: 'List your business, idea, or co-founder search for a partner, co-founder, or share holder.',
   options: [
-    { label: 'Monthly', regular: '৳500', discount: '৳350' },
     { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
   ],
   features: [
