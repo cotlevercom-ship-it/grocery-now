@@ -5,7 +5,7 @@ import { theme } from '@/lib/theme'
 const PLANS = [
   {
     name: 'Add Business',
-    tagline: 'List your business for partners, investors, employees, suppliers, or buyers.',
+    tagline: 'List your business for partners, employees, suppliers, or buyers.',
     options: [
       { label: 'Monthly', regular: '৳500', discount: '৳350' },
       { label: 'Yearly', regular: '৳6000', discount: '৳2500' },

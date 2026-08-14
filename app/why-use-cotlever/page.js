@@ -5,7 +5,7 @@ import { theme } from '@/lib/theme'
 const REASONS = [
   {
     title: 'Built for founders in Bangladesh',
-    body: 'Finding a co-founder, partner, investor, employee, supplier, or buyer here usually means asking around your own circle. Cot Lever gives you a directory built specifically for that search.',
+    body: 'Finding a co-founder, partner, employee, supplier, or buyer here usually means asking around your own circle. Cot Lever gives you a directory built specifically for that search.',
   },
   {
     title: 'Every listing is verified',
@@ -36,7 +36,7 @@ export default function WhyUseCotleverPage() {
         }}>Why use Cot Lever</h1>
 
         <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '44px', maxWidth: '520px' }}>
-          A directory built to connect founders in Bangladesh with the partners, investors, and people they need.
+          A directory built to connect founders in Bangladesh with the partners and people they need.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>

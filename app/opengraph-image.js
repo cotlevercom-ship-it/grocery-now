@@ -44,7 +44,7 @@ export default async function Image() {
             maxWidth: 980,
           }}
         >
-          Find a co-founder, partner, or investor
+          Find a co-founder or partner
         </div>
         <div
           style={{

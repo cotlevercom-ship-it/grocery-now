@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
 const FEATURES = [
-  { icon: '🤝', title: 'Partners & Investors', body: 'List your business for the partner, investor, or employee it needs — reach people actively looking.' },
+  { icon: '🤝', title: 'Partners & Employees', body: 'List your business for the partner or employee it needs — reach people actively looking.' },
   { icon: '📦', title: 'Suppliers & Buyers', body: 'Find the supplier or buyer relationships that keep a business moving, all in one directory.' },
   { icon: '🧩', title: 'Find a Co-founder', body: 'Post your idea or early business and connect with someone ready to build it with you.' },
   { icon: '✅', title: 'Verified Listings', body: 'Every listing is reviewed before it goes live, so what you see is a real, checked business.' },
@@ -34,7 +34,7 @@ export default function MarketingHome() {
             Find the right people for your business.
           </h1>
           <p style={{ fontSize: 'clamp(15px,1.6vw,17px)', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '32px', maxWidth: '540px' }}>
-            Cot Lever connects founders in Bangladesh with the co-founders, partners, investors, employees, suppliers, and buyers their business needs — all verified, all in one place.
+            Cot Lever connects founders in Bangladesh with the co-founders, partners, employees, suppliers, and buyers their business needs — all verified, all in one place.
           </p>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -113,7 +113,7 @@ export default function MarketingHome() {
             <div style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.ink, marginBottom: '3px' }}>
               Resources for founders
             </div>
-            <p style={{ fontSize: '13px', color: theme.inkSoft }}>Short, practical reads on finding co-founders, investors, and partners.</p>
+            <p style={{ fontSize: '13px', color: theme.inkSoft }}>Short, practical reads on finding co-founders and partners.</p>
           </div>
           <Link href="/login" style={{
             display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,

@@ -118,7 +118,7 @@ export default function AdminListingTypesPage() {
         }}>+ Add Type</button>
       </div>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        These are the purposes a business can list for (Co-founder, Investor, etc). Deactivating a type
+        These are the purposes a business can list for (Co-founder, Supplier, etc). Deactivating a type
         hides it from new listings and the homepage filter — existing listings that already use it keep showing normally.
       </p>
 
