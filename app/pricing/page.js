@@ -10,6 +10,12 @@ const PLANS = [
       { label: 'Monthly', regular: '৳500', discount: '৳350' },
       { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
     ],
+    features: [
+      'Your business listed in the public directory, searchable by anyone browsing',
+      'A verified checkmark badge once your listing is approved — builds trust with people who find you',
+      'Interested people contact you directly using the details you provide',
+      'Listing stays active for the full plan period, then renews',
+    ],
     cta: { label: 'List Your Business', href: '/listings/new' },
   },
   {
@@ -17,6 +23,12 @@ const PLANS = [
     tagline: 'Post your idea and find someone to build it with.',
     options: [
       { label: 'Yearly', regular: '৳2000', discount: null },
+    ],
+    features: [
+      'Your idea/post listed under Find a Co-founder for a full year',
+      'A verified checkmark badge once approved',
+      'People looking to join a project can contact you directly',
+      'First-ever post gets a 30-day free trial before the yearly charge applies',
     ],
     note: 'Your first-ever post gets a 30-day free trial (still reviewed before going live).',
     cta: { label: 'Find a Co-founder', href: '/cofounder/new' },
@@ -35,10 +47,10 @@ export default function PricingPage() {
         <h1 style={{
           fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(28px,3.6vw,40px)',
           color: theme.ink, marginBottom: '16px', lineHeight: '1.15'
-        }}>Simple, one-time pricing</h1>
+        }}>Simple, transparent pricing</h1>
 
         <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '44px', maxWidth: '520px' }}>
-          Pay via bKash. Every listing is reviewed by our team before it goes live.
+          Pay via bKash to get your listing reviewed and published in the directory. Here's exactly what each plan includes.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -74,6 +86,23 @@ export default function PricingPage() {
               {plan.note && (
                 <p style={{ fontSize: '12.5px', color: theme.brassDark, marginBottom: '20px' }}>{plan.note}</p>
               )}
+
+              <div style={{ marginBottom: '22px' }}>
+                <div style={{ fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase', color: theme.inkSoft, marginBottom: '10px', fontWeight: '600' }}>
+                  What you get
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
+                  {plan.features.map((f) => (
+                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.signal} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ flexShrink: 0, marginTop: '3px' }}>
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <span style={{ fontSize: '13.5px', color: theme.ink, lineHeight: '1.5' }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               <Link href={plan.cta.href} style={{
                 display: 'inline-block', background: theme.brass, color: 'white',
