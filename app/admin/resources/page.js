@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
-const emptyForm = { title: '', slug: '', excerpt: '', content: '', is_published: true, category_id: '' }
+const emptyForm = { title: '', slug: '', excerpt: '', content: '', is_published: true, category_id: '', series_slug: '', series_order: '' }
 
 function slugify(title) {
   return title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 80)
@@ -40,7 +40,7 @@ export default function AdminResourcesPage() {
   const openAdd = () => { setEditingId(null); setForm(emptyForm); setError(''); setShowForm(true) }
   const openEdit = (item) => {
     setEditingId(item.id)
-    setForm({ title: item.title, slug: item.slug, excerpt: item.excerpt || '', content: item.content, is_published: item.is_published, category_id: item.category_id || '' })
+    setForm({ title: item.title, slug: item.slug, excerpt: item.excerpt || '', content: item.content, is_published: item.is_published, category_id: item.category_id || '', series_slug: item.series_slug || '', series_order: item.series_order != null ? String(item.series_order) : '' })
     setError('')
     setShowForm(true)
   }
@@ -68,6 +68,8 @@ export default function AdminResourcesPage() {
         content: form.content.trim(),
         is_published: !!form.is_published,
         category_id: form.category_id || null,
+        series_slug: form.series_slug.trim() || null,
+        series_order: form.series_slug.trim() && form.series_order.trim() ? parseInt(form.series_order, 10) : null,
       }
       if (editingId) {
         await supabaseFetch(`resources?id=eq.${editingId}`, { method: 'PATCH', body: JSON.stringify(payload) })
@@ -127,6 +129,16 @@ export default function AdminResourcesPage() {
               ))}
             </select>
           </div>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
+            <div style={{ flex: 2 }}>
+              <label style={labelStyle}>Series key (optional — same key groups articles into a series)</label>
+              <input style={inputStyle} value={form.series_slug} onChange={e => handleChange('series_slug', e.target.value)} placeholder="e.g. word-of-mouth-marketing" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Order in series</label>
+              <input style={inputStyle} type="number" min="1" value={form.series_order} onChange={e => handleChange('series_order', e.target.value)} placeholder="1" />
+            </div>
+          </div>
           <div style={{ marginBottom: '14px' }}>
             <label style={labelStyle}>Excerpt (shown in the list)</label>
             <textarea style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }} value={form.excerpt} onChange={e => handleChange('excerpt', e.target.value)} placeholder="One or two sentence summary" />
@@ -160,7 +172,7 @@ export default function AdminResourcesPage() {
             <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 16px', borderBottom: i < items.length - 1 ? '1px solid #eee' : 'none', flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: '160px' }}>
                 <div style={{ fontSize: '13.5px', fontWeight: '600', color: '#1a1a1a' }}>{item.title}</div>
-                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>/{item.slug}{item.resource_categories?.name ? ` · ${item.resource_categories.name}` : ''}</div>
+                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>/{item.slug}{item.resource_categories?.name ? ` · ${item.resource_categories.name}` : ''}{item.series_slug ? ` · Series: ${item.series_slug} #${item.series_order ?? '?'}` : ''}</div>
               </div>
               <span style={{ fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px', background: '#f5f5f5', color: item.is_published ? '#2d6a4f' : '#999' }}>
                 {item.is_published ? 'Published' : 'Draft'}
