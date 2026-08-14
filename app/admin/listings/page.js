@@ -33,7 +33,7 @@ export default function AdminListingsPage() {
       ])
       setSubs(subData || [])
       setTypeOptions(types)
-      const ids = [...new Set((subData || []).map(s => s.listing_id))]
+      const ids = [...new Set((subData || []).map(s => s.listing_id).filter(Boolean))]
       if (ids.length) {
         const listingData = await supabaseFetch(`listings?select=*&id=in.(${ids.join(',')})`)
         const map = {}
@@ -57,10 +57,15 @@ export default function AdminListingsPage() {
         method: 'PATCH',
         body: JSON.stringify({ status: 'active', starts_at, ends_at }),
       })
-      await supabaseFetch(`listings?id=eq.${sub.listing_id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: 'active' }),
-      })
+      // Account-level subscription paid at signup — no specific listing to
+      // activate yet (listing_id is null). It just becomes the user's
+      // active subscription for their next up to 3 listings.
+      if (sub.listing_id) {
+        await supabaseFetch(`listings?id=eq.${sub.listing_id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'active' }),
+        })
+      }
       await load()
     } catch (e) {
       console.error(e)
@@ -131,13 +136,15 @@ export default function AdminListingsPage() {
                 >
                   <div>
                     <div style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                      {listing?.business_name || 'Unknown'} <span style={{ color: '#aaa', fontWeight: '400' }}>{isOpen ? '▲' : '▼'}</span>
+                      {sub.listing_id ? (listing?.business_name || 'Unknown') : '🎫 Account Subscription (Signup Payment)'} <span style={{ color: '#aaa', fontWeight: '400' }}>{isOpen ? '▲' : '▼'}</span>
                     </div>
+                    {sub.listing_id && (
+                      <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                        {(listing?.listing_types || []).map(t => TYPE_LABEL[t] || t).join(', ')}
+                      </div>
+                    )}
                     <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                      {(listing?.listing_types || []).map(t => TYPE_LABEL[t] || t).join(', ')}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                      {sub.plan === 'monthly' ? 'Monthly' : 'Yearly'} · ৳{sub.amount} · bKash: {sub.payment_reference}
+                      {sub.plan === 'monthly' ? 'Monthly' : 'Yearly'} · ৳{sub.amount} · {sub.payment_method === 'included_in_plan' ? sub.payment_reference : `bKash: ${sub.payment_reference}`}
                     </div>
                   </div>
                   {sub.status === 'pending' && (

@@ -162,8 +162,9 @@ function LoginForm() {
             console.error('profile save failed', profileErr)
           }
         }
-        // Email was already verified inline above — go straight through.
-        router.push(nextUrl)
+        // Email was already verified inline above — go straight to the
+        // one-time subscription payment step (covers up to 3 listings).
+        router.push('/account/subscribe')
       } else {
         await signIn(email.trim(), password)
         router.push(nextUrl)
