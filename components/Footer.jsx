@@ -43,9 +43,9 @@ export default function Footer() {
         <div className="footer-links-grid">
           <div>
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Platform</div>
-            <FooterLink href="/about?tab=about-us">About Us</FooterLink>
+            <FooterLink href="/about">About Us</FooterLink>
             <FooterLink href="/how-it-works">How It Works</FooterLink>
-            <FooterLink href="/about?tab=contact-us">Contact Us</FooterLink>
+            <FooterLink href="/contact">Contact Us</FooterLink>
             {facebookUrl && (
               <a href={facebookUrl} target="_blank" rel="noopener noreferrer" style={{
                 display: 'block', fontSize: '12.5px', color: 'rgba(237,234,224,0.8)',
@@ -56,10 +56,10 @@ export default function Footer() {
 
           <div>
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Legal</div>
-            <FooterLink href="/about?tab=privacy-policy">Privacy Policy</FooterLink>
-            <FooterLink href="/about?tab=terms-and-conditions">Terms & Conditions</FooterLink>
-            <FooterLink href="/about?tab=payment-policy">Payment Policy</FooterLink>
-            <FooterLink href="/about?tab=user-agreement">User Agreement</FooterLink>
+            <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+            <FooterLink href="/terms">Terms & Conditions</FooterLink>
+            <FooterLink href="/payment-policy">Payment Policy</FooterLink>
+            <FooterLink href="/user-agreement">User Agreement</FooterLink>
           </div>
         </div>
       </div>
