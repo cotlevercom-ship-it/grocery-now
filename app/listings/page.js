@@ -6,6 +6,9 @@ export const dynamic = 'force-dynamic'
 export const metadata = {
   title: 'Browse Businesses — Partners, Investors, Suppliers | Cot Lever',
   description: 'Browse verified business listings looking for partners, investors, employees, or suppliers. List your own business on Cot Lever today.',
+  alternates: {
+    canonical: '/listings',
+  },
 }
 
 export default function ListingsPage() {

@@ -30,6 +30,9 @@ export const metadata = {
   metadataBase: new URL('https://cotlever.com'),
   title: 'Cot Lever',
   description: 'Find a co-founder, partner, investor, employee, supplier, or buyer — list your business today.',
+  alternates: {
+    canonical: '/',
+  },
   verification: {
     google: 'QJp1bORijOwPPOcGwBZha1t5o18CeiNHiUGexTwIf28',
   },

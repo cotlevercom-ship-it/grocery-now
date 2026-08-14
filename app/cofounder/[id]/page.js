@@ -12,6 +12,9 @@ export async function generateMetadata({ params }) {
     return {
       title: `${post.idea_name} — Find a Co-founder | Cot Lever`,
       description: post.description ? post.description.slice(0, 155) : undefined,
+      alternates: {
+        canonical: `/cofounder/${id}`,
+      },
     }
   } catch (e) {
     return { title: 'Find a Co-founder | Cot Lever' }

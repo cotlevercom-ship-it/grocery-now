@@ -102,7 +102,7 @@ export default function MemberDetailPage() {
               background: theme.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'
             }}>
               {member.photo_url ? (
-                <img src={member.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={member.photo_url} alt={member.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <span style={{ fontFamily: theme.fontDisplay, fontSize: '42px', fontWeight: '600', color: theme.paper }}>{initial}</span>
               )}
