@@ -1,6 +1,30 @@
 import './globals.css'
+import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+
+// Self-hosted via Next.js font optimization instead of a render-blocking
+// <link> to fonts.googleapis.com — removes the extra DNS/connect/fetch
+// round-trips that were delaying First/Largest Contentful Paint.
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-fraunces',
+  display: 'swap',
+})
+const plexSans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-plex-sans',
+  display: 'swap',
+})
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+  variable: '--font-plex-mono',
+  display: 'swap',
+})
 
 export const metadata = {
   title: 'Cot Lever',
@@ -15,12 +39,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}>
       <body>
         <div className="app-container">
           <Navbar />
@@ -31,5 +50,3 @@ export default function RootLayout({ children }) {
     </html>
   )
 }
-// redeploy trigger 1786535936
-// redeploy trigger 1786536680
