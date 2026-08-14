@@ -5,7 +5,7 @@ import { theme } from '@/lib/theme'
 const REASONS = [
   {
     title: 'Built for founders in Bangladesh',
-    body: 'Finding a co-founder, partner, employee, supplier, or buyer here usually means asking around your own circle. Cot Lever gives you a directory built specifically for that search.',
+    body: 'Finding a co-founder, partner, or share holder here usually means asking around your own circle. Cot Lever gives you a directory built specifically for that search.',
   },
   {
     title: 'Every listing is verified',

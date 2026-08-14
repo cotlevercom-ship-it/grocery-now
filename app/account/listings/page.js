@@ -209,18 +209,6 @@ export default function MyListingsPage() {
                         background: theme.brass, borderRadius: '7px', padding: '8px 14px'
                       }}>{isExpired ? 'Renew' : 'Pay Now'}</Link>
                     )}
-                    {(listing.listing_types || []).includes('employee') && (
-                      <button
-                        onClick={() => handleToggleFilled(listing)}
-                        disabled={togglingId === listing.id}
-                        style={{
-                          fontSize: '13px', fontWeight: '600', color: listing.is_filled ? theme.signal : theme.inkSoft,
-                          background: 'transparent', border: `1px solid ${theme.line}`, borderRadius: '7px',
-                          padding: '8px 14px', cursor: togglingId === listing.id ? 'default' : 'pointer',
-                          opacity: togglingId === listing.id ? 0.6 : 1
-                        }}
-                      >{listing.is_filled ? 'Mark as Open' : 'Mark as Filled'}</button>
-                    )}
                   </div>
                 </div>
               )

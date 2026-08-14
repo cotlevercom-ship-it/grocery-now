@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'About Us | Cot Lever',
-  description: 'Learn about Cot Lever — the platform connecting founders with co-founders, partners, employees, and suppliers.',
+  description: 'Learn about Cot Lever — the platform connecting founders with co-founders, partners, and share holders.',
   alternates: {
     canonical: '/about',
   },

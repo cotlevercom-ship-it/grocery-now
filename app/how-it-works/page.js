@@ -7,7 +7,7 @@ const STEPS = [
   {
     n: '01',
     title: 'List your business',
-    body: 'Tell us what you\'re looking for — co-founder, partner, employee, supplier, or buyer — and a bit about your business. Takes a few minutes.',
+    body: 'Tell us what you\'re looking for — co-founder, partner, or share holder — and a bit about your business. Takes a few minutes.',
   },
   {
     n: '02',

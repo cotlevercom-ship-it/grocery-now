@@ -4,8 +4,7 @@ import { theme } from '@/lib/theme'
 
 const FEATURES = [
   { icon: '🧩', title: 'Co-founders & Partners', body: 'List your idea or business for the co-founder or partner it needs — reach people actively looking.' },
-  { icon: '📦', title: 'Suppliers & Buyers', body: 'Find the supplier or buyer relationships that keep a business moving, all in one directory.' },
-  { icon: '💼', title: 'Employees', body: 'List openings and reach people looking for their next role.' },
+  { icon: '🤝', title: 'Share Holders', body: 'Bring on a share holder for the equity your business needs.' },
   { icon: '✅', title: 'Verified Listings', body: 'Every listing is reviewed before it goes live, so what you see is a real, checked business.' },
 ]
 
@@ -34,7 +33,7 @@ export default function MarketingHome() {
             Find the right people for your business.
           </h1>
           <p style={{ fontSize: 'clamp(15px,1.6vw,17px)', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '32px', maxWidth: '540px' }}>
-            Cot Lever connects founders in Bangladesh with the co-founders, partners, employees, suppliers, and buyers their business needs — all verified, all in one place.
+            Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs — all verified, all in one place.
           </p>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>

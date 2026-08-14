@@ -9,11 +9,8 @@ import { fetchListingTypes } from '@/lib/listingTypes'
 // The single most useful field to surface on the card for each listing type,
 // so a browsing visitor sees the key number/detail without opening the listing.
 const HIGHLIGHT_FIELD = {
-  employee: { key: 'position', icon: '💼' },
   co_founder: { key: 'skills_needed', icon: '🧩' },
   partner: { key: 'partnership_type', icon: '🔗' },
-  supplier: { key: 'product', icon: '📦' },
-  buyer: { key: 'product', icon: '🛒' },
 }
 
 function highlightFor(listing) {
