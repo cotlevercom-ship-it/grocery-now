@@ -28,13 +28,47 @@ function renderContent(content) {
 }
 
 function ShareBar({ url, title }) {
+  const [canNativeShare, setCanNativeShare] = useState(false)
+
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      setCanNativeShare(true)
+    }
+  }, [])
+
   const encodedUrl = encodeURIComponent(url)
   const encodedTitle = encodeURIComponent(title)
   const btnStyle = {
     display: 'inline-flex', alignItems: 'center', gap: '7px',
     padding: '9px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
-    textDecoration: 'none', border: `1px solid ${theme.line}`,
+    textDecoration: 'none', border: `1px solid ${theme.line}`, cursor: 'pointer',
+    background: 'none', fontFamily: 'inherit',
   }
+
+  const handleNativeShare = async () => {
+    try {
+      await navigator.share({ title, url })
+    } catch (e) {
+      // User cancelled the share sheet — nothing to do.
+    }
+  }
+
+  if (canNativeShare) {
+    return (
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: theme.inkSoft, marginRight: '4px' }}>
+          Share
+        </span>
+        <button
+          onClick={handleNativeShare}
+          style={{ ...btnStyle, color: theme.brassDark, background: theme.lineSoft }}
+        >
+          Share this article
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
       <span style={{ fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: theme.inkSoft, marginRight: '4px' }}>
