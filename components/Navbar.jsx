@@ -28,18 +28,16 @@ function NavMenu() {
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         onClick={() => setOpen((v) => !v)}
+        aria-label="Menu"
         style={{
-          display: 'flex', alignItems: 'center', gap: '5px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '4px',
           background: 'none', border: 'none', cursor: 'pointer',
-          color: theme.ink, fontSize: '13.5px', fontWeight: '600',
-          padding: '8px 6px', fontFamily: theme.fontBody,
+          padding: '8px 6px', flexShrink: 0,
         }}
       >
-        Menu
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease' }}>
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        <span style={{ width: '20px', height: '2px', background: theme.ink, borderRadius: '2px' }} />
+        <span style={{ width: '20px', height: '2px', background: theme.ink, borderRadius: '2px' }} />
+        <span style={{ width: '20px', height: '2px', background: theme.ink, borderRadius: '2px' }} />
       </button>
 
       {open && (
@@ -101,14 +99,14 @@ export default function Navbar() {
       zIndex: 40,
       padding: 'clamp(12px,1.6vw,18px) clamp(16px,3vw,56px)',
     }}>
+      <NavMenu />
+
       <Link href="/" style={{
         fontFamily: theme.fontDisplay, fontSize: 'clamp(18px,1.6vw,22px)', fontWeight: '600',
         color: theme.ink, textDecoration: 'none', flexShrink: 0
       }}>
         Cot<span style={{ color: theme.brass }}>Lever</span>
       </Link>
-
-      <NavMenu />
 
       <div style={{ flex: 1 }} />
 
