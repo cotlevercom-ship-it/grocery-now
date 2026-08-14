@@ -7,7 +7,7 @@ import { theme } from '@/lib/theme'
 export default function PaymentPage() {
   const { listingId } = useParams()
   const router = useRouter()
-  const [prices, setPrices] = useState({ monthly: '', yearly: '', bkashNumber: '' })
+  const [prices, setPrices] = useState({ monthly: '', monthlyRegular: '', yearly: '', yearlyRegular: '', bkashNumber: '' })
   const [plan, setPlan] = useState('monthly')
   const [senderNumber, setSenderNumber] = useState('')
   const [trxId, setTrxId] = useState('')
@@ -25,12 +25,14 @@ export default function PaymentPage() {
       }
       setLoading(true)
       try {
-        const rows = await supabaseFetch('app_settings?select=key,value&key=in.(listing_price_monthly,listing_price_yearly,bkash_payment_number)')
+        const rows = await supabaseFetch('app_settings?select=key,value&key=in.(listing_price_monthly_regular,listing_price_monthly,listing_price_yearly_regular,listing_price_yearly,bkash_payment_number)')
         const map = {}
         ;(rows || []).forEach(r => { map[r.key] = r.value })
         setPrices({
           monthly: map.listing_price_monthly || '0',
+          monthlyRegular: map.listing_price_monthly_regular || '',
           yearly: map.listing_price_yearly || '0',
+          yearlyRegular: map.listing_price_yearly_regular || '',
           bkashNumber: map.bkash_payment_number || '',
         })
       } catch (e) {
@@ -107,18 +109,31 @@ export default function PaymentPage() {
         </h1>
 
         <div style={{ display: 'flex', gap: '12px', marginBottom: '22px' }}>
-          {['monthly', 'yearly'].map(p => (
-            <button key={p} onClick={() => setPlan(p)} style={{
-              flex: 1, padding: '18px', borderRadius: '10px', border: `2px solid ${plan === p ? theme.ink : theme.line}`,
-              background: plan === p ? theme.ink : theme.surface,
-              color: plan === p ? theme.paper : theme.ink, textAlign: 'left'
-            }}>
-              <div style={{ fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody }}>{p === 'monthly' ? 'Monthly' : 'Yearly'}</div>
-              <div style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', marginTop: '4px' }}>
-                ৳{p === 'monthly' ? prices.monthly : prices.yearly}
-              </div>
-            </button>
-          ))}
+          {['monthly', 'yearly'].map(p => {
+            const discount = p === 'monthly' ? prices.monthly : prices.yearly
+            const regular = p === 'monthly' ? prices.monthlyRegular : prices.yearlyRegular
+            const active = plan === p
+            return (
+              <button key={p} onClick={() => setPlan(p)} style={{
+                flex: 1, padding: '18px', borderRadius: '10px', border: `2px solid ${active ? theme.ink : theme.line}`,
+                background: active ? theme.ink : theme.surface,
+                color: active ? theme.paper : theme.ink, textAlign: 'left'
+              }}>
+                <div style={{ fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody }}>{p === 'monthly' ? 'Monthly' : 'Yearly'}</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+                  <div style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600' }}>
+                    ৳{discount}
+                  </div>
+                  {regular && (
+                    <div style={{
+                      fontSize: '13px', fontFamily: theme.fontBody, textDecoration: 'line-through',
+                      opacity: 0.6
+                    }}>৳{regular}</div>
+                  )}
+                </div>
+              </button>
+            )
+          })}
         </div>
 
         {error && (
@@ -130,7 +145,7 @@ export default function PaymentPage() {
         <div style={{ background: '#FBF3E7', border: `1px solid ${theme.brass}`, borderRadius: '10px', padding: '18px', marginBottom: '22px' }}>
           <div style={{ fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: '600', color: theme.brassDark, marginBottom: '8px' }}>Pay via bKash</div>
           <div style={{ fontSize: '15px', color: theme.ink }}>
-            Send Money to: <strong>{prices.bkashNumber || 'Admin has not set a number yet'}</strong>, amount ৳{price}
+            Send Money to: <strong>{prices.bkashNumber || 'Admin has not set a number yet'}</strong>, amount ৳{price} (discounted)
           </div>
         </div>
 
