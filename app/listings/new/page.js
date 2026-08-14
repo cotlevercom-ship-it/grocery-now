@@ -41,6 +41,10 @@ export default function NewListingPage() {
   const [error, setError] = useState('')
   const [types, setTypes] = useState([]) // active listing type options, admin-managed
   const [agreed, setAgreed] = useState(false)
+  const [listingCount, setListingCount] = useState(null) // null = still loading
+  const [activeSub, setActiveSub] = useState(null) // most recent active, non-expired subscription (any of the user's listings)
+
+  const MAX_LISTINGS_PER_USER = 3
 
   useEffect(() => {
     const s = getSession()
@@ -49,6 +53,17 @@ export default function NewListingPage() {
       setForm(prev => ({ ...prev, contact_email: s.user.email }))
     }
     fetchListingTypes({ activeOnly: true }).then(setTypes).catch(e => console.error(e))
+
+    if (s?.user?.id) {
+      supabaseFetch(`listings?select=id&owner_id=eq.${s.user.id}`)
+        .then(rows => setListingCount((rows || []).length))
+        .catch(e => { console.error(e); setListingCount(0) })
+
+      const nowIso = new Date().toISOString()
+      supabaseFetch(`listing_subscriptions?select=*&user_id=eq.${s.user.id}&status=eq.active&ends_at=gt.${nowIso}&order=ends_at.desc&limit=1`)
+        .then(rows => setActiveSub(rows?.[0] || null))
+        .catch(e => console.error(e))
+    }
   }, [])
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
@@ -70,6 +85,10 @@ export default function NewListingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    if (listingCount !== null && listingCount >= MAX_LISTINGS_PER_USER) {
+      setError(`You've reached the ${MAX_LISTINGS_PER_USER}-listing limit for your account.`)
+      return
+    }
     if (!form.business_name.trim()) { setError('Enter your business name'); return }
     if (!form.owner_name.trim()) { setError('Enter the owner/founder name'); return }
     if (form.listing_types.length === 0) { setError('Select at least one category'); return }
@@ -105,7 +124,29 @@ export default function NewListingPage() {
       }
       const res = await supabaseFetch('listings', { method: 'POST', body: JSON.stringify(payload) })
       const listing = res?.[0]
-      router.push(`/payment/${listing.id}`)
+
+      if (activeSub && listingCount < MAX_LISTINGS_PER_USER) {
+        // Already has a paid, active subscription with room left under the
+        // 3-listing cap — this extra listing rides on that plan at no extra
+        // charge. Still goes through the normal admin-approval queue (the
+        // anti-bypass DB trigger requires it) but with amount 0, so the
+        // admin knows there's no bKash transaction to check.
+        await supabaseFetch('listing_subscriptions', {
+          method: 'POST',
+          body: JSON.stringify({
+            listing_id: listing.id,
+            user_id: session.user.id,
+            plan: activeSub.plan,
+            amount: 0,
+            status: 'pending',
+            payment_method: 'included_in_plan',
+            payment_reference: 'Additional listing under existing subscription',
+          }),
+        })
+        router.push('/account/listings')
+      } else {
+        router.push(`/payment/${listing.id}`)
+      }
     } catch (e) {
       console.error(e)
       setError('Could not create the listing')
@@ -134,6 +175,23 @@ export default function NewListingPage() {
     )
   }
 
+  if (listingCount !== null && listingCount >= MAX_LISTINGS_PER_USER) {
+    return (
+      <div style={{ background: theme.paper, minHeight: '60vh', padding: '60px 20px', textAlign: 'center' }}>
+        <p style={{ color: theme.ink, fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
+          You've reached the {MAX_LISTINGS_PER_USER}-listing limit
+        </p>
+        <p style={{ color: theme.inkSoft, marginBottom: '18px', fontSize: '14px' }}>
+          Your account already has {MAX_LISTINGS_PER_USER} listings. Manage or remove one to add another.
+        </p>
+        <Link href="/account/listings" style={{
+          display: 'inline-block', background: theme.brass, color: 'white',
+          borderRadius: '8px', padding: '12px 24px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
+        }}>My Listings</Link>
+      </div>
+    )
+  }
+
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
       <div style={{ maxWidth: '620px', margin: '0 auto', padding: 'clamp(20px,4vw,48px) clamp(16px,3vw,24px)' }}>
@@ -145,7 +203,9 @@ export default function NewListingPage() {
           List Your Business
         </h1>
         <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '28px' }}>
-          Fill in your details, then pay to activate the listing.
+          {activeSub
+            ? `Your subscription covers up to ${MAX_LISTINGS_PER_USER} listings — this one won't need a separate payment.`
+            : 'Fill in your details, then pay to activate the listing.'}
         </p>
 
         {error && (

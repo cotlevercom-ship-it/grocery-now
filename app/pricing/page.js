@@ -9,10 +9,11 @@ const PLAN = {
     { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
   ],
   features: [
-    'Your listing shown in the public directory, searchable by anyone browsing',
-    'A verified checkmark badge once your listing is approved — builds trust with people who find you',
+    'Add up to 3 listings under one subscription — no extra payment for the 2nd or 3rd',
+    'Every listing shown in the public directory, searchable by anyone browsing',
+    'A verified checkmark badge once a listing is approved — builds trust with people who find you',
     'Interested people contact you directly using the details you provide',
-    'Listing stays active for the full plan period, then renews',
+    'Listings stay active for the full plan period, then renew',
   ],
   cta: { label: 'Create Your Listing', href: '/listings/new' },
 }
