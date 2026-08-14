@@ -9,8 +9,7 @@ const PLAN = {
     { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
   ],
   features: [
-    'Pay once at signup — no separate payment when creating each listing',
-    'Add up to 3 listings under one subscription — no extra payment for the 2nd or 3rd',
+    'Add up to 3 Business listings under one subscription',
     'Every listing shown in the public directory, searchable by anyone browsing',
     'A verified checkmark badge once a listing is approved — builds trust with people who find you',
     'Interested people contact you directly using the details you provide',
