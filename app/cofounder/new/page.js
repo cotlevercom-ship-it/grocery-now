@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 const inputStyle = {
   width: '100%', padding: '11px 13px', borderRadius: '8px', border: `1px solid ${theme.line}`,
@@ -20,6 +21,7 @@ export default function NewCofounderPostPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [agreed, setAgreed] = useState(false)
 
   useEffect(() => {
     const s = getSession()
@@ -38,6 +40,7 @@ export default function NewCofounderPostPage() {
     setError('')
     if (!form.idea_name.trim()) { setError('Give your idea/business a name'); return }
     if (!form.description.trim()) { setError('Add a short description'); return }
+    if (!agreed) { setError('Please agree to the Find Co-founder Terms'); return }
     setSubmitting(true)
     try {
       const created = await supabaseFetch('cofounder_posts', {
@@ -158,6 +161,10 @@ export default function NewCofounderPostPage() {
           <div>
             <label style={labelStyle}>Contact email</label>
             <input style={{ ...inputStyle, background: '#F2F0EA', color: theme.inkSoft, cursor: 'not-allowed' }} value={form.contact_email} readOnly />
+          </div>
+
+          <div>
+            <AgreementCheckbox type="cofounder" checked={agreed} onChange={setAgreed} accent={theme.brass} />
           </div>
 
           <button type="submit" disabled={submitting} style={{

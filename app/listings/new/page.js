@@ -6,6 +6,7 @@ import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { EXTRA_FIELD_CONFIG, cleanExtraFieldsForType } from '@/lib/listingExtraFields'
 import { fetchListingTypes } from '@/lib/listingTypes'
+import AgreementCheckbox from '@/components/AgreementCheckbox'
 
 const INDUSTRIES = [
   'Technology / Software',
@@ -39,6 +40,7 @@ export default function NewListingPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [types, setTypes] = useState([]) // active listing type options, admin-managed
+  const [agreed, setAgreed] = useState(false)
 
   useEffect(() => {
     const s = getSession()
@@ -72,6 +74,7 @@ export default function NewListingPage() {
     if (!form.owner_name.trim()) { setError('Enter the owner/founder name'); return }
     if (form.listing_types.length === 0) { setError('Select at least one category'); return }
     if (!form.contact_email.trim()) { setError('Provide a contact email'); return }
+    if (!agreed) { setError('Please agree to the Business Listing Terms'); return }
     for (const type of form.listing_types) {
       const config = EXTRA_FIELD_CONFIG[type]
       if (!config) continue
@@ -251,6 +254,10 @@ export default function NewListingPage() {
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>Website (optional)</label>
             <input style={inputStyle} value={form.website} onChange={e => handleChange('website', e.target.value)} placeholder="https://..." />
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <AgreementCheckbox type="listing" checked={agreed} onChange={setAgreed} accent={theme.brass} />
           </div>
 
           <button type="submit" disabled={submitting} style={{
