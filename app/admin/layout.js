@@ -68,6 +68,7 @@ export default function AdminLayout({ children }) {
     { href: '/admin/cofounder', label: 'Find Co-founder', icon: '🧩' },
     { href: '/admin/listing-types', label: 'Listing Types', icon: '🏷️' },
     { href: '/admin/resources', label: 'Resources', icon: '📰' },
+    { href: '/admin/resource-categories', label: 'Article Categories', icon: '🗂️' },
     { href: '/admin/banners', label: 'Banners', icon: '🖼️' },
     { href: '/admin/pages', label: 'Page Management', icon: '📄' },
     { href: '/admin/agreements', label: 'Agreements', icon: '📜' },

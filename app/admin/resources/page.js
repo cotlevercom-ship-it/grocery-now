@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
 
-const emptyForm = { title: '', slug: '', excerpt: '', content: '', is_published: true }
+const emptyForm = { title: '', slug: '', excerpt: '', content: '', is_published: true, category_id: '' }
 
 function slugify(title) {
   return title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 80)
@@ -10,6 +10,7 @@ function slugify(title) {
 
 export default function AdminResourcesPage() {
   const [items, setItems] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -21,8 +22,12 @@ export default function AdminResourcesPage() {
     setLoading(true)
     setError('')
     try {
-      const data = await supabaseFetch('resources?select=*&order=created_at.desc')
+      const [data, cats] = await Promise.all([
+        supabaseFetch('resources?select=*,resource_categories(name)&order=created_at.desc'),
+        supabaseFetch('resource_categories?select=*&order=sort_order.asc'),
+      ])
       setItems(data || [])
+      setCategories(cats || [])
     } catch (e) {
       console.error(e)
       setError('Failed to load')
@@ -35,7 +40,7 @@ export default function AdminResourcesPage() {
   const openAdd = () => { setEditingId(null); setForm(emptyForm); setError(''); setShowForm(true) }
   const openEdit = (item) => {
     setEditingId(item.id)
-    setForm({ title: item.title, slug: item.slug, excerpt: item.excerpt || '', content: item.content, is_published: item.is_published })
+    setForm({ title: item.title, slug: item.slug, excerpt: item.excerpt || '', content: item.content, is_published: item.is_published, category_id: item.category_id || '' })
     setError('')
     setShowForm(true)
   }
@@ -62,6 +67,7 @@ export default function AdminResourcesPage() {
         excerpt: form.excerpt.trim() || null,
         content: form.content.trim(),
         is_published: !!form.is_published,
+        category_id: form.category_id || null,
       }
       if (editingId) {
         await supabaseFetch(`resources?id=eq.${editingId}`, { method: 'PATCH', body: JSON.stringify(payload) })
@@ -113,6 +119,15 @@ export default function AdminResourcesPage() {
             <input style={inputStyle} value={form.slug} onChange={e => handleChange('slug', e.target.value)} placeholder="auto-generated-from-title" />
           </div>
           <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>Category</label>
+            <select style={inputStyle} value={form.category_id} onChange={e => handleChange('category_id', e.target.value)}>
+              <option value="">Uncategorized</option>
+              {categories.map(c => (
+                <option key={c.id} value={c.id}>{c.name}{!c.is_active ? ' (inactive)' : ''}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ marginBottom: '14px' }}>
             <label style={labelStyle}>Excerpt (shown in the list)</label>
             <textarea style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }} value={form.excerpt} onChange={e => handleChange('excerpt', e.target.value)} placeholder="One or two sentence summary" />
           </div>
@@ -145,7 +160,7 @@ export default function AdminResourcesPage() {
             <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 16px', borderBottom: i < items.length - 1 ? '1px solid #eee' : 'none', flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: '160px' }}>
                 <div style={{ fontSize: '13.5px', fontWeight: '600', color: '#1a1a1a' }}>{item.title}</div>
-                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>/{item.slug}</div>
+                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>/{item.slug}{item.resource_categories?.name ? ` · ${item.resource_categories.name}` : ''}</div>
               </div>
               <span style={{ fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px', background: '#f5f5f5', color: item.is_published ? '#2d6a4f' : '#999' }}>
                 {item.is_published ? 'Published' : 'Draft'}
