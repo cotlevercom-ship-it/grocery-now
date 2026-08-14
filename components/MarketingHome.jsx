@@ -3,15 +3,15 @@ import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
 const FEATURES = [
-  { icon: '🤝', title: 'Partners & Employees', body: 'List your business for the partner or employee it needs — reach people actively looking.' },
+  { icon: '🧩', title: 'Co-founders & Partners', body: 'List your idea or business for the co-founder or partner it needs — reach people actively looking.' },
   { icon: '📦', title: 'Suppliers & Buyers', body: 'Find the supplier or buyer relationships that keep a business moving, all in one directory.' },
-  { icon: '🧩', title: 'Find a Co-founder', body: 'Post your idea or early business and connect with someone ready to build it with you.' },
+  { icon: '💼', title: 'Employees', body: 'List openings and reach people looking for their next role.' },
   { icon: '✅', title: 'Verified Listings', body: 'Every listing is reviewed before it goes live, so what you see is a real, checked business.' },
 ]
 
 const STEPS = [
   { n: '01', title: 'Create your account', body: 'Sign up free — takes less than a minute.' },
-  { n: '02', title: 'List or browse', body: 'List your business, post for a co-founder, or browse what others are looking for.' },
+  { n: '02', title: 'List or browse', body: 'List your business or idea, or browse what others are looking for.' },
   { n: '03', title: 'Connect directly', body: 'Reach out to the people and businesses that match what you need.' },
 ]
 

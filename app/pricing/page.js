@@ -2,38 +2,21 @@
 import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
-const PLANS = [
-  {
-    name: 'Add Business',
-    tagline: 'List your business for partners, employees, suppliers, or buyers.',
-    options: [
-      { label: 'Monthly', regular: '৳500', discount: '৳350' },
-      { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
-    ],
-    features: [
-      'Your business listed in the public directory, searchable by anyone browsing',
-      'A verified checkmark badge once your listing is approved — builds trust with people who find you',
-      'Interested people contact you directly using the details you provide',
-      'Listing stays active for the full plan period, then renews',
-    ],
-    cta: { label: 'List Your Business', href: '/listings/new' },
-  },
-  {
-    name: 'Find Co-founder',
-    tagline: 'Post your idea and find someone to build it with.',
-    options: [
-      { label: 'Yearly', regular: '৳2000', discount: null },
-    ],
-    features: [
-      'Your idea/post listed under Find a Co-founder for a full year',
-      'A verified checkmark badge once approved',
-      'People looking to join a project can contact you directly',
-      'First-ever post gets a 30-day free trial before the yearly charge applies',
-    ],
-    note: 'Your first-ever post gets a 30-day free trial (still reviewed before going live).',
-    cta: { label: 'Find a Co-founder', href: '/cofounder/new' },
-  },
-]
+const PLAN = {
+  name: 'List on Cot Lever',
+  tagline: 'List your business, idea, or co-founder search for partners, employees, suppliers, buyers, or a co-founder.',
+  options: [
+    { label: 'Monthly', regular: '৳500', discount: '৳350' },
+    { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
+  ],
+  features: [
+    'Your listing shown in the public directory, searchable by anyone browsing',
+    'A verified checkmark badge once your listing is approved — builds trust with people who find you',
+    'Interested people contact you directly using the details you provide',
+    'Listing stays active for the full plan period, then renews',
+  ],
+  cta: { label: 'Create Your Listing', href: '/listings/new' },
+}
 
 export default function PricingPage() {
   return (
@@ -50,66 +33,58 @@ export default function PricingPage() {
         }}>Simple, transparent pricing</h1>
 
         <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '44px', maxWidth: '520px' }}>
-          Pay via bKash to get your listing reviewed and published in the directory. Here's exactly what each plan includes.
+          One simple listing, pay via bKash. Every listing is reviewed by our team before it goes live.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {PLANS.map((plan) => (
-            <div key={plan.name} style={{
-              padding: 'clamp(22px,3.5vw,32px)', background: theme.surface,
-              borderRadius: '12px', border: `1px solid ${theme.line}`,
-            }}>
-              <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600', color: theme.ink, marginBottom: '6px' }}>
-                {plan.name}
-              </h2>
-              <p style={{ fontSize: '13.5px', color: theme.inkSoft, marginBottom: '18px' }}>{plan.tagline}</p>
+        <div style={{
+          padding: 'clamp(22px,3.5vw,32px)', background: theme.surface,
+          borderRadius: '12px', border: `1px solid ${theme.line}`,
+        }}>
+          <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600', color: theme.ink, marginBottom: '6px' }}>
+            {PLAN.name}
+          </h2>
+          <p style={{ fontSize: '13.5px', color: theme.inkSoft, marginBottom: '18px' }}>{PLAN.tagline}</p>
 
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: plan.note ? '12px' : '20px' }}>
-                {plan.options.map((opt) => (
-                  <div key={opt.label} style={{
-                    flex: '1 1 160px', border: `1px solid ${theme.line}`, borderRadius: '10px',
-                    padding: '14px 16px',
-                  }}>
-                    <div style={{ fontSize: '12px', color: theme.inkSoft, marginBottom: '4px' }}>{opt.label}</div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '700', color: theme.ink }}>
-                        {opt.discount || opt.regular}
-                      </span>
-                      {opt.discount && (
-                        <span style={{ fontSize: '13px', color: theme.inkSoft, textDecoration: 'line-through' }}>{opt.regular}</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {plan.note && (
-                <p style={{ fontSize: '12.5px', color: theme.brassDark, marginBottom: '20px' }}>{plan.note}</p>
-              )}
-
-              <div style={{ marginBottom: '22px' }}>
-                <div style={{ fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase', color: theme.inkSoft, marginBottom: '10px', fontWeight: '600' }}>
-                  What you get
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
-                  {plan.features.map((f) => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.signal} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ flexShrink: 0, marginTop: '3px' }}>
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span style={{ fontSize: '13.5px', color: theme.ink, lineHeight: '1.5' }}>{f}</span>
-                    </div>
-                  ))}
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
+            {PLAN.options.map((opt) => (
+              <div key={opt.label} style={{
+                flex: '1 1 160px', border: `1px solid ${theme.line}`, borderRadius: '10px',
+                padding: '14px 16px',
+              }}>
+                <div style={{ fontSize: '12px', color: theme.inkSoft, marginBottom: '4px' }}>{opt.label}</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                  <span style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '700', color: theme.ink }}>
+                    {opt.discount || opt.regular}
+                  </span>
+                  {opt.discount && (
+                    <span style={{ fontSize: '13px', color: theme.inkSoft, textDecoration: 'line-through' }}>{opt.regular}</span>
+                  )}
                 </div>
               </div>
+            ))}
+          </div>
 
-              <Link href={plan.cta.href} style={{
-                display: 'inline-block', background: theme.brass, color: 'white',
-                borderRadius: '8px', padding: '11px 20px', fontSize: '13.5px', fontWeight: '600', textDecoration: 'none',
-              }}>{plan.cta.label}</Link>
+          <div style={{ marginBottom: '22px' }}>
+            <div style={{ fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase', color: theme.inkSoft, marginBottom: '10px', fontWeight: '600' }}>
+              What you get
             </div>
-          ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
+              {PLAN.features.map((f) => (
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.signal} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ flexShrink: 0, marginTop: '3px' }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span style={{ fontSize: '13.5px', color: theme.ink, lineHeight: '1.5' }}>{f}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Link href={PLAN.cta.href} style={{
+            display: 'inline-block', background: theme.brass, color: 'white',
+            borderRadius: '8px', padding: '11px 20px', fontSize: '13.5px', fontWeight: '600', textDecoration: 'none',
+          }}>{PLAN.cta.label}</Link>
         </div>
 
         <p style={{ fontSize: '13px', color: theme.inkSoft, marginTop: '28px', lineHeight: '1.6' }}>

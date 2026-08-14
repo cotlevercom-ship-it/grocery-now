@@ -12,8 +12,8 @@ const REASONS = [
     body: 'Nothing goes live without admin review first. That keeps the directory trustworthy — when you see a listing, you know a real person stands behind it.',
   },
   {
-    title: 'A dedicated path for co-founder search',
-    body: 'Have an idea but no one to build it with? Find a Co-founder is a separate flow just for that — post what you\'re building and what kind of co-founder you need.',
+    title: 'Co-founder search included',
+    body: 'Have an idea but no one to build it with? Post it as a listing and select "Co-founder" — the same simple flow as any other listing.',
   },
   {
     title: 'You stay in control',
