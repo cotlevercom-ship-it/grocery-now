@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { getSession } from '@/lib/supabase'
+import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
 // Pages reachable without logging in — the auth/onboarding flow itself,
@@ -52,6 +52,36 @@ export default function SiteAuthGate({ children }) {
       setChecking(false)
       return
     }
+
+    // A logged-in account isn't a real Cot Lever member until they've
+    // confirmed payment — enforced everywhere except the subscribe page
+    // itself, so a user can't wander the rest of the site unpaid (e.g. by
+    // closing the tab right after signup, before the redirect completes).
+    // Legacy /payment/cofounder/[postId] is exempt so any old pending
+    // cofounder payment (from before this signup-payment change) can still
+    // be completed — those live in a separate cofounder_subscriptions
+    // table, not listing_subscriptions, so this check wouldn't see them.
+    const skipSubscriptionCheck = pathname === '/account/subscribe' || pathname?.startsWith('/payment/cofounder/')
+    if (!skipSubscriptionCheck) {
+      supabaseFetch(`listing_subscriptions?select=id&user_id=eq.${session.user.id}&limit=1`)
+        .then(subs => {
+          if (!subs || subs.length === 0) {
+            router.replace('/account/subscribe')
+            setAllowed(false)
+          } else {
+            setAllowed(true)
+          }
+          setChecking(false)
+        })
+        .catch(e => {
+          console.error(e)
+          // Fail open rather than lock a paid user out on a network hiccup.
+          setAllowed(true)
+          setChecking(false)
+        })
+      return
+    }
+
     setAllowed(true)
     setChecking(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
