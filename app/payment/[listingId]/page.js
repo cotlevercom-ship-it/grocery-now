@@ -145,7 +145,7 @@ export default function PaymentPage() {
         <div style={{ background: '#FBF3E7', border: `1px solid ${theme.brass}`, borderRadius: '10px', padding: '18px', marginBottom: '22px' }}>
           <div style={{ fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: '600', color: theme.brassDark, marginBottom: '8px' }}>Pay via bKash</div>
           <div style={{ fontSize: '15px', color: theme.ink }}>
-            Send Money to: <strong>{prices.bkashNumber || 'Admin has not set a number yet'}</strong>, amount ৳{price} (discounted)
+            Merchant: <strong>{prices.bkashNumber || 'Admin has not set a number yet'}</strong>, amount ৳{price} (discounted)
           </div>
         </div>
 
