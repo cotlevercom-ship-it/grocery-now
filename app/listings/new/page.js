@@ -43,6 +43,7 @@ export default function NewListingPage() {
   const [agreed, setAgreed] = useState(false)
   const [listingCount, setListingCount] = useState(null) // null = still loading
   const [activeSub, setActiveSub] = useState(null) // most recent active, non-expired subscription (any of the user's listings)
+  const [pendingSub, setPendingSub] = useState(null) // account-level subscription still awaiting admin approval — already paid, just not confirmed yet
 
   const MAX_LISTINGS_PER_USER = 3
 
@@ -62,6 +63,15 @@ export default function NewListingPage() {
       const nowIso = new Date().toISOString()
       supabaseFetch(`listing_subscriptions?select=*&user_id=eq.${s.user.id}&status=eq.active&ends_at=gt.${nowIso}&order=ends_at.desc&limit=1`)
         .then(rows => setActiveSub(rows?.[0] || null))
+        .catch(e => console.error(e))
+
+      // Already-paid-but-not-yet-approved subscription (e.g. the one made at
+      // signup on /account/subscribe). Without this, a user who just paid
+      // and immediately tries to create their first listing gets sent to
+      // /payment/[listingId] and asked to pay a second time while their
+      // first payment is still waiting on admin review.
+      supabaseFetch(`listing_subscriptions?select=*&user_id=eq.${s.user.id}&status=eq.pending&order=created_at.desc&limit=1`)
+        .then(rows => setPendingSub(rows?.[0] || null))
         .catch(e => console.error(e))
     }
   }, [])
@@ -125,22 +135,26 @@ export default function NewListingPage() {
       const res = await supabaseFetch('listings', { method: 'POST', body: JSON.stringify(payload) })
       const listing = res?.[0]
 
-      if (activeSub && listingCount < MAX_LISTINGS_PER_USER) {
-        // Already has a paid, active subscription with room left under the
-        // 3-listing cap — this extra listing rides on that plan at no extra
-        // charge. Still goes through the normal admin-approval queue (the
-        // anti-bypass DB trigger requires it) but with amount 0, so the
-        // admin knows there's no bKash transaction to check.
+      const coveringSub = activeSub || pendingSub
+      if (coveringSub && listingCount < MAX_LISTINGS_PER_USER) {
+        // Already has a paid subscription (active, or paid and still
+        // awaiting admin approval) with room left under the 3-listing cap —
+        // this extra listing rides on that plan at no extra charge. Still
+        // goes through the normal admin-approval queue (the anti-bypass DB
+        // trigger requires it) but with amount 0, so the admin knows
+        // there's no separate bKash transaction to check.
         await supabaseFetch('listing_subscriptions', {
           method: 'POST',
           body: JSON.stringify({
             listing_id: listing.id,
             user_id: session.user.id,
-            plan: activeSub.plan,
+            plan: coveringSub.plan,
             amount: 0,
             status: 'pending',
             payment_method: 'included_in_plan',
-            payment_reference: 'Additional listing under existing subscription',
+            payment_reference: activeSub
+              ? 'Additional listing under existing subscription'
+              : 'Listing under subscription paid at signup, pending admin approval',
           }),
         })
         router.push('/account/listings')
@@ -203,7 +217,7 @@ export default function NewListingPage() {
           List Your Business
         </h1>
         <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '28px' }}>
-          {activeSub
+          {(activeSub || pendingSub)
             ? `Your subscription covers up to ${MAX_LISTINGS_PER_USER} listings — this one won't need a separate payment.`
             : 'Fill in your details, then pay to activate the listing.'}
         </p>
