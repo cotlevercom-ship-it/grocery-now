@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
@@ -96,14 +97,14 @@ export default function SubscribePage() {
         <div style={{ maxWidth: '500px', margin: '0 auto', padding: 'clamp(20px,4vw,48px) clamp(16px,3vw,24px)', textAlign: 'center' }}>
           <div style={{ background: theme.surface, borderRadius: '14px', border: `1px solid ${theme.line}`, padding: '44px 28px', marginTop: '30px' }}>
             <div style={{ fontSize: '44px', marginBottom: '16px' }}>✅</div>
-            <h1 style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: theme.ink, marginBottom: '10px' }}>You're All Set</h1>
+            <h1 style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: theme.ink, marginBottom: '10px' }}>You&apos;re All Set</h1>
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
               Your subscription is already active or being reviewed. You can create your listings now.
             </p>
-            <a href="/listings/new" style={{
+            <Link href="/listings/new" style={{
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '12px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'
-            }}>Create a Listing</a>
+            }}>Create a Listing</Link>
           </div>
         </div>
       </div>
@@ -120,10 +121,10 @@ export default function SubscribePage() {
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
               Once verified (usually within a few hours), you can create up to 3 listings with no extra payment.
             </p>
-            <a href="/" style={{
+            <Link href="/" style={{
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '12px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'
-            }}>Back to Home</a>
+            }}>Back to Home</Link>
           </div>
         </div>
       </div>

@@ -62,7 +62,7 @@ export default function MemberDetailPage() {
               <h1 style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(20px,2.6vw,26px)', fontWeight: '600', color: theme.ink }}>
                 {ownerName}
               </h1>
-              <p style={{ fontSize: '13px', color: theme.inkSoft, marginTop: '6px' }}>Hasn't set up a co-founder profile yet</p>
+              <p style={{ fontSize: '13px', color: theme.inkSoft, marginTop: '6px' }}>Hasn&apos;t set up a co-founder profile yet</p>
             </div>
             <div style={{
               fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',

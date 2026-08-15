@@ -78,7 +78,7 @@ export default function CofounderPaymentPage() {
         <div style={{ textAlign: 'center', maxWidth: '380px' }}>
           <div style={{ fontSize: '40px', marginBottom: '14px' }}>✅</div>
           <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600', color: theme.ink, marginBottom: '8px' }}>Payment Submitted</h2>
-          <p style={{ fontSize: '13.5px', color: theme.inkSoft, marginBottom: '20px' }}>We'll verify it and activate your post shortly — usually within a few hours.</p>
+          <p style={{ fontSize: '13.5px', color: theme.inkSoft, marginBottom: '20px' }}>We&apos;ll verify it and activate your post shortly — usually within a few hours.</p>
           <a href="/account/cofounder" style={{ display: 'inline-block', background: theme.brass, color: 'white', borderRadius: '8px', padding: '11px 22px', fontSize: '14px', fontWeight: '600', textDecoration: 'none' }}>Back to Find Co-founder</a>
         </div>
       </div>

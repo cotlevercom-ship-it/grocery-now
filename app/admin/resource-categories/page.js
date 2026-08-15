@@ -130,7 +130,7 @@ export default function AdminResourceCategoriesPage() {
       </div>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
         Categories group articles on the Resources page. Deactivating a category hides it from the
-        public filter tabs — its articles still show under "All". Deleting a category leaves its
+        public filter tabs — its articles still show under &quot;All&quot;. Deleting a category leaves its
         articles in place, just uncategorized.
       </p>
 

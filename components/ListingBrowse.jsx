@@ -11,6 +11,7 @@ import { fetchListingTypes } from '@/lib/listingTypes'
 const HIGHLIGHT_FIELD = {
   co_founder: { key: 'skills_needed', icon: '🧩' },
   partner: { key: 'partnership_type', icon: '🔗' },
+  share_holder: { key: 'equity_percent', icon: '📈' },
 }
 
 function highlightFor(listing) {
@@ -45,6 +46,10 @@ export default function ListingBrowse({ embedded = false }) {
   // Keep filter in sync with ?type= — e.g. a type-filtered link (partner,
   // investor, etc.) navigating back to "/listings" while this component is mounted.
   useEffect(() => {
+    // Re-syncs the filter when the URL's ?type= changes after mount (e.g. a
+    // type-filtered link navigated to while this component stays mounted) —
+    // the initial value is already set correctly via useState above.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFilterType(searchParams.get('type') || 'all')
   }, [searchParams])
   const TYPE_LABEL = Object.fromEntries(typeOptions.map(t => [t.key, t.label]))
@@ -206,7 +211,7 @@ export default function ListingBrowse({ embedded = false }) {
                       marginBottom: '16px', lineHeight: '1.55',
                       overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
                       WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'
-                    }}>"{listing.description}"</p>
+                    }}>&quot;{listing.description}&quot;</p>
                   )}
 
                   {/* Purpose row — labeled plainly so it's unambiguous what this business wants */}

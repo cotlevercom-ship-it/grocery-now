@@ -48,7 +48,10 @@ export default function NewListingPage() {
   const MAX_LISTINGS_PER_USER = 3
 
   useEffect(() => {
+    // getSession() reads localStorage — client-only, must stay in an effect
+    // rather than a lazy useState initializer to avoid a hydration mismatch.
     const s = getSession()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSession(s)
     if (s?.user?.email) {
       setForm(prev => ({ ...prev, contact_email: s.user.email }))
@@ -193,7 +196,7 @@ export default function NewListingPage() {
     return (
       <div style={{ background: theme.paper, minHeight: '60vh', padding: '60px 20px', textAlign: 'center' }}>
         <p style={{ color: theme.ink, fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
-          You've reached the {MAX_LISTINGS_PER_USER}-listing limit
+          You&apos;ve reached the {MAX_LISTINGS_PER_USER}-listing limit
         </p>
         <p style={{ color: theme.inkSoft, marginBottom: '18px', fontSize: '14px' }}>
           Your account already has {MAX_LISTINGS_PER_USER} listings. Manage or remove one to add another.

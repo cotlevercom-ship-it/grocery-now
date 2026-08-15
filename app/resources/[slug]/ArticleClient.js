@@ -31,7 +31,10 @@ function ShareBar({ url, title }) {
   const [canNativeShare, setCanNativeShare] = useState(false)
 
   useEffect(() => {
+    // navigator is undefined during SSR — this must run client-side only,
+    // so a lazy useState initializer isn't safe here (would mismatch on hydration).
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCanNativeShare(true)
     }
   }, [])

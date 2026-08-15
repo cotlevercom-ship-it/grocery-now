@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
           Forgot Password
         </div>
         <div style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '22px', lineHeight: 1.6 }}>
-          Enter your email and we'll send you a code to reset your password
+          Enter your email and we&apos;ll send you a code to reset your password
         </div>
 
         <form onSubmit={handleSubmit}>

@@ -72,6 +72,10 @@ export default function Navbar() {
   const isAdminArea = pathname?.startsWith('/admin')
 
   useEffect(() => {
+    // getSession() reads localStorage, which doesn't exist during SSR — must
+    // run client-side only in an effect, not a lazy useState initializer
+    // (that would mismatch what the server rendered on hydration).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSession(getSession())
     const onAuthChanged = () => setSession(getSession())
     window.addEventListener('auth-changed', onAuthChanged)

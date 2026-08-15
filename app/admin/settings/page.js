@@ -82,7 +82,7 @@ export default function AdminSettingsPage() {
         Settings
       </h1>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        Manage the site's contact info and payment number from here. Leave a field blank to hide that icon/info in the footer.
+        Manage the site&apos;s contact info and payment number from here. Leave a field blank to hide that icon/info in the footer.
       </p>
 
       {error && (

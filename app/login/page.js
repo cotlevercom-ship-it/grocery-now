@@ -116,6 +116,7 @@ function LoginForm() {
   // Auto-verify as soon as 6 digits are entered
   useEffect(() => {
     if (mode === 'signup' && otpSent && !emailVerified && otpCode.length === 6 && !verifyingOtp) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       handleVerifyOtp(otpCode)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -351,7 +352,7 @@ function LoginForm() {
 
           <div style={{ textAlign: 'center', marginTop: '18px', fontSize: '13px', color: '#666' }}>
             {mode === 'login' ? (
-              <>Don't have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice(''); resetOtpState() }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
+              <>Don&apos;t have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice(''); resetOtpState() }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
             ) : (
               <>Already have an account? <button type="button" onClick={() => { setMode('login'); setError(''); setNotice(''); resetOtpState() }} style={{ color: '#000000', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Log In</button></>
             )}

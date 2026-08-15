@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
@@ -41,6 +42,7 @@ export default function PaymentPage() {
       setLoading(false)
     }
     load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const price = plan === 'monthly' ? prices.monthly : prices.yearly
@@ -91,10 +93,10 @@ export default function PaymentPage() {
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
               Your listing will be activated after verification (usually within a few hours).
             </p>
-            <a href="/" style={{
+            <Link href="/" style={{
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '12px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'
-            }}>Back to Home</a>
+            }}>Back to Home</Link>
           </div>
         </div>
       </div>

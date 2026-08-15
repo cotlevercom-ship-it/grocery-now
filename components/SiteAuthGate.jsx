@@ -41,6 +41,7 @@ export default function SiteAuthGate({ children }) {
 
   useEffect(() => {
     if (isPublic) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAllowed(true)
       setChecking(false)
       return

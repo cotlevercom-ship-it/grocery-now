@@ -122,7 +122,7 @@ export default function MyListingsPage() {
             padding: '48px 24px', textAlign: 'center'
           }}>
             <div style={{ fontSize: '34px', marginBottom: '12px' }}>📋</div>
-            <p style={{ fontSize: '14.5px', color: theme.inkSoft, marginBottom: '18px' }}>You haven't listed a business yet.</p>
+            <p style={{ fontSize: '14.5px', color: theme.inkSoft, marginBottom: '18px' }}>You haven&apos;t listed a business yet.</p>
             <Link href="/listings/new" style={{
               display: 'inline-block', background: theme.brass, color: 'white', borderRadius: '8px',
               padding: '11px 22px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'

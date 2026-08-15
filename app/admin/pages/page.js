@@ -209,7 +209,7 @@ export default function AdminPagesPage() {
             Page Management
           </h1>
           <p style={{ color: '#888', fontSize: '14px' }}>
-            Manage the footer's Info and Partner With Us section links/pages from here.
+            Manage the footer&apos;s Info and Partner With Us section links/pages from here.
           </p>
         </div>
         {!showForm && (
