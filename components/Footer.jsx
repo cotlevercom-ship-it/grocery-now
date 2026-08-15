@@ -47,7 +47,6 @@ export default function Footer() {
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Legal</div>
             <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
             <FooterLink href="/terms">Terms & Conditions</FooterLink>
-            <FooterLink href="/payment-policy">Payment Policy</FooterLink>
             <FooterLink href="/user-agreement">User Agreement</FooterLink>
           </div>
         </div>
