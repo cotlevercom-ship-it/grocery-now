@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import { theme } from '@/lib/theme'
 
@@ -77,25 +76,6 @@ export default function MarketingHome() {
         }}>Find the right people for your business — Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs.</h1>
 
         <HeroCarousel />
-      </div>
-
-      {/* Resources teaser */}
-      <div style={{ borderTop: `1px solid ${theme.line}` }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto', padding: 'clamp(18px,3vw,32px) clamp(16px,3vw,56px)',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px'
-        }}>
-          <div>
-            <div style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.ink, marginBottom: '3px' }}>
-              Resources for founders
-            </div>
-            <p style={{ fontSize: '13px', color: theme.inkSoft }}>Short, practical reads on finding co-founders and partners.</p>
-          </div>
-          <Link href="/login" style={{
-            display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
-            borderRadius: '8px', padding: '10px 18px', fontSize: '13px', fontWeight: '600', textDecoration: 'none', whiteSpace: 'nowrap'
-          }}>Get Started →</Link>
-        </div>
       </div>
     </div>
   )
