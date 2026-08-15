@@ -13,33 +13,37 @@ export default function MarketingHome() {
     <div style={{ background: theme.paper }}>
       {/* Hero */}
       <div style={{
-        maxWidth: '1200px', margin: '0 auto', padding: 'clamp(40px,7vw,88px) clamp(16px,3vw,56px) clamp(32px,5vw,56px)',
+        maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px) clamp(32px,5vw,56px)',
       }}>
-        <div style={{ maxWidth: '680px' }}>
-          <div style={{
-            fontFamily: theme.fontMono, fontSize: '11.5px', letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: theme.brassDark, marginBottom: '14px', fontWeight: '600'
-          }}>A Business-Matching Directory</div>
-          <h1 style={{
-            fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(34px,4.6vw,56px)',
-            lineHeight: '1.08', color: theme.ink, marginBottom: '20px', letterSpacing: '-0.01em'
-          }}>
-            Find the right people for your business.
-          </h1>
-          <p style={{ fontSize: 'clamp(15px,1.6vw,17px)', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '32px', maxWidth: '540px' }}>
-            Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs — all verified, all in one place.
-          </p>
+        {/* Visually hidden but present for SEO/screen readers — the image below carries this same headline visually */}
+        <h1 style={{
+          position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px',
+          overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0
+        }}>Find the right people for your business — Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs.</h1>
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link href="/login" style={{
-              display: 'inline-block', background: theme.brass, color: 'white',
-              borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
-            }}>Join Cot Lever</Link>
-            <Link href="/how-it-works" style={{
-              display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
-              borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
-            }}>How It Works</Link>
-          </div>
+        <div style={{
+          position: 'relative', width: '100%', aspectRatio: '1536 / 1024',
+          borderRadius: '14px', overflow: 'hidden', marginBottom: '24px'
+        }}>
+          <Image
+            src="/marketing/hero-find-people.jpg"
+            alt="Find the right people for your business — Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs, all verified, all in one place."
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit: 'cover' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <Link href="/login" style={{
+            display: 'inline-block', background: theme.brass, color: 'white',
+            borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
+          }}>Join Cot Lever</Link>
+          <Link href="/how-it-works" style={{
+            display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
+            borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
+          }}>How It Works</Link>
         </div>
       </div>
 
