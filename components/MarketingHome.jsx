@@ -1,11 +1,11 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { theme } from '@/lib/theme'
 
 const FEATURES = [
-  { icon: '🧩', title: 'Co-founders & Partners', body: 'List your idea or business for the co-founder or partner it needs — reach people actively looking.' },
-  { icon: '🤝', title: 'Share Holders', body: 'Bring on a share holder for the equity your business needs.' },
-  { icon: '✅', title: 'Verified Listings', body: 'Every listing is reviewed before it goes live, so what you see is a real, checked business.' },
+  { title: 'Co-founders & Partners', image: '/marketing/cofounders-partners.jpg' },
+  { title: 'Share Holders', image: '/marketing/shareholder.jpg' },
 ]
 
 export default function MarketingHome() {
@@ -52,18 +52,14 @@ export default function MarketingHome() {
           }}>What you&apos;ll find on Cot Lever</h2>
 
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px,1fr))', gap: 'clamp(14px,1.8vw,22px)'
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px,1fr))', gap: 'clamp(14px,1.8vw,22px)'
           }}>
             {FEATURES.map(f => (
               <div key={f.title} style={{
-                background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '12px',
-                padding: '22px 20px'
+                position: 'relative', width: '100%', aspectRatio: '3 / 2',
+                borderRadius: '12px', overflow: 'hidden', border: `1px solid ${theme.line}`
               }}>
-                <div style={{ fontSize: '26px', marginBottom: '12px' }}>{f.icon}</div>
-                <div style={{ fontFamily: theme.fontDisplay, fontSize: '16.5px', fontWeight: '600', color: theme.ink, marginBottom: '6px' }}>
-                  {f.title}
-                </div>
-                <p style={{ fontSize: '13px', color: theme.inkSoft, lineHeight: '1.55' }}>{f.body}</p>
+                <Image src={f.image} alt={f.title} fill sizes="(max-width: 700px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
               </div>
             ))}
           </div>
