@@ -35,26 +35,11 @@ export default function MarketingHome() {
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <Link href="/login" style={{
-            display: 'inline-block', background: theme.brass, color: 'white',
-            borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
-          }}>Join Cot Lever</Link>
-          <Link href="/how-it-works" style={{
-            display: 'inline-block', background: 'transparent', color: theme.ink, border: `1px solid ${theme.line}`,
-            borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
-          }}>How It Works</Link>
-        </div>
       </div>
 
       {/* Features */}
       <div style={{ borderTop: `1px solid ${theme.line}` }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(36px,5vw,64px) clamp(16px,3vw,56px)' }}>
-          <h2 style={{
-            fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(22px,2.6vw,28px)',
-            color: theme.ink, marginBottom: '28px'
-          }}>What you&apos;ll find on Cot Lever</h2>
-
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px,1fr))', gap: 'clamp(14px,1.8vw,22px)'
           }}>
