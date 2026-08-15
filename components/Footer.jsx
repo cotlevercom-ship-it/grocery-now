@@ -35,9 +35,6 @@ export default function Footer() {
           <div style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', marginBottom: '5px' }}>
             Cot<span style={{ color: theme.brass }}>Lever</span>
           </div>
-          <p style={{ fontSize: '12px', lineHeight: '1.45', color: 'rgba(237,234,224,0.6)', maxWidth: '320px' }}>
-            A business-matching directory for founders in Bangladesh.
-          </p>
         </div>
 
         <div className="footer-links-grid">
