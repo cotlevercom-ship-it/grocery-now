@@ -266,10 +266,10 @@ export default function NewListingPage() {
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {types.map(t => (
                 <button key={t.key} type="button" onClick={() => toggleType(t.key)} style={{
-                  padding: '9px 16px', borderRadius: '20px', border: `1px solid ${form.listing_types.includes(t.key) ? theme.ink : theme.line}`,
+                  padding: '9px 16px', borderRadius: '20px', border: `1px solid ${form.listing_types.includes(t.key) ? theme.brass : theme.line}`,
                   fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
-                  background: form.listing_types.includes(t.key) ? theme.ink : theme.surface,
-                  color: form.listing_types.includes(t.key) ? theme.paper : theme.inkSoft
+                  background: form.listing_types.includes(t.key) ? theme.brass : theme.surface,
+                  color: form.listing_types.includes(t.key) ? 'white' : theme.inkSoft
                 }}>{t.icon} {t.label}</button>
               ))}
             </div>

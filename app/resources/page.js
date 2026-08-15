@@ -35,9 +35,9 @@ export default function ResourcesPage() {
 
   const tabStyle = (active) => ({
     padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600',
-    border: `1px solid ${active ? theme.ink : theme.line}`,
-    background: active ? theme.ink : 'transparent',
-    color: active ? theme.paper : theme.inkSoft,
+    border: `1px solid ${active ? theme.brass : theme.line}`,
+    background: active ? theme.brass : 'transparent',
+    color: active ? 'white' : theme.inkSoft,
     cursor: 'pointer', whiteSpace: 'nowrap',
   })
 

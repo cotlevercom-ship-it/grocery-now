@@ -117,9 +117,9 @@ export default function PaymentPage() {
             const active = plan === p
             return (
               <button key={p} onClick={() => setPlan(p)} style={{
-                flex: 1, padding: '18px', borderRadius: '10px', border: `2px solid ${active ? theme.ink : theme.line}`,
-                background: active ? theme.ink : theme.surface,
-                color: active ? theme.paper : theme.ink, textAlign: 'left'
+                flex: 1, padding: '18px', borderRadius: '10px', border: `2px solid ${active ? theme.brass : theme.line}`,
+                background: active ? theme.brass : theme.surface,
+                color: active ? 'white' : theme.ink, textAlign: 'left'
               }}>
                 <div style={{ fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody }}>{p === 'monthly' ? 'Monthly' : 'Yearly'}</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>

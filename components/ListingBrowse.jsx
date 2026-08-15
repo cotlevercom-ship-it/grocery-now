@@ -121,17 +121,17 @@ export default function ListingBrowse({ embedded = false }) {
         {activeTypeOptions.length > 1 && (
           <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', flexWrap: 'wrap' }}>
             <button onClick={() => setFilterType('all')} style={{
-              padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === 'all' ? theme.ink : theme.line}`,
+              padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === 'all' ? theme.brass : theme.line}`,
               fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
-              background: filterType === 'all' ? theme.ink : theme.surface,
-              color: filterType === 'all' ? theme.paper : theme.inkSoft,
+              background: filterType === 'all' ? theme.brass : theme.surface,
+              color: filterType === 'all' ? 'white' : theme.inkSoft,
             }}>All</button>
             {activeTypeOptions.map(t => (
               <button key={t.key} onClick={() => setFilterType(t.key)} style={{
-                padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === t.key ? theme.ink : theme.line}`,
+                padding: '8px 16px', borderRadius: '20px', border: `1px solid ${filterType === t.key ? theme.brass : theme.line}`,
                 fontSize: '13px', fontWeight: '600', fontFamily: theme.fontBody,
-                background: filterType === t.key ? theme.ink : theme.surface,
-                color: filterType === t.key ? theme.paper : theme.inkSoft,
+                background: filterType === t.key ? theme.brass : theme.surface,
+                color: filterType === t.key ? 'white' : theme.inkSoft,
               }}>{t.label}</button>
             ))}
           </div>

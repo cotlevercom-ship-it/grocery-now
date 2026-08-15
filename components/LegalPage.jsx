@@ -42,9 +42,9 @@ export default function LegalPage({ slug, title }) {
               style={{
                 padding: '6px 16px', borderRadius: '20px', fontSize: '12.5px', fontWeight: '700',
                 border: '1px solid', cursor: 'pointer',
-                background: lang === l.key ? theme.ink : 'white',
+                background: lang === l.key ? theme.brass : theme.surface,
                 color: lang === l.key ? 'white' : theme.inkSoft,
-                borderColor: lang === l.key ? theme.ink : '#ddd',
+                borderColor: lang === l.key ? theme.brass : theme.line,
               }}
             >{l.label}</button>
           ))}

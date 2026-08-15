@@ -65,8 +65,8 @@ function TimelineStep({ step, index, isLast, onVisible }) {
     >
       <div style={{
         flexShrink: 0, width: '48px', height: '48px', borderRadius: '50%',
-        background: visible ? theme.ink : theme.surface,
-        color: visible ? theme.paper : theme.inkSoft,
+        background: visible ? theme.brass : theme.surface,
+        color: visible ? 'white' : theme.inkSoft,
         border: visible ? `4px solid ${theme.paper}` : `1.5px solid ${theme.line}`,
         boxShadow: visible ? `0 0 0 1.5px ${theme.brass}` : 'none',
         display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -27,7 +27,7 @@ export default function Footer() {
 
   return (
     <footer style={{
-      background: theme.ink, color: '#EDEAE0', marginTop: '40px',
+      background: theme.surface, color: '#EDEAE0', marginTop: '40px',
       padding: 'clamp(20px, 4vw, 44px) clamp(16px, 3vw, 56px) 18px',
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '18px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
