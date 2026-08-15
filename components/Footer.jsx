@@ -27,12 +27,12 @@ export default function Footer() {
 
   return (
     <footer style={{
-      background: theme.surface, color: '#EDEAE0', marginTop: '40px',
-      padding: 'clamp(20px, 4vw, 44px) clamp(16px, 3vw, 56px) 18px',
+      background: theme.surface, color: '#EDEAE0', marginTop: '24px',
+      padding: 'clamp(14px, 2.5vw, 26px) clamp(16px, 3vw, 56px) 12px',
     }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '18px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-        <div style={{ marginBottom: '18px' }}>
-          <div style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', marginBottom: '5px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+        <div style={{ marginBottom: '10px' }}>
+          <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600' }}>
             Cot<span style={{ color: theme.brass }}>Lever</span>
           </div>
         </div>
@@ -41,11 +41,11 @@ export default function Footer() {
           <div>
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Platform</div>
             <FooterLink href="/about">About Us</FooterLink>
+            <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
           </div>
 
           <div>
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Legal</div>
-            <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
             <FooterLink href="/terms">Terms & Conditions</FooterLink>
             <FooterLink href="/user-agreement">User Agreement</FooterLink>
           </div>
@@ -53,7 +53,7 @@ export default function Footer() {
       </div>
 
       <div style={{
-        maxWidth: '1200px', margin: '0 auto', paddingTop: '12px',
+        maxWidth: '1200px', margin: '0 auto', paddingTop: '10px',
         display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '18px',
         fontSize: '11px', color: 'rgba(237,234,224,0.45)',
       }}>
@@ -78,7 +78,7 @@ function FooterLink({ href, children }) {
   return (
     <Link href={href} style={{
       display: 'block', fontSize: '12.5px', color: 'rgba(237,234,224,0.8)',
-      marginBottom: '6px', textDecoration: 'none',
+      marginBottom: '4px', textDecoration: 'none',
     }}>{children}</Link>
   )
 }
