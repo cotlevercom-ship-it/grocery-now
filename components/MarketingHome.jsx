@@ -8,12 +8,6 @@ const FEATURES = [
   { icon: '✅', title: 'Verified Listings', body: 'Every listing is reviewed before it goes live, so what you see is a real, checked business.' },
 ]
 
-const STEPS = [
-  { n: '01', title: 'Create your account', body: 'Sign up free — takes less than a minute.' },
-  { n: '02', title: 'List or browse', body: 'List your business or idea, or browse what others are looking for.' },
-  { n: '03', title: 'Connect directly', body: 'Reach out to the people and businesses that match what you need.' },
-]
-
 export default function MarketingHome() {
   return (
     <div style={{ background: theme.paper }}>
@@ -70,32 +64,6 @@ export default function MarketingHome() {
                   {f.title}
                 </div>
                 <p style={{ fontSize: '13px', color: theme.inkSoft, lineHeight: '1.55' }}>{f.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* How it works (condensed) */}
-      <div style={{ borderTop: `1px solid ${theme.line}`, background: theme.surface }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(36px,5vw,64px) clamp(16px,3vw,56px)' }}>
-          <h2 style={{
-            fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(22px,2.6vw,28px)',
-            color: theme.ink, marginBottom: '28px'
-          }}>Getting started is simple</h2>
-
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))', gap: 'clamp(20px,2.5vw,32px)'
-          }}>
-            {STEPS.map(s => (
-              <div key={s.n}>
-                <div style={{
-                  fontFamily: theme.fontMono, fontSize: '13px', fontWeight: '600', color: theme.brassDark, marginBottom: '10px'
-                }}>{s.n}</div>
-                <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, marginBottom: '6px' }}>
-                  {s.title}
-                </div>
-                <p style={{ fontSize: '13px', color: theme.inkSoft, lineHeight: '1.55' }}>{s.body}</p>
               </div>
             ))}
           </div>
