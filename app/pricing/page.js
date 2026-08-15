@@ -11,7 +11,6 @@ const PLAN = {
   features: [
     'Add up to 3 Business listings under one subscription',
     'Every listing shown in the public directory, searchable by anyone browsing',
-    'A verified checkmark badge once a listing is approved — builds trust with people who find you',
     'Interested people contact you directly using the details you provide',
     'Listings stay active for the full plan period, then renew',
   ],
