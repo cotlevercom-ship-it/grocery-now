@@ -44,7 +44,6 @@ export default function Footer() {
           <div>
             <div style={{ fontFamily: theme.fontMono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(237,234,224,0.5)', marginBottom: '8px' }}>Platform</div>
             <FooterLink href="/about">About Us</FooterLink>
-            <FooterLink href="/how-it-works">How It Works</FooterLink>
             <FooterLink href="/contact">Contact Us</FooterLink>
             {facebookUrl && (
               <a href={facebookUrl} target="_blank" rel="noopener noreferrer" style={{
