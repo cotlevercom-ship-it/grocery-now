@@ -54,7 +54,7 @@ export default function LegalPage({ slug, title }) {
       {loading ? (
         <div style={{ color: theme.inkSoft, fontSize: '14px', padding: '30px 0', textAlign: 'center' }}>Loading...</div>
       ) : displayedContent ? (
-        <div style={{ fontSize: '15px', lineHeight: '1.8', color: '#333', whiteSpace: 'pre-wrap' }}>
+        <div style={{ fontSize: '15px', lineHeight: '1.8', color: theme.ink, whiteSpace: 'pre-wrap' }}>
           {displayedContent}
         </div>
       ) : (
