@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabaseFetch } from '@/lib/supabase'
+import { theme } from '@/lib/theme'
 
 // type: 'founder' | 'customer'
 // checked / onChange: controlled checkbox state
@@ -30,7 +31,7 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
     <>
       <label style={{
         display: 'flex', alignItems: 'flex-start', gap: '10px',
-        fontSize: '13px', color: '#4a4a4a', cursor: 'pointer', lineHeight: 1.5,
+        fontSize: '13px', color: theme.inkSoft, cursor: 'pointer', lineHeight: 1.5,
       }}>
         <input
           type="checkbox"
@@ -52,21 +53,21 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
       {showModal && (
         <div
           style={{
-            position: 'fixed', inset: 0, background: 'white', zIndex: 1000,
+            position: 'fixed', inset: 0, background: theme.paper, zIndex: 1000,
             display: 'flex', flexDirection: 'column',
           }}
         >
           <div style={{
-            padding: '16px 18px', borderBottom: '1px solid #eee',
+            padding: '16px 18px', borderBottom: `1px solid ${theme.line}`,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
           }}>
-            <div style={{ fontSize: '16px', fontWeight: '800', color: '#0a0a0a' }}>{title}</div>
+            <div style={{ fontSize: '16px', fontWeight: '800', color: theme.ink }}>{title}</div>
             <button
               onClick={() => setShowModal(false)}
-              style={{ background: 'none', border: 'none', fontSize: '24px', color: '#999', cursor: 'pointer', lineHeight: 1, padding: '4px' }}
+              style={{ background: 'none', border: 'none', fontSize: '24px', color: theme.inkSoft, cursor: 'pointer', lineHeight: 1, padding: '4px' }}
             >×</button>
           </div>
-          <div style={{ display: 'flex', borderBottom: '1px solid #eee', flexShrink: 0 }}>
+          <div style={{ display: 'flex', borderBottom: `1px solid ${theme.line}`, flexShrink: 0 }}>
             {[['bn', 'বাংলা'], ['en', 'English']].map(([key, label]) => (
               <button
                 key={key}
@@ -74,7 +75,7 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
                 style={{
                   flex: 1, padding: '11px', border: 'none', background: 'none', cursor: 'pointer',
                   fontSize: '13.5px', fontWeight: '700',
-                  color: lang === key ? '#0a0a0a' : '#999',
+                  color: lang === key ? theme.ink : theme.inkSoft,
                   borderBottom: lang === key ? `2px solid ${accent}` : '2px solid transparent',
                 }}
               >{label}</button>
@@ -83,11 +84,11 @@ export default function AgreementCheckbox({ type, checked, onChange, accent = '#
           <div style={{
             flex: 1, overflowY: 'auto', padding: '20px 18px 40px',
             maxWidth: '640px', width: '100%', margin: '0 auto', boxSizing: 'border-box',
-            fontSize: '14px', color: '#333', lineHeight: 1.75, whiteSpace: 'pre-wrap'
+            fontSize: '14px', color: theme.ink, lineHeight: 1.75, whiteSpace: 'pre-wrap'
           }}>
             {(lang === 'bn' ? agreement?.content_bn : agreement?.content_en) || 'Loading...'}
           </div>
-          <div style={{ padding: '14px 18px', borderTop: '1px solid #eee', flexShrink: 0 }}>
+          <div style={{ padding: '14px 18px', borderTop: `1px solid ${theme.line}`, flexShrink: 0 }}>
             <button
               onClick={() => setShowModal(false)}
               style={{
