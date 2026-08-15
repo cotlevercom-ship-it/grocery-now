@@ -6,8 +6,8 @@
 
 html, body {
   font-family: 'Inter', sans-serif;
-  background: #e5e5e5;
-  color: #1a1a1a;
+  background: #170A09;
+  color: #F3E9E4;
 }
 
 a {
@@ -30,7 +30,7 @@ input {
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  background: #f5f5f5;
+  background: #170A09;
   min-height: 100vh;
 }
 
