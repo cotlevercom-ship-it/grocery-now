@@ -120,22 +120,6 @@ export default function MarketingHome() {
           }}>Get Started →</Link>
         </div>
       </div>
-
-      {/* Final CTA */}
-      <div style={{ borderTop: `1px solid ${theme.line}`, background: theme.ink }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto', padding: 'clamp(32px,5vw,56px) clamp(16px,3vw,56px)',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '18px'
-        }}>
-          <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(19px,2.2vw,24px)', fontWeight: '600', color: theme.paper, maxWidth: '480px' }}>
-            Ready to find the right people for your business?
-          </div>
-          <Link href="/login" style={{
-            display: 'inline-block', background: theme.brass, color: 'white',
-            borderRadius: '8px', padding: '14px 26px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none', whiteSpace: 'nowrap'
-          }}>Create Free Account</Link>
-        </div>
-      </div>
     </div>
   )
 }
