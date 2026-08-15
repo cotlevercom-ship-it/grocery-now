@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getSession, supabaseFetch } from '@/lib/supabase'
+import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
 // Signup-time payment: not tied to any specific listing yet. Once approved
@@ -17,6 +17,11 @@ export default function SubscribePage() {
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
   const [alreadyHasSub, setAlreadyHasSub] = useState(false)
+
+  const handleLogout = () => {
+    signOut()
+    router.push('/')
+  }
 
   useEffect(() => {
     async function load() {
@@ -128,6 +133,12 @@ export default function SubscribePage() {
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: 'clamp(20px,4vw,48px) clamp(16px,3vw,24px)' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '6px' }}>
+          <button onClick={handleLogout} style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: '13px', color: theme.inkSoft, fontFamily: theme.fontBody, textDecoration: 'underline',
+          }}>Log Out</button>
+        </div>
         <div style={{
           fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
           color: theme.brassDark, marginBottom: '10px', fontWeight: '600'
