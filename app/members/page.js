@@ -62,56 +62,63 @@ export default function MembersBrowsePage({ embedded = false }) {
             {members.map(m => {
               const initial = (m.display_name || '?').trim().charAt(0).toUpperCase()
               return (
-                <Link key={m.user_id} href={`/members/${m.user_id}`} className="member-card" style={{
+                <div key={m.user_id} className="member-card" style={{
                   background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
                   display: 'flex', flexDirection: 'column', padding: '20px 20px 16px',
-                  textDecoration: 'none',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '14px' }}>
-                    <div style={{
-                      width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-                      background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    }}>
-                      {m.photo_url ? (
-                        <img src={m.photo_url} alt={m.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <span style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: 'white' }}>{initial}</span>
+                  <Link href={`/members/${m.user_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '14px' }}>
+                      <div style={{
+                        width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+                        background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        {m.photo_url ? (
+                          <img src={m.photo_url} alt={m.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <span style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: 'white' }}>{initial}</span>
+                        )}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, lineHeight: '1.2' }}>
+                          {m.display_name}
+                        </div>
+                        <div style={{ fontSize: '12px', color: theme.inkSoft, marginTop: '3px' }}>
+                          {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
+                        </div>
+                      </div>
+                    </div>
+
+                    {m.bio && (
+                      <p style={{
+                        fontFamily: theme.fontDisplay, fontStyle: 'italic', fontSize: '12.5px', color: theme.inkSoft,
+                        marginBottom: '14px', lineHeight: '1.55',
+                        overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+                        WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'
+                      }}>{m.bio}</p>
+                    )}
+
+                    <div style={{ paddingTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      {m.looking_for && (
+                        <span style={{
+                          fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
+                          background: theme.signalSoft, color: theme.signal
+                        }}>{m.looking_for}</span>
+                      )}
+                      {m.commitment && (
+                        <span style={{
+                          fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
+                          background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
+                        }}>{m.commitment}</span>
                       )}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, lineHeight: '1.2' }}>
-                        {m.display_name}
-                      </div>
-                      <div style={{ fontSize: '12px', color: theme.inkSoft, marginTop: '3px' }}>
-                        {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
-                      </div>
-                    </div>
-                  </div>
+                  </Link>
 
-                  {m.bio && (
-                    <p style={{
-                      fontFamily: theme.fontDisplay, fontStyle: 'italic', fontSize: '12.5px', color: theme.inkSoft,
-                      marginBottom: '14px', lineHeight: '1.55',
-                      overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                      WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'
-                    }}>{m.bio}</p>
-                  )}
-
-                  <div style={{ marginTop: 'auto', paddingTop: '10px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {m.looking_for && (
-                      <span style={{
-                        fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
-                        background: theme.signalSoft, color: theme.signal
-                      }}>{m.looking_for}</span>
-                    )}
-                    {m.commitment && (
-                      <span style={{
-                        fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
-                        background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
-                      }}>{m.commitment}</span>
-                    )}
-                  </div>
-                </Link>
+                  <Link href={`/members/${m.user_id}`} style={{
+                    marginTop: '16px', textAlign: 'center', textDecoration: 'none',
+                    border: `1.5px solid ${theme.brass}`, color: theme.brass,
+                    borderRadius: '999px', padding: '9px 16px', fontSize: '13px', fontWeight: '700',
+                  }}>Meet</Link>
+                </div>
               )
             })}
             <style jsx>{`
