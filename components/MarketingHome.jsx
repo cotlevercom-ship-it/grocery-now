@@ -8,6 +8,7 @@ function HeroBanner() {
   return (
     <div style={{
       position: 'relative', width: '100%', aspectRatio: '1536 / 1024',
+      maxHeight: 'clamp(220px, 42vw, 460px)',
       borderRadius: '14px', overflow: 'hidden'
     }}>
       <Image
