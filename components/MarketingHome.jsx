@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { theme } from '@/lib/theme'
@@ -29,6 +30,47 @@ const STEPS = [
   { n: '05', title: 'Interested people contact you', body: 'You stay in control of every conversation.' },
 ]
 
+function StepCard({ step }) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setVisible(true)
+        })
+      },
+      { threshold: 0.4, rootMargin: '0px 0px -10% 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
+        padding: '18px',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(18px)',
+        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+      }}
+    >
+      <div style={{
+        fontFamily: theme.fontMono, fontSize: '12px', fontWeight: '700', color: theme.brass, marginBottom: '10px'
+      }}>{step.n}</div>
+      <div style={{
+        fontFamily: theme.fontDisplay, fontSize: '15px', fontWeight: '600', color: theme.ink, marginBottom: '5px'
+      }}>{step.title}</div>
+      <p style={{ fontSize: '12.5px', color: theme.inkSoft, lineHeight: '1.5' }}>{step.body}</p>
+    </div>
+  )
+}
+
 function HowItWorksTeaser() {
   return (
     <div style={{
@@ -47,20 +89,7 @@ function HowItWorksTeaser() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px',
         marginBottom: '28px'
       }}>
-        {STEPS.map(step => (
-          <div key={step.n} style={{
-            background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
-            padding: '18px'
-          }}>
-            <div style={{
-              fontFamily: theme.fontMono, fontSize: '12px', fontWeight: '700', color: theme.brass, marginBottom: '10px'
-            }}>{step.n}</div>
-            <div style={{
-              fontFamily: theme.fontDisplay, fontSize: '15px', fontWeight: '600', color: theme.ink, marginBottom: '5px'
-            }}>{step.title}</div>
-            <p style={{ fontSize: '12.5px', color: theme.inkSoft, lineHeight: '1.5' }}>{step.body}</p>
-          </div>
-        ))}
+        {STEPS.map(step => <StepCard key={step.n} step={step} />)}
       </div>
 
       <Link href="/how-it-works" style={{
