@@ -30,7 +30,7 @@ const STEPS = [
   { n: '05', title: 'Interested people contact you', body: 'You stay in control of every conversation.' },
 ]
 
-function StepCard({ step }) {
+function StepCard({ step, index }) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
 
@@ -57,7 +57,7 @@ function StepCard({ step }) {
         padding: '18px',
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(18px)',
-        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        transition: `opacity 0.6s ease-out ${index * 0.12}s, transform 0.6s ease-out ${index * 0.12}s`,
       }}
     >
       <div style={{
@@ -89,7 +89,7 @@ function HowItWorksTeaser() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px',
         marginBottom: '28px'
       }}>
-        {STEPS.map(step => <StepCard key={step.n} step={step} />)}
+        {STEPS.map((step, i) => <StepCard key={step.n} step={step} index={i} />)}
       </div>
 
       <Link href="/how-it-works" style={{
