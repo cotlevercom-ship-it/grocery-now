@@ -94,51 +94,56 @@ export default function Navbar() {
     <div style={{
       background: theme.paper,
       borderBottom: `1px solid ${theme.line}`,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '8px',
       position: 'sticky',
       top: 0,
       zIndex: 40,
-      padding: 'clamp(12px,1.6vw,18px) clamp(16px,3vw,56px)',
     }}>
-      <NavMenu />
-
-      <Link href="/" style={{
-        fontFamily: theme.fontDisplay, fontSize: 'clamp(18px,1.6vw,22px)', fontWeight: '600',
-        color: theme.ink, textDecoration: 'none', flexShrink: 0
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '8px',
+        padding: 'clamp(12px,1.6vw,18px) clamp(16px,3vw,56px)',
       }}>
-        Cot<span style={{ color: theme.brass }}>Lever</span>
-      </Link>
+        <NavMenu />
 
-      <div style={{ flex: 1 }} />
+        <Link href="/" style={{
+          fontFamily: theme.fontDisplay, fontSize: 'clamp(18px,1.6vw,22px)', fontWeight: '600',
+          color: theme.ink, textDecoration: 'none', flexShrink: 0
+        }}>
+          Cot<span style={{ color: theme.brass }}>Lever</span>
+        </Link>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        {session ? (
-          <Link href="/account" style={{
-            display: 'flex', alignItems: 'center', gap: '4px',
-            background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
-            borderRadius: '7px', padding: '8px 12px',
-            fontSize: '13px', whiteSpace: 'nowrap', textDecoration: 'none',
-            maxWidth: '120px', overflow: 'hidden'
-          }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {customerName || 'Account'}
-            </span>
-          </Link>
-        ) : (
-          <Link href="/login" style={{
-            display: 'flex', alignItems: 'center', gap: '4px',
-            background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
-            borderRadius: '7px', padding: '9px 14px',
-            fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', textDecoration: 'none'
-          }}>Log In</Link>
-        )}
+        <div style={{ flex: 1 }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {session ? (
+            <Link href="/account" style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
+              borderRadius: '7px', padding: '8px 12px',
+              fontSize: '13px', whiteSpace: 'nowrap', textDecoration: 'none',
+              maxWidth: '120px', overflow: 'hidden'
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {customerName || 'Account'}
+              </span>
+            </Link>
+          ) : (
+            <Link href="/login" style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
+              borderRadius: '7px', padding: '9px 14px',
+              fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', textDecoration: 'none'
+            }}>Log In</Link>
+          )}
+        </div>
       </div>
     </div>
   )
