@@ -6,28 +6,28 @@ import { theme } from '@/lib/theme'
 const STEPS = [
   {
     n: '01',
-    title: 'List your business',
-    body: 'Tell us what you\'re looking for — co-founder, partner, or share holder — and a bit about your business. Takes a few minutes.',
+    title: 'Create your profile',
+    body: 'Tell us who you are, your skills and experience, and what you\'re looking for — a co-founder, partner, or investor. Takes a few minutes.',
   },
   {
     n: '02',
     title: 'Choose a plan and pay',
-    body: 'Pick a monthly or yearly listing plan and confirm payment via bKash. One simple fee, no hidden costs.',
+    body: 'Confirm your yearly membership via bKash. One simple fee, no hidden costs.',
   },
   {
     n: '03',
-    title: 'We verify your listing',
-    body: 'Every listing is reviewed before it goes live — this keeps the directory trustworthy for everyone browsing it.',
+    title: 'Your profile goes live instantly',
+    body: 'No waiting on approval — as soon as you save, your profile appears in the member directory.',
   },
   {
     n: '04',
-    title: 'Your listing goes live',
-    body: 'Once approved, your business appears in the directory under every category you selected.',
+    title: 'Browse other members',
+    body: 'Search the directory for people whose skills and goals match what you\'re looking for.',
   },
   {
     n: '05',
     title: 'Interested people contact you',
-    body: 'Anyone who finds your listing reaches out directly using the contact details you provided — you stay in control of every conversation.',
+    body: 'Anyone who finds your profile reaches out directly using the contact details you provided — you stay in control of every conversation.',
   },
 ]
 
@@ -121,7 +121,7 @@ export default function HowItWorksPage() {
         }}>How Cot Lever works</h1>
 
         <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '48px', maxWidth: '520px' }}>
-          From listing your business to getting contacted by the right person — five steps, start to finish.
+          From creating your profile to getting contacted by the right person — five steps, start to finish.
         </p>
 
         <div ref={trackRef} style={{ position: 'relative' }}>
@@ -154,12 +154,12 @@ export default function HowItWorksPage() {
             <div style={{ fontFamily: theme.fontDisplay, fontSize: '19px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
               Ready to get started?
             </div>
-            <p style={{ fontSize: '13.5px', color: theme.inkSoft }}>List your business and let the right people find you.</p>
+            <p style={{ fontSize: '13.5px', color: theme.inkSoft }}>Create your profile and let the right people find you.</p>
           </div>
-          <Link href="/listings/new" style={{
+          <Link href="/members/new" style={{
             display: 'inline-block', background: theme.brass, color: 'white',
             borderRadius: '8px', padding: '13px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none', whiteSpace: 'nowrap'
-          }}>List Your Business</Link>
+          }}>Create Your Profile</Link>
         </div>
       </div>
     </div>
