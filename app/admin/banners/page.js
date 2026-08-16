@@ -4,6 +4,7 @@ import { supabaseFetch, uploadImage } from '@/lib/supabase'
 
 const emptyForm = {
   image_url: '',
+  mobile_image_url: '',
   link_url: '',
   sort_order: 0,
   is_active: true,
@@ -19,8 +20,10 @@ export default function AdminBannersPage() {
   const [form, setForm] = useState(emptyForm)
   const [submitting, setSubmitting] = useState(false)
 
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState('')
+  const [desktopFile, setDesktopFile] = useState(null)
+  const [desktopPreview, setDesktopPreview] = useState('')
+  const [mobileFile, setMobileFile] = useState(null)
+  const [mobilePreview, setMobilePreview] = useState('')
   const [uploading, setUploading] = useState(false)
 
   const [deletingId, setDeletingId] = useState(null)
@@ -45,8 +48,10 @@ export default function AdminBannersPage() {
   const openAddForm = () => {
     setEditingId(null)
     setForm({ ...emptyForm, sort_order: banners.length + 1 })
-    setImageFile(null)
-    setImagePreview('')
+    setDesktopFile(null)
+    setDesktopPreview('')
+    setMobileFile(null)
+    setMobilePreview('')
     setError('')
     setShowForm(true)
   }
@@ -55,12 +60,15 @@ export default function AdminBannersPage() {
     setEditingId(banner.id)
     setForm({
       image_url: banner.image_url || '',
+      mobile_image_url: banner.mobile_image_url || '',
       link_url: banner.link_url || '',
       sort_order: banner.sort_order ?? 0,
       is_active: !!banner.is_active,
     })
-    setImageFile(null)
-    setImagePreview(banner.image_url || '')
+    setDesktopFile(null)
+    setDesktopPreview(banner.image_url || '')
+    setMobileFile(null)
+    setMobilePreview(banner.mobile_image_url || '')
     setError('')
     setShowForm(true)
   }
@@ -69,42 +77,60 @@ export default function AdminBannersPage() {
     setShowForm(false)
     setEditingId(null)
     setForm(emptyForm)
-    setImageFile(null)
-    setImagePreview('')
+    setDesktopFile(null)
+    setDesktopPreview('')
+    setMobileFile(null)
+    setMobilePreview('')
   }
 
   const handleFieldChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleImageChange = (e) => {
+  const handleDesktopChange = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
+    setDesktopFile(file)
+    setDesktopPreview(URL.createObjectURL(file))
+  }
+
+  const handleMobileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setMobileFile(file)
+    setMobilePreview(URL.createObjectURL(file))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    if (!imageFile && !form.image_url) {
-      setError('Please provide a banner image')
+    if (!desktopFile && !form.image_url) {
+      setError('Please provide a desktop banner image')
+      return
+    }
+    if (!mobileFile && !form.mobile_image_url) {
+      setError('Please provide a mobile banner image')
       return
     }
 
     setSubmitting(true)
     try {
       let imageUrl = form.image_url
+      let mobileImageUrl = form.mobile_image_url
 
-      if (imageFile) {
-        setUploading(true)
-        imageUrl = await uploadImage(imageFile, 'banners')
-        setUploading(false)
+      setUploading(true)
+      if (desktopFile) {
+        imageUrl = await uploadImage(desktopFile, 'banners')
       }
+      if (mobileFile) {
+        mobileImageUrl = await uploadImage(mobileFile, 'banners')
+      }
+      setUploading(false)
 
       const payload = {
         image_url: imageUrl,
+        mobile_image_url: mobileImageUrl,
         link_url: form.link_url.trim() || null,
         sort_order: Number(form.sort_order) || 0,
         is_active: !!form.is_active,
@@ -165,7 +191,7 @@ export default function AdminBannersPage() {
         )}
       </div>
       <p style={{ color: '#888', fontSize: '14px', marginBottom: '20px' }}>
-        Manage the slider banners shown at the top of the homepage.
+        Manage the homepage banner. Each banner needs a separate desktop and mobile image.
       </p>
 
       {error && (
@@ -185,22 +211,39 @@ export default function AdminBannersPage() {
             {editingId ? 'Edit Banner' : 'Add New Banner'}
           </div>
 
-          {/* Image upload */}
+          {/* Desktop image upload */}
           <div style={{ marginBottom: '14px' }}>
-            <label style={labelStyle}>Banner Image * (Recommended size: 1600×280px, JPG/PNG/WebP, under 500KB)</label>
+            <label style={labelStyle}>Desktop Image * (Recommended: 1536×1024px, JPG/PNG/WebP, under 500KB)</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{
                 width: '140px', height: '56px', borderRadius: '8px', background: '#f5f5f5',
                 border: '1px solid #ddd', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', overflow: 'hidden', flexShrink: 0
               }}>
-                {imagePreview ? (
-                  <img src={imagePreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : '🖼️'}
+                {desktopPreview ? (
+                  <img src={desktopPreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : '🖥️'}
               </div>
-              <input type="file" accept="image/*" onChange={handleImageChange} style={{ fontSize: '13px' }} />
+              <input type="file" accept="image/*" onChange={handleDesktopChange} style={{ fontSize: '13px' }} />
             </div>
-            {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading image...</div>}
+          </div>
+
+          {/* Mobile image upload */}
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>Mobile Image * (Recommended: 800×1000px portrait, JPG/PNG/WebP, under 300KB)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '56px', height: '70px', borderRadius: '8px', background: '#f5f5f5',
+                border: '1px solid #ddd', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', overflow: 'hidden', flexShrink: 0
+              }}>
+                {mobilePreview ? (
+                  <img src={mobilePreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : '📱'}
+              </div>
+              <input type="file" accept="image/*" onChange={handleMobileChange} style={{ fontSize: '13px' }} />
+            </div>
+            {uploading && <div style={{ fontSize: '12px', color: '#2d6a4f', marginTop: '6px' }}>Uploading images...</div>}
           </div>
 
           <div style={{ marginBottom: '14px' }}>
@@ -263,7 +306,16 @@ export default function AdminBannersPage() {
               }}>
                 {banner.image_url ? (
                   <img src={banner.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : '🖼️'}
+                ) : '🖥️'}
+              </div>
+              <div style={{
+                width: '40px', height: '50px', borderRadius: '8px', background: '#f5f5f5',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden', flexShrink: 0
+              }}>
+                {banner.mobile_image_url ? (
+                  <img src={banner.mobile_image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : '📱'}
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -277,7 +329,7 @@ export default function AdminBannersPage() {
 
               <span style={{
                 fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px',
-                background: banner.is_active ? '#f5f5f5' : '#f5f5f5',
+                background: '#f5f5f5',
                 color: banner.is_active ? '#2d6a4f' : '#999'
               }}>{banner.is_active ? 'Active' : 'Off'}</span>
 
