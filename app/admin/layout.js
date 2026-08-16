@@ -64,6 +64,7 @@ export default function AdminLayout({ children }) {
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
+    { href: '/admin/members', label: 'Members', icon: '👤' },
     { href: '/admin/listings', label: 'Listings', icon: '🏢' },
     { href: '/admin/cofounder', label: 'Find Co-founder', icon: '🧩' },
     { href: '/admin/listing-types', label: 'Listing Types', icon: '🏷️' },
