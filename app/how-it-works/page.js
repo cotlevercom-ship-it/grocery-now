@@ -16,8 +16,8 @@ const STEPS = [
   },
   {
     n: '03',
-    title: 'Your profile goes live instantly',
-    body: 'No waiting on approval — as soon as you save, your profile appears in the member directory.',
+    title: 'We review your profile',
+    body: 'Every profile is checked before it goes live — this keeps the directory trustworthy for everyone browsing it.',
   },
   {
     n: '04',
