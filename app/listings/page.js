@@ -1,20 +1,13 @@
-import { Suspense } from 'react'
-import ListingBrowse from '@/components/ListingBrowse'
+'use client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
-
-export const metadata = {
-  title: 'Browse Businesses — Partners & Co-founders | Cot Lever',
-  description: 'Browse verified business listings looking for partners, co-founders, or share holders. List your own business on Cot Lever today.',
-  alternates: {
-    canonical: '/listings',
-  },
-}
-
-export default function ListingsPage() {
-  return (
-    <Suspense fallback={null}>
-      <ListingBrowse />
-    </Suspense>
-  )
+// Business listings were removed — this platform is now member-profile
+// based. Redirect old links here.
+export default function ListingsRedirect() {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/members')
+  }, [router])
+  return null
 }
