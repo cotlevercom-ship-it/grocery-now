@@ -106,7 +106,7 @@ export default function MarketingHome() {
     <div style={{ background: theme.paper }}>
       {/* Hero */}
       <div style={{
-        width: '100%', padding: 'clamp(24px,4vw,48px) 0 clamp(32px,5vw,56px)',
+        width: '100%', padding: '0 0 clamp(32px,5vw,56px)',
       }}>
         {/* Visually hidden but present for SEO/screen readers — the banner below carries this same content visually */}
         <h1 style={{
