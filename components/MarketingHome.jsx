@@ -73,6 +73,43 @@ function StepCard({ step, index }) {
   )
 }
 
+const CARD_SIZE = { minWidth: '180px', flex: '1 1 0' }
+
+function TriggerCard({ open, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-expanded={open}
+      style={{
+        ...CARD_SIZE,
+        background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
+        padding: '18px', cursor: 'pointer', textAlign: 'left',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      }}
+    >
+      <div>
+        <div style={{
+          fontFamily: theme.fontMono, fontSize: '12px', fontWeight: '700', color: theme.brass, marginBottom: '10px'
+        }}>The Process</div>
+        <div style={{
+          fontFamily: theme.fontDisplay, fontSize: '15px', fontWeight: '600', color: theme.ink, marginBottom: '5px'
+        }}>How Cot Lever works</div>
+        <p style={{ fontSize: '12.5px', color: theme.inkSoft, lineHeight: '1.5' }}>Tap to see the steps.</p>
+      </div>
+      <svg
+        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.brass} strokeWidth="2"
+        strokeLinecap="round" strokeLinejoin="round"
+        style={{
+          marginTop: '10px', transition: 'transform 0.25s ease',
+          transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+        }}
+      >
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
+  )
+}
+
 function HowItWorksTeaser() {
   const [open, setOpen] = useState(false)
 
@@ -80,54 +117,23 @@ function HowItWorksTeaser() {
     <div style={{
       maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px,3vw,56px) clamp(40px,6vw,72px)',
     }}>
-      <button
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
-          background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
-          padding: '18px 22px', cursor: 'pointer', textAlign: 'left',
-        }}
-      >
-        <div>
-          <div style={{
-            fontFamily: theme.fontMono, fontSize: '11.5px', letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: theme.brassDark, marginBottom: '6px', fontWeight: '600'
-          }}>The Process</div>
-          <div style={{
-            fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(20px,2.4vw,26px)',
-            color: theme.ink,
-          }}>How Cot Lever works</div>
-        </div>
-        <svg
-          width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.ink} strokeWidth="2"
-          strokeLinecap="round" strokeLinejoin="round"
-          style={{
-            flexShrink: 0, transition: 'transform 0.25s ease',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-          }}
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
+      <div style={{
+        display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '16px',
+      }}>
+        <TriggerCard open={open} onClick={() => setOpen((v) => !v)} />
+
+        {open && STEPS.map((step, i) => (
+          <div key={step.n} style={CARD_SIZE}>
+            <StepCard step={step} index={i} />
+          </div>
+        ))}
+      </div>
 
       {open && (
-        <div style={{ marginTop: '24px' }}>
-          <div style={{
-            display: 'flex', flexDirection: 'row', gap: '16px', overflowX: 'auto',
-            paddingBottom: '8px', marginBottom: '20px',
-          }}>
-            {STEPS.map((step, i) => (
-              <div key={step.n} style={{ flex: '1 1 0', minWidth: '180px' }}>
-                <StepCard step={step} index={i} />
-              </div>
-            ))}
-          </div>
-
-          <Link href="/how-it-works" style={{
-            fontSize: '13.5px', fontWeight: '600', color: theme.brass, textDecoration: 'none'
-          }}>See the full details →</Link>
-        </div>
+        <Link href="/how-it-works" style={{
+          display: 'inline-block', marginTop: '20px',
+          fontSize: '13.5px', fontWeight: '600', color: theme.brass, textDecoration: 'none'
+        }}>See the full details →</Link>
       )}
     </div>
   )
