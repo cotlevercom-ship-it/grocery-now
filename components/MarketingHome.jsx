@@ -107,10 +107,29 @@ function HowItWorksTeaser() {
     <div style={{
       maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px,3vw,56px) clamp(40px,6vw,72px)',
     }}>
-      <div style={{
-        display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px',
+      <style jsx>{`
+        .howitworks-trigger-wrap {
+          width: 220px;
+        }
+        @media (max-width: 680px) {
+          .howitworks-row {
+            flex-direction: column !important;
+          }
+          .howitworks-trigger-wrap {
+            width: 100% !important;
+          }
+        }
+        .steps-scroll {
+          scrollbar-width: none;
+        }
+        .steps-scroll::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      <div className="howitworks-row" style={{
+        display: 'flex', alignItems: 'center', gap: '10px',
       }}>
-        <div style={{ width: '220px', flexShrink: 0, alignSelf: 'flex-start' }}>
+        <div className="howitworks-trigger-wrap" style={{ flexShrink: 0, alignSelf: 'flex-start' }}>
           <TriggerCard open={open} onClick={() => setOpen((v) => !v)} />
         </div>
 
@@ -159,14 +178,6 @@ function HowItWorksTeaser() {
               </svg>
             </button>
 
-            <style jsx>{`
-              .steps-scroll {
-                scrollbar-width: none;
-              }
-              .steps-scroll::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
           </div>
         </div>
       </div>
