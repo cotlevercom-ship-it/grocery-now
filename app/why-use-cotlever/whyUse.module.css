@@ -1,0 +1,146 @@
+.book {
+  width: 100%;
+  --bg: #160909;
+  --text: #f4e9df;
+  --muted: #c5aaa0;
+  --accent: #b94a38;
+  --line: #472421;
+}
+
+.bookPage {
+  min-height: 100vh;
+  padding: 32px 7vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+/* top navigation */
+.pageTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: .18em;
+}
+.brand {
+  color: var(--accent);
+}
+.pageNumber {
+  color: #80665f;
+}
+
+/* small section label */
+.pageLabel {
+  margin-top: 12vh;
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+/* main page */
+.pageContent {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+}
+.pageIndex {
+  font-family: Georgia, serif;
+  font-size: clamp(80px, 12vw, 180px);
+  color: #321714;
+  line-height: .8;
+}
+.pageCopy {
+  max-width: 850px;
+}
+.pageCopy h2 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(52px, 7vw, 108px);
+  line-height: .92;
+  letter-spacing: -.045em;
+}
+.pageCopy h2 em {
+  color: var(--accent);
+  font-style: italic;
+}
+.pageCopy p {
+  max-width: 570px;
+  margin-top: 42px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+/* footer */
+.pageBottom {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: #80665f;
+  font-size: 10px;
+  letter-spacing: .18em;
+}
+
+/* subtle page variation */
+.bookPage:nth-child(even) {
+  background: #190b0b;
+}
+.bookPage:nth-child(2) .pageContent,
+.bookPage:nth-child(4) .pageContent {
+  grid-template-columns: 1fr 180px;
+}
+.bookPage:nth-child(2) .pageIndex,
+.bookPage:nth-child(4) .pageIndex {
+  order: 2;
+  text-align: right;
+}
+
+/* mobile */
+@media (max-width: 700px) {
+  .bookPage {
+    min-height: 100svh;
+    padding: 24px;
+  }
+  .pageLabel {
+    margin-top: 8vh;
+  }
+  .pageContent,
+  .bookPage:nth-child(2) .pageContent,
+  .bookPage:nth-child(4) .pageContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .pageIndex,
+  .bookPage:nth-child(2) .pageIndex,
+  .bookPage:nth-child(4) .pageIndex {
+    order: 0;
+    text-align: left;
+    font-size: 80px;
+    margin-bottom: 35px;
+  }
+  .pageCopy h2 {
+    font-size: clamp(48px, 15vw, 72px);
+  }
+  .pageCopy p {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-top: 28px;
+  }
+  .pageBottom {
+    font-size: 8px;
+  }
+}
