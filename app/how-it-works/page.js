@@ -14,14 +14,27 @@ import {
 } from 'lucide-react'
 import { theme } from '@/lib/theme'
 
+// Cream/beige card palette — matches the reference slide-deck design.
+// The page around the carousel stays on the site's dark theme; each
+// slide card itself uses this light palette instead of theme.paper/ink.
+const card = {
+  bg: '#F3E6D5',
+  bgAlt: '#EFDFC9',
+  text: '#2B1811',
+  textSoft: '#6B5142',
+  accent: '#8C2E20',
+  pill: '#E6C8B8',
+  line: 'rgba(43,24,17,0.14)',
+}
+
 function IconPill({ Icon }) {
   return (
     <div style={{
       width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
-      background: theme.signalSoft ? 'rgba(179,55,42,0.14)' : theme.line,
+      background: card.pill,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <Icon size={16} color={theme.brass} strokeWidth={2} />
+      <Icon size={16} color={card.accent} strokeWidth={2} />
     </div>
   )
 }
@@ -30,7 +43,7 @@ function BulletRow({ Icon, text }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
       <IconPill Icon={Icon} />
-      <span style={{ fontSize: '14.5px', color: theme.ink }}>{text}</span>
+      <span style={{ fontSize: '14.5px', color: card.text }}>{text}</span>
     </div>
   )
 }
@@ -41,7 +54,7 @@ function CenterArt({ Icon, size = 120 }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       width: `${size}px`, height: `${size}px`, margin: '0 auto',
     }}>
-      <Icon size={size} color={theme.brass} strokeWidth={1.1} />
+      <Icon size={size} color={card.accent} strokeWidth={1.1} />
     </div>
   )
 }
@@ -52,17 +65,17 @@ function CoverSlide() {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: theme.paper,
+      justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: card.bgAlt,
     }}>
       <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(26px,5vw,32px)', fontWeight: '700', marginBottom: '6px' }}>
-        <span style={{ color: theme.ink }}>Cot</span><span style={{ color: theme.brass }}>Lever</span>
+        <span style={{ color: card.text }}>Cot</span><span style={{ color: card.accent }}>Lever</span>
       </div>
-      <div style={{ width: '46px', height: '1.5px', background: theme.brass, margin: '14px 0 22px' }} />
+      <div style={{ width: '46px', height: '1.5px', background: card.accent, margin: '14px 0 22px' }} />
       <h1 style={{
-        fontFamily: theme.fontDisplay, fontWeight: '700', color: theme.ink,
+        fontFamily: theme.fontDisplay, fontWeight: '700', color: card.text,
         fontSize: 'clamp(26px,5.5vw,36px)', lineHeight: '1.2', marginBottom: '14px',
       }}>Find Your<br />Co-Founder</h1>
-      <p style={{ fontSize: '14.5px', color: theme.inkSoft, lineHeight: '1.6', maxWidth: '320px' }}>
+      <p style={{ fontSize: '14.5px', color: card.textSoft, lineHeight: '1.6', maxWidth: '320px' }}>
         Great businesses start with the right people.
       </p>
       <div style={{ marginTop: '36px' }}>
@@ -76,26 +89,26 @@ function ContentSlide({ n, title, intro, bullets, closer, Icon }) {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-      padding: 'clamp(24px,5vw,40px)', background: theme.paper,
+      padding: 'clamp(24px,5vw,40px)', background: card.bg,
     }}>
       <div style={{ display: 'flex', gap: 'clamp(16px,4vw,32px)', alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ flex: '1 1 260px', minWidth: '220px' }}>
           <div style={{
-            fontFamily: theme.fontMono, fontSize: '13px', fontWeight: '700', color: theme.brass,
+            fontFamily: theme.fontMono, fontSize: '13px', fontWeight: '700', color: card.accent,
           }}>{n}</div>
-          <div style={{ width: '22px', height: '2px', background: theme.brass, margin: '4px 0 14px' }} />
+          <div style={{ width: '22px', height: '2px', background: card.accent, margin: '4px 0 14px' }} />
           <h2 style={{
             fontFamily: theme.fontDisplay, fontSize: 'clamp(21px,3.4vw,26px)', fontWeight: '600',
-            color: theme.ink, marginBottom: '10px',
+            color: card.text, marginBottom: '10px',
           }}>{title}</h2>
           {intro && (
-            <p style={{ fontSize: '13.5px', color: theme.inkSoft, lineHeight: '1.55', marginBottom: '18px' }}>{intro}</p>
+            <p style={{ fontSize: '13.5px', color: card.textSoft, lineHeight: '1.55', marginBottom: '18px' }}>{intro}</p>
           )}
           {bullets && bullets.map((b, i) => (
             <BulletRow key={i} Icon={b.Icon} text={b.text} />
           ))}
           {closer && (
-            <p style={{ fontSize: '13.5px', color: theme.ink, fontWeight: '600', marginTop: '16px' }}>{closer}</p>
+            <p style={{ fontSize: '13.5px', color: card.text, fontWeight: '600', marginTop: '16px' }}>{closer}</p>
           )}
         </div>
         {Icon && (
@@ -112,20 +125,20 @@ function ClosingSlide() {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: theme.paper,
+      justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: card.bgAlt,
     }}>
-      <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,4.5vw,28px)', fontWeight: '700', color: theme.ink, marginBottom: '18px' }}>
+      <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,4.5vw,28px)', fontWeight: '700', color: card.text, marginBottom: '18px' }}>
         CotLever
       </div>
-      <p style={{ fontSize: '14.5px', color: theme.inkSoft, lineHeight: '1.65', maxWidth: '320px', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14.5px', color: card.textSoft, lineHeight: '1.65', maxWidth: '320px', marginBottom: '24px' }}>
         The right co-founder can turn your idea into something extraordinary.
       </p>
       <CenterArt Icon={Handshake} size={72} />
       <p style={{
-        fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: theme.brass, marginTop: '24px', marginBottom: '28px',
+        fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: card.accent, marginTop: '24px', marginBottom: '28px',
       }}>Let&apos;s build the future together.</p>
       <Link href="/members/new" style={{
-        display: 'inline-block', background: theme.brass, color: 'white',
+        display: 'inline-block', background: card.accent, color: '#F3E6D5',
         borderRadius: '8px', padding: '13px 26px', fontSize: '14px', fontWeight: '600', textDecoration: 'none',
       }}>Create Your Profile</Link>
     </div>
