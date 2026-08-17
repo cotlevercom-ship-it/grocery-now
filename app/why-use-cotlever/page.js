@@ -79,6 +79,11 @@ export default function WhyUseCotleverPage() {
 
   return (
     <div className={styles.book}>
+      <div className={styles.bookFrame}>
+        <div className={styles.spine}>
+          <span className={styles.spineText}>WHY USE COT LEVER</span>
+        </div>
+        <div className={styles.pageBlock}>
       <div
         className={styles.stage}
         onClick={handleClick}
@@ -149,6 +154,8 @@ export default function WhyUseCotleverPage() {
             </section>
           )
         })}
+      </div>
+        </div>
       </div>
 
       <div className={styles.progress}>
