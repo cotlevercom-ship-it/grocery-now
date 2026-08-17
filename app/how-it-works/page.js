@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import {
   PenLine, TrendingUp, HeartHandshake, RefreshCw,
@@ -10,7 +10,6 @@ import {
   UsersRound, Handshake,
   Sprout,
   Trophy,
-  ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { theme } from '@/lib/theme'
 
@@ -59,9 +58,9 @@ function CenterArt({ Icon, size = 120 }) {
   )
 }
 
-// Wraps one element so it fades/slides up into place, staggered by `i`.
-// Only meant to be used inside a freshly-mounted (active) slide — see
-// the remount-on-active-change trick in HowItWorksPage below.
+// Wraps one element so it fades into place, staggered by `i`. Stays
+// invisible until its parent `.hiw-slide` gets the `.is-revealed`
+// class (added by SlideCard's IntersectionObserver on scroll-into-view).
 function Reveal({ i, children }) {
   return (
     <div className="hiw-anim-item" style={{ '--i': i }}>
@@ -75,7 +74,7 @@ function Reveal({ i, children }) {
 function CoverSlide() {
   return (
     <div style={{
-      height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
+      width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: card.bgAlt,
     }}>
       <Reveal i={0}>
@@ -107,7 +106,7 @@ function CoverSlide() {
 function ContentSlide({ n, title, intro, bullets, closer, Icon }) {
   return (
     <div style={{
-      height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center',
       padding: 'clamp(24px,5vw,40px)', background: card.bg,
     }}>
       <div style={{ display: 'flex', gap: 'clamp(16px,4vw,32px)', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -155,7 +154,7 @@ function ContentSlide({ n, title, intro, bullets, closer, Icon }) {
 function ClosingSlide() {
   return (
     <div style={{
-      height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
+      width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: card.bgAlt,
     }}>
       <Reveal i={0}>
@@ -305,138 +304,96 @@ const SLIDES = [
   { key: 'closing', render: () => <ClosingSlide /> },
 ]
 
-export default function HowItWorksPage() {
-  const [index, setIndex] = useState(0)
-  const trackRef = useRef(null)
-  const touchStartX = useRef(null)
-
-  const goTo = useCallback((i) => {
-    const clamped = Math.max(0, Math.min(SLIDES.length - 1, i))
-    setIndex(clamped)
-  }, [])
+function SlideCard({ slide, isFirst }) {
+  const ref = useRef(null)
+  const [revealed, setRevealed] = useState(false)
 
   useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === 'ArrowRight') goTo(index + 1)
-      if (e.key === 'ArrowLeft') goTo(index - 1)
+    const el = ref.current
+    if (!el) return
+    if (isFirst) {
+      // First card is already in view on load — reveal immediately.
+      setRevealed(true)
+      return
     }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [index, goTo])
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setRevealed(true)
+        })
+      },
+      { threshold: 0.3, rootMargin: '0px 0px -10% 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [isFirst])
 
-  const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX }
-  const onTouchEnd = (e) => {
-    if (touchStartX.current === null) return
-    const dx = e.changedTouches[0].clientX - touchStartX.current
-    if (Math.abs(dx) > 40) {
-      if (dx < 0) goTo(index + 1)
-      else goTo(index - 1)
-    }
-    touchStartX.current = null
+  return (
+    <div
+      ref={ref}
+      className={revealed ? 'hiw-slide is-revealed' : 'hiw-slide'}
+      style={{
+        borderRadius: '14px', border: `1px solid ${theme.line}`, overflow: 'hidden',
+        marginBottom: 'clamp(18px,3vw,28px)', minHeight: 'clamp(360px,52vh,480px)',
+        display: 'flex',
+      }}
+    >
+      {slide.render()}
+    </div>
+  )
+}
+
+export default function HowItWorksPage() {
+  const dotRefs = useRef([])
+
+  const scrollToSlide = (i) => {
+    const el = dotRefs.current[i]
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
-      <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(12px,3vw,24px)' }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(12px,3vw,24px)' }}>
         <div style={{
           fontFamily: theme.fontMono, fontSize: '11.5px', letterSpacing: '0.1em', textTransform: 'uppercase',
           color: theme.brassDark, marginBottom: '6px', fontWeight: '600', textAlign: 'center',
         }}>The Process</div>
         <h1 style={{
           fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(24px,3.4vw,32px)',
-          color: theme.ink, marginBottom: '24px', lineHeight: '1.15', textAlign: 'center',
+          color: theme.ink, marginBottom: '10px', lineHeight: '1.15', textAlign: 'center',
         }}>How Cot Lever works</h1>
+        <p style={{
+          fontSize: '13px', color: theme.inkSoft, textAlign: 'center', marginBottom: '32px',
+        }}>Scroll down — each step reveals as you go.</p>
 
-        <div style={{ position: 'relative' }}>
-          {/* Slide viewport */}
-          <div
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-            style={{
-              position: 'relative', overflow: 'hidden', borderRadius: '14px',
-              border: `1px solid ${theme.line}`, background: theme.paper,
-              height: 'clamp(420px,62vh,560px)',
-            }}
-          >
-            <div
-              ref={trackRef}
-              style={{
-                display: 'flex', height: '100%', width: `${SLIDES.length * 100}%`,
-                transform: `translateX(-${(index * 100) / SLIDES.length}%)`,
-                transition: 'transform 0.45s ease-out',
-              }}
-            >
-              {SLIDES.map((s, i) => (
-                <div key={s.key} style={{ width: `${100 / SLIDES.length}%`, height: '100%', flexShrink: 0 }}>
-                  <div key={i === index ? 'active' : 'inactive'} style={{ height: '100%' }}>
-                    {s.render()}
-                  </div>
-                </div>
-              ))}
-            </div>
+        {SLIDES.map((s, i) => (
+          <div key={s.key} ref={(el) => { dotRefs.current[i] = el }}>
+            <SlideCard slide={s} isFirst={i === 0} />
           </div>
+        ))}
 
-          {/* Prev / Next arrows — hidden on touch/mobile widths via CSS below */}
-          <button
-            className="hiw-arrow"
-            onClick={() => goTo(index - 1)}
-            disabled={index === 0}
-            aria-label="Previous slide"
-            style={{
-              position: 'absolute', left: '-18px', top: '50%', transform: 'translateY(-50%)',
-              width: '38px', height: '38px', borderRadius: '50%',
-              background: theme.surface, border: `1px solid ${theme.line}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              opacity: index === 0 ? 0.35 : 1,
-            }}
-          >
-            <ChevronLeft size={18} color={theme.ink} />
-          </button>
-          <button
-            className="hiw-arrow"
-            onClick={() => goTo(index + 1)}
-            disabled={index === SLIDES.length - 1}
-            aria-label="Next slide"
-            style={{
-              position: 'absolute', right: '-18px', top: '50%', transform: 'translateY(-50%)',
-              width: '38px', height: '38px', borderRadius: '50%',
-              background: theme.surface, border: `1px solid ${theme.line}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              opacity: index === SLIDES.length - 1 ? 0.35 : 1,
-            }}
-          >
-            <ChevronRight size={18} color={theme.ink} />
-          </button>
-        </div>
-
-        {/* Dot indicators */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '7px', marginTop: '18px', flexWrap: 'wrap' }}>
+        {/* Quick-jump dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '7px', marginTop: '8px', flexWrap: 'wrap' }}>
           {SLIDES.map((s, i) => (
             <button
               key={s.key}
-              onClick={() => goTo(i)}
-              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => scrollToSlide(i)}
+              aria-label={`Jump to slide ${i + 1}`}
               style={{
-                width: i === index ? '20px' : '7px', height: '7px', borderRadius: '4px',
-                background: i === index ? theme.brass : theme.line,
-                border: 'none', cursor: 'pointer', transition: 'all 0.3s ease',
+                width: '7px', height: '7px', borderRadius: '4px',
+                background: theme.line, border: 'none', cursor: 'pointer',
               }}
             />
           ))}
         </div>
 
-        <style jsx>{`
-          @media (max-width: 640px) {
-            .hiw-arrow { display: none; }
-          }
-        `}</style>
         <style jsx global>{`
           @keyframes hiwFadeUp {
             from { opacity: 0; }
             to { opacity: 1; }
           }
-          .hiw-anim-item {
-            opacity: 0;
+          .hiw-anim-item { opacity: 0; }
+          .hiw-slide.is-revealed .hiw-anim-item {
             animation: hiwFadeUp 0.7s ease-out forwards;
             animation-delay: calc(var(--i) * 100ms);
           }
