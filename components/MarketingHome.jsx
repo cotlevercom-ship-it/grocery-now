@@ -95,15 +95,22 @@ function TriggerCard({ open, onClick }) {
 
 function HowItWorksTeaser() {
   const [open, setOpen] = useState(false)
+  const scrollRef = useRef(null)
+
+  const scrollBy = (dir) => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollBy({ left: dir * 240, behavior: 'smooth' })
+  }
 
   return (
     <div style={{
       maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px,3vw,56px) clamp(40px,6vw,72px)',
     }}>
       <div style={{
-        display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: '16px',
+        display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px',
       }}>
-        <div style={{ width: '220px', flexShrink: 0 }}>
+        <div style={{ width: '220px', flexShrink: 0, alignSelf: 'flex-start' }}>
           <TriggerCard open={open} onClick={() => setOpen((v) => !v)} />
         </div>
 
@@ -113,8 +120,22 @@ function HowItWorksTeaser() {
           transition: 'grid-template-columns 1.9s ease',
           minWidth: 0, flex: '0 1 auto',
         }}>
-          <div style={{ overflow: 'hidden', minWidth: 0 }}>
-            <div className="steps-scroll" style={{
+          <div style={{ overflow: 'hidden', minWidth: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px' }}>
+            <button
+              onClick={() => scrollBy(-1)}
+              aria-label="Scroll left"
+              style={{
+                flexShrink: 0, width: '32px', height: '32px', borderRadius: '50%',
+                background: theme.surface, border: `1px solid ${theme.line}`, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={theme.ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            <div ref={scrollRef} className="steps-scroll" style={{
               display: 'flex', flexDirection: 'row', gap: '16px', overflowX: 'auto', paddingBottom: '10px',
             }}>
               {STEPS.map((step, i) => (
@@ -123,6 +144,21 @@ function HowItWorksTeaser() {
                 </div>
               ))}
             </div>
+
+            <button
+              onClick={() => scrollBy(1)}
+              aria-label="Scroll right"
+              style={{
+                flexShrink: 0, width: '32px', height: '32px', borderRadius: '50%',
+                background: theme.surface, border: `1px solid ${theme.line}`, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={theme.ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+
             <style jsx>{`
               .steps-scroll {
                 scrollbar-width: none;
