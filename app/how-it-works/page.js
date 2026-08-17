@@ -432,12 +432,12 @@ export default function HowItWorksPage() {
         `}</style>
         <style jsx global>{`
           @keyframes hiwFadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
           }
           .hiw-anim-item {
             opacity: 0;
-            animation: hiwFadeUp 0.6s cubic-bezier(0.16, 0.8, 0.3, 1) forwards;
+            animation: hiwFadeUp 0.7s ease-out forwards;
             animation-delay: calc(var(--i) * 100ms);
           }
         `}</style>
