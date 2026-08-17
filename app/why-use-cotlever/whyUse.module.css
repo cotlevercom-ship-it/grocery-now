@@ -8,7 +8,11 @@
   --accent: #b94a38;
   --line: #472421;
   position: relative;
-  background: var(--bg);
+  background: repeating-linear-gradient(
+    to bottom,
+    #2d1815 0px, #2d1815 2px,
+    #1a0d0b 2px, #1a0d0b 4px
+  );
 }
 
 /* the 3D stage that holds all pages */
@@ -16,31 +20,61 @@
   position: relative;
   width: 100%;
   height: 100%;
-  perspective: 2200px;
+  perspective: 2600px;
   touch-action: pan-y;
   cursor: pointer;
 }
 
 .bookPage {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 7px;
   padding: 32px 7vw;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background: radial-gradient(ellipse at top left, #1d0e0c 0%, var(--bg) 55%);
   color: var(--text);
   font-family: Arial, sans-serif;
   transform-style: preserve-3d;
   backface-visibility: hidden;
   transform-origin: left center;
   transform: rotateY(0deg);
-  transition: transform .75s cubic-bezier(.45, 0, .2, 1);
-  box-shadow: 8px 0 30px rgba(0, 0, 0, .35);
+  transition: transform 1.15s cubic-bezier(.62, .04, .32, 1),
+              box-shadow 1.15s cubic-bezier(.62, .04, .32, 1);
+  box-shadow: 10px 0 40px rgba(0, 0, 0, .4), inset -1px 0 0 rgba(255,255,255,.03);
+  border-radius: 0 3px 3px 0;
+  will-change: transform;
 }
 
 .bookPage.flipped {
-  transform: rotateY(-180deg);
+  transform: rotateY(-178deg);
   pointer-events: none;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, .5);
+}
+
+/* spine shadow — always present, gives book-binding depth on the left edge */
+.bookPage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,.4), transparent 90px);
+  pointer-events: none;
+}
+
+/* darkening overlay while the page is mid-turn, like light falling off paper */
+.bookPage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,.2) 30%, transparent 55%);
+  opacity: 0;
+  transition: opacity 1.15s cubic-bezier(.62, .04, .32, 1);
+  pointer-events: none;
+}
+.bookPage.flipped::after {
+  opacity: 1;
 }
 
 /* top navigation */
@@ -50,6 +84,8 @@
   align-items: center;
   font-size: 11px;
   letter-spacing: .18em;
+  position: relative;
+  z-index: 2;
 }
 .brand {
   color: var(--accent);
@@ -65,6 +101,8 @@
   font-size: 11px;
   letter-spacing: .22em;
   text-transform: uppercase;
+  position: relative;
+  z-index: 2;
 }
 
 /* main page */
@@ -75,6 +113,8 @@
   align-items: center;
   max-width: 1200px;
   width: 100%;
+  position: relative;
+  z-index: 2;
 }
 .pageIndex {
   font-family: Georgia, serif;
@@ -114,11 +154,13 @@
   color: #80665f;
   font-size: 10px;
   letter-spacing: .18em;
+  position: relative;
+  z-index: 2;
 }
 
 /* subtle page variation */
 .bookPage:nth-child(even) {
-  background: #190b0b;
+  background: radial-gradient(ellipse at top right, #200f0e 0%, #190b0b 55%);
 }
 .bookPage:nth-child(2) .pageContent,
 .bookPage:nth-child(4) .pageContent {
@@ -146,18 +188,21 @@
   height: 6px;
   border-radius: 50%;
   background: var(--line);
+  transition: background .3s ease;
 }
 .dotActive {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--accent);
+  transition: background .3s ease;
 }
 
 /* mobile */
 @media (max-width: 700px) {
   .bookPage {
     padding: 24px;
+    right: 4px;
   }
   .pageLabel {
     margin-top: 8vh;
