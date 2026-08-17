@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
@@ -21,6 +22,40 @@ const REASONS = [
   },
 ]
 
+function FadeIn({ children, delay = 0, style }) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setVisible(true)
+        })
+      },
+      { threshold: 0.3, rootMargin: '0px 0px -10% 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(18px)',
+        transition: `opacity 0.6s ease-out ${delay}s, transform 0.6s ease-out ${delay}s`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
 export default function WhyUseCotleverPage() {
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
@@ -40,35 +75,39 @@ export default function WhyUseCotleverPage() {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          {REASONS.map((r) => (
-            <div key={r.title} style={{
-              padding: 'clamp(20px,3vw,28px)', background: theme.surface,
-              borderRadius: '12px', border: `1px solid ${theme.line}`,
-            }}>
-              <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.ink, marginBottom: '8px' }}>
-                {r.title}
-              </h2>
-              <p style={{ fontSize: '14px', color: theme.inkSoft, lineHeight: '1.65' }}>{r.body}</p>
-            </div>
+          {REASONS.map((r, i) => (
+            <FadeIn key={r.title} delay={i * 0.12}>
+              <div style={{
+                padding: 'clamp(20px,3vw,28px)', background: theme.surface,
+                borderRadius: '12px', border: `1px solid ${theme.line}`,
+              }}>
+                <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '600', color: theme.ink, marginBottom: '8px' }}>
+                  {r.title}
+                </h2>
+                <p style={{ fontSize: '14px', color: theme.inkSoft, lineHeight: '1.65' }}>{r.body}</p>
+              </div>
+            </FadeIn>
           ))}
         </div>
 
-        <div style={{
-          marginTop: '48px', padding: 'clamp(24px,3.5vw,36px)', background: theme.surface,
-          borderRadius: '12px', border: `1px solid ${theme.line}`,
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '18px'
-        }}>
-          <div>
-            <div style={{ fontFamily: theme.fontDisplay, fontSize: '19px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
-              See how it works
+        <FadeIn delay={REASONS.length * 0.12} style={{ marginTop: '48px' }}>
+          <div style={{
+            padding: 'clamp(24px,3.5vw,36px)', background: theme.surface,
+            borderRadius: '12px', border: `1px solid ${theme.line}`,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '18px'
+          }}>
+            <div>
+              <div style={{ fontFamily: theme.fontDisplay, fontSize: '19px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
+                See how it works
+              </div>
+              <p style={{ fontSize: '13.5px', color: theme.inkSoft }}>From listing to getting contacted, step by step.</p>
             </div>
-            <p style={{ fontSize: '13.5px', color: theme.inkSoft }}>From listing to getting contacted, step by step.</p>
+            <Link href="/how-it-works" style={{
+              display: 'inline-block', background: theme.brass, color: 'white',
+              borderRadius: '8px', padding: '13px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none', whiteSpace: 'nowrap'
+            }}>How It Works</Link>
           </div>
-          <Link href="/how-it-works" style={{
-            display: 'inline-block', background: theme.brass, color: 'white',
-            borderRadius: '8px', padding: '13px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none', whiteSpace: 'nowrap'
-          }}>How It Works</Link>
-        </div>
+        </FadeIn>
       </div>
     </div>
   )
