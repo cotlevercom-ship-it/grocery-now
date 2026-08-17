@@ -110,7 +110,7 @@ function HowItWorksTeaser() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: open ? '1fr' : '0fr',
-          transition: 'grid-template-columns 1.1s ease',
+          transition: 'grid-template-columns 1.9s ease',
           minWidth: 0, flex: '0 1 auto',
         }}>
           <div style={{ overflow: 'hidden', minWidth: 0 }}>
@@ -138,7 +138,7 @@ function HowItWorksTeaser() {
       <div style={{
         display: 'grid',
         gridTemplateRows: open ? '1fr' : '0fr',
-        transition: 'grid-template-rows 1.1s ease',
+        transition: 'grid-template-rows 1.9s ease',
       }}>
         <div style={{ overflow: 'hidden', minHeight: 0 }}>
           <Link href="/how-it-works" style={{
