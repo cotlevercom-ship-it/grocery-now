@@ -85,28 +85,12 @@ function TriggerCard({ open, onClick }) {
         ...CARD_SIZE,
         background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
         padding: '18px', height: '190px', boxSizing: 'border-box', cursor: 'pointer', textAlign: 'left',
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
       }}
     >
-      <div>
-        <div style={{
-          fontFamily: theme.fontMono, fontSize: '12px', fontWeight: '700', color: theme.brass, marginBottom: '10px'
-        }}>The Process</div>
-        <div style={{
-          fontFamily: theme.fontDisplay, fontSize: '15px', fontWeight: '600', color: theme.ink, marginBottom: '5px'
-        }}>How Cot Lever works</div>
-        <p style={{ fontSize: '12.5px', color: theme.inkSoft, lineHeight: '1.5' }}>Tap to see the steps.</p>
-      </div>
-      <svg
-        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.brass} strokeWidth="2"
-        strokeLinecap="round" strokeLinejoin="round"
-        style={{
-          marginTop: '10px', transition: 'transform 0.25s ease',
-          transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-        }}
-      >
-        <polyline points="6 9 12 15 18 9" />
-      </svg>
+      <div style={{
+        fontFamily: theme.fontDisplay, fontSize: '15px', fontWeight: '600', color: theme.ink,
+      }}>How Cot Lever works</div>
     </button>
   )
 }
@@ -122,20 +106,31 @@ function HowItWorksTeaser() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 220px))', gap: '16px',
       }}>
         <TriggerCard open={open} onClick={() => setOpen((v) => !v)} />
-
-        {open && STEPS.map((step, i) => (
-          <div key={step.n} style={CARD_SIZE}>
-            <StepCard step={step} index={i} />
-          </div>
-        ))}
       </div>
 
-      {open && (
-        <Link href="/how-it-works" style={{
-          display: 'inline-block', marginTop: '20px',
-          fontSize: '13.5px', fontWeight: '600', color: theme.brass, textDecoration: 'none'
-        }}>See the full details →</Link>
-      )}
+      <div style={{
+        display: 'grid',
+        gridTemplateRows: open ? '1fr' : '0fr',
+        transition: 'grid-template-rows 1.1s ease',
+      }}>
+        <div style={{ overflow: 'hidden', minHeight: 0 }}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 220px))', gap: '16px',
+            marginTop: '16px',
+          }}>
+            {STEPS.map((step, i) => (
+              <div key={step.n} style={CARD_SIZE}>
+                <StepCard step={step} index={i} />
+              </div>
+            ))}
+          </div>
+
+          <Link href="/how-it-works" style={{
+            display: 'inline-block', marginTop: '20px',
+            fontSize: '13.5px', fontWeight: '600', color: theme.brass, textDecoration: 'none'
+          }}>See the full details →</Link>
+        </div>
+      </div>
     </div>
   )
 }
