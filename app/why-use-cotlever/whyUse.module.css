@@ -1,23 +1,46 @@
 .book {
   width: 100%;
+  height: 100svh;
+  overflow: hidden;
   --bg: #160909;
   --text: #f4e9df;
   --muted: #c5aaa0;
   --accent: #b94a38;
   --line: #472421;
+  position: relative;
+  background: var(--bg);
+}
+
+/* the 3D stage that holds all pages */
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 2200px;
+  touch-action: pan-y;
+  cursor: pointer;
 }
 
 .bookPage {
-  min-height: 100vh;
+  position: absolute;
+  inset: 0;
   padding: 32px 7vw;
-  position: relative;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--line);
-  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: Arial, sans-serif;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transform-origin: left center;
+  transform: rotateY(0deg);
+  transition: transform .75s cubic-bezier(.45, 0, .2, 1);
+  box-shadow: 8px 0 30px rgba(0, 0, 0, .35);
+}
+
+.bookPage.flipped {
+  transform: rotateY(-180deg);
+  pointer-events: none;
 }
 
 /* top navigation */
@@ -107,10 +130,33 @@
   text-align: right;
 }
 
+/* progress dots */
+.progress {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 999;
+  pointer-events: none;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line);
+}
+.dotActive {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
 /* mobile */
 @media (max-width: 700px) {
   .bookPage {
-    min-height: 100svh;
     padding: 24px;
   }
   .pageLabel {
