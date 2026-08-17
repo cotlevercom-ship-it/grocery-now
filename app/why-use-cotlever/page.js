@@ -11,13 +11,13 @@ const REASONS = [
   },
   {
     n: '02',
-    heading: <>Every listing is <em>verified</em></>,
-    body: 'Nothing goes live without admin review first. That keeps the directory trustworthy — when you see a listing, you know a real person stands behind it.',
+    heading: <>Your profile goes live <em>instantly</em></>,
+    body: 'No waiting on approval. As soon as you fill in your profile, it appears in the directory — real people, ready to be found right away.',
   },
   {
     n: '03',
-    heading: <>Co-founder search <em>included</em></>,
-    body: 'Have an idea but no one to build it with? Post it as a listing and select "Co-founder" — the same simple flow as any other listing.',
+    heading: <>Made for co-founder <em>matching</em></>,
+    body: 'Every profile tells others what you bring and what you\u2019re looking for — skills, experience, and commitment level — so the right match is easy to spot.',
   },
   {
     n: '04',
