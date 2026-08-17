@@ -114,8 +114,8 @@ function HowItWorksTeaser() {
           minWidth: 0, flex: '0 1 auto',
         }}>
           <div style={{ overflow: 'hidden', minWidth: 0 }}>
-            <div style={{
-              display: 'flex', flexDirection: 'row', gap: '16px', overflowX: 'auto', paddingBottom: '4px',
+            <div className="steps-scroll" style={{
+              display: 'flex', flexDirection: 'row', gap: '16px', overflowX: 'auto', paddingBottom: '10px',
             }}>
               {STEPS.map((step, i) => (
                 <div key={step.n} style={{ width: '220px', flexShrink: 0 }}>
@@ -123,6 +123,22 @@ function HowItWorksTeaser() {
                 </div>
               ))}
             </div>
+            <style jsx>{`
+              .steps-scroll {
+                scrollbar-width: thin;
+                scrollbar-color: ${theme.line} transparent;
+              }
+              .steps-scroll::-webkit-scrollbar {
+                height: 5px;
+              }
+              .steps-scroll::-webkit-scrollbar-track {
+                background: transparent;
+              }
+              .steps-scroll::-webkit-scrollbar-thumb {
+                background: ${theme.line};
+                border-radius: 4px;
+              }
+            `}</style>
           </div>
         </div>
       </div>
