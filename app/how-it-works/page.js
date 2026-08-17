@@ -59,6 +59,17 @@ function CenterArt({ Icon, size = 120 }) {
   )
 }
 
+// Wraps one element so it fades/slides up into place, staggered by `i`.
+// Only meant to be used inside a freshly-mounted (active) slide — see
+// the remount-on-active-change trick in HowItWorksPage below.
+function Reveal({ i, children }) {
+  return (
+    <div className="hiw-anim-item" style={{ '--i': i }}>
+      {children}
+    </div>
+  )
+}
+
 // ---- Slide content ----
 
 function CoverSlide() {
@@ -67,20 +78,28 @@ function CoverSlide() {
       height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: card.bgAlt,
     }}>
-      <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(26px,5vw,32px)', fontWeight: '700', marginBottom: '6px' }}>
-        <span style={{ color: card.text }}>Cot</span><span style={{ color: card.accent }}>Lever</span>
-      </div>
-      <div style={{ width: '46px', height: '1.5px', background: card.accent, margin: '14px 0 22px' }} />
-      <h1 style={{
-        fontFamily: theme.fontDisplay, fontWeight: '700', color: card.text,
-        fontSize: 'clamp(26px,5.5vw,36px)', lineHeight: '1.2', marginBottom: '14px',
-      }}>Find Your<br />Co-Founder</h1>
-      <p style={{ fontSize: '14.5px', color: card.textSoft, lineHeight: '1.6', maxWidth: '320px' }}>
-        Great businesses start with the right people.
-      </p>
-      <div style={{ marginTop: '36px' }}>
-        <CenterArt Icon={Handshake} size={96} />
-      </div>
+      <Reveal i={0}>
+        <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(26px,5vw,32px)', fontWeight: '700', marginBottom: '6px' }}>
+          <span style={{ color: card.text }}>Cot</span><span style={{ color: card.accent }}>Lever</span>
+        </div>
+        <div style={{ width: '46px', height: '1.5px', background: card.accent, margin: '14px auto 22px' }} />
+      </Reveal>
+      <Reveal i={1}>
+        <h1 style={{
+          fontFamily: theme.fontDisplay, fontWeight: '700', color: card.text,
+          fontSize: 'clamp(26px,5.5vw,36px)', lineHeight: '1.2', marginBottom: '14px',
+        }}>Find Your<br />Co-Founder</h1>
+      </Reveal>
+      <Reveal i={2}>
+        <p style={{ fontSize: '14.5px', color: card.textSoft, lineHeight: '1.6', maxWidth: '320px' }}>
+          Great businesses start with the right people.
+        </p>
+      </Reveal>
+      <Reveal i={3}>
+        <div style={{ marginTop: '36px' }}>
+          <CenterArt Icon={Handshake} size={96} />
+        </div>
+      </Reveal>
     </div>
   )
 }
@@ -93,28 +112,40 @@ function ContentSlide({ n, title, intro, bullets, closer, Icon }) {
     }}>
       <div style={{ display: 'flex', gap: 'clamp(16px,4vw,32px)', alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ flex: '1 1 260px', minWidth: '220px' }}>
-          <div style={{
-            fontFamily: theme.fontMono, fontSize: '13px', fontWeight: '700', color: card.accent,
-          }}>{n}</div>
-          <div style={{ width: '22px', height: '2px', background: card.accent, margin: '4px 0 14px' }} />
-          <h2 style={{
-            fontFamily: theme.fontDisplay, fontSize: 'clamp(21px,3.4vw,26px)', fontWeight: '600',
-            color: card.text, marginBottom: '10px',
-          }}>{title}</h2>
+          <Reveal i={0}>
+            <div style={{
+              fontFamily: theme.fontMono, fontSize: '13px', fontWeight: '700', color: card.accent,
+            }}>{n}</div>
+            <div style={{ width: '22px', height: '2px', background: card.accent, margin: '4px 0 14px' }} />
+          </Reveal>
+          <Reveal i={1}>
+            <h2 style={{
+              fontFamily: theme.fontDisplay, fontSize: 'clamp(21px,3.4vw,26px)', fontWeight: '600',
+              color: card.text, marginBottom: '10px',
+            }}>{title}</h2>
+          </Reveal>
           {intro && (
-            <p style={{ fontSize: '13.5px', color: card.textSoft, lineHeight: '1.55', marginBottom: '18px' }}>{intro}</p>
+            <Reveal i={2}>
+              <p style={{ fontSize: '13.5px', color: card.textSoft, lineHeight: '1.55', marginBottom: '18px' }}>{intro}</p>
+            </Reveal>
           )}
           {bullets && bullets.map((b, i) => (
-            <BulletRow key={i} Icon={b.Icon} text={b.text} />
+            <Reveal key={i} i={3 + i}>
+              <BulletRow Icon={b.Icon} text={b.text} />
+            </Reveal>
           ))}
           {closer && (
-            <p style={{ fontSize: '13.5px', color: card.text, fontWeight: '600', marginTop: '16px' }}>{closer}</p>
+            <Reveal i={3 + (bullets ? bullets.length : 0)}>
+              <p style={{ fontSize: '13.5px', color: card.text, fontWeight: '600', marginTop: '16px' }}>{closer}</p>
+            </Reveal>
           )}
         </div>
         {Icon && (
-          <div style={{ flex: '0 0 auto', width: 'clamp(90px,20vw,120px)' }}>
-            <CenterArt Icon={Icon} size={90} />
-          </div>
+          <Reveal i={4 + (bullets ? bullets.length : 0)}>
+            <div style={{ flex: '0 0 auto', width: 'clamp(90px,20vw,120px)' }}>
+              <CenterArt Icon={Icon} size={90} />
+            </div>
+          </Reveal>
         )}
       </div>
     </div>
@@ -127,20 +158,30 @@ function ClosingSlide() {
       height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: card.bgAlt,
     }}>
-      <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,4.5vw,28px)', fontWeight: '700', color: card.text, marginBottom: '18px' }}>
-        CotLever
-      </div>
-      <p style={{ fontSize: '14.5px', color: card.textSoft, lineHeight: '1.65', maxWidth: '320px', marginBottom: '24px' }}>
-        The right co-founder can turn your idea into something extraordinary.
-      </p>
-      <CenterArt Icon={Handshake} size={72} />
-      <p style={{
-        fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: card.accent, marginTop: '24px', marginBottom: '28px',
-      }}>Let&apos;s build the future together.</p>
-      <Link href="/members/new" style={{
-        display: 'inline-block', background: card.accent, color: '#F3E6D5',
-        borderRadius: '8px', padding: '13px 26px', fontSize: '14px', fontWeight: '600', textDecoration: 'none',
-      }}>Create Your Profile</Link>
+      <Reveal i={0}>
+        <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(24px,4.5vw,28px)', fontWeight: '700', color: card.text, marginBottom: '18px' }}>
+          CotLever
+        </div>
+      </Reveal>
+      <Reveal i={1}>
+        <p style={{ fontSize: '14.5px', color: card.textSoft, lineHeight: '1.65', maxWidth: '320px', marginBottom: '24px' }}>
+          The right co-founder can turn your idea into something extraordinary.
+        </p>
+      </Reveal>
+      <Reveal i={2}>
+        <CenterArt Icon={Handshake} size={72} />
+      </Reveal>
+      <Reveal i={3}>
+        <p style={{
+          fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: card.accent, marginTop: '24px', marginBottom: '28px',
+        }}>Let&apos;s build the future together.</p>
+      </Reveal>
+      <Reveal i={4}>
+        <Link href="/members/new" style={{
+          display: 'inline-block', background: card.accent, color: '#F3E6D5',
+          borderRadius: '8px', padding: '13px 26px', fontSize: '14px', fontWeight: '600', textDecoration: 'none',
+        }}>Create Your Profile</Link>
+      </Reveal>
     </div>
   )
 }
@@ -325,9 +366,11 @@ export default function HowItWorksPage() {
                 transition: 'transform 0.45s ease-out',
               }}
             >
-              {SLIDES.map((s) => (
+              {SLIDES.map((s, i) => (
                 <div key={s.key} style={{ width: `${100 / SLIDES.length}%`, height: '100%', flexShrink: 0 }}>
-                  {s.render()}
+                  <div key={i === index ? 'active' : 'inactive'} style={{ height: '100%' }}>
+                    {s.render()}
+                  </div>
                 </div>
               ))}
             </div>
@@ -385,6 +428,17 @@ export default function HowItWorksPage() {
         <style jsx>{`
           @media (max-width: 640px) {
             .hiw-arrow { display: none; }
+          }
+        `}</style>
+        <style jsx global>{`
+          @keyframes hiwFadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .hiw-anim-item {
+            opacity: 0;
+            animation: hiwFadeUp 0.6s cubic-bezier(0.16, 0.8, 0.3, 1) forwards;
+            animation-delay: calc(var(--i) * 100ms);
           }
         `}</style>
       </div>
