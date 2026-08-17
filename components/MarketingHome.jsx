@@ -77,6 +77,7 @@ function StepCard({ step, index }) {
 function TriggerCard({ open, onClick }) {
   return (
     <button
+      className="howitworks-trigger"
       onClick={onClick}
       aria-expanded={open}
       style={{
@@ -125,6 +126,15 @@ function HowItWorksTeaser() {
         .steps-scroll::-webkit-scrollbar {
           display: none;
         }
+        @media (max-width: 680px) {
+          .howitworks-arrow {
+            display: none !important;
+          }
+          .howitworks-trigger {
+            height: auto !important;
+            min-height: 64px !important;
+          }
+        }
       `}</style>
       <div className="howitworks-row" style={{
         display: 'flex', alignItems: 'center', gap: '10px',
@@ -141,6 +151,7 @@ function HowItWorksTeaser() {
         }}>
           <div style={{ overflow: 'hidden', minWidth: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px' }}>
             <button
+              className="howitworks-arrow"
               onClick={() => scrollBy(-1)}
               aria-label="Scroll left"
               style={{
@@ -155,7 +166,7 @@ function HowItWorksTeaser() {
             </button>
 
             <div ref={scrollRef} className="steps-scroll" style={{
-              display: 'flex', flexDirection: 'row', gap: '16px', overflowX: 'auto', paddingBottom: '10px',
+              display: 'flex', flexDirection: 'row', gap: '16px', overflowX: 'auto', paddingBottom: '10px', paddingRight: '16px',
             }}>
               {STEPS.map((step, i) => (
                 <div key={step.n} style={{ width: '220px', flexShrink: 0 }}>
@@ -165,6 +176,7 @@ function HowItWorksTeaser() {
             </div>
 
             <button
+              className="howitworks-arrow"
               onClick={() => scrollBy(1)}
               aria-label="Scroll right"
               style={{
