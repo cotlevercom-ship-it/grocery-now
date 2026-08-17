@@ -56,7 +56,8 @@ function StepCard({ step, index }) {
       ref={ref}
       style={{
         background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
-        padding: '18px',
+        padding: '18px', height: '190px', boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column',
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(18px)',
         transition: `opacity 0.6s ease-out ${index * 0.12}s, transform 0.6s ease-out ${index * 0.12}s`,
@@ -83,7 +84,7 @@ function TriggerCard({ open, onClick }) {
       style={{
         ...CARD_SIZE,
         background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
-        padding: '18px', cursor: 'pointer', textAlign: 'left',
+        padding: '18px', height: '190px', boxSizing: 'border-box', cursor: 'pointer', textAlign: 'left',
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       }}
     >
