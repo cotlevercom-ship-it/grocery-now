@@ -74,15 +74,13 @@ function StepCard({ step, index }) {
   )
 }
 
-const CARD_SIZE = { width: '100%' }
-
 function TriggerCard({ open, onClick }) {
   return (
     <button
       onClick={onClick}
       aria-expanded={open}
       style={{
-        ...CARD_SIZE,
+        width: '100%',
         background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
         padding: '18px', height: '190px', boxSizing: 'border-box', cursor: 'pointer', textAlign: 'left',
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
@@ -103,9 +101,30 @@ function HowItWorksTeaser() {
       maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px,3vw,56px) clamp(40px,6vw,72px)',
     }}>
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 220px))', gap: '16px',
+        display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: '16px',
       }}>
-        <TriggerCard open={open} onClick={() => setOpen((v) => !v)} />
+        <div style={{ width: '220px', flexShrink: 0 }}>
+          <TriggerCard open={open} onClick={() => setOpen((v) => !v)} />
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: open ? '1fr' : '0fr',
+          transition: 'grid-template-columns 1.1s ease',
+          minWidth: 0, flex: '0 1 auto',
+        }}>
+          <div style={{ overflow: 'hidden', minWidth: 0 }}>
+            <div style={{
+              display: 'flex', flexDirection: 'row', gap: '16px', overflowX: 'auto', paddingBottom: '4px',
+            }}>
+              {STEPS.map((step, i) => (
+                <div key={step.n} style={{ width: '220px', flexShrink: 0 }}>
+                  <StepCard step={step} index={i} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div style={{
@@ -114,17 +133,6 @@ function HowItWorksTeaser() {
         transition: 'grid-template-rows 1.1s ease',
       }}>
         <div style={{ overflow: 'hidden', minHeight: 0 }}>
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 220px))', gap: '16px',
-            marginTop: '16px',
-          }}>
-            {STEPS.map((step, i) => (
-              <div key={step.n} style={CARD_SIZE}>
-                <StepCard step={step} index={i} />
-              </div>
-            ))}
-          </div>
-
           <Link href="/how-it-works" style={{
             display: 'inline-block', marginTop: '20px',
             fontSize: '13.5px', fontWeight: '600', color: theme.brass, textDecoration: 'none'
