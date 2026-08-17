@@ -125,18 +125,10 @@ function HowItWorksTeaser() {
             </div>
             <style jsx>{`
               .steps-scroll {
-                scrollbar-width: thin;
-                scrollbar-color: ${theme.line} transparent;
+                scrollbar-width: none;
               }
               .steps-scroll::-webkit-scrollbar {
-                height: 5px;
-              }
-              .steps-scroll::-webkit-scrollbar-track {
-                background: transparent;
-              }
-              .steps-scroll::-webkit-scrollbar-thumb {
-                background: ${theme.line};
-                border-radius: 4px;
+                display: none;
               }
             `}</style>
           </div>
