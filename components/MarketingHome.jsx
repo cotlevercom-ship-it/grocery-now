@@ -73,7 +73,7 @@ function StepCard({ step, index }) {
   )
 }
 
-const CARD_SIZE = { minWidth: '180px', flex: '1 1 0' }
+const CARD_SIZE = { width: '100%' }
 
 function TriggerCard({ open, onClick }) {
   return (
@@ -118,7 +118,7 @@ function HowItWorksTeaser() {
       maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px,3vw,56px) clamp(40px,6vw,72px)',
     }}>
       <div style={{
-        display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '16px',
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 220px))', gap: '16px',
       }}>
         <TriggerCard open={open} onClick={() => setOpen((v) => !v)} />
 
