@@ -3,74 +3,24 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { theme } from '@/lib/theme'
-import { supabaseFetch } from '@/lib/supabase'
 
 function HeroBanner() {
-  const [banner, setBanner] = useState(null)
-
-  useEffect(() => {
-    let cancelled = false
-    supabaseFetch('banners?select=*&is_active=eq.true&order=sort_order&limit=1')
-      .then((data) => {
-        if (!cancelled && data && data[0]) setBanner(data[0])
-      })
-      .catch((e) => console.error('Failed to load banner', e))
-    return () => { cancelled = true }
-  }, [])
-
-  const desktopSrc = banner?.image_url || '/marketing/hero-find-cofounder.jpg'
-  const mobileSrc = banner?.mobile_image_url || desktopSrc
-  const alt = 'Find a co-founder for your business — Cot Lever'
-
-  const Wrapper = ({ children }) =>
-    banner?.link_url ? (
-      <Link href={banner.link_url} style={{ display: 'block' }}>{children}</Link>
-    ) : (
-      <>{children}</>
-    )
+  const alt = 'Find the right co-founder. Build something great, together. — Cot Lever'
 
   return (
-    <Wrapper>
-      {/* Desktop image */}
-      <div className="cl-hero-desktop" style={{
-        position: 'relative', width: '100%', aspectRatio: '1536 / 1024',
-        maxHeight: 'clamp(220px, 42vw, 460px)',
-        borderRadius: '14px', overflow: 'hidden'
-      }}>
-        <Image
-          src={desktopSrc}
-          alt={alt}
-          fill
-          priority
-          sizes="100vw"
-          style={{ objectFit: 'cover' }}
-        />
-      </div>
-
-      {/* Mobile image */}
-      <div className="cl-hero-mobile" style={{
-        position: 'relative', width: '100%', aspectRatio: '4 / 5',
-        maxHeight: '70vh',
-        borderRadius: '14px', overflow: 'hidden'
-      }}>
-        <Image
-          src={mobileSrc}
-          alt={alt}
-          fill
-          priority
-          sizes="100vw"
-          style={{ objectFit: 'cover' }}
-        />
-      </div>
-
-      <style jsx>{`
-        .cl-hero-mobile { display: none; }
-        @media (max-width: 640px) {
-          .cl-hero-desktop { display: none; }
-          .cl-hero-mobile { display: block; }
-        }
-      `}</style>
-    </Wrapper>
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: '1942 / 809',
+      borderRadius: '14px', overflow: 'hidden', background: theme.surface
+    }}>
+      <Image
+        src="/marketing/hero-cofounder-banner.png"
+        alt={alt}
+        fill
+        priority
+        sizes="100vw"
+        style={{ objectFit: 'contain' }}
+      />
+    </div>
   )
 }
 
