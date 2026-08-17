@@ -10,7 +10,7 @@ function HeroBanner() {
   return (
     <div style={{
       position: 'relative', width: '100%', aspectRatio: '1942 / 809',
-      borderRadius: '14px', overflow: 'hidden', background: theme.surface
+      overflow: 'hidden', background: theme.surface
     }}>
       <Image
         src="/marketing/hero-cofounder-banner.png"
@@ -106,7 +106,7 @@ export default function MarketingHome() {
     <div style={{ background: theme.paper }}>
       {/* Hero */}
       <div style={{
-        maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px) clamp(32px,5vw,56px)',
+        width: '100%', padding: 'clamp(24px,4vw,48px) 0 clamp(32px,5vw,56px)',
       }}>
         {/* Visually hidden but present for SEO/screen readers — the banner below carries this same content visually */}
         <h1 style={{
