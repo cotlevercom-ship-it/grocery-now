@@ -10,23 +10,12 @@ import { theme } from '@/lib/theme'
 // shows a marketing view when logged out, via HomeGate). /admin has its
 // own independent gate (AdminLayout) so it's excluded here entirely.
 //
-// Also public: /resources (+ detail pages) and individual listing/
-// co-founder detail pages — these carry the SEO work (sitemap, OG
-// images, JSON-LD) done for organic search, so gating them behind login
-// would keep Google from ever indexing them. The *browse* pages
-// (/listings, /cofounder) and everything else (create forms, account,
-// payment, members) stay login-gated as originally requested.
+// Also public: /resources (+ detail pages) — carries the SEO work
+// (sitemap, JSON-LD) done for organic search, so gating it behind login
+// would keep Google from ever indexing it. Everything else (create form,
+// account, payment, members browse/detail) stays login-gated.
 const PUBLIC_PATHS = ['/', '/login', '/forgot-password', '/reset-password', '/verify-otp', '/about', '/how-it-works', '/contact', '/privacy-policy', '/terms', '/payment-policy', '/user-agreement', '/why-use-cotlever', '/pricing']
-const PUBLIC_PREFIXES = ['/resources', '/listing/'] // /listing/[id] — distinct path from /listings (gated browse page)
-
-// /cofounder/[id] is public (SEO detail page), but /cofounder/new (the
-// create form) must stay gated — both share the /cofounder/ prefix so
-// this needs its own check rather than a plain prefix match.
-function isCofounderDetail(pathname) {
-  if (!pathname?.startsWith('/cofounder/')) return false
-  const rest = pathname.slice('/cofounder/'.length)
-  return !!rest && rest !== 'new' && !rest.startsWith('new/')
-}
+const PUBLIC_PREFIXES = ['/resources']
 
 export default function SiteAuthGate({ children }) {
   const router = useRouter()
@@ -37,7 +26,6 @@ export default function SiteAuthGate({ children }) {
   const isPublic = pathname?.startsWith('/admin')
     || PUBLIC_PATHS.includes(pathname)
     || PUBLIC_PREFIXES.some(prefix => pathname?.startsWith(prefix))
-    || isCofounderDetail(pathname)
 
   useEffect(() => {
     if (isPublic) {
@@ -58,13 +46,9 @@ export default function SiteAuthGate({ children }) {
     // confirmed payment — enforced everywhere except the subscribe page
     // itself, so a user can't wander the rest of the site unpaid (e.g. by
     // closing the tab right after signup, before the redirect completes).
-    // Legacy /payment/cofounder/[postId] is exempt so any old pending
-    // cofounder payment (from before this signup-payment change) can still
-    // be completed — those live in a separate cofounder_subscriptions
-    // table, not listing_subscriptions, so this check wouldn't see them.
-    const skipSubscriptionCheck = pathname === '/account/subscribe' || pathname?.startsWith('/payment/cofounder/')
+    const skipSubscriptionCheck = pathname === '/account/subscribe'
     if (!skipSubscriptionCheck) {
-      supabaseFetch(`listing_subscriptions?select=id&user_id=eq.${session.user.id}&limit=1`)
+      supabaseFetch(`member_subscriptions?select=id&user_id=eq.${session.user.id}&limit=1`)
         .then(subs => {
           if (!subs || subs.length === 0) {
             router.replace('/account/subscribe')

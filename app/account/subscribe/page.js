@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
-// Signup-time payment: not tied to any specific listing yet. Once approved
-// by admin, this becomes the user's account-level active subscription —
-// their next up to 3 listings (see /listings/new) skip payment entirely.
+// Signup-time payment: account-level, not tied to a listing. Once approved
+// by admin, this becomes the user's active subscription — required to use
+// the rest of the site (create/browse profiles, etc).
 export default function SubscribePage() {
   const router = useRouter()
   const [prices, setPrices] = useState({ yearly: '', yearlyRegular: '', bkashNumber: '' })
@@ -42,9 +42,8 @@ export default function SubscribePage() {
           bkashNumber: map.bkash_payment_number || '',
         })
 
-        const nowIso = new Date().toISOString()
         const existing = await supabaseFetch(
-          `listing_subscriptions?select=id&user_id=eq.${s.user.id}&status=in.(active,pending)&order=created_at.desc&limit=1`
+          `member_subscriptions?select=id&user_id=eq.${s.user.id}&status=in.(active,pending)&order=created_at.desc&limit=1`
         )
         if (existing && existing.length) setAlreadyHasSub(true)
       } catch (e) {
@@ -62,10 +61,9 @@ export default function SubscribePage() {
     setSubmitting(true)
     try {
       const session = getSession()
-      await supabaseFetch('listing_subscriptions', {
+      await supabaseFetch('member_subscriptions', {
         method: 'POST',
         body: JSON.stringify({
-          listing_id: null,
           user_id: session.user.id,
           plan: 'yearly',
           amount: Number(prices.yearly),
@@ -99,12 +97,12 @@ export default function SubscribePage() {
             <div style={{ fontSize: '44px', marginBottom: '16px' }}>✅</div>
             <h1 style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: theme.ink, marginBottom: '10px' }}>You&apos;re All Set</h1>
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
-              Your subscription is already active or being reviewed. You can create your listings now.
+              Your subscription is already active or being reviewed. You can create your profile now.
             </p>
-            <Link href="/listings/new" style={{
+            <Link href="/members/new" style={{
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '12px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'
-            }}>Create a Listing</Link>
+            }}>Create Your Profile</Link>
           </div>
         </div>
       </div>
@@ -119,7 +117,7 @@ export default function SubscribePage() {
             <div style={{ fontSize: '44px', marginBottom: '16px' }}>✅</div>
             <h1 style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: theme.ink, marginBottom: '10px' }}>Payment Submitted</h1>
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
-              Once verified (usually within a few hours), you can create up to 3 listings with no extra payment.
+              Once verified (usually within a few hours), you'll have full access to the site.
             </p>
             <Link href="/" style={{
               display: 'inline-block', background: theme.brass, color: 'white',
@@ -148,7 +146,7 @@ export default function SubscribePage() {
           Activate Your Subscription
         </h1>
         <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
-          Pay once, then create up to 3 listings — no extra payment for the 2nd or 3rd.
+          Pay once a year to unlock your co-founder profile and the full directory.
         </p>
 
         <div style={{
