@@ -114,8 +114,7 @@ export default function MarketingHome() {
         .ideas-banner-desktop-only { display: none; }
         .how-it-works-mobile {
           display: block;
-          position: sticky;
-          top: var(--nav-h, 0px);
+          position: relative;
           z-index: 2;
         }
         @media (min-width: 768px) {
