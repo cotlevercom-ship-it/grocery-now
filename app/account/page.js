@@ -58,13 +58,6 @@ export default function AccountPage() {
 
   const rows = [
     {
-      href: '/members/new',
-      icon: '📋',
-      title: 'My Co-founder Profile',
-      subtitle: 'Edit what other founders see about you',
-      tag: null,
-    },
-    {
       href: '/account/profile',
       icon: '👤',
       title: 'Edit Profile',
