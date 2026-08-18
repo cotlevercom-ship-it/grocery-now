@@ -9,4 +9,4 @@ export const metadata = {
 export default function HowItWorksLayout({ children }) {
   return children
 }
-// redeploy trigger 1786878431
+// redeploy trigger 1787070890
