@@ -76,8 +76,10 @@ function Reveal({ i, children }) {
 // edge-to-edge (used for step 01 in place of the coded ContentSlide).
 function ImageSlide({ src, alt }) {
   return (
-    <div style={{ position: 'relative', width: '100%', minHeight: 'clamp(360px,52vh,480px)' }}>
-      <Image src={src} alt={alt} fill sizes="100vw" style={{ objectFit: 'cover' }} />
+    <div style={{
+      position: 'relative', width: '100%', minHeight: 'clamp(360px,52vh,480px)', background: card.bg,
+    }}>
+      <Image src={src} alt={alt} fill sizes="100vw" style={{ objectFit: 'contain' }} />
     </div>
   )
 }
