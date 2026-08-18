@@ -82,7 +82,7 @@ function ImageSlide({ src, alt, width, height }) {
       <div style={{ width: '100%', background: card.bg }}>
         <Image
           src={src} alt={alt} width={width} height={height}
-          sizes="100vw"
+          sizes="100vw" priority
           style={{ width: '100%', height: 'auto', display: 'block' }}
         />
       </div>
@@ -284,20 +284,20 @@ const SLIDES = [
   { key: 'closing', render: () => <ClosingSlide /> },
 ]
 
-function SlideCard({ slide, isFirst }) {
+function SlideCard({ slide }) {
   const ref = useRef(null)
   const [revealed, setRevealed] = useState(false)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    if (isFirst) {
-      // First card is already in view on load — reveal immediately.
-      setRevealed(true)
-    }
-    // Re-triggers on every scroll-into-view (both directions), not just
-    // the first time — toggling revealed off when it leaves the viewport
-    // lets the fade-up animation replay the next time it comes back in.
+    // Every card — including the first one visible on page load — reveals
+    // only through this observer, so the browser always paints the
+    // invisible state first and the fade is actually visible, instead of
+    // the first card jumping straight to revealed before the first paint.
+    // Re-triggers on every scroll-into-view (both directions): toggling
+    // revealed off when it leaves the viewport lets the animation replay
+    // the next time it comes back in.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -308,7 +308,7 @@ function SlideCard({ slide, isFirst }) {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [isFirst])
+  }, [])
 
   return (
     <div
@@ -357,7 +357,7 @@ export default function HowItWorksDeck({ showHeading = true }) {
 
       {SLIDES.map((s, i) => (
         <div key={s.key} ref={(el) => { dotRefs.current[i] = el }}>
-          <SlideCard slide={s} isFirst={i === 0} />
+          <SlideCard slide={s} />
         </div>
       ))}
 
