@@ -57,59 +57,59 @@ export default function MembersBrowsePage({ embedded = false }) {
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '18px' }}>
               Browse founders looking for a co-founder, partner, or share holder.
             </p>
-
-            <button
-              onClick={() => setFiltersOpen(v => !v)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '7px', marginBottom: '18px',
-                background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '8px',
-                padding: '9px 15px', fontSize: '13px', fontWeight: '600', color: theme.ink,
-                cursor: 'pointer', fontFamily: theme.fontBody,
-              }}
-            >
-              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''} {filtersOpen ? '▲' : '▼'}
-            </button>
-
-            {filtersOpen && (
-              <div style={{
-                background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
-                padding: '18px', marginBottom: '22px',
-              }}>
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{
-                    fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
-                    color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
-                  }}>Skill</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
-                    {SKILL_OPTIONS.map(s => (
-                      <button key={s} type="button" onClick={() => toggleFilter(setSkillFilter, s)} style={chipStyle(skillFilter.includes(s))}>{s}</button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <div style={{
-                    fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
-                    color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
-                  }}>Industry</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
-                    {INDUSTRY_OPTIONS.map(i => (
-                      <button key={i} type="button" onClick={() => toggleFilter(setIndustryFilter, i)} style={chipStyle(industryFilter.includes(i))}>{i}</button>
-                    ))}
-                  </div>
-                </div>
-                {activeFilterCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => { setSkillFilter([]); setIndustryFilter([]) }}
-                    style={{
-                      marginTop: '16px', background: 'none', border: 'none', color: theme.brassDark,
-                      fontSize: '12.5px', fontWeight: '600', cursor: 'pointer', padding: 0, fontFamily: theme.fontBody,
-                    }}
-                  >Clear filters</button>
-                )}
-              </div>
-            )}
           </>
+        )}
+
+        <button
+          onClick={() => setFiltersOpen(v => !v)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '7px', marginBottom: '18px',
+            background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '8px',
+            padding: '9px 15px', fontSize: '13px', fontWeight: '600', color: theme.ink,
+            cursor: 'pointer', fontFamily: theme.fontBody,
+          }}
+        >
+          Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''} {filtersOpen ? '▲' : '▼'}
+        </button>
+
+        {filtersOpen && (
+          <div style={{
+            background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
+            padding: '18px', marginBottom: '22px',
+          }}>
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{
+                fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
+              }}>Skill</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+                {SKILL_OPTIONS.map(s => (
+                  <button key={s} type="button" onClick={() => toggleFilter(setSkillFilter, s)} style={chipStyle(skillFilter.includes(s))}>{s}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{
+                fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
+              }}>Industry</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+                {INDUSTRY_OPTIONS.map(i => (
+                  <button key={i} type="button" onClick={() => toggleFilter(setIndustryFilter, i)} style={chipStyle(industryFilter.includes(i))}>{i}</button>
+                ))}
+              </div>
+            </div>
+            {activeFilterCount > 0 && (
+              <button
+                type="button"
+                onClick={() => { setSkillFilter([]); setIndustryFilter([]) }}
+                style={{
+                  marginTop: '16px', background: 'none', border: 'none', color: theme.brassDark,
+                  fontSize: '12.5px', fontWeight: '600', cursor: 'pointer', padding: 0, fontFamily: theme.fontBody,
+                }}
+              >Clear filters</button>
+            )}
+          </div>
         )}
 
         {loading ? (
