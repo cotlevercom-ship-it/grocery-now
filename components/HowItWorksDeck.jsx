@@ -72,14 +72,18 @@ function Reveal({ i, children }) {
 
 // ---- Slide content ----
 
-// A slide that's just a static illustration image, filling the card
-// edge-to-edge (used for step 01 in place of the coded ContentSlide).
-function ImageSlide({ src, alt }) {
+// A slide that's just a static illustration image, sized by its own
+// aspect ratio (not stretched to match the other cards' height) so it
+// always spans the full card width with no left/right letterboxing —
+// used for step 01 in place of the coded ContentSlide.
+function ImageSlide({ src, alt, width, height }) {
   return (
-    <div style={{
-      position: 'relative', width: '100%', minHeight: 'clamp(360px,52vh,480px)', background: card.bg,
-    }}>
-      <Image src={src} alt={alt} fill sizes="100vw" style={{ objectFit: 'contain' }} />
+    <div style={{ width: '100%', alignSelf: 'center', background: card.bg }}>
+      <Image
+        src={src} alt={alt} width={width} height={height}
+        sizes="100vw"
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
     </div>
   )
 }
@@ -171,6 +175,7 @@ const SLIDES = [
     key: '01', render: () => (
       <ImageSlide
         src="/marketing/hiw-slide-01-idea.jpg"
+        width={708} height={975}
         alt="01. The Idea — you have an idea, but building it alone can be hard."
       />
     )
