@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
 function HeroBanner() {
@@ -56,6 +57,31 @@ function IdeasPeopleTogetherBanner() {
   )
 }
 
+function HowItWorksMobileTeaser() {
+  return (
+    <Link
+      href="/how-it-works"
+      className="how-it-works-teaser-mobile banner-anim"
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
+        margin: '0 20px', marginTop: '20px', padding: '18px 20px',
+        background: theme.surface, border: `1px solid ${theme.brass}33`, borderRadius: '14px',
+        textDecoration: 'none', animationDelay: '0.15s',
+      }}
+    >
+      <div>
+        <div style={{ color: theme.brass, fontSize: '12px', letterSpacing: '0.08em', fontWeight: 600, textTransform: 'uppercase' }}>
+          How It Works
+        </div>
+        <div style={{ color: theme.ink, fontSize: '16px', fontWeight: 600, marginTop: '4px' }}>
+          See how Cot Lever finds your co-founder
+        </div>
+      </div>
+      <span aria-hidden="true" style={{ color: theme.brass, fontSize: '22px', flexShrink: 0 }}>→</span>
+    </Link>
+  )
+}
+
 export default function MarketingHome() {
   return (
     <div style={{ background: theme.paper, position: 'relative' }}>
@@ -68,6 +94,9 @@ export default function MarketingHome() {
       <div className="banner-sticky-1">
         <HeroBanner />
       </div>
+
+      {/* How It Works teaser — mobile only, sits right under the hero */}
+      <HowItWorksMobileTeaser />
 
       {/* Ideas. People. Together. — desktop only: slides up to cover the hero on scroll. Hidden on mobile. */}
       <div className="banner-sticky-2 ideas-banner-desktop-only" style={{
@@ -95,7 +124,9 @@ export default function MarketingHome() {
         .hero-mobile-only { display: block; }
         .hero-desktop-only { display: none; }
         .ideas-banner-desktop-only { display: none; }
+        .how-it-works-teaser-mobile { display: flex; }
         @media (min-width: 768px) {
+          .how-it-works-teaser-mobile { display: none; }
           .banner-sticky-1 {
             position: sticky;
             top: 0;
