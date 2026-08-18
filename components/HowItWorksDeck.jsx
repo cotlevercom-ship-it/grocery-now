@@ -62,9 +62,9 @@ function CenterArt({ Icon, size = 120 }) {
 // Wraps one element so it fades into place, staggered by `i`. Stays
 // invisible until its parent `.hiw-slide` gets the `.is-revealed`
 // class (added by SlideCard's IntersectionObserver on scroll-into-view).
-function Reveal({ i, children }) {
+function Reveal({ i, children, style }) {
   return (
-    <div className="hiw-anim-item" style={{ '--i': i }}>
+    <div className="hiw-anim-item" style={{ '--i': i, ...style }}>
       {children}
     </div>
   )
@@ -78,13 +78,15 @@ function Reveal({ i, children }) {
 // used for step 01 in place of the coded ContentSlide.
 function ImageSlide({ src, alt, width, height }) {
   return (
-    <div style={{ width: '100%', alignSelf: 'center', background: card.bg }}>
-      <Image
-        src={src} alt={alt} width={width} height={height}
-        sizes="100vw"
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
-    </div>
+    <Reveal i={0} style={{ width: '100%', alignSelf: 'center' }}>
+      <div style={{ width: '100%', background: card.bg }}>
+        <Image
+          src={src} alt={alt} width={width} height={height}
+          sizes="100vw"
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
+      </div>
+    </Reveal>
   )
 }
 
