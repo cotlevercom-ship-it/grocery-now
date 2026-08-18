@@ -78,15 +78,13 @@ function Reveal({ i, children, style }) {
 // used for step 01 in place of the coded ContentSlide.
 function ImageSlide({ src, alt, width, height }) {
   return (
-    <Reveal i={0} style={{ width: '100%', alignSelf: 'center' }}>
-      <div style={{ width: '100%', background: card.bg }}>
-        <Image
-          src={src} alt={alt} width={width} height={height}
-          sizes="100vw" priority
-          style={{ width: '100%', height: 'auto', display: 'block' }}
-        />
-      </div>
-    </Reveal>
+    <div className="hiw-image-slide" style={{ width: '100%', alignSelf: 'center', background: card.bg }}>
+      <Image
+        src={src} alt={alt} width={width} height={height}
+        sizes="100vw" priority
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
+    </div>
   )
 }
 
@@ -394,6 +392,14 @@ export default function HowItWorksDeck({ showHeading = true }) {
         .hiw-slide.is-revealed .hiw-anim-item {
           animation: hiwFadeUp 0.7s ease-out forwards;
           animation-delay: calc(var(--i) * 100ms);
+        }
+        /* Step 01's image is the first thing visible on load — it fades
+           in unconditionally on mount (like the homepage banners), not
+           via the scroll observer, since being already in the viewport
+           at page-load made the observer-based reveal unreliable. */
+        .hiw-image-slide {
+          opacity: 0;
+          animation: hiwFadeUp 0.7s ease-out 0.15s forwards;
         }
       `}</style>
     </div>
