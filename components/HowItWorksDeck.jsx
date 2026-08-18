@@ -393,13 +393,18 @@ export default function HowItWorksDeck({ showHeading = true }) {
           animation: hiwFadeUp 0.7s ease-out forwards;
           animation-delay: calc(var(--i) * 100ms);
         }
-        /* Step 01's image is the first thing visible on load — it fades
-           in unconditionally on mount (like the homepage banners), not
-           via the scroll observer, since being already in the viewport
-           at page-load made the observer-based reveal unreliable. */
+        /* Step 01's image is the first thing visible on load — it wipes
+           into view left-to-right unconditionally on mount (like the
+           homepage banners fade in), not via the scroll observer, since
+           being already in the viewport at page-load made the
+           observer-based reveal unreliable. */
+        @keyframes hiwWipeReveal {
+          from { clip-path: inset(0 100% 0 0); }
+          to { clip-path: inset(0 0 0 0); }
+        }
         .hiw-image-slide {
-          opacity: 0;
-          animation: hiwFadeUp 0.7s ease-out 0.15s forwards;
+          clip-path: inset(0 100% 0 0);
+          animation: hiwWipeReveal 1.1s ease-in-out 0.15s forwards;
         }
       `}</style>
     </div>
