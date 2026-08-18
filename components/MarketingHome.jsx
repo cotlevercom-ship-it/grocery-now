@@ -61,7 +61,7 @@ function HowItWorksMobileSection() {
   return (
     <div
       className="how-it-works-mobile"
-      style={{ padding: '28px 16px clamp(32px,5vw,56px)', background: theme.paper }}
+      style={{ padding: '28px 0 clamp(32px,5vw,56px)', background: theme.paper }}
     >
       <HowItWorksDeck showHeading={false} />
     </div>
