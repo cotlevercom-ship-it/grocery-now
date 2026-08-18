@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Pricing | Cot Lever',
-  description: 'Cot Lever pricing for Add Business and Find Co-founder listings.',
+  description: 'Cot Lever pricing for creating your co-founder profile.',
   alternates: {
     canonical: '/pricing',
   },

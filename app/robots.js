@@ -11,8 +11,6 @@ export default function robots() {
         '/account',
         '/account/',
         '/api/',
-        '/payment',
-        '/payment/',
         '/login',
         '/forgot-password',
         '/reset-password',

@@ -165,7 +165,7 @@ function LoginForm() {
           }
         }
         // Email was already verified inline above — go straight to the
-        // one-time subscription payment step (covers up to 3 listings).
+        // one-time subscription payment step.
         router.push('/account/subscribe')
       } else {
         await signIn(email.trim(), password)
@@ -270,7 +270,7 @@ function LoginForm() {
 
             {mode === 'signup' && !otpSent && (
               <div style={{ fontSize: '11.5px', color: theme.inkSoft, marginTop: '6px' }}>
-                This will be the contact email visitors see on your listing.
+                This will be the contact email other founders see on your profile.
               </div>
             )}
 
