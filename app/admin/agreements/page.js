@@ -4,8 +4,6 @@ import { supabaseFetch } from '@/lib/supabase'
 
 const TYPE_LABELS = {
   customer: { label: 'Customer Registration', desc: 'Shown at /login during signup' },
-  listing: { label: 'Business Listing', desc: 'Shown on the Add Business form' },
-  cofounder: { label: 'Find Co-founder', desc: 'Shown on the Find Co-founder post form' },
 }
 
 export default function AdminAgreementsPage() {
