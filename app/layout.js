@@ -30,7 +30,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata = {
   metadataBase: new URL('https://cotlever.com'),
   title: 'Cot Lever',
-  description: 'Find a co-founder, partner, or share holder — list your business today.',
+  description: 'Find a co-founder, partner, or share holder — create your profile today.',
   alternates: {
     canonical: '/',
   },

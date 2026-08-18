@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'How It Works | Cot Lever',
-  description: 'How Cot Lever works — list your business, connect with partners, or find a co-founder for your next venture.',
+  description: 'How Cot Lever works — create your profile, connect with partners, or find a co-founder for your next venture.',
   alternates: {
     canonical: '/how-it-works',
   },

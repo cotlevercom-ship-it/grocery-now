@@ -125,7 +125,7 @@ export default function WhyUseCotleverPage() {
                     <div className={styles.pageIndex}>{p.n}</div>
                     <div className={styles.pageCopy}>
                       <h2>Ready to get <em>started</em>?</h2>
-                      <p>Create your profile and let the right people find you — see the full five-step process first if you like.</p>
+                      <p>Create your profile and let the right people find you — see how it works first if you like.</p>
                       <div
                         style={{ display: 'flex', gap: '16px', marginTop: '36px', flexWrap: 'wrap' }}
                         onClick={(e) => e.stopPropagation()}

@@ -3,16 +3,16 @@ import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
 const PLAN = {
-  name: 'List on Cot Lever',
-  tagline: 'List your business, idea, or co-founder search for a partner, co-founder, or share holder.',
+  name: 'Join Cot Lever',
+  tagline: 'Create your co-founder profile and get discovered by partners, co-founders, and share holders.',
   options: [
     { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
   ],
   features: [
-    'Add up to 3 Business listings under one subscription',
-    'Every listing shown in the public directory, searchable by anyone browsing',
+    'Create your co-founder profile — skills, experience, and what you\u2019re looking for',
+    'Your profile shown in the public directory, searchable by anyone browsing',
     'Interested people contact you directly using the details you provide',
-    'Listings stay active for the full plan period, then renew',
+    'Profile stays active for the full plan period, then renews',
   ],
   cta: { label: 'Get Started', href: '/login' },
 }
@@ -32,7 +32,7 @@ export default function PricingPage() {
         }}>Simple, transparent pricing</h1>
 
         <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '44px', maxWidth: '520px' }}>
-          One simple listing, pay via bKash. Every listing is reviewed by our team before it goes live.
+          One simple profile, pay via bKash. Your profile goes live in the directory as soon as you save it.
         </p>
 
         <div style={{

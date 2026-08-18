@@ -5,7 +5,7 @@ const jsonLd = {
   '@type': 'Organization',
   name: 'Cot Lever',
   url: 'https://cotlever.com',
-  description: 'Find a co-founder, partner, or share holder — list your business today.',
+  description: 'Find a co-founder, partner, or share holder — create your profile today.',
 }
 
 export default function Home() {
