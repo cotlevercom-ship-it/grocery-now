@@ -21,6 +21,7 @@ export default function MemberProfileFormPage() {
     display_name: '', role_title: '', skills: '', experience: '',
     industry: '', years_experience: '', founder_type: '', education: '',
     looking_for: '', commitment: '', bio: '', location: '', contact_email: '',
+    linkedin_url: '', interested_industry: '',
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -48,6 +49,7 @@ export default function MemberProfileFormPage() {
             looking_for: p.looking_for || '', commitment: p.commitment || '',
             bio: p.bio || '', location: p.location || '',
             contact_email: p.contact_email || s.user.email || '',
+            linkedin_url: p.linkedin_url || '', interested_industry: p.interested_industry || '',
           })
           setExistingPhotoUrl(p.photo_url || '')
         } else {
@@ -101,6 +103,8 @@ export default function MemberProfileFormPage() {
         bio: form.bio.trim() || null,
         location: form.location.trim() || null,
         contact_email: form.contact_email.trim(),
+        linkedin_url: form.linkedin_url.trim() || null,
+        interested_industry: form.interested_industry.trim() || null,
         photo_url,
         updated_at: new Date().toISOString(),
       }
@@ -262,6 +266,11 @@ export default function MemberProfileFormPage() {
           </div>
 
           <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Interested In (Industry/Idea)</label>
+            <input style={inputStyle} value={form.interested_industry} onChange={e => handleChange('interested_industry', e.target.value)} placeholder="e.g. Fintech, Healthtech, Logistics" />
+          </div>
+
+          <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Bio / Pitch</label>
             <textarea style={{ ...inputStyle, minHeight: '90px', resize: 'vertical' }} value={form.bio} onChange={e => handleChange('bio', e.target.value)} placeholder="A couple lines about yourself and what you're building" />
           </div>
@@ -271,9 +280,14 @@ export default function MemberProfileFormPage() {
             <input style={inputStyle} value={form.location} onChange={e => handleChange('location', e.target.value)} placeholder="Dhaka" />
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Contact Email *</label>
             <input style={inputStyle} value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" />
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={labelStyle}>LinkedIn / Portfolio Link</label>
+            <input style={inputStyle} value={form.linkedin_url} onChange={e => handleChange('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/yourname" />
           </div>
 
           <button type="submit" disabled={submitting} style={{

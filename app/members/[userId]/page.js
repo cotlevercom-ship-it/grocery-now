@@ -174,7 +174,7 @@ export default function MemberDetailPage() {
             </div>
           </div>
 
-          {(member.looking_for || member.commitment) && (
+          {(member.looking_for || member.commitment || member.interested_industry) && (
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '22px' }}>
               {member.looking_for && (
                 <span style={{
@@ -187,6 +187,12 @@ export default function MemberDetailPage() {
                   fontSize: '11.5px', fontWeight: '600', padding: '5px 11px', borderRadius: '20px',
                   background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
                 }}>{member.commitment}</span>
+              )}
+              {member.interested_industry && (
+                <span style={{
+                  fontSize: '11.5px', fontWeight: '600', padding: '5px 11px', borderRadius: '20px',
+                  background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
+                }}>Interested in: {member.interested_industry}</span>
               )}
             </div>
           )}
@@ -258,6 +264,13 @@ export default function MemberDetailPage() {
               <a href={`mailto:${member.contact_email}`} style={{ fontSize: '14.5px', color: theme.ink, fontWeight: '600', textDecoration: 'none' }}>
                 {member.contact_email}
               </a>
+              {member.linkedin_url && (
+                <div style={{ marginTop: '8px' }}>
+                  <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '13.5px', color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>
+                    LinkedIn / Portfolio ↗
+                  </a>
+                </div>
+              )}
             </div>
           )}
 
