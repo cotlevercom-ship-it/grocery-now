@@ -7,18 +7,31 @@ function HeroBanner() {
 
   return (
     <div className="banner-anim" style={{
-      position: 'relative', width: '100%', aspectRatio: '1942 / 809',
-      overflow: 'hidden', background: theme.surface,
+      position: 'relative', width: '100%', overflow: 'hidden', background: theme.surface,
       animationDelay: '0s',
     }}>
-      <Image
-        src="/marketing/hero-cofounder-banner.png"
-        alt={alt}
-        fill
-        priority
-        sizes="100vw"
-        style={{ objectFit: 'contain' }}
-      />
+      {/* Mobile-only hero image (portrait) */}
+      <div className="hero-mobile-only" style={{ position: 'relative', width: '100%', aspectRatio: '903 / 1215' }}>
+        <Image
+          src="/marketing/hero-mobile-idea.jpg"
+          alt={alt}
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: 'cover' }}
+        />
+      </div>
+      {/* Desktop hero image (wide) */}
+      <div className="hero-desktop-only" style={{ position: 'relative', width: '100%', aspectRatio: '1942 / 809' }}>
+        <Image
+          src="/marketing/hero-cofounder-banner.png"
+          alt={alt}
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: 'contain' }}
+        />
+      </div>
     </div>
   )
 }
@@ -79,6 +92,8 @@ export default function MarketingHome() {
           position: static;
           background: ${theme.paper};
         }
+        .hero-mobile-only { display: block; }
+        .hero-desktop-only { display: none; }
         @media (min-width: 768px) {
           .banner-sticky-1 {
             position: sticky;
@@ -90,6 +105,8 @@ export default function MarketingHome() {
             top: 0;
             z-index: 2;
           }
+          .hero-mobile-only { display: none; }
+          .hero-desktop-only { display: block; }
         }
       `}</style>
     </div>
