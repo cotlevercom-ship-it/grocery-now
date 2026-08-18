@@ -1,8 +1,9 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
-  PenLine, TrendingUp, HeartHandshake, RefreshCw,
+  TrendingUp, RefreshCw,
   Code2, Megaphone, PenTool, Briefcase,
   BarChart3, Users, Target, Compass,
   ClipboardCheck,
@@ -70,6 +71,16 @@ function Reveal({ i, children }) {
 }
 
 // ---- Slide content ----
+
+// A slide that's just a static illustration image, filling the card
+// edge-to-edge (used for step 01 in place of the coded ContentSlide).
+function ImageSlide({ src, alt }) {
+  return (
+    <div style={{ position: 'relative', width: '100%', minHeight: 'clamp(360px,52vh,480px)' }}>
+      <Image src={src} alt={alt} fill sizes="100vw" style={{ objectFit: 'cover' }} />
+    </div>
+  )
+}
 
 function ContentSlide({ n, title, intro, bullets, closer, Icon }) {
   return (
@@ -156,16 +167,9 @@ function ClosingSlide() {
 const SLIDES = [
   {
     key: '01', render: () => (
-      <ContentSlide
-        n="01" title="The Idea" Icon={Sprout}
-        intro="Every great business begins with..."
-        bullets={[
-          { Icon: PenLine, text: 'A vision.' },
-          { Icon: TrendingUp, text: 'A solid strategy.' },
-          { Icon: HeartHandshake, text: 'Passion & purpose.' },
-          { Icon: RefreshCw, text: 'A plan to execute.' },
-        ]}
-        closer="But execution makes it real."
+      <ImageSlide
+        src="/marketing/hiw-slide-01-idea.jpg"
+        alt="01. The Idea — you have an idea, but building it alone can be hard."
       />
     )
   },
