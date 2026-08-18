@@ -8,12 +8,18 @@ import VerificationSection from '@/components/VerificationSection'
 
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const LOOKING_FOR_OPTIONS = ['Technical co-founder', 'Business co-founder', 'Marketing co-founder', 'Any co-founder']
+const YEARS_EXPERIENCE_OPTIONS = ['0-1 years', '1-3 years', '3-5 years', '5-10 years', '10+ years']
+const FOUNDER_TYPE_OPTIONS = [
+  { value: 'first_time', label: 'First-time founder' },
+  { value: 'serial', label: 'Serial founder' },
+]
 
 export default function MemberProfileFormPage() {
   const router = useRouter()
   const [session, setSession] = useState(undefined)
   const [form, setForm] = useState({
     display_name: '', role_title: '', skills: '', experience: '',
+    industry: '', years_experience: '', founder_type: '', education: '',
     looking_for: '', commitment: '', bio: '', location: '', contact_email: '',
   })
   const [photoFile, setPhotoFile] = useState(null)
@@ -37,6 +43,8 @@ export default function MemberProfileFormPage() {
           setForm({
             display_name: p.display_name || '', role_title: p.role_title || '',
             skills: (p.skills || []).join(', '), experience: p.experience || '',
+            industry: p.industry || '', years_experience: p.years_experience || '',
+            founder_type: p.founder_type || '', education: p.education || '',
             looking_for: p.looking_for || '', commitment: p.commitment || '',
             bio: p.bio || '', location: p.location || '',
             contact_email: p.contact_email || s.user.email || '',
@@ -84,6 +92,10 @@ export default function MemberProfileFormPage() {
         role_title: form.role_title.trim() || null,
         skills: form.skills.split(',').map(s => s.trim()).filter(Boolean),
         experience: form.experience.trim() || null,
+        industry: form.industry.trim() || null,
+        years_experience: form.years_experience || null,
+        founder_type: form.founder_type || null,
+        education: form.education.trim() || null,
         looking_for: form.looking_for || null,
         commitment: form.commitment || null,
         bio: form.bio.trim() || null,
@@ -202,6 +214,34 @@ export default function MemberProfileFormPage() {
           <div style={{ marginBottom: '18px' }}>
             <label style={labelStyle}>Experience</label>
             <input style={inputStyle} value={form.experience} onChange={e => handleChange('experience', e.target.value)} placeholder="e.g. 5 years in fintech product management" />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '18px' }}>
+            <div>
+              <label style={labelStyle}>Industry</label>
+              <input style={inputStyle} value={form.industry} onChange={e => handleChange('industry', e.target.value)} placeholder="e.g. Fintech, E-commerce" />
+            </div>
+            <div>
+              <label style={labelStyle}>Years of Experience</label>
+              <select style={inputStyle} value={form.years_experience} onChange={e => handleChange('years_experience', e.target.value)}>
+                <option value="">Select</option>
+                {YEARS_EXPERIENCE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '18px' }}>
+            <div>
+              <label style={labelStyle}>Founder Type</label>
+              <select style={inputStyle} value={form.founder_type} onChange={e => handleChange('founder_type', e.target.value)}>
+                <option value="">Select</option>
+                {FOUNDER_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Education</label>
+              <input style={inputStyle} value={form.education} onChange={e => handleChange('education', e.target.value)} placeholder="e.g. BSc CSE, BUET" />
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '18px' }}>

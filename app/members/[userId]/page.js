@@ -207,6 +207,31 @@ export default function MemberDetailPage() {
             </div>
           )}
 
+          {(member.industry || member.years_experience || member.founder_type || member.education) && (
+            <div style={{ marginBottom: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {member.industry && (
+                <div style={{ fontSize: '14px', color: theme.ink }}>
+                  <span style={{ color: theme.inkSoft }}>Industry: </span>{member.industry}
+                </div>
+              )}
+              {member.years_experience && (
+                <div style={{ fontSize: '14px', color: theme.ink }}>
+                  <span style={{ color: theme.inkSoft }}>Experience: </span>{member.years_experience}
+                </div>
+              )}
+              {member.founder_type && (
+                <div style={{ fontSize: '14px', color: theme.ink }}>
+                  <span style={{ color: theme.inkSoft }}>Founder type: </span>{member.founder_type === 'serial' ? 'Serial founder' : 'First-time founder'}
+                </div>
+              )}
+              {member.education && (
+                <div style={{ fontSize: '14px', color: theme.ink }}>
+                  <span style={{ color: theme.inkSoft }}>Education: </span>{member.education}
+                </div>
+              )}
+            </div>
+          )}
+
           {(member.skills || []).length > 0 && (
             <div style={{ marginBottom: '22px' }}>
               <div style={{
