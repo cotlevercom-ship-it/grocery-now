@@ -69,8 +69,8 @@ export default function MarketingHome() {
         <HeroBanner />
       </div>
 
-      {/* Ideas. People. Together. — on desktop slides up to cover the hero on scroll; on mobile just follows normally */}
-      <div className="banner-sticky-2" style={{
+      {/* Ideas. People. Together. — desktop only: slides up to cover the hero on scroll. Hidden on mobile. */}
+      <div className="banner-sticky-2 ideas-banner-desktop-only" style={{
         paddingBottom: 'clamp(32px,5vw,56px)',
       }}>
         <IdeasPeopleTogetherBanner />
@@ -94,6 +94,7 @@ export default function MarketingHome() {
         }
         .hero-mobile-only { display: block; }
         .hero-desktop-only { display: none; }
+        .ideas-banner-desktop-only { display: none; }
         @media (min-width: 768px) {
           .banner-sticky-1 {
             position: sticky;
@@ -107,6 +108,7 @@ export default function MarketingHome() {
           }
           .hero-mobile-only { display: none; }
           .hero-desktop-only { display: block; }
+          .ideas-banner-desktop-only { display: block; }
         }
       `}</style>
     </div>
