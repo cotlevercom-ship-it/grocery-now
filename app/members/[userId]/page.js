@@ -174,7 +174,7 @@ export default function MemberDetailPage() {
             </div>
           </div>
 
-          {(member.looking_for || member.commitment || member.interested_industry) && (
+          {(member.looking_for || member.commitment || (member.interested_industry || []).length > 0) && (
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '22px' }}>
               {member.looking_for && (
                 <span style={{
@@ -188,12 +188,12 @@ export default function MemberDetailPage() {
                   background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
                 }}>{member.commitment}</span>
               )}
-              {member.interested_industry && (
-                <span style={{
+              {(member.interested_industry || []).map(i => (
+                <span key={i} style={{
                   fontSize: '11.5px', fontWeight: '600', padding: '5px 11px', borderRadius: '20px',
                   background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
-                }}>Interested in: {member.interested_industry}</span>
-              )}
+                }}>{i}</span>
+              ))}
             </div>
           )}
 

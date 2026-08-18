@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import VerificationSection from '@/components/VerificationSection'
+import { SKILL_OPTIONS, INDUSTRY_OPTIONS } from '@/lib/memberOptions'
 
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const LOOKING_FOR_OPTIONS = ['Technical co-founder', 'Business co-founder', 'Marketing co-founder', 'Any co-founder']
@@ -18,10 +19,10 @@ export default function MemberProfileFormPage() {
   const router = useRouter()
   const [session, setSession] = useState(undefined)
   const [form, setForm] = useState({
-    display_name: '', role_title: '', skills: '', experience: '',
+    display_name: '', role_title: '', skills: [], experience: '',
     industry: '', years_experience: '', founder_type: '', education: '',
     looking_for: '', commitment: '', bio: '', location: '', contact_email: '',
-    linkedin_url: '', interested_industry: '',
+    linkedin_url: '', interested_industry: [],
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -43,13 +44,13 @@ export default function MemberProfileFormPage() {
         if (p) {
           setForm({
             display_name: p.display_name || '', role_title: p.role_title || '',
-            skills: (p.skills || []).join(', '), experience: p.experience || '',
+            skills: p.skills || [], experience: p.experience || '',
             industry: p.industry || '', years_experience: p.years_experience || '',
             founder_type: p.founder_type || '', education: p.education || '',
             looking_for: p.looking_for || '', commitment: p.commitment || '',
             bio: p.bio || '', location: p.location || '',
             contact_email: p.contact_email || s.user.email || '',
-            linkedin_url: p.linkedin_url || '', interested_industry: p.interested_industry || '',
+            linkedin_url: p.linkedin_url || '', interested_industry: p.interested_industry || [],
           })
           setExistingPhotoUrl(p.photo_url || '')
         } else {
@@ -62,6 +63,11 @@ export default function MemberProfileFormPage() {
   }, [])
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
+
+  const toggleArrayValue = (field, value) => setForm(prev => {
+    const arr = prev[field] || []
+    return { ...prev, [field]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] }
+  })
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0]
@@ -92,7 +98,7 @@ export default function MemberProfileFormPage() {
         user_id: session.user.id,
         display_name: form.display_name.trim(),
         role_title: form.role_title.trim() || null,
-        skills: form.skills.split(',').map(s => s.trim()).filter(Boolean),
+        skills: form.skills,
         experience: form.experience.trim() || null,
         industry: form.industry.trim() || null,
         years_experience: form.years_experience || null,
@@ -104,7 +110,7 @@ export default function MemberProfileFormPage() {
         location: form.location.trim() || null,
         contact_email: form.contact_email.trim(),
         linkedin_url: form.linkedin_url.trim() || null,
-        interested_industry: form.interested_industry.trim() || null,
+        interested_industry: form.interested_industry,
         photo_url,
         updated_at: new Date().toISOString(),
       }
@@ -211,8 +217,24 @@ export default function MemberProfileFormPage() {
           </div>
 
           <div style={{ marginBottom: '18px' }}>
-            <label style={labelStyle}>Skills (comma separated)</label>
-            <input style={inputStyle} value={form.skills} onChange={e => handleChange('skills', e.target.value)} placeholder="e.g. Marketing, Backend Dev, Sales" />
+            <label style={labelStyle}>Skills</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {SKILL_OPTIONS.map(s => {
+                const selected = form.skills.includes(s)
+                return (
+                  <button
+                    key={s} type="button" onClick={() => toggleArrayValue('skills', s)}
+                    style={{
+                      fontSize: '12.5px', fontWeight: '600', padding: '7px 13px', borderRadius: '20px',
+                      cursor: 'pointer', fontFamily: theme.fontBody,
+                      background: selected ? theme.brass : theme.surface,
+                      color: selected ? 'white' : theme.inkSoft,
+                      border: `1px solid ${selected ? theme.brass : theme.line}`,
+                    }}
+                  >{s}</button>
+                )
+              })}
+            </div>
           </div>
 
           <div style={{ marginBottom: '18px' }}>
@@ -266,8 +288,24 @@ export default function MemberProfileFormPage() {
           </div>
 
           <div style={{ marginBottom: '18px' }}>
-            <label style={labelStyle}>Interested In (Industry/Idea)</label>
-            <input style={inputStyle} value={form.interested_industry} onChange={e => handleChange('interested_industry', e.target.value)} placeholder="e.g. Fintech, Healthtech, Logistics" />
+            <label style={labelStyle}>Interested In (Industry)</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {INDUSTRY_OPTIONS.map(i => {
+                const selected = form.interested_industry.includes(i)
+                return (
+                  <button
+                    key={i} type="button" onClick={() => toggleArrayValue('interested_industry', i)}
+                    style={{
+                      fontSize: '12.5px', fontWeight: '600', padding: '7px 13px', borderRadius: '20px',
+                      cursor: 'pointer', fontFamily: theme.fontBody,
+                      background: selected ? theme.brass : theme.surface,
+                      color: selected ? 'white' : theme.inkSoft,
+                      border: `1px solid ${selected ? theme.brass : theme.line}`,
+                    }}
+                  >{i}</button>
+                )
+              })}
+            </div>
           </div>
 
           <div style={{ marginBottom: '18px' }}>

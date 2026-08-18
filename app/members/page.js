@@ -4,10 +4,14 @@ import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import VerifiedBadge from '@/components/VerifiedBadge'
+import { SKILL_OPTIONS, INDUSTRY_OPTIONS } from '@/lib/memberOptions'
 
 export default function MembersBrowsePage({ embedded = false }) {
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [skillFilter, setSkillFilter] = useState([])
+  const [industryFilter, setIndustryFilter] = useState([])
 
   useEffect(() => {
     async function load() {
@@ -23,6 +27,24 @@ export default function MembersBrowsePage({ embedded = false }) {
     load()
   }, [])
 
+  const toggleFilter = (setFn, value) => setFn(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value])
+
+  const activeFilterCount = skillFilter.length + industryFilter.length
+
+  const filteredMembers = members.filter(m => {
+    const skillMatch = skillFilter.length === 0 || skillFilter.some(s => (m.skills || []).includes(s))
+    const industryMatch = industryFilter.length === 0 || industryFilter.some(i => (m.interested_industry || []).includes(i))
+    return skillMatch && industryMatch
+  })
+
+  const chipStyle = (selected) => ({
+    fontSize: '12px', fontWeight: '600', padding: '6px 12px', borderRadius: '20px',
+    cursor: 'pointer', fontFamily: theme.fontBody, whiteSpace: 'nowrap',
+    background: selected ? theme.brass : theme.paper,
+    color: selected ? 'white' : theme.inkSoft,
+    border: `1px solid ${selected ? theme.brass : theme.line}`,
+  })
+
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px)' }}>
@@ -32,28 +54,86 @@ export default function MembersBrowsePage({ embedded = false }) {
               fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(24px,3vw,34px)',
               color: theme.ink, marginBottom: '8px', letterSpacing: '-0.01em'
             }}>Find a Co-founder</h1>
-            <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px' }}>
+            <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '18px' }}>
               Browse founders looking for a co-founder, partner, or share holder.
             </p>
+
+            <button
+              onClick={() => setFiltersOpen(v => !v)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '7px', marginBottom: '18px',
+                background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '8px',
+                padding: '9px 15px', fontSize: '13px', fontWeight: '600', color: theme.ink,
+                cursor: 'pointer', fontFamily: theme.fontBody,
+              }}
+            >
+              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''} {filtersOpen ? '▲' : '▼'}
+            </button>
+
+            {filtersOpen && (
+              <div style={{
+                background: theme.surface, border: `1px solid ${theme.line}`, borderRadius: '10px',
+                padding: '18px', marginBottom: '22px',
+              }}>
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{
+                    fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                    color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
+                  }}>Skill</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+                    {SKILL_OPTIONS.map(s => (
+                      <button key={s} type="button" onClick={() => toggleFilter(setSkillFilter, s)} style={chipStyle(skillFilter.includes(s))}>{s}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div style={{
+                    fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                    color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
+                  }}>Industry</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+                    {INDUSTRY_OPTIONS.map(i => (
+                      <button key={i} type="button" onClick={() => toggleFilter(setIndustryFilter, i)} style={chipStyle(industryFilter.includes(i))}>{i}</button>
+                    ))}
+                  </div>
+                </div>
+                {activeFilterCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => { setSkillFilter([]); setIndustryFilter([]) }}
+                    style={{
+                      marginTop: '16px', background: 'none', border: 'none', color: theme.brassDark,
+                      fontSize: '12.5px', fontWeight: '600', cursor: 'pointer', padding: 0, fontFamily: theme.fontBody,
+                    }}
+                  >Clear filters</button>
+                )}
+              </div>
+            )}
           </>
         )}
 
         {loading ? (
           <div style={{ color: theme.inkSoft, fontSize: '14px', textAlign: 'center', padding: '60px' }}>Loading…</div>
-        ) : members.length === 0 ? (
+        ) : filteredMembers.length === 0 ? (
           <div style={{
             textAlign: 'center', padding: '60px 20px', color: theme.inkSoft,
             background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`
           }}>
-            <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: theme.ink, marginBottom: '8px' }}>No profiles yet</p>
-            <p style={{ fontSize: '13.5px' }}>Be the first — <Link href="/members/new" style={{ color: theme.brassDark, fontWeight: '600' }}>create your profile</Link>.</p>
+            {members.length === 0 ? (
+              <>
+                <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: theme.ink, marginBottom: '8px' }}>No profiles yet</p>
+                <p style={{ fontSize: '13.5px' }}>Be the first — <Link href="/members/new" style={{ color: theme.brassDark, fontWeight: '600' }}>create your profile</Link>.</p>
+              </>
+            ) : (
+              <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: theme.ink }}>No profiles match these filters</p>
+            )}
           </div>
         ) : (
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(240px,25vw,300px),1fr))',
             gap: 'clamp(14px, 1.6vw, 22px)'
           }}>
-            {members.map(m => {
+            {filteredMembers.map(m => {
               const initial = (m.display_name || '?').trim().charAt(0).toUpperCase()
               return (
                 <div key={m.user_id} className="member-card" style={{
