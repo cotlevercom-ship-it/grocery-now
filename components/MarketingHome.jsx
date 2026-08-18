@@ -51,14 +51,13 @@ export default function MarketingHome() {
         overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0
       }}>Find the right people for your business — Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs.</h1>
 
-      {/* Hero — stays pinned while the next banner scrolls up over it */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+      {/* Hero — on desktop stays pinned while the next banner scrolls up over it; on mobile just normal flow */}
+      <div className="banner-sticky-1">
         <HeroBanner />
       </div>
 
-      {/* Ideas. People. Together. — slides up to cover the hero on scroll */}
-      <div style={{
-        position: 'sticky', top: 0, zIndex: 2, background: theme.paper,
+      {/* Ideas. People. Together. — on desktop slides up to cover the hero on scroll; on mobile just follows normally */}
+      <div className="banner-sticky-2" style={{
         paddingBottom: 'clamp(32px,5vw,56px)',
       }}>
         <IdeasPeopleTogetherBanner />
@@ -72,6 +71,25 @@ export default function MarketingHome() {
         .banner-anim {
           opacity: 0;
           animation: bannerFadeUp 0.9s ease-out forwards;
+        }
+        .banner-sticky-1 {
+          position: static;
+        }
+        .banner-sticky-2 {
+          position: static;
+          background: ${theme.paper};
+        }
+        @media (min-width: 768px) {
+          .banner-sticky-1 {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+          }
+          .banner-sticky-2 {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+          }
         }
       `}</style>
     </div>
