@@ -291,23 +291,32 @@ function SlideCard({ slide }) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    let timeoutId
     // Every card — including the first one visible on page load — reveals
     // only through this observer, so the browser always paints the
     // invisible state first and the fade is actually visible, instead of
     // the first card jumping straight to revealed before the first paint.
+    // A short delay before applying the result guarantees at least one
+    // real paint of the invisible state even when a card (typically the
+    // first one) is already fully in view the instant it mounts, so the
+    // fade is never skipped by an effectively-instant observer callback.
     // Re-triggers on every scroll-into-view (both directions): toggling
     // revealed off when it leaves the viewport lets the animation replay
     // the next time it comes back in.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          setRevealed(entry.isIntersecting)
+          clearTimeout(timeoutId)
+          timeoutId = setTimeout(() => setRevealed(entry.isIntersecting), 60)
         })
       },
       { threshold: 0.3, rootMargin: '0px 0px -10% 0px' }
     )
     observer.observe(el)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      clearTimeout(timeoutId)
+    }
   }, [])
 
   return (
