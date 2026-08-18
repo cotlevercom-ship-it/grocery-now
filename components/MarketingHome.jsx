@@ -76,12 +76,12 @@ export default function MarketingHome() {
         overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0
       }}>Find the right people for your business — Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs.</h1>
 
-      {/* Hero — on desktop stays pinned while the next banner scrolls up over it; on mobile just normal flow */}
+      {/* Hero — stays pinned while the next section scrolls up over it, on both mobile and desktop */}
       <div className="banner-sticky-1">
         <HeroBanner />
       </div>
 
-      {/* How It Works — full scroll-reveal deck, mobile only, sits right under the hero */}
+      {/* How It Works — full scroll-reveal deck, mobile only: slides up and covers the hero on scroll */}
       <HowItWorksMobileSection />
 
       {/* Ideas. People. Together. — desktop only: slides up to cover the hero on scroll. Hidden on mobile. */}
@@ -101,7 +101,9 @@ export default function MarketingHome() {
           animation: bannerFadeUp 0.9s ease-out forwards;
         }
         .banner-sticky-1 {
-          position: static;
+          position: sticky;
+          top: 0;
+          z-index: 1;
         }
         .banner-sticky-2 {
           position: static;
@@ -110,14 +112,14 @@ export default function MarketingHome() {
         .hero-mobile-only { display: block; }
         .hero-desktop-only { display: none; }
         .ideas-banner-desktop-only { display: none; }
-        .how-it-works-mobile { display: block; }
+        .how-it-works-mobile {
+          display: block;
+          position: sticky;
+          top: 0;
+          z-index: 2;
+        }
         @media (min-width: 768px) {
           .how-it-works-mobile { display: none; }
-          .banner-sticky-1 {
-            position: sticky;
-            top: 0;
-            z-index: 1;
-          }
           .banner-sticky-2 {
             position: sticky;
             top: 0;
