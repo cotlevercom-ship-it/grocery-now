@@ -46,9 +46,8 @@ export default function MarketingHome() {
     <div style={{ background: theme.paper }}>
       {/* Hero */}
       <div style={{
-        width: '100%', padding: '0 0 clamp(32px,5vw,56px)',
+        width: '100%',
       }}>
-        {/* Visually hidden but present for SEO/screen readers — the banner below carries this same content visually */}
         <h1 style={{
           position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px',
           overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0
