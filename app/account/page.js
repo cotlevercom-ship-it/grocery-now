@@ -81,16 +81,19 @@ export default function AccountPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{
+            <Link href={`/members/${profile?.id}`} style={{
               width: '54px', height: '54px', borderRadius: '50%', background: '#dc2626',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '22px', fontWeight: '700', color: 'white', flexShrink: 0,
-              border: '2px solid rgba(255,255,255,0.25)'
-            }}>{initial}</div>
+              border: '2px solid rgba(255,255,255,0.25)', textDecoration: 'none'
+            }}>{initial}</Link>
             <div style={{ minWidth: 0 }}>
-              <div style={{ color: 'white', fontSize: '18px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Link href={`/members/${profile?.id}`} style={{
+                color: 'white', fontSize: '18px', fontWeight: '700', overflow: 'hidden',
+                textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none', display: 'block'
+              }}>
                 {profile?.full_name || 'Guest User'}
-              </div>
+              </Link>
               <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', marginTop: '2px', fontFamily: '"Courier New", monospace' }}>
                 {profile?.phone || 'No phone number added'}
               </div>

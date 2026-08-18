@@ -117,6 +117,8 @@ export default function MemberDetailPage() {
   const { userId } = useParams()
   const [member, setMember] = useState(null)
   const [loading, setLoading] = useState(true)
+  const session = getSession()
+  const isOwnProfile = session?.user?.id && session.user.id === userId
 
   useEffect(() => {
     async function load() {
@@ -135,6 +137,17 @@ export default function MemberDetailPage() {
   if (loading) return <div style={{ padding: '60px', textAlign: 'center', color: theme.inkSoft }}>Loading…</div>
 
   if (!member) {
+    if (isOwnProfile) {
+      return (
+        <div style={{ padding: '60px 20px', textAlign: 'center', color: theme.inkSoft }}>
+          <p style={{ marginBottom: '16px' }}>You haven&apos;t created your co-founder profile yet.</p>
+          <Link href="/members/new" style={{
+            display: 'inline-block', background: theme.brass, color: 'white',
+            borderRadius: '8px', padding: '12px 24px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
+          }}>Create Your Profile</Link>
+        </div>
+      )
+    }
     return (
       <div style={{ padding: '60px', textAlign: 'center', color: theme.inkSoft }}>
         Profile not found. <Link href="/members" style={{ color: theme.brassDark, fontWeight: '600' }}>Back to co-founders</Link>
@@ -172,6 +185,12 @@ export default function MemberDetailPage() {
             <div style={{ fontSize: '14px', color: theme.inkSoft, marginTop: '4px' }}>
               {member.role_title || 'Role not specified'}{member.location ? ` · ${member.location}` : ''}
             </div>
+            {isOwnProfile && (
+              <Link href="/members/new" style={{
+                display: 'inline-block', marginTop: '14px', fontSize: '13px', fontWeight: '600', color: theme.brass,
+                textDecoration: 'none', border: `1.5px solid ${theme.brass}`, borderRadius: '999px', padding: '8px 18px',
+              }}>Edit Profile</Link>
+            )}
           </div>
 
           {(member.looking_for || member.commitment || (member.interested_industry || []).length > 0) && (
