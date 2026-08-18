@@ -314,12 +314,14 @@ function SlideCard({ slide, isFirst }) {
     if (isFirst) {
       // First card is already in view on load — reveal immediately.
       setRevealed(true)
-      return
     }
+    // Re-triggers on every scroll-into-view (both directions), not just
+    // the first time — toggling revealed off when it leaves the viewport
+    // lets the fade-up animation replay the next time it comes back in.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setRevealed(true)
+          setRevealed(entry.isIntersecting)
         })
       },
       { threshold: 0.3, rootMargin: '0px 0px -10% 0px' }
