@@ -19,7 +19,6 @@ export default function MemberProfileFormPage() {
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
   const [existingPhotoUrl, setExistingPhotoUrl] = useState('')
-  const [approvalStatus, setApprovalStatus] = useState(null)
   const [loaded, setLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -43,7 +42,6 @@ export default function MemberProfileFormPage() {
             contact_email: p.contact_email || s.user.email || '',
           })
           setExistingPhotoUrl(p.photo_url || '')
-          setApprovalStatus(p.approval_status || null)
         } else {
           setForm(prev => ({ ...prev, contact_email: s.user.email || '' }))
         }
@@ -94,16 +92,12 @@ export default function MemberProfileFormPage() {
         photo_url,
         updated_at: new Date().toISOString(),
       }
-      // Resubmit a previously-rejected profile for review; leave approved/pending profiles as-is
-      // (edits to an already-approved profile stay live without forcing re-review).
-      if (approvalStatus === 'rejected') payload.approval_status = 'pending'
 
       const rows = await supabaseFetch('member_profiles', {
         method: 'POST',
         headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify(payload),
       })
-      setApprovalStatus(rows?.[0]?.approval_status || 'pending')
       setSaved(true)
       setExistingPhotoUrl(photo_url || '')
       setPhotoFile(null)
@@ -160,19 +154,7 @@ export default function MemberProfileFormPage() {
         )}
         {saved && (
           <div style={{ marginBottom: '16px', padding: '11px 14px', background: theme.signalSoft, color: theme.signal, borderRadius: '8px', fontSize: '13.5px' }}>
-            {approvalStatus === 'approved'
-              ? '✓ Profile saved — visible to other founders now.'
-              : '✓ Profile saved — pending review. It\'ll appear in the directory once approved.'}
-          </div>
-        )}
-        {!saved && approvalStatus === 'pending' && (
-          <div style={{ marginBottom: '16px', padding: '11px 14px', background: theme.surface, border: `1px solid ${theme.line}`, color: theme.inkSoft, borderRadius: '8px', fontSize: '13.5px' }}>
-            ⏳ Your profile is pending review and not yet visible in the directory.
-          </div>
-        )}
-        {!saved && approvalStatus === 'rejected' && (
-          <div style={{ marginBottom: '16px', padding: '11px 14px', background: theme.dangerSoft, color: theme.danger, borderRadius: '8px', fontSize: '13.5px' }}>
-            Your profile wasn't approved. You can edit and resubmit it below.
+            ✓ Profile saved — visible to other founders now.
           </div>
         )}
 

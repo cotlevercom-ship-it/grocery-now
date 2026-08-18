@@ -60,7 +60,7 @@ export default function AdminMembersPage() {
     <div>
       <h1 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>Member Profiles</h1>
       <p style={{ fontSize: '13px', color: '#888', marginBottom: '18px' }}>
-        New profiles are pending until approved here — they only appear in the public directory once approved.
+        Profiles publish instantly and are not gated by this status — this list is for reference/moderation only.
       </p>
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', flexWrap: 'wrap' }}>
