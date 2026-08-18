@@ -70,6 +70,7 @@ export default function Navbar() {
   const [session, setSession] = useState(null)
   const pathname = usePathname()
   const isAdminArea = pathname?.startsWith('/admin')
+  const navRef = useRef(null)
 
   useEffect(() => {
     // getSession() reads localStorage, which doesn't exist during SSR — must
@@ -86,12 +87,28 @@ export default function Navbar() {
     }
   }, [])
 
+  useEffect(() => {
+    // Publish the navbar's real (responsive) height as a CSS var so
+    // other sticky sections (e.g. the homepage hero) can offset their
+    // own `top` by exactly this amount instead of sticking at 0 and
+    // scrolling up underneath this sticky, higher-z-index navbar.
+    const el = navRef.current
+    if (!el) return
+    const setVar = () => {
+      document.documentElement.style.setProperty('--nav-h', `${el.offsetHeight}px`)
+    }
+    setVar()
+    const observer = new ResizeObserver(setVar)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [isAdminArea])
+
   const customerName = session?.user?.email ? session.user.email.split('@')[0] : ''
 
   if (isAdminArea) return null
 
   return (
-    <div style={{
+    <div ref={navRef} style={{
       background: theme.paper,
       borderBottom: `1px solid ${theme.line}`,
       position: 'sticky',

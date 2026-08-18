@@ -102,7 +102,7 @@ export default function MarketingHome() {
         }
         .banner-sticky-1 {
           position: sticky;
-          top: 0;
+          top: var(--nav-h, 0px);
           z-index: 1;
         }
         .banner-sticky-2 {
@@ -115,14 +115,14 @@ export default function MarketingHome() {
         .how-it-works-mobile {
           display: block;
           position: sticky;
-          top: 0;
+          top: var(--nav-h, 0px);
           z-index: 2;
         }
         @media (min-width: 768px) {
           .how-it-works-mobile { display: none; }
           .banner-sticky-2 {
             position: sticky;
-            top: 0;
+            top: var(--nav-h, 0px);
             z-index: 2;
           }
           .hero-mobile-only { display: none; }
