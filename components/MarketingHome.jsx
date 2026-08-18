@@ -6,9 +6,10 @@ function HeroBanner() {
   const alt = 'Find the right co-founder. Build something great, together. — Cot Lever'
 
   return (
-    <div style={{
+    <div className="banner-anim" style={{
       position: 'relative', width: '100%', aspectRatio: '1942 / 809',
-      overflow: 'hidden', background: theme.surface
+      overflow: 'hidden', background: theme.surface,
+      animationDelay: '0s',
     }}>
       <Image
         src="/marketing/hero-cofounder-banner.png"
@@ -26,9 +27,10 @@ function IdeasPeopleTogetherBanner() {
   const alt = 'Ideas. People. Together. Find the right co-founder and build something amazing. — 1. The Idea: you have an idea but building it alone can be hard. 2. The Missing Piece: maybe you need a developer, a marketer, a designer, or a business mind. 3. Meet Cot Lever: find the right co-founder.'
 
   return (
-    <div style={{
+    <div className="banner-anim" style={{
       position: 'relative', width: '100%', aspectRatio: '1821 / 864',
-      overflow: 'hidden', background: theme.surface
+      overflow: 'hidden', background: theme.surface,
+      animationDelay: '0.25s',
     }}>
       <Image
         src="/marketing/ideas-people-together.png"
@@ -62,6 +64,17 @@ export default function MarketingHome() {
       }}>
         <IdeasPeopleTogetherBanner />
       </div>
+
+      <style jsx global>{`
+        @keyframes bannerFadeUp {
+          from { opacity: 0; transform: translateY(28px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .banner-anim {
+          opacity: 0;
+          animation: bannerFadeUp 0.9s ease-out forwards;
+        }
+      `}</style>
     </div>
   )
 }
