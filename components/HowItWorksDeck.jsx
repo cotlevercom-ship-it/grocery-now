@@ -71,38 +71,6 @@ function Reveal({ i, children }) {
 
 // ---- Slide content ----
 
-function CoverSlide() {
-  return (
-    <div style={{
-      width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', textAlign: 'center', padding: '32px 24px', background: card.bgAlt,
-    }}>
-      <Reveal i={0}>
-        <div style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(26px,5vw,32px)', fontWeight: '700', marginBottom: '6px' }}>
-          <span style={{ color: card.text }}>Cot</span><span style={{ color: card.accent }}>Lever</span>
-        </div>
-        <div style={{ width: '46px', height: '1.5px', background: card.accent, margin: '14px auto 22px' }} />
-      </Reveal>
-      <Reveal i={1}>
-        <h1 style={{
-          fontFamily: theme.fontDisplay, fontWeight: '700', color: card.text,
-          fontSize: 'clamp(26px,5.5vw,36px)', lineHeight: '1.2', marginBottom: '14px',
-        }}>Find Your<br />Co-Founder</h1>
-      </Reveal>
-      <Reveal i={2}>
-        <p style={{ fontSize: '14.5px', color: card.textSoft, lineHeight: '1.6', maxWidth: '320px' }}>
-          Great businesses start with the right people.
-        </p>
-      </Reveal>
-      <Reveal i={3}>
-        <div style={{ marginTop: '36px' }}>
-          <CenterArt Icon={Handshake} size={96} />
-        </div>
-      </Reveal>
-    </div>
-  )
-}
-
 function ContentSlide({ n, title, intro, bullets, closer, Icon }) {
   return (
     <div style={{
@@ -186,7 +154,6 @@ function ClosingSlide() {
 }
 
 const SLIDES = [
-  { key: 'cover', render: () => <CoverSlide /> },
   {
     key: '01', render: () => (
       <ContentSlide
