@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import VerifiedBadge from '@/components/VerifiedBadge'
 
 function ConnectSection({ member }) {
   const session = getSession()
@@ -214,8 +215,12 @@ export default function MemberDetailPage() {
                 <span style={{ fontFamily: theme.fontDisplay, fontSize: '42px', fontWeight: '600', color: theme.paper }}>{initial}</span>
               )}
             </div>
-            <h1 style={{ fontFamily: theme.fontDisplay, fontSize: 'clamp(22px,2.8vw,28px)', fontWeight: '600', color: theme.ink }}>
+            <h1 style={{
+              fontFamily: theme.fontDisplay, fontSize: 'clamp(22px,2.8vw,28px)', fontWeight: '600', color: theme.ink,
+              display: 'flex', alignItems: 'center', gap: '7px',
+            }}>
               {member.display_name}
+              {member.verified && <VerifiedBadge size={19} />}
             </h1>
             <div style={{ fontSize: '14px', color: theme.inkSoft, marginTop: '4px' }}>
               {member.role_title || 'Role not specified'}{member.location ? ` · ${member.location}` : ''}

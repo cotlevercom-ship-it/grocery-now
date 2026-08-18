@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import VerificationSection from '@/components/VerificationSection'
 
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const LOOKING_FOR_OPTIONS = ['Technical co-founder', 'Business co-founder', 'Marketing co-founder', 'Any co-founder']
@@ -260,6 +261,8 @@ export default function MemberProfileFormPage() {
             {uploading ? 'Uploading photo...' : submitting ? 'Saving...' : 'Save Profile'}
           </button>
         </form>
+
+        <VerificationSection />
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import VerifiedBadge from '@/components/VerifiedBadge'
 
 export default function MembersBrowsePage({ embedded = false }) {
   const [members, setMembers] = useState([])
@@ -72,8 +73,9 @@ export default function MembersBrowsePage({ embedded = false }) {
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, lineHeight: '1.2' }}>
-                          {m.display_name}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: theme.ink, lineHeight: '1.2' }}>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
+                          {m.verified && <VerifiedBadge />}
                         </div>
                         <div style={{ fontSize: '12px', color: theme.inkSoft, marginTop: '3px' }}>
                           {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
