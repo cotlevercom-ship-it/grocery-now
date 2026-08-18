@@ -2,8 +2,115 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { supabaseFetch } from '@/lib/supabase'
+import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+
+function ConnectSection({ member }) {
+  const session = getSession()
+  const myUserId = session?.user?.id || null
+  const [status, setStatus] = useState('checking') // checking | self | not_sent | sending | sent | error
+  const [showForm, setShowForm] = useState(false)
+  const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    if (!myUserId) { setStatus('not_sent'); return }
+    if (myUserId === member.user_id) { setStatus('self'); return }
+
+    supabaseFetch(`connection_requests?select=id&from_user_id=eq.${myUserId}&to_user_id=eq.${member.user_id}&limit=1`)
+      .then(rows => setStatus(rows && rows.length > 0 ? 'sent' : 'not_sent'))
+      .catch(() => setStatus('not_sent'))
+  }, [myUserId, member.user_id])
+
+  async function sendRequest() {
+    setStatus('sending')
+    try {
+      const rows = await supabaseFetch('connection_requests', {
+        method: 'POST',
+        body: JSON.stringify({
+          from_user_id: myUserId,
+          to_user_id: member.user_id,
+          message: message.trim() || null,
+        }),
+      })
+      const requestId = rows?.[0]?.id
+      if (requestId) {
+        // Best-effort — the request row is already saved even if the email fails.
+        fetch('/api/connect/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestId }),
+        }).catch(() => {})
+      }
+      setStatus('sent')
+      setShowForm(false)
+    } catch (e) {
+      console.error(e)
+      setStatus('error')
+    }
+  }
+
+  if (status === 'checking' || status === 'self') return null
+
+  return (
+    <div style={{ borderTop: `1px solid ${theme.line}`, marginTop: '22px', paddingTop: '20px' }}>
+      {status === 'sent' && (
+        <div style={{
+          textAlign: 'center', fontSize: '13.5px', fontWeight: '600', color: theme.brassDark,
+          background: theme.paper, border: `1px solid ${theme.line}`, borderRadius: '8px', padding: '12px',
+        }}>Request sent — they'll be notified by email.</div>
+      )}
+
+      {(status === 'not_sent' || status === 'sending' || status === 'error') && !showForm && (
+        <button
+          onClick={() => setShowForm(true)}
+          disabled={status === 'sending'}
+          style={{
+            width: '100%', background: theme.signal, color: '#fff', border: 'none', borderRadius: '8px',
+            padding: '12px', fontSize: '14.5px', fontWeight: '700', cursor: 'pointer',
+          }}
+        >Request to Connect</button>
+      )}
+
+      {(status === 'not_sent' || status === 'sending' || status === 'error') && showForm && (
+        <div>
+          <textarea
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            placeholder="Add a short note (optional)…"
+            rows={3}
+            style={{
+              width: '100%', boxSizing: 'border-box', resize: 'vertical', marginBottom: '10px',
+              background: theme.paper, border: `1px solid ${theme.line}`, borderRadius: '8px',
+              padding: '10px 12px', fontSize: '14px', color: theme.ink, fontFamily: 'inherit',
+            }}
+          />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={sendRequest}
+              disabled={status === 'sending'}
+              style={{
+                flex: 1, background: theme.signal, color: '#fff', border: 'none', borderRadius: '8px',
+                padding: '11px', fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+                opacity: status === 'sending' ? 0.7 : 1,
+              }}
+            >{status === 'sending' ? 'Sending…' : 'Send Request'}</button>
+            <button
+              onClick={() => setShowForm(false)}
+              disabled={status === 'sending'}
+              style={{
+                background: theme.paper, color: theme.inkSoft, border: `1px solid ${theme.line}`, borderRadius: '8px',
+                padding: '11px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+              }}
+            >Cancel</button>
+          </div>
+          {status === 'error' && (
+            <p style={{ color: theme.signal, fontSize: '12.5px', marginTop: '8px' }}>Something went wrong — try again.</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function MemberDetailPage() {
   const { userId } = useParams()
@@ -182,6 +289,8 @@ export default function MemberDetailPage() {
               </a>
             </div>
           )}
+
+          <ConnectSection member={member} />
         </div>
       </div>
     </div>
