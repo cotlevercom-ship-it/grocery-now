@@ -37,13 +37,6 @@ export default function MembersBrowsePage({ embedded = false }) {
           </>
         )}
 
-        <div style={{ marginBottom: '28px' }}>
-          <Link href="/members/new" style={{
-            display: 'inline-block', background: theme.brass, color: 'white',
-            borderRadius: '8px', padding: '11px 20px', fontSize: '13.5px', fontWeight: '600', textDecoration: 'none'
-          }}>Create Your Profile</Link>
-        </div>
-
         {loading ? (
           <div style={{ color: theme.inkSoft, fontSize: '14px', textAlign: 'center', padding: '60px' }}>Loading…</div>
         ) : members.length === 0 ? (
