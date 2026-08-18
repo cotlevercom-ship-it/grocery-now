@@ -11,7 +11,7 @@ function HeroBanner() {
       animationDelay: '0s',
     }}>
       {/* Mobile-only hero image (portrait) */}
-      <div className="hero-mobile-only" style={{ position: 'relative', width: '100%', aspectRatio: '903 / 1215' }}>
+      <div className="hero-mobile-only" style={{ position: 'relative', width: '100%', aspectRatio: '1536 / 1024' }}>
         <Image
           src="/marketing/hero-mobile-idea.jpg"
           alt={alt}
