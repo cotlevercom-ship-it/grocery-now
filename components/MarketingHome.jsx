@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
-import Link from 'next/link'
 import { theme } from '@/lib/theme'
+import HowItWorksDeck from '@/components/HowItWorksDeck'
 
 function HeroBanner() {
   const alt = 'Find the right co-founder. Build something great, together. — Cot Lever'
@@ -57,28 +57,14 @@ function IdeasPeopleTogetherBanner() {
   )
 }
 
-function HowItWorksMobileTeaser() {
+function HowItWorksMobileSection() {
   return (
-    <Link
-      href="/how-it-works"
-      className="how-it-works-teaser-mobile banner-anim"
-      style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
-        margin: '0 20px', marginTop: '20px', padding: '18px 20px',
-        background: theme.surface, border: `1px solid ${theme.brass}33`, borderRadius: '14px',
-        textDecoration: 'none', animationDelay: '0.15s',
-      }}
+    <div
+      className="how-it-works-mobile"
+      style={{ padding: '28px 16px clamp(32px,5vw,56px)', background: theme.paper }}
     >
-      <div>
-        <div style={{ color: theme.brass, fontSize: '12px', letterSpacing: '0.08em', fontWeight: 600, textTransform: 'uppercase' }}>
-          How It Works
-        </div>
-        <div style={{ color: theme.ink, fontSize: '16px', fontWeight: 600, marginTop: '4px' }}>
-          See how Cot Lever finds your co-founder
-        </div>
-      </div>
-      <span aria-hidden="true" style={{ color: theme.brass, fontSize: '22px', flexShrink: 0 }}>→</span>
-    </Link>
+      <HowItWorksDeck showHeading />
+    </div>
   )
 }
 
@@ -95,8 +81,8 @@ export default function MarketingHome() {
         <HeroBanner />
       </div>
 
-      {/* How It Works teaser — mobile only, sits right under the hero */}
-      <HowItWorksMobileTeaser />
+      {/* How It Works — full scroll-reveal deck, mobile only, sits right under the hero */}
+      <HowItWorksMobileSection />
 
       {/* Ideas. People. Together. — desktop only: slides up to cover the hero on scroll. Hidden on mobile. */}
       <div className="banner-sticky-2 ideas-banner-desktop-only" style={{
@@ -124,9 +110,9 @@ export default function MarketingHome() {
         .hero-mobile-only { display: block; }
         .hero-desktop-only { display: none; }
         .ideas-banner-desktop-only { display: none; }
-        .how-it-works-teaser-mobile { display: flex; }
+        .how-it-works-mobile { display: block; }
         @media (min-width: 768px) {
-          .how-it-works-teaser-mobile { display: none; }
+          .how-it-works-mobile { display: none; }
           .banner-sticky-1 {
             position: sticky;
             top: 0;
