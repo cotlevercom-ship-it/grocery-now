@@ -181,7 +181,7 @@ function LoginForm() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: theme.paper,
+      background: `linear-gradient(180deg, rgba(23,10,9,0.55) 0%, rgba(23,10,9,0.85) 100%), url('/marketing/login-bg.png') center / cover no-repeat, ${theme.paper}`,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
