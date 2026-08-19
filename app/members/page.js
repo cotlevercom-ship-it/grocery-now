@@ -6,20 +6,21 @@ import { theme } from '@/lib/theme'
 import VerifiedBadge from '@/components/VerifiedBadge'
 import { SKILL_OPTIONS, INDUSTRY_OPTIONS } from '@/lib/memberOptions'
 
-// Black & white palette — scoped to the /members browse page only.
-const bw = {
-  bg: '#FFFFFF',
+// Clean, minimal SaaS-app palette — scoped to the /members browse page only.
+// Rest of the site keeps its dark red/black theme; this page opts into a
+// light neutral surface with the brand's brass accent reserved for
+// buttons, badges, and selected states.
+const sc = {
+  bg: '#F6F6F7',
   cardBg: '#FFFFFF',
-  border: '#111111',
-  borderSoft: '#DDDDDD',
-  text: '#111111',
-  textSoft: '#555555',
-  chipBg: '#FFFFFF',
-  chipText: '#111111',
-  chipFilledBg: '#111111',
-  chipFilledText: '#FFFFFF',
-  bannerFrom: '#1A1A1A',
-  bannerTo: '#000000',
+  text: '#16181D',
+  textSoft: '#6B7280',
+  chipBg: '#F1F2F4',
+  chipText: '#42454C',
+  industryChipBg: 'rgba(179,55,42,0.08)',
+  industryChipText: theme.brass,
+  shadow: '0 1px 2px rgba(16,24,40,0.04), 0 1px 6px rgba(16,24,40,0.05)',
+  shadowHover: '0 6px 20px rgba(16,24,40,0.10)',
 }
 
 export default function MembersBrowsePage({ embedded = false }) {
@@ -70,23 +71,23 @@ export default function MembersBrowsePage({ embedded = false }) {
   }
 
   const chipStyle = (selected) => ({
-    fontSize: '12px', fontWeight: '600', padding: '6px 12px', borderRadius: '20px',
-    cursor: 'pointer', fontFamily: theme.fontBody, whiteSpace: 'nowrap',
-    background: selected ? bw.chipFilledBg : bw.chipBg,
-    color: selected ? bw.chipFilledText : bw.chipText,
-    border: `1px solid ${bw.border}`,
+    fontSize: '12.5px', fontWeight: '600', padding: '7px 13px', borderRadius: '20px',
+    cursor: 'pointer', fontFamily: theme.fontBody, whiteSpace: 'nowrap', border: 'none',
+    background: selected ? theme.brass : sc.chipBg,
+    color: selected ? '#FFFFFF' : sc.chipText,
+    transition: 'background 0.12s ease',
   })
 
   return (
-    <div style={{ background: bw.bg, minHeight: '70vh' }}>
+    <div style={{ background: sc.bg, minHeight: '70vh' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px)' }}>
         {!embedded && (
           <>
             <h1 style={{
               fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(24px,3vw,34px)',
-              color: bw.text, marginBottom: '8px', letterSpacing: '-0.01em'
+              color: sc.text, marginBottom: '8px', letterSpacing: '-0.01em'
             }}>Find a Co-founder</h1>
-            <p style={{ fontSize: '14px', color: bw.textSoft, marginBottom: '18px' }}>
+            <p style={{ fontSize: '14px', color: sc.textSoft, marginBottom: '18px' }}>
               Browse founders looking for a co-founder, partner, or share holder.
             </p>
           </>
@@ -96,8 +97,8 @@ export default function MembersBrowsePage({ embedded = false }) {
           onClick={() => setFiltersOpen(v => !v)}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '7px', marginBottom: '18px',
-            background: bw.cardBg, border: `1px solid ${bw.border}`, borderRadius: '8px',
-            padding: '9px 15px', fontSize: '13px', fontWeight: '600', color: bw.text,
+            background: sc.cardBg, border: 'none', borderRadius: '9px', boxShadow: sc.shadow,
+            padding: '9px 16px', fontSize: '13px', fontWeight: '600', color: sc.text,
             cursor: 'pointer', fontFamily: theme.fontBody,
           }}
         >
@@ -106,13 +107,13 @@ export default function MembersBrowsePage({ embedded = false }) {
 
         {filtersOpen && (
           <div style={{
-            background: bw.cardBg, border: `1px solid ${bw.border}`, borderRadius: '10px',
-            padding: '18px', marginBottom: '22px',
+            background: sc.cardBg, borderRadius: '12px', boxShadow: sc.shadow,
+            padding: '20px', marginBottom: '24px',
           }}>
-            <div style={{ marginBottom: '16px' }}>
+            <div style={{ marginBottom: '18px' }}>
               <div style={{
                 fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
-                color: bw.text, marginBottom: '8px', fontWeight: '600'
+                color: sc.textSoft, marginBottom: '9px', fontWeight: '600'
               }}>Skill</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
                 {SKILL_OPTIONS.map(s => (
@@ -123,7 +124,7 @@ export default function MembersBrowsePage({ embedded = false }) {
             <div>
               <div style={{
                 fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase',
-                color: bw.text, marginBottom: '8px', fontWeight: '600'
+                color: sc.textSoft, marginBottom: '9px', fontWeight: '600'
               }}>Industry</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
                 {INDUSTRY_OPTIONS.map(i => (
@@ -131,14 +132,14 @@ export default function MembersBrowsePage({ embedded = false }) {
                 ))}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginTop: '18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginTop: '20px' }}>
               <button
                 type="button"
                 onClick={applyFilters}
                 style={{
-                  background: bw.chipFilledBg, border: `1px solid ${bw.border}`, color: bw.chipFilledText,
+                  background: theme.brass, border: 'none', color: '#FFFFFF',
                   fontSize: '13px', fontWeight: '700', cursor: 'pointer',
-                  padding: '9px 22px', borderRadius: '999px', fontFamily: theme.fontBody,
+                  padding: '10px 24px', borderRadius: '999px', fontFamily: theme.fontBody,
                 }}
               >Apply{pendingFilterCount > 0 ? ` (${pendingFilterCount})` : ''}</button>
               {(pendingFilterCount > 0 || activeFilterCount > 0) && (
@@ -146,9 +147,8 @@ export default function MembersBrowsePage({ embedded = false }) {
                   type="button"
                   onClick={clearFilters}
                   style={{
-                    background: 'none', border: 'none', color: bw.text,
+                    background: 'none', border: 'none', color: sc.textSoft,
                     fontSize: '12.5px', fontWeight: '600', cursor: 'pointer', padding: 0, fontFamily: theme.fontBody,
-                    textDecoration: 'underline',
                   }}
                 >Clear filters</button>
               )}
@@ -157,19 +157,19 @@ export default function MembersBrowsePage({ embedded = false }) {
         )}
 
         {loading ? (
-          <div style={{ color: bw.textSoft, fontSize: '14px', textAlign: 'center', padding: '60px' }}>Loading…</div>
+          <div style={{ color: sc.textSoft, fontSize: '14px', textAlign: 'center', padding: '60px' }}>Loading…</div>
         ) : filteredMembers.length === 0 ? (
           <div style={{
-            textAlign: 'center', padding: '60px 20px', color: bw.textSoft,
-            background: bw.cardBg, borderRadius: '10px', border: `1px solid ${bw.border}`
+            textAlign: 'center', padding: '60px 20px', color: sc.textSoft,
+            background: sc.cardBg, borderRadius: '12px', boxShadow: sc.shadow,
           }}>
             {members.length === 0 ? (
               <>
-                <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: bw.text, marginBottom: '8px' }}>No profiles yet</p>
-                <p style={{ fontSize: '13.5px' }}>Be the first — <Link href="/members/new" style={{ color: bw.text, fontWeight: '600', textDecoration: 'underline' }}>create your profile</Link>.</p>
+                <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: sc.text, marginBottom: '8px' }}>No profiles yet</p>
+                <p style={{ fontSize: '13.5px' }}>Be the first — <Link href="/members/new" style={{ color: theme.brass, fontWeight: '600' }}>create your profile</Link>.</p>
               </>
             ) : (
-              <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: bw.text }}>No profiles match these filters</p>
+              <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: sc.text }}>No profiles match these filters</p>
             )}
           </div>
         ) : (
@@ -181,71 +181,65 @@ export default function MembersBrowsePage({ embedded = false }) {
               const initial = (m.display_name || '?').trim().charAt(0).toUpperCase()
               return (
                 <div key={m.user_id} className="member-card" style={{
-                  background: bw.cardBg, border: `1px solid ${bw.border}`, borderRadius: '10px',
-                  display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                  background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow,
+                  display: 'flex', flexDirection: 'column', padding: '22px 20px 18px',
                 }}>
-                  <Link href={`/members/${m.user_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    {/* Avatar */}
-                    <div style={{ padding: '18px 18px 0' }}>
+                  <Link href={`/members/${m.user_id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '15px' }}>
                       <div style={{
-                        width: '68px', height: '68px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-                        background: bw.chipFilledBg, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        border: `3px solid ${bw.cardBg}`,
+                        width: '52px', height: '52px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+                        background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}>
                         {m.photo_url ? (
                           <img src={m.photo_url} alt={m.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
-                          <span style={{ fontFamily: theme.fontDisplay, fontSize: '24px', fontWeight: '600', color: bw.chipFilledText }}>{initial}</span>
+                          <span style={{ fontFamily: theme.fontDisplay, fontSize: '19px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
                         )}
                       </div>
-                    </div>
-
-                    <div style={{ padding: '10px 18px 0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: theme.fontDisplay, fontSize: '17px', fontWeight: '600', color: bw.text, lineHeight: '1.2' }}>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
-                        {m.verified && <VerifiedBadge />}
-                      </div>
-                      <div style={{ fontSize: '12px', color: bw.textSoft, marginTop: '3px', marginBottom: '14px' }}>
-                        {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
-                      </div>
-
-                      {((m.skills && m.skills.length > 0) || (m.interested_industry && m.interested_industry.length > 0)) && (
-                        <div style={{ paddingTop: '2px', paddingBottom: '16px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {(m.skills || []).map((s, idx) => (
-                            <span key={`sk-${idx}`} style={{
-                              fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
-                              background: bw.chipBg, border: `1px solid ${bw.border}`, color: bw.chipText
-                            }}>{s}</span>
-                          ))}
-                          {(m.interested_industry || []).map((ind, idx) => (
-                            <span key={`in-${idx}`} style={{
-                              fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
-                              background: bw.chipFilledBg, color: bw.chipFilledText
-                            }}>{ind}</span>
-                          ))}
+                      <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: theme.fontDisplay, fontSize: '16.5px', fontWeight: '600', color: sc.text, lineHeight: '1.25' }}>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
+                          {m.verified && <VerifiedBadge />}
                         </div>
-                      )}
+                        <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
+                          {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
+                        </div>
+                      </div>
                     </div>
+
+                    {((m.skills && m.skills.length > 0) || (m.interested_industry && m.interested_industry.length > 0)) && (
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {(m.skills || []).map((s, idx) => (
+                          <span key={`sk-${idx}`} style={{
+                            fontSize: '10.5px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px',
+                            background: sc.chipBg, color: sc.chipText
+                          }}>{s}</span>
+                        ))}
+                        {(m.interested_industry || []).map((ind, idx) => (
+                          <span key={`in-${idx}`} style={{
+                            fontSize: '10.5px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px',
+                            background: sc.industryChipBg, color: sc.industryChipText
+                          }}>{ind}</span>
+                        ))}
+                      </div>
+                    )}
                   </Link>
 
-                  <div style={{ padding: '0 18px 18px' }}>
-                    <Link href={`/members/${m.user_id}`} style={{
-                      display: 'block', textAlign: 'center', textDecoration: 'none',
-                      border: `1.5px solid ${bw.border}`, color: bw.text,
-                      borderRadius: '999px', padding: '9px 16px', fontSize: '13px', fontWeight: '700',
-                    }}>Meet</Link>
-                  </div>
+                  <Link href={`/members/${m.user_id}`} style={{
+                    marginTop: '18px', textAlign: 'center', textDecoration: 'none',
+                    background: theme.brass, color: '#FFFFFF',
+                    borderRadius: '999px', padding: '10px 16px', fontSize: '13px', fontWeight: '700',
+                  }}>Meet</Link>
                 </div>
               )
             })}
             <style jsx>{`
               .member-card {
-                transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
               }
               .member-card:hover {
                 transform: translateY(-3px);
-                box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35);
-                border-color: ${bw.border};
+                box-shadow: ${sc.shadowHover};
               }
             `}</style>
           </div>
