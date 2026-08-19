@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { theme } from '@/lib/theme'
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
@@ -39,22 +40,22 @@ export default function ForgotPasswordPage() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#0a0a0a', display: 'flex',
+      minHeight: '100vh', background: theme.paper, display: 'flex',
       flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px'
     }}>
       <div style={{
-        width: '100%', maxWidth: '380px', background: 'white', borderRadius: '16px',
-        padding: '32px 26px'
+        width: '100%', maxWidth: '380px', background: theme.surface, borderRadius: '16px',
+        padding: '32px 26px', border: `1px solid ${theme.line}`
       }}>
-        <div style={{ fontSize: '18px', fontWeight: '700', color: '#0a0a0a', marginBottom: '6px' }}>
+        <div style={{ fontSize: '18px', fontWeight: '700', color: theme.ink, marginBottom: '6px' }}>
           Forgot Password
         </div>
-        <div style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '22px', lineHeight: 1.6 }}>
+        <div style={{ fontSize: '13px', color: theme.inkSoft, marginBottom: '22px', lineHeight: 1.6 }}>
           Enter your email and we&apos;ll send you a code to reset your password
         </div>
 
         <form onSubmit={handleSubmit}>
-          <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>
+          <label style={{ fontSize: '12px', color: theme.inkSoft, fontWeight: '600', display: 'block', marginBottom: '6px' }}>
             Email
           </label>
           <input
@@ -63,14 +64,15 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             style={{
-              width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1.5px solid #e8e6e2',
-              fontSize: '14px', boxSizing: 'border-box', marginBottom: '14px'
+              width: '100%', padding: '12px 14px', borderRadius: '10px', border: `1.5px solid ${theme.line}`,
+              fontSize: '14px', boxSizing: 'border-box', marginBottom: '14px',
+              background: theme.paper, color: theme.ink
             }}
           />
 
           {error && (
             <div style={{
-              padding: '10px 12px', background: '#ffebee', color: '#c62828',
+              padding: '10px 12px', background: theme.dangerSoft, color: theme.danger,
               borderRadius: '8px', fontSize: '13px', marginBottom: '14px'
             }}>{error}</div>
           )}
@@ -79,7 +81,7 @@ export default function ForgotPasswordPage() {
             type="submit"
             disabled={submitting}
             style={{
-              width: '100%', background: submitting ? '#999' : '#dc2626', color: 'white',
+              width: '100%', background: submitting ? theme.line : theme.brass, color: theme.ink,
               padding: '13px', borderRadius: '999px', fontSize: '15px', fontWeight: '700',
               border: 'none'
             }}
@@ -89,7 +91,7 @@ export default function ForgotPasswordPage() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '18px' }}>
-          <Link href="/login" style={{ fontSize: '13px', color: '#999' }}>← Back to Log In</Link>
+          <Link href="/login" style={{ fontSize: '13px', color: theme.inkSoft }}>← Back to Log In</Link>
         </div>
       </div>
     </div>

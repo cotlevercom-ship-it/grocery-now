@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
+import { theme } from '@/lib/theme'
 
 function ZigzagEdge({ fill }) {
   return (
@@ -48,8 +49,8 @@ export default function AccountPage() {
 
   if (!loaded) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#999', fontSize: '14px' }}>Loading...</div>
+      <div style={{ minHeight: '100vh', background: theme.paper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: theme.inkSoft, fontSize: '14px' }}>Loading...</div>
       </div>
     )
   }
@@ -67,29 +68,29 @@ export default function AccountPage() {
   ]
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
+    <div style={{ minHeight: '100vh', background: theme.paper, paddingBottom: '48px' }}>
       {/* Passbook cover */}
-      <div style={{ background: 'linear-gradient(155deg, #0a0a0a 0%, #1a1a1a 60%, #262626 100%)' }}>
+      <div style={{ background: `linear-gradient(155deg, ${theme.paper} 0%, ${theme.surface} 60%, ${theme.lineSoft} 100%)` }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', textDecoration: 'none', marginBottom: '20px' }}>
             <span style={{ fontSize: '17px', lineHeight: 1 }}>←</span> Back to Home
           </Link>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '18px' }}>
-            <span style={{ fontSize: '13px', letterSpacing: '0.04em', color: 'rgba(220,38,38,0.9)', fontWeight: '700' }}>COT LEVER</span>
+            <span style={{ fontSize: '13px', letterSpacing: '0.04em', color: theme.brass, fontWeight: '700' }}>COT LEVER</span>
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginLeft: '8px' }}>My Passbook</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <Link href={`/members/${profile?.id}`} style={{
-              width: '54px', height: '54px', borderRadius: '50%', background: '#dc2626',
+              width: '54px', height: '54px', borderRadius: '50%', background: theme.brass,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '22px', fontWeight: '700', color: 'white', flexShrink: 0,
+              fontSize: '22px', fontWeight: '700', color: theme.ink, flexShrink: 0,
               border: '2px solid rgba(255,255,255,0.25)', textDecoration: 'none'
             }}>{initial}</Link>
             <div style={{ minWidth: 0 }}>
               <Link href={`/members/${profile?.id}`} style={{
-                color: 'white', fontSize: '18px', fontWeight: '700', overflow: 'hidden',
+                color: theme.ink, fontSize: '18px', fontWeight: '700', overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none', display: 'block'
               }}>
                 {profile?.full_name || 'Guest User'}
@@ -100,37 +101,37 @@ export default function AccountPage() {
             </div>
           </div>
         </div>
-        <ZigzagEdge fill="#f5f5f0" />
+        <ZigzagEdge fill={theme.paper} />
       </div>
 
       <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 16px 0' }}>
 
         {/* Ledger entries */}
         <div style={{
-          background: '#fffdf8', borderRadius: '4px', border: '1px solid #e6ded0',
-          boxShadow: '0 1px 3px rgba(22,58,44,0.05)', overflow: 'hidden', marginBottom: '18px'
+          background: theme.surface, borderRadius: '4px', border: `1px solid ${theme.line}`,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.25)', overflow: 'hidden', marginBottom: '18px'
         }}>
           {rows.map((row, i) => (
             <Link key={row.href} href={row.href} style={{ textDecoration: 'none' }}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '13px', padding: '15px 16px',
-                borderBottom: i < rows.length - 1 ? '1px dashed #e6ded0' : 'none'
+                borderBottom: i < rows.length - 1 ? `1px dashed ${theme.line}` : 'none'
               }}>
                 <div style={{
-                  width: '34px', height: '34px', borderRadius: '8px', background: '#f2ede0',
+                  width: '34px', height: '34px', borderRadius: '8px', background: theme.lineSoft,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0
                 }}>{row.icon}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{row.title}</div>
-                  <div style={{ fontSize: '11.5px', color: '#9a9182', marginTop: '2px' }}>{row.subtitle}</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: theme.ink }}>{row.title}</div>
+                  <div style={{ fontSize: '11.5px', color: theme.inkSoft, marginTop: '2px' }}>{row.subtitle}</div>
                 </div>
                 {row.tag && (
                   <div style={{
-                    fontSize: '10.5px', fontWeight: '700', color: '#b91c1c', background: '#fde8e8',
+                    fontSize: '10.5px', fontWeight: '700', color: theme.danger, background: theme.dangerSoft,
                     padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap'
                   }}>{row.tag}</div>
                 )}
-                <span style={{ color: '#cabfa9', fontSize: '15px' }}>›</span>
+                <span style={{ color: theme.inkSoft, fontSize: '15px' }}>›</span>
               </div>
             </Link>
           ))}
@@ -138,8 +139,8 @@ export default function AccountPage() {
 
         <button onClick={handleLogout} style={{
           display: 'block', width: '100%', textAlign: 'center', background: 'transparent',
-          color: '#a6402b', padding: '13px', borderRadius: '4px', fontSize: '13.5px',
-          fontWeight: '700', border: '1.5px dashed #d9a793', cursor: 'pointer',
+          color: theme.danger, padding: '13px', borderRadius: '4px', fontSize: '13.5px',
+          fontWeight: '700', border: `1.5px dashed ${theme.danger}`, cursor: 'pointer',
           letterSpacing: '0.02em'
         }}>Log Out</button>
       </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { theme } from '@/lib/theme'
 
 export default function VerifyOtpPage() {
   return (
@@ -92,19 +93,19 @@ function VerifyOtpForm() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#0a0a0a', display: 'flex',
+      minHeight: '100vh', background: theme.paper, display: 'flex',
       flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px'
     }}>
       <div style={{
-        width: '100%', maxWidth: '380px', background: 'white', borderRadius: '16px',
-        padding: '32px 26px', textAlign: 'center'
+        width: '100%', maxWidth: '380px', background: theme.surface, borderRadius: '16px',
+        padding: '32px 26px', textAlign: 'center', border: `1px solid ${theme.line}`
       }}>
         <div style={{ fontSize: '32px', marginBottom: '10px' }}>✉️</div>
-        <div style={{ fontSize: '18px', fontWeight: '700', color: '#0a0a0a', marginBottom: '6px' }}>
+        <div style={{ fontSize: '18px', fontWeight: '700', color: theme.ink, marginBottom: '6px' }}>
           Enter Verification Code
         </div>
-        <div style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '22px', lineHeight: 1.6 }}>
-          We sent a 6-digit code to<br /><strong>{email}</strong>
+        <div style={{ fontSize: '13px', color: theme.inkSoft, marginBottom: '22px', lineHeight: 1.6 }}>
+          We sent a 6-digit code to<br /><strong style={{ color: theme.ink }}>{email}</strong>
         </div>
 
         <form onSubmit={handleVerify}>
@@ -116,21 +117,22 @@ function VerifyOtpForm() {
             onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
             placeholder="000000"
             style={{
-              width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e8e6e2',
+              width: '100%', padding: '14px', borderRadius: '10px', border: `1.5px solid ${theme.line}`,
               fontSize: '24px', fontWeight: '700', textAlign: 'center', letterSpacing: '8px',
-              boxSizing: 'border-box', marginBottom: '16px'
+              boxSizing: 'border-box', marginBottom: '16px',
+              background: theme.paper, color: theme.ink
             }}
           />
 
           {error && (
             <div style={{
-              padding: '10px 12px', background: '#ffebee', color: '#c62828',
+              padding: '10px 12px', background: theme.dangerSoft, color: theme.danger,
               borderRadius: '8px', fontSize: '13px', marginBottom: '14px'
             }}>{error}</div>
           )}
           {notice && (
             <div style={{
-              padding: '10px 12px', background: '#f5f5f5', color: '#0a0a0a',
+              padding: '10px 12px', background: theme.lineSoft, color: theme.ink,
               borderRadius: '8px', fontSize: '13px', marginBottom: '14px'
             }}>{notice}</div>
           )}
@@ -139,7 +141,7 @@ function VerifyOtpForm() {
             type="submit"
             disabled={submitting}
             style={{
-              width: '100%', background: submitting ? '#999' : '#dc2626', color: 'white',
+              width: '100%', background: submitting ? theme.line : theme.brass, color: theme.ink,
               padding: '13px', borderRadius: '999px', fontSize: '15px', fontWeight: '700',
               border: 'none'
             }}
@@ -153,14 +155,14 @@ function VerifyOtpForm() {
           disabled={resending || cooldown > 0}
           style={{
             marginTop: '16px', background: 'none', border: 'none', fontSize: '13px',
-            color: cooldown > 0 ? '#bbb' : '#0a0a0a', fontWeight: '600', textDecoration: 'underline'
+            color: cooldown > 0 ? theme.line : theme.inkSoft, fontWeight: '600', textDecoration: 'underline'
           }}
         >
           {cooldown > 0 ? `Resend code in ${cooldown}s` : resending ? 'Sending...' : "Didn't get a code? Resend"}
         </button>
 
         <div style={{ marginTop: '18px' }}>
-          <Link href="/login" style={{ fontSize: '13px', color: '#999' }}>← Back</Link>
+          <Link href="/login" style={{ fontSize: '13px', color: theme.inkSoft }}>← Back</Link>
         </div>
       </div>
     </div>

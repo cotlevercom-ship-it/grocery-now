@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
+import { theme } from '@/lib/theme'
 
 export default function HelpCenterPage() {
   const [articles, setArticles] = useState([])
@@ -50,27 +51,28 @@ export default function HelpCenterPage() {
   const activeArticle = articles.find(a => a.id === activeArticleId)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', background: theme.paper }}>
       {/* Topbar */}
       <div style={{
-        background: '#0a0a0a', padding: '14px 16px',
+        background: theme.surface, padding: '14px 16px', borderBottom: `1px solid ${theme.line}`,
         display: 'flex', alignItems: 'center', gap: '12px'
       }}>
         <Link href="/">
-          <div style={{ color: 'white', fontSize: '22px', lineHeight: 1 }}>←</div>
+          <div style={{ color: theme.ink, fontSize: '22px', lineHeight: 1 }}>←</div>
         </Link>
-        <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>Help Center</div>
+        <div style={{ color: theme.ink, fontSize: '16px', fontWeight: '500' }}>Help Center</div>
       </div>
 
       {/* Search */}
-      <div style={{ padding: '14px 16px', background: 'white', borderBottom: '1px solid #eee' }}>
+      <div style={{ padding: '14px 16px', background: theme.surface, borderBottom: `1px solid ${theme.line}` }}>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for help..."
           style={{
             width: '100%', padding: '10px 14px', borderRadius: '8px',
-            border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box'
+            border: `1px solid ${theme.line}`, fontSize: '14px', boxSizing: 'border-box',
+            background: theme.paper, color: theme.ink
           }}
         />
       </div>
@@ -78,8 +80,8 @@ export default function HelpCenterPage() {
       <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', gap: '0' }} className="help-container">
         {/* Category sidebar (mobile: toggle) */}
         <div style={{
-          width: '200px', flexShrink: 0, background: 'white',
-          borderRight: '1px solid #eee', padding: '14px 0', display: menuOpen ? 'block' : undefined
+          width: '200px', flexShrink: 0, background: theme.surface,
+          borderRight: `1px solid ${theme.line}`, padding: '14px 0', display: menuOpen ? 'block' : undefined
         }}
           className="help-sidebar"
         >
@@ -88,8 +90,8 @@ export default function HelpCenterPage() {
             style={{
               display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
               fontSize: '13px', fontWeight: activeCategory === 'all' ? '700' : '400',
-              color: activeCategory === 'all' ? '#0a0a0a' : '#333',
-              background: activeCategory === 'all' ? '#f5f5f5' : 'transparent',
+              color: activeCategory === 'all' ? theme.ink : theme.inkSoft,
+              background: activeCategory === 'all' ? theme.lineSoft : 'transparent',
               border: 'none'
             }}
           >All categories</button>
@@ -100,8 +102,8 @@ export default function HelpCenterPage() {
               style={{
                 display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px',
                 fontSize: '13px', fontWeight: activeCategory === cat ? '700' : '400',
-                color: activeCategory === cat ? '#0a0a0a' : '#333',
-                background: activeCategory === cat ? '#f5f5f5' : 'transparent',
+                color: activeCategory === cat ? theme.ink : theme.inkSoft,
+                background: activeCategory === cat ? theme.lineSoft : 'transparent',
                 border: 'none'
               }}
             >{cat}</button>
@@ -111,13 +113,13 @@ export default function HelpCenterPage() {
         {/* Content */}
         <div style={{ flex: 1, padding: '20px 16px', minWidth: 0 }}>
           {loading ? (
-            <div style={{ color: '#999', fontSize: '14px' }}>Loading...</div>
+            <div style={{ color: theme.inkSoft, fontSize: '14px' }}>Loading...</div>
           ) : articles.length === 0 ? (
-            <div style={{ color: '#999', fontSize: '14px' }}>No help articles yet.</div>
+            <div style={{ color: theme.inkSoft, fontSize: '14px' }}>No help articles yet.</div>
           ) : (
             <>
               {query.trim() && (
-                <div style={{ fontSize: '13px', color: '#888', marginBottom: '12px' }}>
+                <div style={{ fontSize: '13px', color: theme.inkSoft, marginBottom: '12px' }}>
                   {visibleArticles.length} result{visibleArticles.length !== 1 ? 's' : ''} for &quot;{query}&quot;
                 </div>
               )}
@@ -129,10 +131,10 @@ export default function HelpCenterPage() {
                     onClick={() => setActiveArticleId(a.id)}
                     style={{
                       textAlign: 'left', padding: '10px 14px', borderRadius: '8px',
-                      border: `1px solid ${activeArticleId === a.id ? '#0a0a0a' : '#e0e0e0'}`,
-                      background: activeArticleId === a.id ? '#f5f5f5' : 'white',
+                      border: `1px solid ${activeArticleId === a.id ? theme.brass : theme.line}`,
+                      background: activeArticleId === a.id ? theme.lineSoft : theme.surface,
                       fontSize: '13px', fontWeight: activeArticleId === a.id ? '600' : '500',
-                      color: '#1a1a1a'
+                      color: theme.ink
                     }}
                   >{a.title}</button>
                 ))}
@@ -140,15 +142,15 @@ export default function HelpCenterPage() {
 
               {activeArticle && visibleArticles.some(a => a.id === activeArticle.id) && (
                 <div style={{
-                  background: 'white', borderRadius: '10px', border: '1px solid #e0e0e0', padding: '20px'
+                  background: theme.surface, borderRadius: '10px', border: `1px solid ${theme.line}`, padding: '20px'
                 }}>
-                  <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px' }}>
+                  <div style={{ fontSize: '11px', color: theme.inkSoft, marginBottom: '6px' }}>
                     {activeArticle.category}
                   </div>
-                  <h1 style={{ fontSize: '18px', fontWeight: '700', color: '#1a1a1a', marginBottom: '12px' }}>
+                  <h1 style={{ fontSize: '18px', fontWeight: '700', color: theme.ink, marginBottom: '12px' }}>
                     {activeArticle.title}
                   </h1>
-                  <p style={{ fontSize: '14px', color: '#444', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+                  <p style={{ fontSize: '14px', color: theme.inkSoft, lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
                     {activeArticle.content}
                   </p>
                 </div>
@@ -157,14 +159,14 @@ export default function HelpCenterPage() {
           )}
 
           <div style={{
-            marginTop: '24px', padding: '16px', background: 'white',
-            borderRadius: '10px', border: '1px solid #e0e0e0', textAlign: 'center'
+            marginTop: '24px', padding: '16px', background: theme.surface,
+            borderRadius: '10px', border: `1px solid ${theme.line}`, textAlign: 'center'
           }}>
-            <div style={{ fontSize: '13px', color: '#555', marginBottom: '8px' }}>
+            <div style={{ fontSize: '13px', color: theme.inkSoft, marginBottom: '8px' }}>
               Didn&apos;t find what you were looking for?
             </div>
             <Link href="/#footer-contact" style={{
-              display: 'inline-block', background: '#0a0a0a', color: 'white',
+              display: 'inline-block', background: theme.brass, color: theme.ink,
               padding: '9px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600'
             }}>Contact support</Link>
           </div>
@@ -181,7 +183,7 @@ export default function HelpCenterPage() {
             display: flex !important;
             overflow-x: auto;
             border-right: none !important;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid ${theme.line};
             padding: 10px 8px !important;
             gap: 6px;
           }

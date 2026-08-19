@@ -2,6 +2,7 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { theme } from '@/lib/theme'
 
 export default function ResetPasswordPage() {
   return (
@@ -60,24 +61,24 @@ function ResetPasswordForm() {
   if (done) {
     return (
       <div style={{
-        minHeight: '100vh', background: '#0a0a0a', display: 'flex',
+        minHeight: '100vh', background: theme.paper, display: 'flex',
         flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px'
       }}>
         <div style={{
-          width: '100%', maxWidth: '380px', background: 'white', borderRadius: '16px',
-          padding: '32px 26px', textAlign: 'center'
+          width: '100%', maxWidth: '380px', background: theme.surface, borderRadius: '16px',
+          padding: '32px 26px', textAlign: 'center', border: `1px solid ${theme.line}`
         }}>
           <div style={{ fontSize: '36px', marginBottom: '12px' }}>✅</div>
-          <div style={{ fontSize: '18px', fontWeight: '700', color: '#0a0a0a', marginBottom: '8px' }}>
+          <div style={{ fontSize: '18px', fontWeight: '700', color: theme.ink, marginBottom: '8px' }}>
             Password Reset
           </div>
-          <div style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '22px' }}>
+          <div style={{ fontSize: '13px', color: theme.inkSoft, marginBottom: '22px' }}>
             Your password has been changed. You can now log in with your new password.
           </div>
           <button
             onClick={() => router.push(loginHref)}
             style={{
-              width: '100%', background: '#dc2626', color: 'white', padding: '13px',
+              width: '100%', background: theme.brass, color: theme.ink, padding: '13px',
               borderRadius: '999px', fontSize: '15px', fontWeight: '700', border: 'none'
             }}
           >
@@ -90,22 +91,22 @@ function ResetPasswordForm() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#0a0a0a', display: 'flex',
+      minHeight: '100vh', background: theme.paper, display: 'flex',
       flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px'
     }}>
       <div style={{
-        width: '100%', maxWidth: '380px', background: 'white', borderRadius: '16px',
-        padding: '32px 26px'
+        width: '100%', maxWidth: '380px', background: theme.surface, borderRadius: '16px',
+        padding: '32px 26px', border: `1px solid ${theme.line}`
       }}>
-        <div style={{ fontSize: '18px', fontWeight: '700', color: '#0a0a0a', marginBottom: '6px' }}>
+        <div style={{ fontSize: '18px', fontWeight: '700', color: theme.ink, marginBottom: '6px' }}>
           Set New Password
         </div>
-        <div style={{ fontSize: '13px', color: '#6b6b6b', marginBottom: '22px' }}>
+        <div style={{ fontSize: '13px', color: theme.inkSoft, marginBottom: '22px' }}>
           For {email}
         </div>
 
         <form onSubmit={handleSubmit}>
-          <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>
+          <label style={{ fontSize: '12px', color: theme.inkSoft, fontWeight: '600', display: 'block', marginBottom: '6px' }}>
             New Password
           </label>
           <input
@@ -114,12 +115,13 @@ function ResetPasswordForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="At least 6 characters"
             style={{
-              width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1.5px solid #e8e6e2',
-              fontSize: '14px', boxSizing: 'border-box', marginBottom: '14px'
+              width: '100%', padding: '12px 14px', borderRadius: '10px', border: `1.5px solid ${theme.line}`,
+              fontSize: '14px', boxSizing: 'border-box', marginBottom: '14px',
+              background: theme.paper, color: theme.ink
             }}
           />
 
-          <label style={{ fontSize: '12px', color: '#666', fontWeight: '600', display: 'block', marginBottom: '6px' }}>
+          <label style={{ fontSize: '12px', color: theme.inkSoft, fontWeight: '600', display: 'block', marginBottom: '6px' }}>
             Confirm Password
           </label>
           <input
@@ -128,14 +130,15 @@ function ResetPasswordForm() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Re-enter password"
             style={{
-              width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1.5px solid #e8e6e2',
-              fontSize: '14px', boxSizing: 'border-box', marginBottom: '14px'
+              width: '100%', padding: '12px 14px', borderRadius: '10px', border: `1.5px solid ${theme.line}`,
+              fontSize: '14px', boxSizing: 'border-box', marginBottom: '14px',
+              background: theme.paper, color: theme.ink
             }}
           />
 
           {error && (
             <div style={{
-              padding: '10px 12px', background: '#ffebee', color: '#c62828',
+              padding: '10px 12px', background: theme.dangerSoft, color: theme.danger,
               borderRadius: '8px', fontSize: '13px', marginBottom: '14px'
             }}>{error}</div>
           )}
@@ -144,7 +147,7 @@ function ResetPasswordForm() {
             type="submit"
             disabled={submitting}
             style={{
-              width: '100%', background: submitting ? '#999' : '#dc2626', color: 'white',
+              width: '100%', background: submitting ? theme.line : theme.brass, color: theme.ink,
               padding: '13px', borderRadius: '999px', fontSize: '15px', fontWeight: '700',
               border: 'none'
             }}
@@ -154,7 +157,7 @@ function ResetPasswordForm() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '18px' }}>
-          <Link href={loginHref} style={{ fontSize: '13px', color: '#999' }}>← Back to Log In</Link>
+          <Link href={loginHref} style={{ fontSize: '13px', color: theme.inkSoft }}>← Back to Log In</Link>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
+import { theme } from '@/lib/theme'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -69,23 +70,23 @@ export default function ProfilePage() {
 
   if (!loaded) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#999', fontSize: '14px' }}>Loading...</div>
+      <div style={{ minHeight: '100vh', background: theme.paper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: theme.inkSoft, fontSize: '14px' }}>Loading...</div>
       </div>
     )
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f0', paddingBottom: '48px' }}>
+    <div style={{ minHeight: '100vh', background: theme.paper, paddingBottom: '48px' }}>
       {/* Topbar */}
-      <div style={{ background: '#0a0a0a', padding: '16px' }}>
+      <div style={{ background: theme.surface, padding: '16px', borderBottom: `1px solid ${theme.line}` }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/account">
-            <div style={{ color: 'white', fontSize: '21px', lineHeight: 1 }}>←</div>
+            <div style={{ color: theme.ink, fontSize: '21px', lineHeight: 1 }}>←</div>
           </Link>
           <div>
-            <div style={{ color: 'white', fontSize: '15.5px', fontWeight: '700' }}>Update Passbook Info</div>
-            <div style={{ color: 'rgba(220,38,38,0.9)', fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>Profile Entry</div>
+            <div style={{ color: theme.ink, fontSize: '15.5px', fontWeight: '700' }}>Update Passbook Info</div>
+            <div style={{ color: theme.brass, fontSize: '11px', marginTop: '1px', letterSpacing: '0.03em' }}>Profile Entry</div>
           </div>
         </div>
       </div>
@@ -94,11 +95,11 @@ export default function ProfilePage() {
 
         <form onSubmit={handleSubmit}>
           <div style={{
-            background: '#fffdf8', margin: '18px 16px 14px', borderRadius: '4px',
-            border: '1px solid #e6ded0', padding: '22px 18px 6px'
+            background: theme.surface, margin: '18px 16px 14px', borderRadius: '4px',
+            border: `1px solid ${theme.line}`, padding: '22px 18px 6px'
           }}>
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>Name *</label>
+              <label style={{ fontSize: '11px', color: theme.inkSoft, display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>Name *</label>
               <input
                 type="text"
                 value={name}
@@ -109,7 +110,7 @@ export default function ProfilePage() {
             </div>
 
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ fontSize: '11px', color: '#9a9182', display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>Phone Number *</label>
+              <label style={{ fontSize: '11px', color: theme.inkSoft, display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>Phone Number *</label>
               <input
                 type="tel"
                 value={phone}
@@ -123,15 +124,15 @@ export default function ProfilePage() {
 
           {error && (
             <div style={{
-              margin: '0 16px 14px', padding: '11px 13px', background: '#fbe9e4',
-              color: '#a6402b', borderRadius: '4px', fontSize: '13px', borderLeft: '3px solid #a6402b'
+              margin: '0 16px 14px', padding: '11px 13px', background: theme.dangerSoft,
+              color: theme.danger, borderRadius: '4px', fontSize: '13px', borderLeft: `3px solid ${theme.danger}`
             }}>{error}</div>
           )}
 
           {saved && (
             <div style={{
-              margin: '0 16px 14px', padding: '11px 13px', background: '#fde8e8',
-              color: '#7a1414', borderRadius: '4px', fontSize: '13px', borderLeft: '3px solid #dc2626'
+              margin: '0 16px 14px', padding: '11px 13px', background: theme.signalSoft,
+              color: theme.signal, borderRadius: '4px', fontSize: '13px', borderLeft: `3px solid ${theme.signal}`
             }}>✓ Profile saved</div>
           )}
 
@@ -140,9 +141,9 @@ export default function ProfilePage() {
               type="submit"
               disabled={submitting}
               style={{
-                width: '100%', background: submitting ? '#999' : '#0a0a0a', color: 'white',
+                width: '100%', background: submitting ? theme.line : theme.brass, color: theme.ink,
                 padding: '14px', borderRadius: '4px', fontSize: '14.5px', fontWeight: '700',
-                border: '1px solid rgba(255,255,255,0.15)', letterSpacing: '0.02em'
+                border: 'none', letterSpacing: '0.02em'
               }}>
               {submitting ? 'Saving...' : 'Save'}
             </button>
@@ -156,19 +157,19 @@ export default function ProfilePage() {
           width: 100%;
           padding: 2px 2px 8px;
           border: none;
-          border-bottom: 1.5px solid #d9cfb8;
+          border-bottom: 1.5px solid ${theme.line};
           font-size: 15px;
           background: transparent;
           box-sizing: border-box;
           transition: border-color 0.15s;
-          color: #1a1a1a;
+          color: ${theme.ink};
         }
         .ledger-input:focus {
           outline: none;
-          border-bottom: 1.5px solid #dc2626;
+          border-bottom: 1.5px solid ${theme.brass};
         }
         .ledger-input::placeholder {
-          color: #c3baa7;
+          color: ${theme.inkSoft};
         }
       `}</style>
     </div>
