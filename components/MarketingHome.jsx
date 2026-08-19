@@ -66,12 +66,10 @@ function TellMatchConversationBanner() {
       overflow: 'hidden', background: theme.surface,
       animationDelay: '0.35s',
     }}>
-      <Image
+      <img
         src="/marketing/tell-match-conversation.png"
         alt={alt}
-        fill
-        sizes="100vw"
-        style={{ objectFit: 'contain' }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }}
       />
     </div>
   )
