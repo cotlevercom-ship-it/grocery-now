@@ -21,6 +21,7 @@ export default function AccountPage() {
   const [loaded, setLoaded] = useState(false)
   const [profile, setProfile] = useState(null)
   const [memberProfile, setMemberProfile] = useState(null)
+  const [sentRequests, setSentRequests] = useState([])
 
   const handleLogout = () => {
     signOut()
@@ -46,6 +47,22 @@ export default function AccountPage() {
       try {
         const memberRows = await supabaseFetch(`member_profiles?select=display_name,skills&user_id=eq.${session.user.id}`)
         setMemberProfile(memberRows?.[0] || null)
+      } catch (e) {
+        console.error(e)
+      }
+
+      try {
+        const requests = await supabaseFetch(
+          `connection_requests?select=id,to_user_id,status,created_at&from_user_id=eq.${session.user.id}&order=created_at.desc`
+        )
+        if (requests?.length) {
+          const toIds = [...new Set(requests.map(r => r.to_user_id))].join(',')
+          const toProfiles = await supabaseFetch(`member_profiles?select=user_id,display_name&user_id=in.(${toIds})`)
+          const nameById = Object.fromEntries((toProfiles || []).map(p => [p.user_id, p.display_name]))
+          setSentRequests(requests.map(r => ({ ...r, toName: nameById[r.to_user_id] || 'A member' })))
+        } else {
+          setSentRequests([])
+        }
       } catch (e) {
         console.error(e)
       }
@@ -153,6 +170,38 @@ export default function AccountPage() {
             </Link>
           ))}
         </div>
+
+        {sentRequests.length > 0 && (
+          <div style={{
+            background: theme.surface, borderRadius: '4px', border: `1px solid ${theme.line}`,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.25)', overflow: 'hidden', marginBottom: '18px'
+          }}>
+            <div style={{
+              padding: '13px 16px 10px', fontSize: '11px', letterSpacing: '0.06em', textTransform: 'uppercase',
+              color: theme.brass, fontWeight: '700'
+            }}>Connection Requests Sent</div>
+            {sentRequests.map((r, i) => (
+              <Link key={r.id} href={`/members/${r.to_user_id}`} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '13px', padding: '13px 16px',
+                  borderTop: `1px dashed ${theme.line}`
+                }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '13.5px', fontWeight: '600', color: theme.ink }}>{r.toName}</div>
+                    <div style={{ fontSize: '11px', color: theme.inkSoft, marginTop: '2px' }}>
+                      {new Date(r.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em',
+                    color: theme.inkSoft, background: theme.paper, border: `1px solid ${theme.line}`,
+                    padding: '3px 9px', borderRadius: '20px', whiteSpace: 'nowrap'
+                  }}>{r.status || 'sent'}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         <button onClick={handleLogout} style={{
           display: 'block', width: '100%', textAlign: 'center', background: 'transparent',
