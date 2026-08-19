@@ -20,6 +20,7 @@ export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const [profile, setProfile] = useState(null)
+  const [memberProfile, setMemberProfile] = useState(null)
 
   const handleLogout = () => {
     signOut()
@@ -42,6 +43,13 @@ export default function AccountPage() {
         setProfile({ id: session.user.id, full_name: '', phone: '' })
       }
 
+      try {
+        const memberRows = await supabaseFetch(`member_profiles?select=display_name,skills&user_id=eq.${session.user.id}`)
+        setMemberProfile(memberRows?.[0] || null)
+      } catch (e) {
+        console.error(e)
+      }
+
       setLoaded(true)
     }
     init()
@@ -57,6 +65,8 @@ export default function AccountPage() {
 
   const initial = (profile?.full_name || '?').trim().charAt(0).toUpperCase()
 
+  const isProfileComplete = !!(memberProfile?.display_name?.trim() && (memberProfile?.skills || []).length > 0)
+
   const rows = [
     {
       href: '/account/profile',
@@ -64,6 +74,13 @@ export default function AccountPage() {
       title: 'Edit Profile',
       subtitle: 'Name and phone number',
       tag: null,
+    },
+    {
+      href: '/members/new',
+      icon: '🤝',
+      title: 'Profile',
+      subtitle: isProfileComplete ? 'Skills, bio, and more' : 'Add your skills and bio to get discovered',
+      tag: isProfileComplete ? null : 'INCOMPLETE',
     },
   ]
 
