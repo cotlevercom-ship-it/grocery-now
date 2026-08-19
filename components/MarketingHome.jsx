@@ -57,6 +57,26 @@ function IdeasPeopleTogetherBanner() {
   )
 }
 
+function TellMatchConversationBanner() {
+  const alt = '04. Tell Us About You — your skills, your vision, your goals. Create your founder profile and tell the community what you\u2019re building and who you\u2019re looking for. 05. Find Your Match — not just a connection, a potential partnership. Discover founders with complementary skills, shared interests and compatible goals. 06. Start a Conversation — talk, explore, challenge. Get to know each other before deciding to build together.'
+
+  return (
+    <div className="banner-anim" style={{
+      position: 'relative', width: '100%', aspectRatio: '1774 / 887',
+      overflow: 'hidden', background: theme.surface,
+      animationDelay: '0.35s',
+    }}>
+      <Image
+        src="/marketing/tell-match-conversation.png"
+        alt={alt}
+        fill
+        sizes="100vw"
+        style={{ objectFit: 'contain' }}
+      />
+    </div>
+  )
+}
+
 function HowItWorksMobileSection() {
   return (
     <div
@@ -85,10 +105,15 @@ export default function MarketingHome() {
       <HowItWorksMobileSection />
 
       {/* Ideas. People. Together. — desktop only: slides up to cover the hero on scroll. Hidden on mobile. */}
-      <div className="banner-sticky-2 ideas-banner-desktop-only" style={{
+      <div className="banner-sticky-2 ideas-banner-desktop-only">
+        <IdeasPeopleTogetherBanner />
+      </div>
+
+      {/* Tell Us About You / Find Your Match / Start a Conversation — desktop only, sits after the sticky-stack. */}
+      <div className="tell-match-banner-desktop-only" style={{
         paddingBottom: 'clamp(32px,5vw,56px)',
       }}>
-        <IdeasPeopleTogetherBanner />
+        <TellMatchConversationBanner />
       </div>
 
       <style jsx global>{`
@@ -112,6 +137,7 @@ export default function MarketingHome() {
         .hero-mobile-only { display: block; }
         .hero-desktop-only { display: none; }
         .ideas-banner-desktop-only { display: none; }
+        .tell-match-banner-desktop-only { display: none; }
         .how-it-works-mobile {
           display: block;
           position: relative;
@@ -127,6 +153,7 @@ export default function MarketingHome() {
           .hero-mobile-only { display: none; }
           .hero-desktop-only { display: block; }
           .ideas-banner-desktop-only { display: block; }
+          .tell-match-banner-desktop-only { display: block; }
         }
       `}</style>
     </div>
