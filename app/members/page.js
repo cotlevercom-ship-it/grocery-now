@@ -12,6 +12,8 @@ export default function MembersBrowsePage({ embedded = false }) {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [skillFilter, setSkillFilter] = useState([])
   const [industryFilter, setIndustryFilter] = useState([])
+  const [appliedSkillFilter, setAppliedSkillFilter] = useState([])
+  const [appliedIndustryFilter, setAppliedIndustryFilter] = useState([])
 
   useEffect(() => {
     async function load() {
@@ -29,13 +31,27 @@ export default function MembersBrowsePage({ embedded = false }) {
 
   const toggleFilter = (setFn, value) => setFn(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value])
 
-  const activeFilterCount = skillFilter.length + industryFilter.length
+  const activeFilterCount = appliedSkillFilter.length + appliedIndustryFilter.length
+  const pendingFilterCount = skillFilter.length + industryFilter.length
 
   const filteredMembers = members.filter(m => {
-    const skillMatch = skillFilter.length === 0 || skillFilter.some(s => (m.skills || []).includes(s))
-    const industryMatch = industryFilter.length === 0 || industryFilter.some(i => (m.interested_industry || []).includes(i))
+    const skillMatch = appliedSkillFilter.length === 0 || appliedSkillFilter.some(s => (m.skills || []).includes(s))
+    const industryMatch = appliedIndustryFilter.length === 0 || appliedIndustryFilter.some(i => (m.interested_industry || []).includes(i))
     return skillMatch && industryMatch
   })
+
+  const applyFilters = () => {
+    setAppliedSkillFilter(skillFilter)
+    setAppliedIndustryFilter(industryFilter)
+    setFiltersOpen(false)
+  }
+
+  const clearFilters = () => {
+    setSkillFilter([])
+    setIndustryFilter([])
+    setAppliedSkillFilter([])
+    setAppliedIndustryFilter([])
+  }
 
   const chipStyle = (selected) => ({
     fontSize: '12px', fontWeight: '600', padding: '6px 12px', borderRadius: '20px',
@@ -99,16 +115,27 @@ export default function MembersBrowsePage({ embedded = false }) {
                 ))}
               </div>
             </div>
-            {activeFilterCount > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginTop: '18px' }}>
               <button
                 type="button"
-                onClick={() => { setSkillFilter([]); setIndustryFilter([]) }}
+                onClick={applyFilters}
                 style={{
-                  marginTop: '16px', background: 'none', border: 'none', color: theme.brassDark,
-                  fontSize: '12.5px', fontWeight: '600', cursor: 'pointer', padding: 0, fontFamily: theme.fontBody,
+                  background: theme.brass, border: 'none', color: 'white',
+                  fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+                  padding: '9px 22px', borderRadius: '999px', fontFamily: theme.fontBody,
                 }}
-              >Clear filters</button>
-            )}
+              >Apply{pendingFilterCount > 0 ? ` (${pendingFilterCount})` : ''}</button>
+              {(pendingFilterCount > 0 || activeFilterCount > 0) && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  style={{
+                    background: 'none', border: 'none', color: theme.brassDark,
+                    fontSize: '12.5px', fontWeight: '600', cursor: 'pointer', padding: 0, fontFamily: theme.fontBody,
+                  }}
+                >Clear filters</button>
+              )}
+            </div>
           </div>
         )}
 
