@@ -93,7 +93,7 @@
 .bookPage {
   position: absolute;
   inset: 0;
-  padding: 28px 6vw;
+  padding: 28px 48px;
   display: flex;
   flex-direction: column;
   background: radial-gradient(ellipse at top left, #1d0e0c 0%, var(--bg) 55%);
@@ -157,7 +157,7 @@
 
 /* small section label */
 .pageLabel {
-  margin-top: 10vh;
+  margin-top: 56px;
   color: var(--accent);
   font-size: 11px;
   letter-spacing: .22em;
@@ -179,20 +179,20 @@
 }
 .pageIndex {
   font-family: Georgia, serif;
-  font-size: clamp(60px, 10vw, 130px);
+  font-size: 100px;
   color: #321714;
   line-height: .8;
 }
 .pageCopy {
-  max-width: 850px;
+  max-width: 420px;
 }
 .pageCopy h2 {
   margin: 0;
   font-family: Georgia, serif;
   font-weight: 400;
-  font-size: clamp(38px, 5.4vw, 74px);
-  line-height: .96;
-  letter-spacing: -.03em;
+  font-size: 46px;
+  line-height: 1.05;
+  letter-spacing: -.02em;
 }
 .pageCopy h2 em {
   color: var(--accent);
