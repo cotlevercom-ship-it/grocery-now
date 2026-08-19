@@ -20,7 +20,6 @@ export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const [profile, setProfile] = useState(null)
-  const [memberProfile, setMemberProfile] = useState(null)
   const [sentRequests, setSentRequests] = useState([])
 
   const handleLogout = () => {
@@ -42,13 +41,6 @@ export default function AccountPage() {
       } catch (e) {
         console.error(e)
         setProfile({ id: session.user.id, full_name: '', phone: '' })
-      }
-
-      try {
-        const memberRows = await supabaseFetch(`member_profiles?select=display_name,skills&user_id=eq.${session.user.id}`)
-        setMemberProfile(memberRows?.[0] || null)
-      } catch (e) {
-        console.error(e)
       }
 
       try {
@@ -82,8 +74,6 @@ export default function AccountPage() {
 
   const initial = (profile?.full_name || '?').trim().charAt(0).toUpperCase()
 
-  const isProfileComplete = !!(memberProfile?.display_name?.trim() && (memberProfile?.skills || []).length > 0)
-
   const rows = [
     {
       href: '/account/profile',
@@ -92,13 +82,6 @@ export default function AccountPage() {
       subtitle: 'Name and phone number',
       tag: null,
     },
-    {
-      href: '/members/new',
-      icon: '🤝',
-      title: 'Profile',
-      subtitle: isProfileComplete ? 'Skills, bio, and more' : 'Add your skills and bio to get discovered',
-      tag: isProfileComplete ? null : 'INCOMPLETE',
-    },
   ]
 
   return (
@@ -106,10 +89,6 @@ export default function AccountPage() {
       {/* Passbook cover */}
       <div style={{ background: `linear-gradient(155deg, ${theme.paper} 0%, ${theme.surface} 60%, ${theme.lineSoft} 100%)` }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', textDecoration: 'none', marginBottom: '20px' }}>
-            <span style={{ fontSize: '17px', lineHeight: 1 }}>←</span> Back to Home
-          </Link>
-
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '18px' }}>
             <span style={{ fontSize: '13px', letterSpacing: '0.04em', color: theme.brass, fontWeight: '700' }}>COT LEVER</span>
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginLeft: '8px' }}>My Passbook</span>
@@ -129,9 +108,6 @@ export default function AccountPage() {
               }}>
                 {profile?.full_name || 'Guest User'}
               </Link>
-              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', marginTop: '2px', fontFamily: '"Courier New", monospace' }}>
-                {profile?.phone || 'No phone number added'}
-              </div>
             </div>
           </div>
         </div>
