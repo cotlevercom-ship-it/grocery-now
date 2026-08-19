@@ -87,7 +87,7 @@ export default function VerificationSection() {
 
       {isVerified ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: theme.signal, fontSize: '14.5px', fontWeight: '600' }}>
-          <VerifiedBadge size={18} /> You're verified — the badge shows on your profile.
+          <VerifiedBadge size={18} /> You&apos;re verified — the badge shows on your profile.
         </div>
       ) : request?.status === 'pending' ? (
         <div style={{ fontSize: '13.5px', color: theme.inkSoft }}>
@@ -100,7 +100,7 @@ export default function VerificationSection() {
           </p>
           {request?.status === 'rejected' && (
             <div style={{ marginBottom: '16px', padding: '11px 14px', background: theme.dangerSoft, color: theme.danger, borderRadius: '8px', fontSize: '13.5px' }}>
-              Your last request wasn't approved{request.admin_note ? `: ${request.admin_note}` : '.'} You can submit again below.
+              Your last request wasn&apos;t approved{request.admin_note ? `: ${request.admin_note}` : '.'} You can submit again below.
             </div>
           )}
           {error && (

@@ -58,7 +58,7 @@ function ConnectSection({ member }) {
         <div style={{
           textAlign: 'center', fontSize: '13.5px', fontWeight: '600', color: theme.brassDark,
           background: theme.paper, border: `1px solid ${theme.line}`, borderRadius: '8px', padding: '12px',
-        }}>Request sent — they'll be notified by email.</div>
+        }}>Request sent — they&apos;ll be notified by email.</div>
       )}
 
       {(status === 'not_sent' || status === 'sending' || status === 'error') && !showForm && (
