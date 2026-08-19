@@ -185,14 +185,8 @@ export default function MembersBrowsePage({ embedded = false }) {
                   display: 'flex', flexDirection: 'column', overflow: 'hidden',
                 }}>
                   <Link href={`/members/${m.user_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    {/* Cover banner */}
-                    <div style={{
-                      height: '64px', width: '100%',
-                      background: `linear-gradient(135deg, ${bw.bannerFrom}, ${bw.bannerTo})`,
-                    }} />
-
-                    {/* Avatar overlapping the banner */}
-                    <div style={{ padding: '0 18px', marginTop: '-34px' }}>
+                    {/* Avatar */}
+                    <div style={{ padding: '18px 18px 0' }}>
                       <div style={{
                         width: '68px', height: '68px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
                         background: bw.chipFilledBg, display: 'flex', alignItems: 'center', justifyContent: 'center',
