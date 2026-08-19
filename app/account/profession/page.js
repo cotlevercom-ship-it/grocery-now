@@ -186,24 +186,32 @@ export default function ProfessionPage() {
             <TagInput label="Interest" values={interests} onChange={setInterests} placeholder="e.g. Photography" />
 
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ fontSize: '11px', color: theme.inkSoft, display: 'block', marginBottom: '10px', letterSpacing: '0.03em' }}>Skill</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {SKILL_OPTIONS.map(s => {
-                  const selected = skills.includes(s)
-                  return (
-                    <button
-                      key={s} type="button" onClick={() => toggleSkill(s)}
-                      style={{
-                        fontSize: '12.5px', fontWeight: '600', padding: '7px 13px', borderRadius: '20px',
-                        cursor: 'pointer', fontFamily: theme.fontBody,
-                        background: selected ? theme.brass : 'transparent',
-                        color: selected ? theme.ink : theme.inkSoft,
-                        border: `1px solid ${selected ? theme.brass : theme.line}`,
-                      }}
-                    >{s}</button>
-                  )
-                })}
-              </div>
+              <label style={{ fontSize: '11px', color: theme.inkSoft, display: 'block', marginBottom: '6px', letterSpacing: '0.03em' }}>Skill</label>
+              {skills.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginBottom: '10px' }}>
+                  {skills.map(s => (
+                    <span key={s} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      fontSize: '12.5px', fontWeight: '600', padding: '6px 10px', borderRadius: '20px',
+                      background: theme.lineSoft, color: theme.ink, border: `1px solid ${theme.line}`
+                    }}>
+                      {s}
+                      <button type="button" onClick={() => toggleSkill(s)} style={{
+                        background: 'none', border: 'none', color: theme.inkSoft, cursor: 'pointer',
+                        fontSize: '13px', lineHeight: 1, padding: 0
+                      }}>×</button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <select
+                value=""
+                onChange={(e) => { if (e.target.value) toggleSkill(e.target.value) }}
+                className="ledger-input ledger-select"
+              >
+                <option value="">Select a skill to add</option>
+                {SKILL_OPTIONS.filter(s => !skills.includes(s)).map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
             </div>
 
             <TagInput label="Language" values={languages} onChange={setLanguages} placeholder="e.g. Bangla, English" />
@@ -250,6 +258,9 @@ export default function ProfessionPage() {
           box-sizing: border-box;
           transition: border-color 0.15s;
           color: ${theme.ink};
+        }
+        .ledger-select {
+          padding-bottom: 6px;
         }
         .ledger-input:focus {
           outline: none;
