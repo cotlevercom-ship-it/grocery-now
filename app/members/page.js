@@ -190,29 +190,22 @@ export default function MembersBrowsePage({ embedded = false }) {
                       </div>
                     </div>
 
-                    {m.bio && (
-                      <p style={{
-                        fontFamily: theme.fontDisplay, fontStyle: 'italic', fontSize: '12.5px', color: theme.inkSoft,
-                        marginBottom: '14px', lineHeight: '1.55',
-                        overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
-                        WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'
-                      }}>{m.bio}</p>
+                    {((m.skills && m.skills.length > 0) || (m.interested_industry && m.interested_industry.length > 0)) && (
+                      <div style={{ paddingTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {(m.skills || []).map((s, idx) => (
+                          <span key={`sk-${idx}`} style={{
+                            fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
+                            background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
+                          }}>{s}</span>
+                        ))}
+                        {(m.interested_industry || []).map((ind, idx) => (
+                          <span key={`in-${idx}`} style={{
+                            fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
+                            background: theme.signalSoft, color: theme.signal
+                          }}>{ind}</span>
+                        ))}
+                      </div>
                     )}
-
-                    <div style={{ paddingTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      {m.looking_for && (
-                        <span style={{
-                          fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
-                          background: theme.signalSoft, color: theme.signal
-                        }}>{m.looking_for}</span>
-                      )}
-                      {m.commitment && (
-                        <span style={{
-                          fontSize: '10.5px', fontWeight: '600', padding: '3px 9px', borderRadius: '20px',
-                          background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
-                        }}>{m.commitment}</span>
-                      )}
-                    </div>
                   </Link>
 
                   <Link href={`/members/${m.user_id}`} style={{
