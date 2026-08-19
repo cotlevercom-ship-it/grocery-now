@@ -113,6 +113,233 @@ function ConnectSection({ member }) {
   )
 }
 
+const TABS = [
+  { id: 'intro', label: 'Intro', icon: '📝' },
+  { id: 'personal', label: 'Personal Details', icon: '📋' },
+  { id: 'skills', label: 'Skills', icon: '🤝' },
+  { id: 'looking', label: 'Looking For', icon: '🎯' },
+  { id: 'contact', label: 'Contact Info', icon: '📧' },
+]
+
+function SectionHeading({ children, isOwnProfile }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <h2 style={{ fontSize: '17px', fontWeight: '700', color: theme.ink, margin: 0 }}>{children}</h2>
+      {isOwnProfile && (
+        <Link href="/members/new" aria-label={`Edit ${children}`} style={{
+          width: '32px', height: '32px', borderRadius: '50%', background: theme.paper,
+          border: `1px solid ${theme.line}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          textDecoration: 'none', fontSize: '14px', flexShrink: 0,
+        }}>✏️</Link>
+      )}
+    </div>
+  )
+}
+
+function EmptyState({ isOwnProfile, label }) {
+  return (
+    <div style={{ fontSize: '14px', color: theme.inkSoft }}>
+      {label} not added yet{isOwnProfile && (
+        <> — <Link href="/members/new" style={{ color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>add it</Link></>
+      )}
+    </div>
+  )
+}
+
+function PinnedRow({ icon, children }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14.5px', color: theme.ink, marginBottom: '10px' }}>
+      <span style={{ fontSize: '15px', width: '20px', textAlign: 'center', flexShrink: 0 }}>{icon}</span>
+      <span>{children}</span>
+    </div>
+  )
+}
+
+function DetailRow({ icon, label, value }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: `1px dashed ${theme.line}` }}>
+      <span style={{ fontSize: '16px', width: '22px', textAlign: 'center', flexShrink: 0 }}>{icon}</span>
+      <div>
+        <div style={{ fontSize: '11px', color: theme.inkSoft, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</div>
+        <div style={{ fontSize: '14.5px', color: theme.ink, fontWeight: '600', marginTop: '2px' }}>{value}</div>
+      </div>
+    </div>
+  )
+}
+
+function ProfileTabs({ member, isOwnProfile }) {
+  const [activeTab, setActiveTab] = useState('intro')
+
+  const hasPersonalDetails = member.industry || member.years_experience || member.founder_type || member.education
+  const hasSkills = (member.skills || []).length > 0
+  const hasLookingFor = member.looking_for || member.commitment || (member.interested_industry || []).length > 0
+  const hasContact = member.contact_email || member.linkedin_url
+
+  return (
+    <div>
+      <div className="profile-tabs-layout">
+        <div className="profile-tabs-sidebar">
+          {TABS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`profile-tab-btn${activeTab === t.id ? ' active' : ''}`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '9px', width: '100%', textAlign: 'left',
+                padding: '10px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                fontSize: '14px', fontWeight: '600', fontFamily: theme.fontBody, whiteSpace: 'nowrap',
+                background: activeTab === t.id ? theme.paper : 'transparent',
+                color: activeTab === t.id ? theme.brass : theme.inkSoft,
+              }}
+            >
+              <span>{t.icon}</span>{t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="profile-tabs-content">
+          {activeTab === 'intro' && (
+            <div>
+              <SectionHeading isOwnProfile={isOwnProfile}>Bio</SectionHeading>
+              {member.bio ? (
+                <p style={{ fontSize: '14.5px', color: theme.ink, lineHeight: '1.7', marginBottom: '22px' }}>{member.bio}</p>
+              ) : (
+                <div style={{ marginBottom: '22px' }}><EmptyState isOwnProfile={isOwnProfile} label="Bio" /></div>
+              )}
+
+              <h3 style={{ fontSize: '13px', fontWeight: '700', color: theme.inkSoft, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '12px' }}>Pinned Details</h3>
+              {(member.role_title || member.location || member.education || member.founder_type) ? (
+                <div>
+                  {member.role_title && <PinnedRow icon="💼">{member.role_title}</PinnedRow>}
+                  {member.location && <PinnedRow icon="📍">{member.location}</PinnedRow>}
+                  {member.education && <PinnedRow icon="🎓">{member.education}</PinnedRow>}
+                  {member.founder_type && <PinnedRow icon="🚀">{member.founder_type === 'serial' ? 'Serial founder' : 'First-time founder'}</PinnedRow>}
+                </div>
+              ) : (
+                <EmptyState isOwnProfile={isOwnProfile} label="Pinned details" />
+              )}
+            </div>
+          )}
+
+          {activeTab === 'personal' && (
+            <div>
+              <SectionHeading isOwnProfile={isOwnProfile}>Personal Details</SectionHeading>
+              {hasPersonalDetails ? (
+                <div>
+                  {member.industry && <DetailRow icon="🏭" label="Industry" value={member.industry} />}
+                  {member.years_experience && <DetailRow icon="📆" label="Years of Experience" value={member.years_experience} />}
+                  {member.founder_type && <DetailRow icon="🚀" label="Founder Type" value={member.founder_type === 'serial' ? 'Serial founder' : 'First-time founder'} />}
+                  {member.education && <DetailRow icon="🎓" label="Education" value={member.education} />}
+                  {member.experience && <DetailRow icon="🧾" label="Experience" value={member.experience} />}
+                </div>
+              ) : (
+                <EmptyState isOwnProfile={isOwnProfile} label="Personal details" />
+              )}
+            </div>
+          )}
+
+          {activeTab === 'skills' && (
+            <div>
+              <SectionHeading isOwnProfile={isOwnProfile}>Skills</SectionHeading>
+              {hasSkills ? (
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {member.skills.map(s => (
+                    <span key={s} style={{
+                      fontSize: '12.5px', fontWeight: '600', padding: '6px 13px', borderRadius: '20px',
+                      background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
+                    }}>{s}</span>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState isOwnProfile={isOwnProfile} label="Skills" />
+              )}
+            </div>
+          )}
+
+          {activeTab === 'looking' && (
+            <div>
+              <SectionHeading isOwnProfile={isOwnProfile}>Looking For</SectionHeading>
+              {hasLookingFor ? (
+                <div>
+                  {member.looking_for && <DetailRow icon="🎯" label="Looking For" value={member.looking_for} />}
+                  {member.commitment && <DetailRow icon="⏱️" label="Commitment" value={member.commitment} />}
+                  {(member.interested_industry || []).length > 0 && (
+                    <div style={{ marginTop: '16px' }}>
+                      <div style={{ fontSize: '11px', color: theme.inkSoft, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>Interested Industries</div>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {member.interested_industry.map(i => (
+                          <span key={i} style={{
+                            fontSize: '12.5px', fontWeight: '600', padding: '6px 13px', borderRadius: '20px',
+                            background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
+                          }}>{i}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <EmptyState isOwnProfile={isOwnProfile} label="Looking for" />
+              )}
+            </div>
+          )}
+
+          {activeTab === 'contact' && (
+            <div>
+              <SectionHeading isOwnProfile={isOwnProfile}>Contact Info</SectionHeading>
+              {hasContact ? (
+                <div>
+                  {member.contact_email && <DetailRow icon="📧" label="Email" value={
+                    <a href={`mailto:${member.contact_email}`} style={{ color: theme.ink, textDecoration: 'none' }}>{member.contact_email}</a>
+                  } />}
+                  {member.linkedin_url && <DetailRow icon="🔗" label="LinkedIn / Portfolio" value={
+                    <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: theme.brassDark, textDecoration: 'none' }}>{member.linkedin_url} ↗</a>
+                  } />}
+                </div>
+              ) : (
+                <EmptyState isOwnProfile={isOwnProfile} label="Contact info" />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style jsx>{`
+        .profile-tabs-layout {
+          display: flex;
+          gap: 24px;
+          align-items: flex-start;
+        }
+        .profile-tabs-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          width: 220px;
+          flex-shrink: 0;
+        }
+        .profile-tabs-content {
+          flex: 1;
+          min-width: 0;
+        }
+        @media (max-width: 700px) {
+          .profile-tabs-layout {
+            flex-direction: column;
+          }
+          .profile-tabs-sidebar {
+            flex-direction: row;
+            width: 100%;
+            overflow-x: auto;
+            gap: 8px;
+            padding-bottom: 6px;
+          }
+          .profile-tab-btn {
+            flex-shrink: 0;
+          }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 export default function MemberDetailPage() {
   const { userId } = useParams()
   const [member, setMember] = useState(null)
@@ -159,7 +386,7 @@ export default function MemberDetailPage() {
 
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
-      <div style={{ maxWidth: '640px', margin: '0 auto', padding: 'clamp(20px,4vw,48px) clamp(16px,3vw,24px)' }}>
+      <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(20px,4vw,48px) clamp(16px,3vw,24px)' }}>
         <Link href="/members" style={{ fontSize: '13px', color: theme.inkSoft, textDecoration: 'none', display: 'inline-block', marginBottom: '20px' }}>← Browse co-founders</Link>
 
         <div style={{ background: theme.surface, borderRadius: '12px', border: `1px solid ${theme.line}`, padding: 'clamp(24px,3.5vw,36px)' }}>
@@ -193,105 +420,9 @@ export default function MemberDetailPage() {
             )}
           </div>
 
-          {(member.looking_for || member.commitment || (member.interested_industry || []).length > 0) && (
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '22px' }}>
-              {member.looking_for && (
-                <span style={{
-                  fontSize: '11.5px', fontWeight: '600', padding: '5px 11px', borderRadius: '20px',
-                  background: theme.signalSoft, color: theme.signal
-                }}>Looking for: {member.looking_for}</span>
-              )}
-              {member.commitment && (
-                <span style={{
-                  fontSize: '11.5px', fontWeight: '600', padding: '5px 11px', borderRadius: '20px',
-                  background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
-                }}>{member.commitment}</span>
-              )}
-              {(member.interested_industry || []).map(i => (
-                <span key={i} style={{
-                  fontSize: '11.5px', fontWeight: '600', padding: '5px 11px', borderRadius: '20px',
-                  background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
-                }}>{i}</span>
-              ))}
-            </div>
-          )}
+          <div style={{ borderTop: `1px solid ${theme.line}`, marginBottom: '22px' }} />
 
-          {member.bio && (
-            <p style={{ fontSize: '15px', color: theme.ink, lineHeight: '1.7', marginBottom: '22px' }}>
-              {member.bio}
-            </p>
-          )}
-
-          {member.experience && (
-            <div style={{ marginBottom: '22px' }}>
-              <div style={{
-                fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: theme.brassDark, marginBottom: '8px', fontWeight: '600'
-              }}>Experience</div>
-              <p style={{ fontSize: '14px', color: theme.ink, lineHeight: '1.6' }}>{member.experience}</p>
-            </div>
-          )}
-
-          {(member.industry || member.years_experience || member.founder_type || member.education) && (
-            <div style={{ marginBottom: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {member.industry && (
-                <div style={{ fontSize: '14px', color: theme.ink }}>
-                  <span style={{ color: theme.inkSoft }}>Industry: </span>{member.industry}
-                </div>
-              )}
-              {member.years_experience && (
-                <div style={{ fontSize: '14px', color: theme.ink }}>
-                  <span style={{ color: theme.inkSoft }}>Experience: </span>{member.years_experience}
-                </div>
-              )}
-              {member.founder_type && (
-                <div style={{ fontSize: '14px', color: theme.ink }}>
-                  <span style={{ color: theme.inkSoft }}>Founder type: </span>{member.founder_type === 'serial' ? 'Serial founder' : 'First-time founder'}
-                </div>
-              )}
-              {member.education && (
-                <div style={{ fontSize: '14px', color: theme.ink }}>
-                  <span style={{ color: theme.inkSoft }}>Education: </span>{member.education}
-                </div>
-              )}
-            </div>
-          )}
-
-          {(member.skills || []).length > 0 && (
-            <div style={{ marginBottom: '22px' }}>
-              <div style={{
-                fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: theme.brassDark, marginBottom: '10px', fontWeight: '600'
-              }}>Skills</div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {member.skills.map(s => (
-                  <span key={s} style={{
-                    fontSize: '11.5px', fontWeight: '600', padding: '4px 10px', borderRadius: '5px',
-                    background: theme.paper, border: `1px solid ${theme.line}`, color: theme.inkSoft
-                  }}>{s}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {member.contact_email && (
-            <div style={{ borderTop: `1px solid ${theme.line}`, paddingTop: '20px' }}>
-              <div style={{
-                fontFamily: theme.fontMono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: theme.brassDark, marginBottom: '10px', fontWeight: '600'
-              }}>Contact</div>
-              <a href={`mailto:${member.contact_email}`} style={{ fontSize: '14.5px', color: theme.ink, fontWeight: '600', textDecoration: 'none' }}>
-                {member.contact_email}
-              </a>
-              {member.linkedin_url && (
-                <div style={{ marginTop: '8px' }}>
-                  <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '13.5px', color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>
-                    LinkedIn / Portfolio ↗
-                  </a>
-                </div>
-              )}
-            </div>
-          )}
+          <ProfileTabs member={member} isOwnProfile={isOwnProfile} />
 
           <ConnectSection member={member} />
         </div>
