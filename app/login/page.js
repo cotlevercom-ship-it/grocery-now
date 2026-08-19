@@ -179,16 +179,15 @@ function LoginForm() {
   }
 
   return (
-    <div style={{
+    <div className="login-shell" style={{
       minHeight: '100vh',
       background: `linear-gradient(180deg, rgba(23,10,9,0.55) 0%, rgba(23,10,9,0.85) 100%), url('/marketing/login-bg.png') center / cover no-repeat, ${theme.paper}`,
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
       padding: '0 16px 40px'
     }}>
       {/* Back link */}
-      <div style={{ width: '100%', maxWidth: '420px', padding: '18px 0 0' }}>
+      <div style={{ width: 'min(92vw, 420px)', padding: '18px 0 0' }}>
         <Link href="/" style={{ color: theme.inkSoft, fontSize: '14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> Back to Home
         </Link>
@@ -196,7 +195,7 @@ function LoginForm() {
 
       {/* Card */}
       <div style={{
-        width: '100%', maxWidth: '420px', background: theme.surface, borderRadius: '16px',
+        width: 'min(92vw, 420px)', background: theme.surface, borderRadius: '16px',
         border: `1px solid ${theme.line}`, boxShadow: '0 20px 50px rgba(0,0,0,0.45)', padding: '28px 24px', marginTop: '32px'
       }}>
         <div style={{ marginBottom: '20px' }}>
@@ -362,6 +361,15 @@ function LoginForm() {
       </div>
 
       <style jsx>{`
+        .login-shell {
+          align-items: center;
+        }
+        @media (min-width: 900px) {
+          .login-shell {
+            align-items: flex-end;
+            padding-right: 8vw;
+          }
+        }
         .login-input {
           width: 100%;
           padding: 12px 14px;
