@@ -89,11 +89,6 @@ export default function AccountPage() {
       {/* Passbook cover */}
       <div style={{ background: `linear-gradient(155deg, ${theme.paper} 0%, ${theme.surface} 60%, ${theme.lineSoft} 100%)` }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '18px' }}>
-            <span style={{ fontSize: '13px', letterSpacing: '0.04em', color: theme.brass, fontWeight: '700' }}>COT LEVER</span>
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginLeft: '8px' }}>My Passbook</span>
-          </div>
-
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <Link href={`/members/${profile?.id}`} style={{
               width: '54px', height: '54px', borderRadius: '50%', background: theme.brass,
