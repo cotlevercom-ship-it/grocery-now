@@ -16,10 +16,17 @@ function ZigzagEdge({ fill }) {
   )
 }
 
+function isFilled(v) {
+  if (Array.isArray(v)) return v.length > 0
+  if (v === null || v === undefined) return false
+  return String(v).trim().length > 0
+}
+
 export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const [profile, setProfile] = useState(null)
+  const [memberProfile, setMemberProfile] = useState(null)
   const [sentRequests, setSentRequests] = useState([])
   const [receivedRequests, setReceivedRequests] = useState([])
   const [actingId, setActingId] = useState(null)
@@ -57,6 +64,16 @@ export default function AccountPage() {
       } catch (e) {
         console.error(e)
         setProfile({ id: session.user.id, full_name: '', phone: '' })
+      }
+
+      try {
+        const members = await supabaseFetch(
+          `member_profiles?select=role_title,experience,location,gender,age,interests,skills,languages&user_id=eq.${session.user.id}`
+        )
+        setMemberProfile(members?.[0] || {})
+      } catch (e) {
+        console.error(e)
+        setMemberProfile({})
       }
 
       try {
@@ -106,6 +123,15 @@ export default function AccountPage() {
 
   const initial = (profile?.full_name || '?').trim().charAt(0).toUpperCase()
 
+  const mp = memberProfile || {}
+  const basicFields = [profile?.phone, mp.location, mp.gender, mp.age]
+  const professionFields = [mp.role_title, mp.experience, mp.interests, mp.skills, mp.languages]
+  const basicFilled = basicFields.filter(isFilled).length
+  const professionFilled = professionFields.filter(isFilled).length
+  const totalFields = basicFields.length + professionFields.length
+  const totalFilled = basicFilled + professionFilled
+  const completionPct = Math.round((totalFilled / totalFields) * 100)
+
   const rows = [
     {
       href: '/account/basic-info',
@@ -113,6 +139,8 @@ export default function AccountPage() {
       title: 'Basic Info',
       subtitle: 'Mobile number, location, gender, age',
       tag: null,
+      filled: basicFilled,
+      total: basicFields.length,
     },
     {
       href: '/account/profession',
@@ -120,6 +148,8 @@ export default function AccountPage() {
       title: 'Profession',
       subtitle: 'Job, experience, interests, skills, languages',
       tag: null,
+      filled: professionFilled,
+      total: professionFields.length,
     },
   ]
 
@@ -135,13 +165,34 @@ export default function AccountPage() {
               fontSize: '22px', fontWeight: '700', color: '#FFFFFF', flexShrink: 0,
               border: '2px solid rgba(255,255,255,0.25)', textDecoration: 'none'
             }}>{initial}</Link>
-            <div style={{ minWidth: 0 }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <Link href={`/members/${profile?.id}`} style={{
                 color: theme.ink, fontSize: '18px', fontWeight: '700', overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none', display: 'block'
               }}>
                 {profile?.full_name || 'Guest User'}
               </Link>
+            </div>
+          </div>
+
+          {/* Profile completion meter */}
+          <div style={{ marginTop: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
+              <span style={{ fontSize: '11.5px', fontWeight: '700', color: theme.inkSoft, letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+                Profile Completion
+              </span>
+              <span style={{ fontSize: '13px', fontWeight: '700', color: theme.brass }}>
+                {completionPct}%
+              </span>
+            </div>
+            <div style={{
+              width: '100%', height: '7px', borderRadius: '20px',
+              background: 'rgba(255,255,255,0.18)', overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${completionPct}%`, height: '100%', borderRadius: '20px',
+                background: theme.brass, transition: 'width 0.4s ease'
+              }} />
             </div>
           </div>
         </div>
@@ -169,6 +220,11 @@ export default function AccountPage() {
                   <div style={{ fontSize: '14px', fontWeight: '600', color: theme.ink }}>{row.title}</div>
                   <div style={{ fontSize: '11.5px', color: theme.inkSoft, marginTop: '2px' }}>{row.subtitle}</div>
                 </div>
+                <div style={{
+                  fontSize: '10.5px', fontWeight: '700', color: row.filled === row.total ? theme.brass : theme.inkSoft,
+                  background: theme.paper, border: `1px solid ${theme.line}`,
+                  padding: '3px 9px', borderRadius: '20px', whiteSpace: 'nowrap'
+                }}>{row.filled}/{row.total}</div>
                 {row.tag && (
                   <div style={{
                     fontSize: '10.5px', fontWeight: '700', color: theme.danger, background: theme.dangerSoft,
