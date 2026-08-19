@@ -208,29 +208,15 @@ export default function MembersBrowsePage({ embedded = false }) {
                     </div>
 
                     {m.skills && m.skills.length > 0 && (
-                      <div style={{ marginBottom: '8px' }}>
-                        <div style={{ fontSize: '9.5px', fontWeight: '700', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '4px' }}>Skill</div>
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {(m.skills || []).map((s, idx) => (
-                            <span key={`sk-${idx}`} style={{
-                              fontSize: '10.5px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px',
-                              background: sc.chipBg, color: sc.chipText
-                            }}>{s}</span>
-                          ))}
-                        </div>
+                      <div style={{ fontSize: '12px', color: sc.text, marginBottom: '4px' }}>
+                        <span style={{ fontWeight: '600', color: sc.textSoft }}>Skill: </span>
+                        {m.skills.join(', ')}
                       </div>
                     )}
                     {m.interested_industry && m.interested_industry.length > 0 && (
-                      <div>
-                        <div style={{ fontSize: '9.5px', fontWeight: '700', color: sc.industryChipText, textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '4px' }}>Interest</div>
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {(m.interested_industry || []).map((ind, idx) => (
-                            <span key={`in-${idx}`} style={{
-                              fontSize: '10.5px', fontWeight: '600', padding: '3px 10px', borderRadius: '20px',
-                              background: sc.industryChipBg, color: sc.industryChipText
-                            }}>{ind}</span>
-                          ))}
-                        </div>
+                      <div style={{ fontSize: '12px', color: sc.text }}>
+                        <span style={{ fontWeight: '600', color: sc.industryChipText }}>Interest: </span>
+                        {m.interested_industry.join(', ')}
                       </div>
                     )}
                   </Link>
