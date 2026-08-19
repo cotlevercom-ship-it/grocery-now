@@ -228,8 +228,9 @@ export default function MembersBrowsePage({ embedded = false }) {
                   <Link href={`/members/${m.user_id}`} style={{
                     marginTop: '18px', textAlign: 'center', textDecoration: 'none',
                     background: theme.brass, color: '#FFFFFF',
-                    borderRadius: '999px', padding: '10px 16px', fontSize: '13px', fontWeight: '700',
-                  }}>Meet</Link>
+                    borderRadius: '999px', padding: '10px 16px', fontSize: '12.5px', fontWeight: '700',
+                    whiteSpace: 'nowrap',
+                  }}>Request to Connect</Link>
                 </div>
               )
             })}
