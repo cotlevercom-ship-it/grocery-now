@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch, signOut } from '@/lib/supabase'
-import { theme } from '@/lib/theme'
+import { accountLightTheme as theme } from '@/lib/accountLightTheme'
 
 function ZigzagEdge({ fill }) {
   return (
@@ -132,7 +132,7 @@ export default function AccountPage() {
             <Link href={`/members/${profile?.id}`} style={{
               width: '54px', height: '54px', borderRadius: '50%', background: theme.brass,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '22px', fontWeight: '700', color: theme.ink, flexShrink: 0,
+              fontSize: '22px', fontWeight: '700', color: '#FFFFFF', flexShrink: 0,
               border: '2px solid rgba(255,255,255,0.25)', textDecoration: 'none'
             }}>{initial}</Link>
             <div style={{ minWidth: 0 }}>
@@ -230,7 +230,7 @@ export default function AccountPage() {
                     onClick={() => handleDecision(r.id, 'accepted')}
                     disabled={actingId === r.id}
                     style={{
-                      background: theme.brass, color: theme.ink, border: 'none',
+                      background: theme.brass, color: '#FFFFFF', border: 'none',
                       borderRadius: '6px', padding: '7px 14px', fontSize: '12.5px', fontWeight: '700',
                       cursor: actingId === r.id ? 'default' : 'pointer', opacity: actingId === r.id ? 0.6 : 1
                     }}

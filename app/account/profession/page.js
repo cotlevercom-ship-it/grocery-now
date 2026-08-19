@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch } from '@/lib/supabase'
-import { theme } from '@/lib/theme'
+import { accountLightTheme as theme } from '@/lib/accountLightTheme'
 import { SKILL_OPTIONS } from '@/lib/memberOptions'
 
 function TagInput({ label, values, onChange, placeholder }) {
@@ -236,7 +236,7 @@ export default function ProfessionPage() {
               type="submit"
               disabled={submitting}
               style={{
-                width: '100%', background: submitting ? theme.line : theme.brass, color: theme.ink,
+                width: '100%', background: submitting ? theme.line : theme.brass, color: '#FFFFFF',
                 padding: '14px', borderRadius: '4px', fontSize: '14.5px', fontWeight: '700',
                 border: 'none', letterSpacing: '0.02em'
               }}>
