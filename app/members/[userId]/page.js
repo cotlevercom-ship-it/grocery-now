@@ -124,7 +124,7 @@ export default function MemberDetailPage() {
     async function load() {
       setLoading(true)
       try {
-        const data = await supabaseFetch(`member_profiles?select=*&user_id=eq.${userId}&is_discoverable=eq.true`)
+        const data = await supabaseFetch(`member_profiles?select=*&user_id=eq.${userId}`)
         setMember(data?.[0] || null)
       } catch (e) {
         console.error(e)
@@ -151,6 +151,18 @@ export default function MemberDetailPage() {
     return (
       <div style={{ padding: '60px', textAlign: 'center', color: theme.inkSoft }}>
         Profile not found. <Link href="/members" style={{ color: theme.brassDark, fontWeight: '600' }}>Back to co-founders</Link>
+      </div>
+    )
+  }
+
+  if (isOwnProfile && !member.display_name?.trim()) {
+    return (
+      <div style={{ padding: '60px 20px', textAlign: 'center', color: theme.inkSoft }}>
+        <p style={{ marginBottom: '16px' }}>Your profile is empty — add your name and skills to get discovered.</p>
+        <Link href="/members/new" style={{
+          display: 'inline-block', background: theme.brass, color: 'white',
+          borderRadius: '8px', padding: '12px 24px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
+        }}>Complete Your Profile</Link>
       </div>
     )
   }
