@@ -108,10 +108,17 @@ export default function AccountPage() {
 
   const rows = [
     {
-      href: '/account/profile',
-      icon: '👤',
-      title: 'Edit Profile',
-      subtitle: 'Name and phone number',
+      href: '/account/basic-info',
+      icon: '🧾',
+      title: 'Basic Info',
+      subtitle: 'Mobile number, location, gender, age',
+      tag: null,
+    },
+    {
+      href: '/account/profession',
+      icon: '💼',
+      title: 'Profession',
+      subtitle: 'Job, experience, interests, skills, languages',
       tag: null,
     },
   ]
