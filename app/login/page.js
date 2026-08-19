@@ -367,7 +367,7 @@ function LoginForm() {
         @media (min-width: 900px) {
           .login-shell {
             align-items: flex-end;
-            padding-right: 8vw;
+            padding-right: 18vw;
           }
         }
         .login-input {
