@@ -155,18 +155,6 @@ export default function MemberDetailPage() {
     )
   }
 
-  if (isOwnProfile && !member.display_name?.trim()) {
-    return (
-      <div style={{ padding: '60px 20px', textAlign: 'center', color: theme.inkSoft }}>
-        <p style={{ marginBottom: '16px' }}>Your profile is empty — add your name and skills to get discovered.</p>
-        <Link href="/members/new" style={{
-          display: 'inline-block', background: theme.brass, color: 'white',
-          borderRadius: '8px', padding: '12px 24px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
-        }}>Complete Your Profile</Link>
-      </div>
-    )
-  }
-
   const initial = (member.display_name || '?').trim().charAt(0).toUpperCase()
 
   return (
