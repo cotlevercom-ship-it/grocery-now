@@ -46,6 +46,7 @@ export default function ForgotPasswordPage() {
       flexDirection: 'column',
       padding: '0 16px 40px'
     }}>
+      <div className="fp-inner">
       <div style={{ width: 'min(92vw, 420px)', padding: '18px 0 0' }}>
         <Link href="/login" style={{ color: theme.inkSoft, fontSize: '14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> Back to Log In
@@ -99,14 +100,15 @@ export default function ForgotPasswordPage() {
           </button>
         </form>
       </div>
+      </div>
 
       <style jsx>{`
         .fp-shell {
           align-items: center;
         }
         @media (min-width: 900px) {
-          .fp-shell {
-            padding-right: 96px;
+          .fp-inner {
+            transform: translateX(-96px);
           }
         }
       `}</style>
