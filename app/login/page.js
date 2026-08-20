@@ -186,17 +186,10 @@ function LoginForm() {
       flexDirection: 'column',
       padding: '0 16px 40px'
     }}>
-      {/* Back link */}
-      <div style={{ width: 'min(92vw, 420px)', padding: '18px 0 0' }}>
-        <Link href="/" style={{ color: theme.inkSoft, fontSize: '14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> Back to Home
-        </Link>
-      </div>
-
       {/* Card */}
-      <div style={{
-        width: 'min(92vw, 420px)', background: theme.surface, borderRadius: '16px',
-        border: `1px solid ${theme.line}`, boxShadow: '0 20px 50px rgba(0,0,0,0.45)', padding: '28px 24px', marginTop: '32px'
+      <div className="login-card" style={{
+        background: theme.surface, borderRadius: '16px',
+        border: `1px solid ${theme.line}`, boxShadow: '0 20px 50px rgba(0,0,0,0.45)'
       }}>
         <div style={{ marginBottom: '20px' }}>
           <div style={{ fontSize: '19px', fontWeight: '700', color: theme.ink, marginBottom: '4px' }}>
@@ -373,6 +366,18 @@ function LoginForm() {
             --bg-pos: center;
           }
         }
+        .login-card {
+          width: min(88vw, 340px);
+          padding: 20px 16px;
+          margin-top: 24px;
+        }
+        @media (min-width: 900px) {
+          .login-card {
+            width: min(92vw, 420px);
+            padding: 28px 24px;
+            margin-top: 32px;
+          }
+        }
         .login-input {
           width: 100%;
           padding: 12px 14px;
@@ -396,3 +401,4 @@ function LoginForm() {
     </div>
   )
 }
+
