@@ -222,7 +222,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                   display: 'flex', flexDirection: 'column', padding: '22px 20px 18px',
                 }}>
                   <Link href={`/members/${m.user_id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '4px' }}>
                       <div style={{
                         width: '96px', height: '96px', borderRadius: '14px', flexShrink: 0, overflow: 'hidden',
                         background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -238,24 +238,23 @@ export default function MembersBrowsePage({ embedded = false }) {
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
                           {m.verified && <VerifiedBadge />}
                         </div>
-                        <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
+                        <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px', marginBottom: '8px' }}>
                           {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
                         </div>
+                        {m.skills && m.skills.length > 0 && (
+                          <div style={{ fontSize: '11.5px', color: sc.text, marginBottom: '4px', lineHeight: '1.4' }}>
+                            <span style={{ fontWeight: '600', color: sc.textSoft }}>Skill: </span>
+                            {m.skills.join(', ')}
+                          </div>
+                        )}
+                        {m.interested_industry && m.interested_industry.length > 0 && (
+                          <div style={{ fontSize: '11.5px', color: sc.text, lineHeight: '1.4' }}>
+                            <span style={{ fontWeight: '600', color: sc.industryChipText }}>Interest: </span>
+                            {m.interested_industry.join(', ')}
+                          </div>
+                        )}
                       </div>
                     </div>
-
-                    {m.skills && m.skills.length > 0 && (
-                      <div style={{ fontSize: '12px', color: sc.text, marginBottom: '4px' }}>
-                        <span style={{ fontWeight: '600', color: sc.textSoft }}>Skill: </span>
-                        {m.skills.join(', ')}
-                      </div>
-                    )}
-                    {m.interested_industry && m.interested_industry.length > 0 && (
-                      <div style={{ fontSize: '12px', color: sc.text }}>
-                        <span style={{ fontWeight: '600', color: sc.industryChipText }}>Interest: </span>
-                        {m.interested_industry.join(', ')}
-                      </div>
-                    )}
                   </Link>
 
                   {myUserId === m.user_id ? null : sentTo.has(m.user_id) ? (
