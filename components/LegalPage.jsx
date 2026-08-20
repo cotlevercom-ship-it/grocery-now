@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
-export default function LegalPage({ slug, title }) {
+export default function LegalPage({ slug, title, backgroundImage }) {
   const [page, setPage] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lang, setLang] = useState('bn')
@@ -28,7 +28,19 @@ export default function LegalPage({ slug, title }) {
     ? (lang === 'bn' ? (page.content_bn || page.content_en) : (page.content_en || page.content_bn))
     : page?.content
 
+  const pageStyle = backgroundImage
+    ? {
+        minHeight: '100vh',
+        backgroundImage: `linear-gradient(rgba(23,10,9,0.72), rgba(23,10,9,0.88)), url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+      }
+    : undefined
+
   return (
+    <div style={pageStyle}>
     <div style={{ maxWidth: '760px', margin: '0 auto', padding: '24px 16px 60px' }}>
       <Link href="/" style={{ color: theme.brass, fontSize: '13px', fontWeight: '700', textDecoration: 'none' }}>← Back to Home</Link>
       <h1 style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '800', color: theme.ink, margin: '14px 0 18px' }}>{title}</h1>
@@ -62,6 +74,7 @@ export default function LegalPage({ slug, title }) {
           Content for this page will be added soon.
         </div>
       )}
+    </div>
     </div>
   )
 }
