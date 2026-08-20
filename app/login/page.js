@@ -181,7 +181,7 @@ function LoginForm() {
   return (
     <div className="login-shell" style={{
       minHeight: '100dvh',
-      background: `linear-gradient(180deg, rgba(23,10,9,0.55) 0%, rgba(23,10,9,0.85) 100%), url('/marketing/login-bg.png') var(--bg-pos, left center) / cover no-repeat, ${theme.paper}`,
+      background: `linear-gradient(180deg, rgba(23,10,9,0.4) 0%, rgba(23,10,9,0.75) 100%), url('/marketing/login-bg.png') var(--bg-pos, bottom center) / var(--bg-size, cover) no-repeat, ${theme.paper}`,
       display: 'flex',
       flexDirection: 'column',
       padding: '0 16px 40px'
@@ -356,7 +356,8 @@ function LoginForm() {
       <style jsx>{`
         .login-shell {
           align-items: center;
-          --bg-pos: left center;
+          --bg-pos: bottom center;
+          --bg-size: auto 34%;
           min-height: 100dvh;
         }
         @media (min-width: 900px) {
@@ -364,6 +365,7 @@ function LoginForm() {
             align-items: flex-end;
             padding-right: 18vw;
             --bg-pos: center;
+            --bg-size: cover;
           }
         }
         .login-card {
