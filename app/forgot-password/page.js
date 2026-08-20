@@ -39,13 +39,22 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh', background: theme.paper, display: 'flex',
-      flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px'
+    <div className="fp-shell" style={{
+      minHeight: '100vh',
+      background: `linear-gradient(180deg, rgba(23,10,9,0.5) 0%, rgba(23,10,9,0.82) 100%), url('/marketing/forgot-password-bg.jpg') center / cover no-repeat, ${theme.paper}`,
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '0 16px 40px'
     }}>
+      <div style={{ width: 'min(92vw, 420px)', padding: '18px 0 0' }}>
+        <Link href="/login" style={{ color: theme.inkSoft, fontSize: '14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> Back to Log In
+        </Link>
+      </div>
       <div style={{
-        width: '100%', maxWidth: '380px', background: theme.surface, borderRadius: '16px',
-        padding: '32px 26px', border: `1px solid ${theme.line}`
+        width: 'min(92vw, 420px)', background: theme.surface, borderRadius: '16px',
+        padding: '32px 26px', border: `1px solid ${theme.line}`,
+        boxShadow: '0 20px 50px rgba(0,0,0,0.45)', marginTop: '32px'
       }}>
         <div style={{ fontSize: '18px', fontWeight: '700', color: theme.ink, marginBottom: '6px' }}>
           Forgot Password
@@ -81,7 +90,7 @@ export default function ForgotPasswordPage() {
             type="submit"
             disabled={submitting}
             style={{
-              width: '100%', background: submitting ? theme.line : theme.brass, color: theme.ink,
+              width: '100%', background: submitting ? theme.line : theme.brass, color: 'white',
               padding: '13px', borderRadius: '999px', fontSize: '15px', fontWeight: '700',
               border: 'none'
             }}
@@ -89,11 +98,19 @@ export default function ForgotPasswordPage() {
             {submitting ? 'Sending...' : 'Send Code'}
           </button>
         </form>
-
-        <div style={{ textAlign: 'center', marginTop: '18px' }}>
-          <Link href="/login" style={{ fontSize: '13px', color: theme.inkSoft }}>← Back to Log In</Link>
-        </div>
       </div>
+
+      <style jsx>{`
+        .fp-shell {
+          align-items: center;
+        }
+        @media (min-width: 900px) {
+          .fp-shell {
+            align-items: flex-end;
+            padding-right: 18vw;
+          }
+        }
+      `}</style>
     </div>
   )
 }
