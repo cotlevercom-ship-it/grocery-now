@@ -371,7 +371,7 @@ function LoginForm() {
         .login-card {
           width: min(82vw, 300px);
           padding: 16px 14px;
-          margin-top: 16px;
+          margin-top: 90px;
         }
         @media (min-width: 900px) {
           .login-card {
