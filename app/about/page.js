@@ -1,3 +1,5 @@
+'use client'
+
 const INK = '#241209'
 const INK_SOFT = '#3A281C'
 const ACCENT = '#8C2E20'
@@ -58,10 +60,9 @@ export default function AboutPage() {
       }}
     >
       <div
+        className="about-content-shell"
         style={{
           maxWidth: '1000px',
-          marginLeft: 'clamp(24px, 32vw, 560px)',
-          marginRight: 'clamp(24px, 6vw, 100px)',
           paddingTop: 'clamp(140px, 16vh, 220px)',
           paddingBottom: '80px',
         }}
@@ -90,13 +91,12 @@ export default function AboutPage() {
           <Kicker>Our Story</Kicker>
           <SectionHeading>Every great venture starts as two people who found each other</SectionHeading>
           <div
+            className="about-story-columns"
             style={{
               fontFamily: FONT_BODY,
               fontSize: '14px',
               lineHeight: '1.75',
               color: INK_SOFT,
-              columnCount: 2,
-              columnGap: '32px',
             }}
           >
             <p style={{ margin: '0 0 14px' }}>
@@ -151,6 +151,25 @@ export default function AboutPage() {
           </p>
         </div>
       </div>
+
+      <style jsx>{`
+        .about-content-shell {
+          margin-left: clamp(24px, 6vw, 100px);
+          margin-right: clamp(24px, 6vw, 100px);
+        }
+        .about-story-columns {
+          column-count: 1;
+        }
+        @media (min-width: 768px) {
+          .about-content-shell {
+            margin-left: clamp(24px, 32vw, 560px);
+          }
+          .about-story-columns {
+            column-count: 2;
+            column-gap: 32px;
+          }
+        }
+      `}</style>
     </div>
   )
 }
