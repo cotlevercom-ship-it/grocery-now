@@ -241,15 +241,6 @@ export default function MembersBrowsePage({ embedded = false }) {
                         <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px', marginBottom: '8px' }}>
                           {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
                         </div>
-                        {m.looking_for && (
-                          <div style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                            background: theme.brass, color: '#FFFFFF', fontSize: '11.5px', fontWeight: '700',
-                            padding: '4px 10px', borderRadius: '999px', marginBottom: '8px',
-                          }}>
-                            🎯 Looking for: {m.looking_for}
-                          </div>
-                        )}
                         {m.skills && m.skills.length > 0 && (
                           <div style={{ fontSize: '11.5px', color: sc.text, marginBottom: '4px', lineHeight: '1.4' }}>
                             <span style={{ fontWeight: '600', color: sc.textSoft }}>Skill: </span>
@@ -257,9 +248,18 @@ export default function MembersBrowsePage({ embedded = false }) {
                           </div>
                         )}
                         {m.interested_industry && m.interested_industry.length > 0 && (
-                          <div style={{ fontSize: '11.5px', color: sc.text, lineHeight: '1.4' }}>
+                          <div style={{ fontSize: '11.5px', color: sc.text, lineHeight: '1.4', marginBottom: '8px' }}>
                             <span style={{ fontWeight: '600', color: sc.industryChipText }}>Interest: </span>
                             {m.interested_industry.join(', ')}
+                          </div>
+                        )}
+                        {m.looking_for && (
+                          <div style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '5px',
+                            background: theme.brass, color: '#FFFFFF', fontSize: '11.5px', fontWeight: '700',
+                            padding: '4px 10px', borderRadius: '999px',
+                          }}>
+                            🎯 Looking for: {m.looking_for}
                           </div>
                         )}
                       </div>
