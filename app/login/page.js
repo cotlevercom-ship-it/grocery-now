@@ -367,9 +367,9 @@ function LoginForm() {
           }
         }
         .login-card {
-          width: min(88vw, 340px);
-          padding: 20px 16px;
-          margin-top: 24px;
+          width: min(82vw, 300px);
+          padding: 16px 14px;
+          margin-top: 16px;
         }
         @media (min-width: 900px) {
           .login-card {
@@ -380,14 +380,20 @@ function LoginForm() {
         }
         .login-input {
           width: 100%;
-          padding: 12px 14px;
+          padding: 9px 12px;
           border-radius: 10px;
           border: 1.5px solid ${theme.line};
-          font-size: 14px;
+          font-size: 13px;
           box-sizing: border-box;
           background: ${theme.paper};
           color: ${theme.ink};
           transition: border-color 0.15s, background 0.15s;
+        }
+        @media (min-width: 900px) {
+          .login-input {
+            padding: 12px 14px;
+            font-size: 14px;
+          }
         }
         .login-input::placeholder {
           color: ${theme.inkSoft};
@@ -401,4 +407,5 @@ function LoginForm() {
     </div>
   )
 }
+
 
