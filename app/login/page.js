@@ -180,8 +180,8 @@ function LoginForm() {
 
   return (
     <div className="login-shell" style={{
-      minHeight: '100vh',
-      background: `linear-gradient(180deg, rgba(23,10,9,0.55) 0%, rgba(23,10,9,0.85) 100%), url('/marketing/login-bg.png') center / cover no-repeat, ${theme.paper}`,
+      minHeight: '100dvh',
+      background: `linear-gradient(180deg, rgba(23,10,9,0.55) 0%, rgba(23,10,9,0.85) 100%), url('/marketing/login-bg.png') var(--bg-pos, left center) / cover no-repeat, ${theme.paper}`,
       display: 'flex',
       flexDirection: 'column',
       padding: '0 16px 40px'
@@ -363,11 +363,14 @@ function LoginForm() {
       <style jsx>{`
         .login-shell {
           align-items: center;
+          --bg-pos: left center;
+          min-height: 100dvh;
         }
         @media (min-width: 900px) {
           .login-shell {
             align-items: flex-end;
             padding-right: 18vw;
+            --bg-pos: center;
           }
         }
         .login-input {
