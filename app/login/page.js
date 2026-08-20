@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, signUp, supabaseFetch } from '@/lib/supabase'
 import AgreementCheckbox from '@/components/AgreementCheckbox'
 import { accountLightTheme as theme } from '@/lib/accountLightTheme'
+import { theme as darkTheme } from '@/lib/theme'
 
 export default function LoginPage() {
   return (
@@ -181,11 +182,28 @@ function LoginForm() {
   return (
     <div className="login-shell" style={{
       minHeight: '100dvh',
-      background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.85) 100%), url('/marketing/login-bg.png') var(--bg-pos, bottom center) / var(--bg-size, cover) no-repeat, ${theme.paper}`,
+      '--paper': theme.paper,
       display: 'flex',
       flexDirection: 'column',
       padding: '0 16px 40px'
     }}>
+      {/* Mobile-only story panel */}
+      <div className="story-mobile" style={{ background: darkTheme.paper }}>
+        <div className="story-mobile-eyebrow" style={{ color: '#E3A552' }}>For Bangladeshi founders</div>
+        <h1 className="story-mobile-h1" style={{ color: darkTheme.ink }}>
+          Every startup begins as <em style={{ color: '#E3A552', fontStyle: 'italic' }}>two people</em> who found each other.
+        </h1>
+        <div className="spark-signature-mobile">
+          <svg width="60" height="24" viewBox="0 0 72 28">
+            <path className="spark-path" d="M6,20 C 16,4 30,26 40,10 S 58,2 66,8" stroke="#E3A552" />
+            <circle className="spark-node a" cx="6" cy="20" r="4" fill={darkTheme.paper} stroke={darkTheme.ink} />
+            <circle className="spark-node b" cx="66" cy="8" r="4" fill={darkTheme.paper} stroke="#E3A552" />
+          </svg>
+          <div className="spark-caption-mobile" style={{ color: darkTheme.inkSoft }}>
+            The idea finds <b style={{ color: darkTheme.ink }}>its missing piece.</b>
+          </div>
+        </div>
+      </div>
       {/* Card */}
       <div className="login-card" style={{
         background: theme.surface, borderRadius: '16px',
@@ -356,22 +374,68 @@ function LoginForm() {
       <style jsx>{`
         .login-shell {
           align-items: center;
-          --bg-pos: center bottom;
-          --bg-size: cover;
+          background: var(--paper, #fff);
           min-height: 100dvh;
+        }
+        .story-mobile {
+          display: block;
+          margin: 0 -16px 0;
+          padding: 40px 24px 30px;
+        }
+        .story-mobile-eyebrow {
+          font-size: 11px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          font-weight: 600;
+          margin-bottom: 14px;
+        }
+        .story-mobile-h1 {
+          font-size: 24px;
+          line-height: 1.25;
+          font-weight: 600;
+          margin: 0 0 20px;
+          max-width: 320px;
+        }
+        .spark-signature-mobile {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .spark-path {
+          stroke-width: 1.6;
+          fill: none;
+          stroke-linecap: round;
+          stroke-dasharray: 220;
+          stroke-dashoffset: 220;
+          animation: sparkDraw 1.4s ease-out 0.2s forwards;
+        }
+        .spark-node {
+          stroke-width: 1.4;
+          opacity: 0;
+          animation: sparkPop 0.5s ease-out forwards;
+        }
+        .spark-node.a { animation-delay: 0.1s; }
+        .spark-node.b { animation-delay: 1.3s; }
+        @keyframes sparkDraw { to { stroke-dashoffset: 0; } }
+        @keyframes sparkPop { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+        .spark-caption-mobile {
+          font-size: 11.5px;
+          line-height: 1.5;
         }
         @media (min-width: 900px) {
           .login-shell {
             align-items: flex-end;
             padding-right: 18vw;
-            --bg-pos: center;
-            --bg-size: cover;
+            background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.85) 100%), url('/marketing/login-bg.png') center / cover no-repeat, var(--paper, #fff);
+          }
+          .story-mobile {
+            display: none;
           }
         }
         .login-card {
           width: min(82vw, 300px);
           padding: 16px 14px;
-          margin-top: 90px;
+          margin-top: 8px;
         }
         @media (min-width: 900px) {
           .login-card {
