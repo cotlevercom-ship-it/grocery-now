@@ -426,7 +426,7 @@ function LoginForm() {
           .login-shell {
             align-items: flex-end;
             padding-right: 18vw;
-            background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.85) 100%), url('/marketing/login-bg.png') center / cover no-repeat, var(--paper, #fff);
+            background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 55%, rgba(255,255,255,0.55) 100%), url('/marketing/login-bg.png') center / cover no-repeat, var(--paper, #fff);
           }
           .story-mobile {
             display: none;
