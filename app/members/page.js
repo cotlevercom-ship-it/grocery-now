@@ -241,6 +241,12 @@ export default function MembersBrowsePage({ embedded = false }) {
                         <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px', marginBottom: '8px' }}>
                           {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
                         </div>
+                        {m.looking_for && (
+                          <div style={{ fontSize: '11.5px', color: sc.text, marginBottom: '4px', lineHeight: '1.4' }}>
+                            <span style={{ fontWeight: '600', color: sc.textSoft }}>Looking for: </span>
+                            {m.looking_for}
+                          </div>
+                        )}
                         {m.skills && m.skills.length > 0 && (
                           <div style={{ fontSize: '11.5px', color: sc.text, marginBottom: '4px', lineHeight: '1.4' }}>
                             <span style={{ fontWeight: '600', color: sc.textSoft }}>Skill: </span>
