@@ -224,13 +224,13 @@ export default function MembersBrowsePage({ embedded = false }) {
                   <Link href={`/members/${m.user_id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '15px' }}>
                       <div style={{
-                        width: '52px', height: '52px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+                        width: '72px', height: '72px', borderRadius: '12px', flexShrink: 0, overflow: 'hidden',
                         background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}>
                         {m.photo_url ? (
                           <img src={m.photo_url} alt={m.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
-                          <span style={{ fontFamily: theme.fontDisplay, fontSize: '19px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
+                          <span style={{ fontFamily: theme.fontDisplay, fontSize: '26px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
