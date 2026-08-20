@@ -211,10 +211,10 @@ function LoginForm() {
         backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)'
       }}>
         <div style={{ marginBottom: '20px' }}>
-          <div style={{ fontSize: '19px', fontWeight: '700', color: theme.ink, marginBottom: '4px' }}>
+          <div style={{ fontSize: '19px', fontWeight: '700', color: '#241512', marginBottom: '4px', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>
             {mode === 'login' ? 'Log In' : 'Create Account'}
           </div>
-          <div style={{ fontSize: '13px', color: theme.inkSoft }}>
+          <div style={{ fontSize: '13px', color: '#4A3A35', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>
             {mode === 'login' ? 'Welcome back! Log in to continue' : 'Create an account to get started'}
           </div>
         </div>
@@ -222,7 +222,7 @@ function LoginForm() {
         <form onSubmit={handleSubmit}>
           {mode === 'signup' && (
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '12px', color: theme.inkSoft, fontWeight: '600', display: 'block', marginBottom: '6px' }}>Name</label>
+              <label style={{ fontSize: '12px', color: '#4A3A35', fontWeight: '600', display: 'block', marginBottom: '6px', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>Name</label>
               <input
                 type="text"
                 value={name}
@@ -234,7 +234,7 @@ function LoginForm() {
           )}
 
           <div style={{ marginBottom: mode === 'signup' ? '10px' : '16px' }}>
-            <label style={{ fontSize: '12px', color: theme.inkSoft, fontWeight: '600', display: 'block', marginBottom: '6px' }}>{mode === 'signup' ? 'Business Email' : 'Email'}</label>
+            <label style={{ fontSize: '12px', color: '#4A3A35', fontWeight: '600', display: 'block', marginBottom: '6px', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>{mode === 'signup' ? 'Business Email' : 'Email'}</label>
 
             {mode === 'signup' ? (
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -280,7 +280,7 @@ function LoginForm() {
             )}
 
             {mode === 'signup' && !otpSent && (
-              <div style={{ fontSize: '11.5px', color: theme.inkSoft, marginTop: '6px' }}>
+              <div style={{ fontSize: '11.5px', color: '#4A3A35', marginTop: '6px', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>
                 This will be the contact email other founders see on your profile.
               </div>
             )}
@@ -301,7 +301,7 @@ function LoginForm() {
                     boxSizing: 'border-box', background: theme.paper, color: theme.ink
                   }}
                 />
-                <div style={{ fontSize: '11.5px', color: theme.inkSoft, marginTop: '6px', textAlign: 'center' }}>
+                <div style={{ fontSize: '11.5px', color: '#4A3A35', marginTop: '6px', textAlign: 'center', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>
                   {verifyingOtp ? 'Verifying...' : `Code sent to ${email.trim()}`}
                 </div>
               </div>
@@ -314,7 +314,7 @@ function LoginForm() {
 
           <div style={{ marginBottom: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <label style={{ fontSize: '12px', color: theme.inkSoft, fontWeight: '600' }}>Password</label>
+              <label style={{ fontSize: '12px', color: '#4A3A35', fontWeight: '600', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>Password</label>
               {mode === 'login' && (
                 <Link href="/forgot-password" style={{ fontSize: '12px', color: theme.brass, textDecoration: 'underline' }}>
                   Forgot password?
@@ -362,7 +362,7 @@ function LoginForm() {
             {submitting ? 'Please wait...' : (mode === 'login' ? 'Log In' : 'Create Account')}
           </button>
 
-          <div style={{ textAlign: 'center', marginTop: '18px', fontSize: '13px', color: theme.inkSoft }}>
+          <div style={{ textAlign: 'center', marginTop: '18px', fontSize: '13px', color: '#4A3A35', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>
             {mode === 'login' ? (
               <>Don&apos;t have an account? <button type="button" onClick={() => { setMode('signup'); setError(''); setNotice(''); resetOtpState() }} style={{ color: theme.brass, fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Up</button></>
             ) : (
@@ -451,7 +451,7 @@ function LoginForm() {
           border: 1.5px solid ${theme.line};
           font-size: 13px;
           box-sizing: border-box;
-          background: rgba(255,255,255,0.35);
+          background: rgba(255,255,255,0.5);
           color: ${theme.ink};
           transition: border-color 0.15s, background 0.15s;
         }
@@ -462,7 +462,7 @@ function LoginForm() {
           }
         }
         .login-input::placeholder {
-          color: ${theme.inkSoft};
+          color: #6B5650;
         }
         .login-input:focus {
           outline: none;
