@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="fp-shell" style={{
       minHeight: '100vh',
-      background: `linear-gradient(180deg, rgba(23,10,9,0.5) 0%, rgba(23,10,9,0.82) 100%), url('/marketing/forgot-password-bg.jpg') center / cover no-repeat, ${theme.paper}`,
+      background: `linear-gradient(180deg, rgba(23,10,9,0.15) 0%, rgba(23,10,9,0.4) 100%), url('/marketing/forgot-password-bg.jpg') center / cover no-repeat, ${theme.paper}`,
       display: 'flex',
       flexDirection: 'column',
       padding: '0 16px 40px'
