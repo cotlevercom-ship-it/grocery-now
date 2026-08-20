@@ -32,8 +32,6 @@ export default function MembersBrowsePage({ embedded = false }) {
   const [appliedSkillFilter, setAppliedSkillFilter] = useState([])
   const [appliedIndustryFilter, setAppliedIndustryFilter] = useState([])
   const [myUserId, setMyUserId] = useState(null)
-  const [sentTo, setSentTo] = useState(new Set())
-  const [sendingTo, setSendingTo] = useState(null)
 
   useEffect(() => {
     async function load() {
@@ -47,41 +45,10 @@ export default function MembersBrowsePage({ embedded = false }) {
       setLoading(false)
 
       const session = getSession()
-      const uid = session?.user?.id || null
-      setMyUserId(uid)
-      if (uid) {
-        try {
-          const rows = await supabaseFetch(`connection_requests?select=to_user_id&from_user_id=eq.${uid}`)
-          setSentTo(new Set((rows || []).map(r => r.to_user_id)))
-        } catch (e) {
-          console.error(e)
-        }
-      }
+      setMyUserId(session?.user?.id || null)
     }
     load()
   }, [])
-
-  async function sendRequest(toUserId) {
-    setSendingTo(toUserId)
-    try {
-      const rows = await supabaseFetch('connection_requests', {
-        method: 'POST',
-        body: JSON.stringify({ from_user_id: myUserId, to_user_id: toUserId, message: null }),
-      })
-      const requestId = rows?.[0]?.id
-      if (requestId) {
-        fetch('/api/connect/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ requestId }),
-        }).catch(() => {})
-      }
-      setSentTo(prev => new Set(prev).add(toUserId))
-    } catch (e) {
-      console.error(e)
-    }
-    setSendingTo(null)
-  }
 
   const toggleFilter = (setFn, value) => setFn(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value])
 
@@ -272,25 +239,36 @@ export default function MembersBrowsePage({ embedded = false }) {
                     </div>
                   </Link>
 
-                  {myUserId === m.user_id ? null : sentTo.has(m.user_id) ? (
-                    <div style={{
-                      marginTop: '18px', textAlign: 'center',
-                      background: sc.chipBg, color: sc.textSoft,
-                      borderRadius: '999px', padding: '10px 16px', fontSize: '12.5px', fontWeight: '700',
-                    }}>Request Sent</div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => sendRequest(m.user_id)}
-                      disabled={sendingTo === m.user_id}
-                      style={{
-                        marginTop: '18px', textAlign: 'center', border: 'none', cursor: sendingTo === m.user_id ? 'default' : 'pointer',
-                        background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
-                        borderRadius: '999px', padding: '10px 16px', fontSize: '12.5px', fontWeight: '700',
-                        whiteSpace: 'nowrap', opacity: sendingTo === m.user_id ? 0.7 : 1,
-                      }}
-                    >{sendingTo === m.user_id ? 'Sending…' : 'Request to Connect'}</button>
-                  )}
+                  {myUserId === m.user_id ? null : (m.contact_email || m.linkedin_url) ? (
+                    <div style={{ marginTop: '18px', display: 'flex', gap: '8px' }}>
+                      {m.contact_email && (
+                        <a
+                          href={`mailto:${m.contact_email}`}
+                          onClick={e => e.stopPropagation()}
+                          style={{
+                            flex: 1, textAlign: 'center', border: 'none', cursor: 'pointer',
+                            background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
+                            borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                            whiteSpace: 'nowrap', textDecoration: 'none', display: 'block',
+                          }}
+                        >📧 Email</a>
+                      )}
+                      {m.linkedin_url && (
+                        <a
+                          href={m.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          style={{
+                            flex: 1, textAlign: 'center', cursor: 'pointer',
+                            background: sc.chipBg, color: sc.text, fontFamily: theme.fontBody,
+                            border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                            whiteSpace: 'nowrap', textDecoration: 'none', display: 'block',
+                          }}
+                        >🔗 LinkedIn</a>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               )
             })}
