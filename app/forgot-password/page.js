@@ -104,6 +104,11 @@ export default function ForgotPasswordPage() {
         .fp-shell {
           align-items: center;
         }
+        @media (min-width: 900px) {
+          .fp-shell {
+            padding-right: 96px;
+          }
+        }
       `}</style>
     </div>
   )
