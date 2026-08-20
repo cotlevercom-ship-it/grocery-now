@@ -247,7 +247,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                             background: theme.brass, color: '#FFFFFF', fontSize: '11.5px', fontWeight: '700',
                             padding: '4px 10px', borderRadius: '999px', marginBottom: '8px',
                           }}>
-                            🎯 {m.looking_for}
+                            🎯 Looking for: {m.looking_for}
                           </div>
                         )}
                         {m.skills && m.skills.length > 0 && (
