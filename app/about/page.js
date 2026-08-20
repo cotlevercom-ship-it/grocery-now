@@ -50,7 +50,7 @@ export default function AboutPage() {
     <div
       style={{
         minHeight: '100vh',
-        backgroundImage: `linear-gradient(rgba(23,10,9,0.15), rgba(23,10,9,0.3)), url(/marketing/about-us-bg.jpg)`,
+        backgroundImage: `url(/marketing/about-us-bg.jpg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center top',
         backgroundRepeat: 'no-repeat',
@@ -59,83 +59,97 @@ export default function AboutPage() {
     >
       <div
         style={{
-          marginLeft: 'clamp(240px, 22vw, 340px)',
-          marginRight: 'clamp(200px, 21vw, 320px)',
-          paddingTop: 'clamp(250px, 24vh, 320px)',
-          paddingBottom: '60px',
+          maxWidth: '1000px',
+          marginLeft: 'clamp(24px, 32vw, 560px)',
+          marginRight: 'clamp(24px, 6vw, 100px)',
+          paddingTop: 'clamp(140px, 16vh, 220px)',
+          paddingBottom: '80px',
         }}
       >
-      <div
-        style={{
-          background: PANEL_BG,
-          borderRadius: '10px',
-          padding: 'clamp(20px, 3vw, 36px)',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.25)',
-        }}
-      >
-        <Kicker>Our Story</Kicker>
-        <SectionHeading>Every great venture starts as two people who found each other</SectionHeading>
+        <h1
+          style={{
+            fontFamily: FONT_DISPLAY,
+            fontWeight: '800',
+            fontSize: 'clamp(34px, 4.4vw, 56px)',
+            color: INK,
+            margin: '0 0 28px',
+            lineHeight: '1.05',
+          }}
+        >
+          About <span style={{ color: ACCENT }}>Us</span>
+        </h1>
+
         <div
           style={{
-            fontFamily: FONT_BODY,
-            fontSize: '14px',
-            lineHeight: '1.75',
-            color: INK_SOFT,
-            columnCount: 2,
-            columnGap: '32px',
+            background: PANEL_BG,
+            borderRadius: '10px',
+            padding: 'clamp(20px, 3vw, 36px)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.25)',
           }}
         >
-          <p style={{ margin: '0 0 14px' }}>
-            Cotlever started with a simple observation: Bangladesh has no shortage of ideas or
-            ambition, but the people who could turn those ideas into real businesses were rarely
-            finding each other. A developer with a working prototype and no business partner. A
-            marketer with market instincts and no product to build. An investor ready to back the
-            right team, but no way to find one.
+          <Kicker>Our Story</Kicker>
+          <SectionHeading>Every great venture starts as two people who found each other</SectionHeading>
+          <div
+            style={{
+              fontFamily: FONT_BODY,
+              fontSize: '14px',
+              lineHeight: '1.75',
+              color: INK_SOFT,
+              columnCount: 2,
+              columnGap: '32px',
+            }}
+          >
+            <p style={{ margin: '0 0 14px' }}>
+              Cotlever started with a simple observation: Bangladesh has no shortage of ideas or
+              ambition, but the people who could turn those ideas into real businesses were rarely
+              finding each other. A developer with a working prototype and no business partner. A
+              marketer with market instincts and no product to build. An investor ready to back the
+              right team, but no way to find one.
+            </p>
+            <p style={{ margin: '0 0 14px' }}>
+              We built Cotlever to close that gap — a place where founders, co-founders, and early
+              partners can find each other by what they actually bring to the table, not just who
+              they already know.
+            </p>
+          </div>
+
+          <Divider />
+
+          <Kicker>Our Mission</Kicker>
+          <SectionHeading>Help ideas find the right people, and turn them into impact</SectionHeading>
+          <p
+            style={{
+              fontFamily: FONT_BODY,
+              fontSize: '14px',
+              lineHeight: '1.75',
+              color: INK_SOFT,
+              margin: '0 0 8px',
+              maxWidth: '640px',
+            }}
+          >
+            Every profile on Cotlever exists to answer one question — who should you be building
+            with? We keep the platform focused on that single job: real people, real skills, and a
+            direct way to start the conversation.
           </p>
-          <p style={{ margin: '0 0 14px' }}>
-            We built Cotlever to close that gap — a place where founders, co-founders, and early
-            partners can find each other by what they actually bring to the table, not just who
-            they already know.
+
+          <Divider />
+
+          <Kicker>Looking Ahead</Kicker>
+          <SectionHeading>Building the network, one founder at a time</SectionHeading>
+          <p
+            style={{
+              fontFamily: FONT_BODY,
+              fontSize: '14px',
+              lineHeight: '1.75',
+              color: INK_SOFT,
+              margin: '0',
+              maxWidth: '640px',
+            }}
+          >
+            We're still early. Every founder who joins makes the next match easier to find — that's
+            what we're building toward.
           </p>
         </div>
-
-        <Divider />
-
-        <Kicker>Our Mission</Kicker>
-        <SectionHeading>Help ideas find the right people, and turn them into impact</SectionHeading>
-        <p
-          style={{
-            fontFamily: FONT_BODY,
-            fontSize: '14px',
-            lineHeight: '1.75',
-            color: INK_SOFT,
-            margin: '0 0 8px',
-            maxWidth: '640px',
-          }}
-        >
-          Every profile on Cotlever exists to answer one question — who should you be building
-          with? We keep the platform focused on that single job: real people, real skills, and a
-          direct way to start the conversation.
-        </p>
-
-        <Divider />
-
-        <Kicker>Looking Ahead</Kicker>
-        <SectionHeading>Building the network, one founder at a time</SectionHeading>
-        <p
-          style={{
-            fontFamily: FONT_BODY,
-            fontSize: '14px',
-            lineHeight: '1.75',
-            color: INK_SOFT,
-            margin: '0',
-            maxWidth: '640px',
-          }}
-        >
-          We're still early. Every founder who joins makes the next match easier to find — that's
-          what we're building toward.
-        </p>
-      </div>
       </div>
     </div>
   )
