@@ -253,6 +253,12 @@ export default function MembersBrowsePage({ embedded = false }) {
                             {m.interested_industry.join(', ')}
                           </div>
                         )}
+                        {m.startup_stage && (
+                          <div style={{ fontSize: '11.5px', color: sc.text, lineHeight: '1.4', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: '600', color: sc.textSoft }}>Stage: </span>
+                            {m.startup_stage}
+                          </div>
+                        )}
                         {m.looking_for && (
                           <div style={{
                             display: 'inline-flex', alignItems: 'center', gap: '5px',

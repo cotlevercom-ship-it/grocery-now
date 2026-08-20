@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { getSession, supabaseFetch, uploadImage } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import VerificationSection from '@/components/VerificationSection'
-import { SKILL_OPTIONS, INDUSTRY_OPTIONS } from '@/lib/memberOptions'
+import { SKILL_OPTIONS, INDUSTRY_OPTIONS, STARTUP_STAGE_OPTIONS } from '@/lib/memberOptions'
 
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const LOOKING_FOR_OPTIONS = ['Technical co-founder', 'Business co-founder', 'Marketing co-founder', 'Any co-founder']
@@ -22,7 +22,7 @@ export default function MemberProfileFormPage() {
     display_name: '', role_title: '', skills: [], experience: '',
     industry: '', years_experience: '', founder_type: '', education: '',
     looking_for: '', commitment: '', bio: '', location: '', contact_email: '',
-    linkedin_url: '', interested_industry: [],
+    linkedin_url: '', interested_industry: [], startup_stage: '',
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -51,6 +51,7 @@ export default function MemberProfileFormPage() {
             bio: p.bio || '', location: p.location || '',
             contact_email: p.contact_email || s.user.email || '',
             linkedin_url: p.linkedin_url || '', interested_industry: p.interested_industry || [],
+            startup_stage: p.startup_stage || '',
           })
           setExistingPhotoUrl(p.photo_url || '')
         } else {
@@ -111,6 +112,7 @@ export default function MemberProfileFormPage() {
         contact_email: form.contact_email.trim(),
         linkedin_url: form.linkedin_url.trim() || null,
         interested_industry: form.interested_industry,
+        startup_stage: form.startup_stage || null,
         photo_url,
         updated_at: new Date().toISOString(),
       }
@@ -285,6 +287,14 @@ export default function MemberProfileFormPage() {
                 {COMMITMENT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
+          </div>
+
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>Startup Stage</label>
+            <select style={inputStyle} value={form.startup_stage} onChange={e => handleChange('startup_stage', e.target.value)}>
+              <option value="">Select</option>
+              {STARTUP_STAGE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
           </div>
 
           <div style={{ marginBottom: '18px' }}>

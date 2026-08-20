@@ -172,7 +172,7 @@ function ProfileTabs({ member, isOwnProfile }) {
 
   const hasPersonalDetails = member.industry || member.years_experience || member.founder_type || member.education
   const hasSkills = (member.skills || []).length > 0
-  const hasLookingFor = member.looking_for || member.commitment || (member.interested_industry || []).length > 0
+  const hasLookingFor = member.looking_for || member.commitment || member.startup_stage || (member.interested_industry || []).length > 0
   const hasContact = member.contact_email || member.linkedin_url
 
   return (
@@ -263,6 +263,7 @@ function ProfileTabs({ member, isOwnProfile }) {
                 <div>
                   {member.looking_for && <DetailRow icon="🎯" label="Looking For" value={member.looking_for} />}
                   {member.commitment && <DetailRow icon="⏱️" label="Commitment" value={member.commitment} />}
+                  {member.startup_stage && <DetailRow icon="🚀" label="Startup Stage" value={member.startup_stage} />}
                   {(member.interested_industry || []).length > 0 && (
                     <div style={{ marginTop: '16px' }}>
                       <div style={{ fontSize: '11px', color: theme.inkSoft, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>Interested Industries</div>
