@@ -425,9 +425,8 @@ function LoginForm() {
         }
         @media (min-width: 900px) {
           .login-shell {
-            align-items: flex-end;
-            padding-right: 18vw;
-            background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 55%, rgba(255,255,255,0.55) 100%), url('/marketing/login-bg.png') center / cover no-repeat, var(--paper, #fff);
+            align-items: center;
+            background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.08) 100%), url('/marketing/login-bg.png') center / cover no-repeat, var(--paper, #fff);
           }
           .story-mobile {
             display: none;
