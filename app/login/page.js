@@ -206,8 +206,9 @@ function LoginForm() {
       </div>
       {/* Card */}
       <div className="login-card" style={{
-        background: theme.surface, borderRadius: '16px',
-        border: `1px solid ${theme.line}`, boxShadow: '0 20px 50px rgba(0,0,0,0.45)'
+        background: 'rgba(255,255,255,0.22)', borderRadius: '16px',
+        border: '1px solid rgba(255,255,255,0.4)', boxShadow: '0 20px 50px rgba(0,0,0,0.45)',
+        backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)'
       }}>
         <div style={{ marginBottom: '20px' }}>
           <div style={{ fontSize: '19px', fontWeight: '700', color: theme.ink, marginBottom: '4px' }}>
@@ -451,7 +452,7 @@ function LoginForm() {
           border: 1.5px solid ${theme.line};
           font-size: 13px;
           box-sizing: border-box;
-          background: ${theme.paper};
+          background: rgba(255,255,255,0.35);
           color: ${theme.ink};
           transition: border-color 0.15s, background 0.15s;
         }
@@ -467,7 +468,7 @@ function LoginForm() {
         .login-input:focus {
           outline: none;
           border-color: ${theme.brass};
-          background: ${theme.surface};
+          background: rgba(255,255,255,0.5);
         }
       `}</style>
     </div>
