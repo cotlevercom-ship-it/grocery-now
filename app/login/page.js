@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, signUp, supabaseFetch } from '@/lib/supabase'
 import AgreementCheckbox from '@/components/AgreementCheckbox'
-import { theme } from '@/lib/theme'
+import { accountLightTheme as theme } from '@/lib/accountLightTheme'
 
 export default function LoginPage() {
   return (
@@ -181,7 +181,7 @@ function LoginForm() {
   return (
     <div className="login-shell" style={{
       minHeight: '100dvh',
-      background: `linear-gradient(180deg, rgba(23,10,9,0.4) 0%, rgba(23,10,9,0.75) 100%), url('/marketing/login-bg.png') var(--bg-pos, bottom center) / var(--bg-size, cover) no-repeat, ${theme.paper}`,
+      background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.85) 100%), url('/marketing/login-bg.png') var(--bg-pos, bottom center) / var(--bg-size, cover) no-repeat, ${theme.paper}`,
       display: 'flex',
       flexDirection: 'column',
       padding: '0 16px 40px'
