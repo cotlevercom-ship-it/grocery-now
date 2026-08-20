@@ -356,8 +356,8 @@ function LoginForm() {
       <style jsx>{`
         .login-shell {
           align-items: center;
-          --bg-pos: bottom center;
-          --bg-size: auto 34%;
+          --bg-pos: center bottom;
+          --bg-size: cover;
           min-height: 100dvh;
         }
         @media (min-width: 900px) {
