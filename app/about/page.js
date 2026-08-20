@@ -1,6 +1,7 @@
-const INK = '#2B1811'
-const INK_SOFT = '#5C4A3D'
+const INK = '#241209'
+const INK_SOFT = '#3A281C'
 const ACCENT = '#8C2E20'
+const PANEL_BG = 'rgba(240,228,209,0.94)'
 const FONT_DISPLAY = "var(--font-fraunces), Georgia, serif"
 const FONT_BODY = "var(--font-plex-sans), Arial, sans-serif"
 const FONT_MONO = "var(--font-plex-mono), 'Courier New', monospace"
@@ -49,7 +50,7 @@ export default function AboutPage() {
     <div
       style={{
         minHeight: '100vh',
-        backgroundImage: `linear-gradient(rgba(23,10,9,0.35), rgba(23,10,9,0.55)), url(/marketing/about-us-bg.jpg)`,
+        backgroundImage: `linear-gradient(rgba(23,10,9,0.15), rgba(23,10,9,0.3)), url(/marketing/about-us-bg.jpg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center top',
         backgroundRepeat: 'no-repeat',
@@ -61,7 +62,15 @@ export default function AboutPage() {
           marginLeft: 'clamp(240px, 22vw, 340px)',
           marginRight: 'clamp(200px, 21vw, 320px)',
           paddingTop: 'clamp(250px, 24vh, 320px)',
-          paddingBottom: '80px',
+          paddingBottom: '60px',
+        }}
+      >
+      <div
+        style={{
+          background: PANEL_BG,
+          borderRadius: '10px',
+          padding: 'clamp(20px, 3vw, 36px)',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.25)',
         }}
       >
         <Kicker>Our Story</Kicker>
@@ -126,6 +135,7 @@ export default function AboutPage() {
           We're still early. Every founder who joins makes the next match easier to find — that's
           what we're building toward.
         </p>
+      </div>
       </div>
     </div>
   )
