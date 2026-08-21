@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import { sc } from '@/lib/memberTheme'
 import VerifiedBadge from '@/components/VerifiedBadge'
 import { SKILL_OPTIONS } from '@/lib/memberOptions'
+import AppSidebar from '@/components/AppSidebar'
+import AppBottomNav from '@/components/AppBottomNav'
 
 function FilterIcon({ size = 16, color = 'currentColor' }) {
   return (
@@ -15,36 +18,12 @@ function FilterIcon({ size = 16, color = 'currentColor' }) {
   )
 }
 
-// Clean, minimal SaaS-app palette — scoped to the /members browse page only.
-// Rest of the site keeps its dark red/black theme; this page opts into a
-// light neutral surface with the brand's brass accent reserved for
-// buttons, badges, and selected states.
-const sc = {
-  bg: '#F7F6F4',
-  sidebarBg: '#FFFFFF',
-  cardBg: '#FFFFFF',
-  text: '#16181D',
-  textSoft: '#6B7280',
-  textFaint: '#A1A5AC',
-  line: '#EBE9E6',
-  chipBg: '#F1F2F4',
-  chipText: '#42454C',
-  industryChipBg: 'rgba(179,55,42,0.08)',
-  industryChipText: theme.brass,
-  shadow: '0 1px 2px rgba(16,24,40,0.04), 0 1px 6px rgba(16,24,40,0.05)',
-  shadowHover: '0 6px 20px rgba(16,24,40,0.10)',
-}
 
 const PAGE_SIZE_OPTIONS = [6, 12, 24]
 const SORT_OPTIONS = [
   { key: 'relevant', label: 'Most Relevant' },
   { key: 'newest', label: 'Newest' },
   { key: 'az', label: 'Name A-Z' },
-]
-
-const NAV_ITEMS = [
-  { key: 'discover', label: 'Discover', icon: '🧭', href: '/members', active: true },
-  { key: 'profile', label: 'My Profile', icon: '👤', href: '/account' },
 ]
 
 function FilterDropdown({ label, count, children, isOpen, onToggle }) {
@@ -563,35 +542,7 @@ export default function MembersBrowsePage({ embedded = false }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: sc.bg }}>
-      {/* Sidebar */}
-      <div style={{
-        width: '236px', flexShrink: 0, background: sc.sidebarBg, borderRight: `1px solid ${sc.line}`,
-        padding: '22px 16px', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh',
-      }} className="members-sidebar">
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '6px' }}>
-          {NAV_ITEMS.map(item => {
-            const inner = (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '9px',
-                fontSize: '14px', fontWeight: '600',
-                background: item.active ? sc.industryChipBg : 'transparent',
-                color: item.active ? theme.brass : item.href ? sc.text : sc.textFaint,
-                cursor: item.href ? 'pointer' : 'default',
-              }}>
-                <span style={{ fontSize: '16px', lineHeight: 1 }}>{item.icon}</span>
-                {item.label}
-                {!item.href && (
-                  <span style={{
-                    marginLeft: 'auto', fontSize: '9.5px', fontWeight: '700', color: sc.textFaint,
-                    border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '2px 7px', letterSpacing: '0.02em',
-                  }}>Soon</span>
-                )}
-              </div>
-            )
-            return item.href ? <Link key={item.key} href={item.href} style={{ textDecoration: 'none' }}>{inner}</Link> : <div key={item.key}>{inner}</div>
-          })}
-        </nav>
-      </div>
+      <AppSidebar active="discover" />
 
       {/* Main */}
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -623,23 +574,7 @@ export default function MembersBrowsePage({ embedded = false }) {
         </div>
       </div>
 
-      {/* Mobile bottom tab bar */}
-      <div className="members-bottom-nav" style={{
-        display: 'none', position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 30,
-        background: sc.sidebarBg, borderTop: `1px solid ${sc.line}`,
-        padding: '10px 8px calc(10px + env(safe-area-inset-bottom))',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: theme.brass }}>
-            <span style={{ fontSize: '18px', lineHeight: 1 }}>👤</span>
-            <span style={{ fontSize: '10.5px', fontWeight: '700' }}>Discover</span>
-          </div>
-          <Link href="/account" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: sc.textFaint }}>
-            <span style={{ fontSize: '18px', lineHeight: 1 }}>👤</span>
-            <span style={{ fontSize: '10.5px', fontWeight: '600' }}>My Profile</span>
-          </Link>
-        </div>
-      </div>
+      <AppBottomNav active="discover" />
 
       <style jsx>{`
         @media (max-width: 860px) {
