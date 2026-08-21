@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Find a Co-founder | Cot Lever',
+  title: 'Find a Partner | Cot Lever',
   description: 'Browse founders on Cot Lever looking for a co-founder, partner, or share holder.',
   alternates: {
     canonical: '/members',
