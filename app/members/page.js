@@ -528,49 +528,6 @@ export default function MembersBrowsePage({ embedded = false }) {
 
       {/* Main */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Topbar */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '16px', padding: '14px clamp(16px,3vw,40px)',
-          borderBottom: `1px solid ${sc.line}`, background: sc.sidebarBg,
-        }}>
-          <div className="members-search" style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
-            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: sc.textFaint }}>🔍</span>
-            <input
-              type="text" value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search by skills, roles, or keywords…"
-              style={{
-                width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '999px',
-                padding: '10px 14px 10px 38px', fontSize: '13.5px', fontFamily: theme.fontBody, background: sc.bg, color: sc.text,
-              }}
-            />
-          </div>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ position: 'relative', fontSize: '18px', color: sc.textSoft }}>
-              🔔
-              <span style={{
-                position: 'absolute', top: '-5px', right: '-7px', minWidth: '15px', height: '15px', borderRadius: '999px',
-                background: theme.brass, color: '#FFFFFF', fontSize: '9px', fontWeight: '700',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px',
-              }}>2</span>
-            </span>
-            <Link href="/account" style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}>
-              <span style={{
-                width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
-                background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                {myProfile?.photo_url ? (
-                  <img src={myProfile.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <span style={{ color: '#FFFFFF', fontSize: '13.5px', fontWeight: '700', fontFamily: theme.fontDisplay }}>{myUserId ? myInitial : '?'}</span>
-                )}
-              </span>
-              <span className="members-username" style={{ fontSize: '13px', fontWeight: '600', color: sc.text, display: 'none', alignItems: 'center', gap: '3px' }}>
-                rfin786 <span style={{ fontSize: '9px' }}>▾</span>
-              </span>
-            </Link>
-          </div>
-        </div>
-
         <div style={{ padding: 'clamp(20px,3vw,40px)', paddingBottom: 'clamp(20px,3vw,40px)' }}>
           <h1 className="members-heading" style={{
             fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(22px,2.6vw,30px)',
@@ -580,21 +537,6 @@ export default function MembersBrowsePage({ embedded = false }) {
             Browse founders looking for a co-founder, partner, or share holder.
           </p>
 
-          <div className="members-mobile-search" style={{ display: 'none', position: 'relative', marginBottom: '14px' }}>
-            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🔍</span>
-            <input
-              type="text" value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name, skills or keyword…"
-              style={{
-                width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '14px',
-                padding: '13px 44px 13px 42px', fontSize: '14px', fontFamily: theme.fontBody, background: sc.cardBg, color: sc.text,
-                boxShadow: sc.shadow,
-              }}
-            />
-            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🎚️</span>
-          </div>
-
-          {filterBar}
           {cardGrid}
         </div>
       </div>
@@ -626,17 +568,6 @@ export default function MembersBrowsePage({ embedded = false }) {
           .members-sidebar { display: none !important; }
           .members-bottom-nav { display: block !important; }
           .members-heading { display: none; }
-          .members-filterbar {
-            flex-wrap: nowrap !important;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 2px;
-          }
-          .members-filterbar::-webkit-scrollbar { display: none; }
-          .members-filterbar > * { flex-shrink: 0; }
-          .members-search { display: none !important; }
-          .members-mobile-search { display: block !important; }
-          .members-sort { margin-left: 0 !important; }
         }
       `}</style>
       <style jsx global>{`
