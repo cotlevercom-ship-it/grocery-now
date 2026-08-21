@@ -498,10 +498,7 @@ export default function MembersBrowsePage({ embedded = false }) {
         width: '236px', flexShrink: 0, background: sc.sidebarBg, borderRight: `1px solid ${sc.line}`,
         padding: '22px 16px', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh',
       }} className="members-sidebar">
-        <div style={{ padding: '0 8px', marginBottom: '28px' }}>
-          <span style={{ fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '700', color: sc.text }}>Cot<span style={{ color: theme.brass }}>Lever</span></span>
-        </div>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '6px' }}>
           {NAV_ITEMS.map(item => {
             const inner = (
               <div style={{
