@@ -436,9 +436,35 @@ export default function MembersBrowsePage({ embedded = false }) {
     return (
       <div style={{ background: sc.bg, minHeight: '70vh' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px)' }}>
+          <div className="members-mobile-search" style={{ display: 'none', position: 'relative', marginBottom: '14px' }}>
+            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🔍</span>
+            <input
+              type="text" value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search by name, skills or keyword…"
+              style={{
+                width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '14px',
+                padding: '13px 44px 13px 42px', fontSize: '14px', fontFamily: theme.fontBody, background: sc.cardBg, color: sc.text,
+                boxShadow: sc.shadow,
+              }}
+            />
+            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🎚️</span>
+          </div>
           {filterBar}
           {cardGrid}
         </div>
+        <style jsx>{`
+          @media (max-width: 860px) {
+            .members-mobile-search { display: block !important; }
+            .members-filterbar {
+              flex-wrap: nowrap !important;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              padding-bottom: 2px;
+            }
+            .members-filterbar::-webkit-scrollbar { display: none; }
+            .members-filterbar > * { flex-shrink: 0; }
+          }
+        `}</style>
         <style jsx global>{`
           .member-card {
             transition: transform 0.15s ease, box-shadow 0.15s ease;
