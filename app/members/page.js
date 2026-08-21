@@ -45,11 +45,7 @@ const SORT_OPTIONS = [
 
 const NAV_ITEMS = [
   { key: 'discover', label: 'Discover', icon: '🧭', href: '/members', active: true },
-  { key: 'matches', label: 'Matches', icon: '❤️' },
-  { key: 'messages', label: 'Messages', icon: '💬' },
-  { key: 'saved', label: 'Saved', icon: '🔖' },
   { key: 'profile', label: 'My Profile', icon: '👤', href: '/account' },
-  { key: 'settings', label: 'Settings', icon: '⚙️' },
 ]
 
 function FilterDropdown({ label, count, children, isOpen, onToggle }) {
@@ -680,10 +676,6 @@ export default function MembersBrowsePage({ embedded = false }) {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: theme.brass }}>
             <span style={{ fontSize: '18px', lineHeight: 1 }}>👤</span>
             <span style={{ fontSize: '10.5px', fontWeight: '700' }}>Discover</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: sc.textFaint }}>
-            <span style={{ fontSize: '18px', lineHeight: 1 }}>💬</span>
-            <span style={{ fontSize: '10.5px', fontWeight: '600' }}>Messages</span>
           </div>
           <Link href="/account" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: sc.textFaint }}>
             <span style={{ fontSize: '18px', lineHeight: 1 }}>👤</span>
