@@ -197,20 +197,25 @@ export default function MembersBrowsePage({ embedded = false }) {
             return (
               <div key={m.user_id} className="member-card" style={{
                 background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow,
-                display: 'flex', flexDirection: 'column', padding: '20px 20px 18px',
+                display: 'flex', flexDirection: 'column', padding: '20px 20px 18px', position: 'relative',
               }}>
+                <span style={{
+                  position: 'absolute', top: '14px', right: '16px', fontSize: '18px', color: sc.textFaint,
+                  lineHeight: 1, letterSpacing: '1px', userSelect: 'none',
+                }}>⋮</span>
+
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '4px' }}>
                   <div style={{
-                    width: '64px', height: '64px', borderRadius: '14px', flexShrink: 0, overflow: 'hidden',
+                    width: '96px', height: '96px', borderRadius: '16px', flexShrink: 0, overflow: 'hidden',
                     background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
                     {m.photo_url ? (
                       <img src={m.photo_url} alt={m.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '24px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
+                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '34px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
                     )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
+                  <div style={{ flex: 1, minWidth: 0, paddingTop: '2px', paddingRight: '18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: sc.text, lineHeight: '1.25' }}>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
                       {m.verified && <VerifiedBadge />}
@@ -218,6 +223,22 @@ export default function MembersBrowsePage({ embedded = false }) {
                     <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
                       {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
                     </div>
+                    {m.skills && m.skills.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '9px' }}>
+                        {m.skills.slice(0, 3).map(s => (
+                          <span key={s} style={{
+                            fontSize: '11px', fontWeight: '600', color: sc.chipText, background: sc.chipBg,
+                            borderRadius: '999px', padding: '5px 10px', whiteSpace: 'nowrap',
+                          }}>{s}</span>
+                        ))}
+                        {m.skills.length > 3 && (
+                          <span style={{
+                            fontSize: '11px', fontWeight: '600', color: sc.textSoft, background: sc.chipBg,
+                            borderRadius: '999px', padding: '5px 10px',
+                          }}>+{m.skills.length - 3}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -343,7 +364,7 @@ export default function MembersBrowsePage({ embedded = false }) {
 
   // ---------- Filter bar (shared) ----------
   const filterBar = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '24px' }}>
+    <div className="members-filterbar" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '24px' }}>
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600',
         color: sc.textSoft, padding: '9px 4px',
@@ -470,10 +491,19 @@ export default function MembersBrowsePage({ embedded = false }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* Topbar */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '16px', padding: '18px clamp(16px,3vw,40px)',
+          display: 'flex', alignItems: 'center', gap: '16px', padding: '14px clamp(16px,3vw,40px)',
           borderBottom: `1px solid ${sc.line}`, background: sc.sidebarBg,
         }}>
-          <div style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
+          <button type="button" aria-label="Menu" className="members-hamburger" style={{
+            display: 'none', background: 'none', border: 'none', padding: '4px', cursor: 'pointer', flexShrink: 0,
+          }}>
+            <div style={{ width: '20px', height: '2px', background: sc.text, marginBottom: '5px', borderRadius: '2px' }} />
+            <div style={{ width: '20px', height: '2px', background: sc.text, borderRadius: '2px' }} />
+          </button>
+          <Link href="/" className="members-mobile-logo" style={{ display: 'none', textDecoration: 'none', flexShrink: 0 }}>
+            <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '700', color: sc.text }}>Cot<span style={{ color: theme.brass }}>Lever</span></span>
+          </Link>
+          <div className="members-search" style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
             <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: sc.textFaint }}>🔍</span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
@@ -485,37 +515,99 @@ export default function MembersBrowsePage({ embedded = false }) {
             />
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '18px', color: sc.textSoft }}>🔔</span>
-            <Link href="/account" style={{
-              width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
-              background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {myProfile?.photo_url ? (
-                <img src={myProfile.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <span style={{ color: '#FFFFFF', fontSize: '13.5px', fontWeight: '700', fontFamily: theme.fontDisplay }}>{myUserId ? myInitial : '?'}</span>
-              )}
+            <span style={{ position: 'relative', fontSize: '18px', color: sc.textSoft }}>
+              🔔
+              <span style={{
+                position: 'absolute', top: '-5px', right: '-7px', minWidth: '15px', height: '15px', borderRadius: '999px',
+                background: theme.brass, color: '#FFFFFF', fontSize: '9px', fontWeight: '700',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px',
+              }}>2</span>
+            </span>
+            <Link href="/account" style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}>
+              <span style={{
+                width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+                background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {myProfile?.photo_url ? (
+                  <img src={myProfile.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ color: '#FFFFFF', fontSize: '13.5px', fontWeight: '700', fontFamily: theme.fontDisplay }}>{myUserId ? myInitial : '?'}</span>
+                )}
+              </span>
+              <span className="members-username" style={{ fontSize: '13px', fontWeight: '600', color: sc.text, display: 'none', alignItems: 'center', gap: '3px' }}>
+                rfin786 <span style={{ fontSize: '9px' }}>▾</span>
+              </span>
             </Link>
           </div>
         </div>
 
-        <div style={{ padding: 'clamp(20px,3vw,40px)' }}>
-          <h1 style={{
+        <div style={{ padding: 'clamp(20px,3vw,40px)', paddingBottom: 'clamp(20px,3vw,40px)' }}>
+          <h1 className="members-heading" style={{
             fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(22px,2.6vw,30px)',
             color: sc.text, marginBottom: '6px', letterSpacing: '-0.01em'
           }}>Find a Co-founder</h1>
-          <p style={{ fontSize: '14px', color: sc.textSoft, marginBottom: '22px' }}>
+          <p className="members-heading" style={{ fontSize: '14px', color: sc.textSoft, marginBottom: '22px' }}>
             Browse founders looking for a co-founder, partner, or share holder.
           </p>
+
+          <div className="members-mobile-search" style={{ display: 'none', position: 'relative', marginBottom: '14px' }}>
+            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🔍</span>
+            <input
+              type="text" value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search by name, skills or keyword…"
+              style={{
+                width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '14px',
+                padding: '13px 44px 13px 42px', fontSize: '14px', fontFamily: theme.fontBody, background: sc.cardBg, color: sc.text,
+                boxShadow: sc.shadow,
+              }}
+            />
+            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🎚️</span>
+          </div>
 
           {filterBar}
           {cardGrid}
         </div>
       </div>
 
+      {/* Mobile bottom tab bar */}
+      <div className="members-bottom-nav" style={{
+        display: 'none', position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 30,
+        background: sc.sidebarBg, borderTop: `1px solid ${sc.line}`,
+        padding: '10px 8px calc(10px + env(safe-area-inset-bottom))',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: theme.brass }}>
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>👤</span>
+            <span style={{ fontSize: '10.5px', fontWeight: '700' }}>Discover</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: sc.textFaint }}>
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>💬</span>
+            <span style={{ fontSize: '10.5px', fontWeight: '600' }}>Messages</span>
+          </div>
+          <Link href="/account" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: sc.textFaint }}>
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>👤</span>
+            <span style={{ fontSize: '10.5px', fontWeight: '600' }}>My Profile</span>
+          </Link>
+        </div>
+      </div>
+
       <style jsx>{`
         @media (max-width: 860px) {
           .members-sidebar { display: none; }
+          .members-hamburger { display: block !important; }
+          .members-mobile-logo { display: block !important; }
+          .members-bottom-nav { display: block !important; }
+          .members-heading { display: none; }
+          .members-filterbar {
+            flex-wrap: nowrap !important;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 2px;
+          }
+          .members-filterbar::-webkit-scrollbar { display: none; }
+          .members-filterbar > * { flex-shrink: 0; }
+          .members-search { display: none !important; }
+          .members-mobile-search { display: block !important; }
         }
       `}</style>
       <style jsx global>{`
@@ -525,6 +617,9 @@ export default function MembersBrowsePage({ embedded = false }) {
         .member-card:hover {
           transform: translateY(-3px);
           box-shadow: ${sc.shadowHover};
+        }
+        @media (max-width: 860px) {
+          body { padding-bottom: 62px; }
         }
       `}</style>
     </div>
