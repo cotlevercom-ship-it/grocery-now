@@ -532,15 +532,6 @@ export default function MembersBrowsePage({ embedded = false }) {
           display: 'flex', alignItems: 'center', gap: '16px', padding: '14px clamp(16px,3vw,40px)',
           borderBottom: `1px solid ${sc.line}`, background: sc.sidebarBg,
         }}>
-          <button type="button" aria-label="Menu" className="members-hamburger" style={{
-            display: 'none', background: 'none', border: 'none', padding: '4px', cursor: 'pointer', flexShrink: 0,
-          }}>
-            <div style={{ width: '20px', height: '2px', background: sc.text, marginBottom: '5px', borderRadius: '2px' }} />
-            <div style={{ width: '20px', height: '2px', background: sc.text, borderRadius: '2px' }} />
-          </button>
-          <Link href="/" className="members-mobile-logo" style={{ display: 'none', textDecoration: 'none', flexShrink: 0 }}>
-            <span style={{ fontFamily: theme.fontDisplay, fontSize: '18px', fontWeight: '700', color: sc.text }}>Cot<span style={{ color: theme.brass }}>Lever</span></span>
-          </Link>
           <div className="members-search" style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
             <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: sc.textFaint }}>🔍</span>
             <input
@@ -632,8 +623,6 @@ export default function MembersBrowsePage({ embedded = false }) {
       <style jsx>{`
         @media (max-width: 860px) {
           .members-sidebar { display: none !important; }
-          .members-hamburger { display: block !important; }
-          .members-mobile-logo { display: block !important; }
           .members-bottom-nav { display: block !important; }
           .members-heading { display: none; }
           .members-filterbar {
