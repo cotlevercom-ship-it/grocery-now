@@ -38,9 +38,14 @@ function SectionLabel({ children }) {
   return (
     <div style={{
       fontSize: '11px', fontWeight: '700', letterSpacing: '0.06em', textTransform: 'uppercase',
-      color: theme.brass, margin: '26px 0 14px'
+      color: theme.brass, margin: '0 0 14px'
     }}>{children}</div>
   )
+}
+
+const sectionBoxStyle = {
+  background: theme.surface, borderRadius: '4px', border: `1px solid ${theme.line}`,
+  padding: '18px 18px 22px', marginTop: '14px',
 }
 
 function FieldLabel({ children }) {
@@ -320,10 +325,7 @@ export default function AccountPage() {
 
       <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '4px 16px 0' }}>
         <form onSubmit={handleSubmit}>
-          <div style={{
-            background: theme.surface, borderRadius: '4px', border: `1px solid ${theme.line}`,
-            padding: '6px 18px 6px', marginTop: '10px'
-          }}>
+          <div style={{ ...sectionBoxStyle, marginTop: '10px' }}>
             <SectionLabel>Profile</SectionLabel>
 
             <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -365,7 +367,9 @@ export default function AccountPage() {
               <FieldLabel>Bio / Pitch</FieldLabel>
               <textarea value={form.bio} onChange={e => handleChange('bio', e.target.value)} placeholder="A couple lines about yourself and what you're building" className="ledger-input" style={{ minHeight: '80px', resize: 'vertical', paddingTop: '6px' }} />
             </div>
+          </div>
 
+          <div style={sectionBoxStyle}>
             <SectionLabel>Basic Info</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
@@ -390,7 +394,9 @@ export default function AccountPage() {
               <FieldLabel>Age</FieldLabel>
               <input type="number" inputMode="numeric" min="16" max="100" value={form.age} onChange={e => handleChange('age', e.target.value)} placeholder="25" className="ledger-input" />
             </div>
+          </div>
 
+          <div style={sectionBoxStyle}>
             <SectionLabel>Profession</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
@@ -428,7 +434,9 @@ export default function AccountPage() {
             </div>
 
             <TagInput label="Language" values={form.languages} onChange={v => handleChange('languages', v)} placeholder="e.g. Bangla, English" />
+          </div>
 
+          <div style={sectionBoxStyle}>
             <SectionLabel>Co-founder Details</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
@@ -485,7 +493,9 @@ export default function AccountPage() {
               <FieldLabel>Interested In (Industry)</FieldLabel>
               <ChipPicker options={INDUSTRY_OPTIONS} selected={form.interested_industry} onToggle={toggleIndustry} />
             </div>
+          </div>
 
+          <div style={sectionBoxStyle}>
             <SectionLabel>Contact</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
