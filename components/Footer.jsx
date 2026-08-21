@@ -37,7 +37,7 @@ export default function Footer() {
 
   return (
     <footer style={{
-      background: bg, color: ink, marginTop: '24px',
+      background: bg, color: ink, marginTop: 0,
       padding: 'clamp(14px, 2.5vw, 26px) clamp(16px, 3vw, 56px) 12px',
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '12px', borderBottom: `1px solid ${line}` }}>
