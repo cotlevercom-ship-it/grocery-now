@@ -188,7 +188,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                   background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow,
                   display: 'flex', flexDirection: 'column', padding: '22px 20px 18px',
                 }}>
-                  <Link href={`/members/${m.user_id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                  <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '4px' }}>
                       <div style={{
                         width: '96px', height: '96px', borderRadius: '14px', flexShrink: 0, overflow: 'hidden',
@@ -237,7 +237,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                         )}
                       </div>
                     </div>
-                  </Link>
+                  </div>
 
                   {myUserId === m.user_id ? null : (m.contact_email || m.linkedin_url) ? (
                     <div style={{ marginTop: '18px', display: 'flex', gap: '8px' }}>

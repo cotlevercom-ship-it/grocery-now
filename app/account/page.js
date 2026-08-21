@@ -285,19 +285,19 @@ export default function AccountPage() {
       <div style={{ background: `linear-gradient(155deg, ${theme.paper} 0%, ${theme.surface} 60%, ${theme.lineSoft} 100%)` }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <Link href={`/members/${userId}`} style={{
+            <div style={{
               width: '54px', height: '54px', borderRadius: '50%', background: theme.brass,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '22px', fontWeight: '700', color: '#FFFFFF', flexShrink: 0,
-              border: '2px solid rgba(255,255,255,0.25)', textDecoration: 'none'
-            }}>{initial}</Link>
+              border: '2px solid rgba(255,255,255,0.25)'
+            }}>{initial}</div>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <Link href={`/members/${userId}`} style={{
+              <div style={{
                 color: theme.ink, fontSize: '18px', fontWeight: '700', overflow: 'hidden',
-                textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none', display: 'block'
+                textOverflow: 'ellipsis', whiteSpace: 'nowrap'
               }}>
                 {fullName || 'Guest User'}
-              </Link>
+              </div>
             </div>
           </div>
 
