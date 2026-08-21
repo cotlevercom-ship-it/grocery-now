@@ -1,160 +1,175 @@
 'use client'
-import Image from 'next/image'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import {
+  Search, ArrowRight, Lightbulb, UserSearch, MessageSquare,
+  Code2, Palette, Megaphone, Briefcase, Heart, Puzzle, User,
+} from 'lucide-react'
 import { theme } from '@/lib/theme'
-import HowItWorksDeck from '@/components/HowItWorksDeck'
 
-function HeroBanner() {
-  const alt = 'Find the right co-founder. Build something great, together. — Cot Lever'
-
-  return (
-    <div className="banner-anim" style={{
-      position: 'relative', width: '100%', overflow: 'hidden', background: theme.surface,
-      animationDelay: '0s',
-    }}>
-      {/* Mobile-only hero image (portrait) */}
-      <div className="hero-mobile-only" style={{ position: 'relative', width: '100%', aspectRatio: '1536 / 1024' }}>
-        <Image
-          src="/marketing/hero-mobile-idea.jpg"
-          alt={alt}
-          fill
-          priority
-          sizes="100vw"
-          style={{ objectFit: 'cover' }}
-        />
-      </div>
-      {/* Desktop hero image (wide) */}
-      <div className="hero-desktop-only" style={{ position: 'relative', width: '100%', aspectRatio: '1942 / 809' }}>
-        <Image
-          src="/marketing/hero-cofounder-banner.png"
-          alt={alt}
-          fill
-          priority
-          sizes="100vw"
-          style={{ objectFit: 'contain' }}
-        />
-      </div>
-    </div>
-  )
+// Light cream/pink landing hero for logged-out visitors — mirrors the
+// logged-in homepage hero (components/HomeTabs.jsx) in style, per the same
+// user-provided reference mockup. Scoped to this file only via a local `lt`
+// const; the global dark Navbar above it is untouched. Since browsing /members
+// requires login, every CTA here routes to /login (which also offers signup).
+const lt = {
+  bg: '#FBF3EF',
+  card: '#FFFFFF',
+  chipBg: '#F7E3DC',
+  ink: '#221714',
+  inkSoft: '#7C6F6A',
+  accent: theme.brass,
+  line: '#F0DED6',
 }
 
-function IdeasPeopleTogetherBanner() {
-  const alt = 'Ideas. People. Together. Find the right co-founder and build something amazing. — 1. The Idea: you have an idea but building it alone can be hard. 2. The Missing Piece: maybe you need a developer, a marketer, a designer, or a business mind. 3. Meet Cot Lever: find the right co-founder.'
+const ROLE_CHIPS = [
+  { label: 'Developer', Icon: Code2 },
+  { label: 'Designer', Icon: Palette },
+  { label: 'Marketer', Icon: Megaphone },
+  { label: 'Product Manager', Icon: Briefcase },
+]
 
-  return (
-    <div className="banner-anim" style={{
-      position: 'relative', width: '100%', aspectRatio: '1821 / 864',
-      overflow: 'hidden', background: theme.surface,
-      animationDelay: '0.25s',
-    }}>
-      <Image
-        src="/marketing/ideas-people-together.png"
-        alt={alt}
-        fill
-        sizes="100vw"
-        style={{ objectFit: 'contain' }}
-      />
-    </div>
-  )
-}
-
-function TellMatchConversationBanner() {
-  const alt = '04. Tell Us About You — your skills, your vision, your goals. Create your founder profile and tell the community what you\u2019re building and who you\u2019re looking for. 05. Find Your Match — not just a connection, a potential partnership. Discover founders with complementary skills, shared interests and compatible goals. 06. Start a Conversation — talk, explore, challenge. Get to know each other before deciding to build together.'
-
-  return (
-    <div className="banner-anim" style={{
-      position: 'relative', width: '100%', aspectRatio: '1774 / 887',
-      overflow: 'hidden', background: theme.surface,
-      animationDelay: '0.35s',
-    }}>
-      <img
-        src="/marketing/tell-match-conversation.png"
-        alt={alt}
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }}
-      />
-    </div>
-  )
-}
-
-function HowItWorksMobileSection() {
-  return (
-    <div
-      className="how-it-works-mobile"
-      style={{ padding: '28px 0 clamp(32px,5vw,56px)', background: theme.paper }}
-    >
-      <HowItWorksDeck showHeading={false} />
-    </div>
-  )
-}
+const STEPS = [
+  { n: '01', Icon: Lightbulb, title: 'Share your idea', body: "Tell us what you're building and what you need." },
+  { n: '02', Icon: UserSearch, title: 'Find the right person', body: 'Discover talented people who match your needs.' },
+  { n: '03', Icon: MessageSquare, title: 'Build together', body: 'Connect, chat and turn your idea into something great.' },
+]
 
 export default function MarketingHome() {
+  const router = useRouter()
+  const [search, setSearch] = useState('')
+
+  const goSearch = (e) => {
+    e.preventDefault()
+    router.push('/login')
+  }
+
   return (
-    <div style={{ background: theme.paper, position: 'relative' }}>
+    <div style={{ background: lt.bg, minHeight: '100vh' }}>
       <h1 style={{
         position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px',
         overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0
       }}>Find the right people for your business — Cot Lever connects founders in Bangladesh with the co-founders, partners, and share holders their business needs.</h1>
 
-      {/* Hero — stays pinned while the next section scrolls up over it, on both mobile and desktop */}
-      <div className="banner-sticky-1">
-        <HeroBanner />
+      <div style={{ maxWidth: '640px', margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,56px) 60px' }}>
+
+        {/* Hero */}
+        <h2 style={{
+          fontFamily: theme.fontDisplay, fontWeight: '700', fontSize: 'clamp(32px,7vw,42px)',
+          color: lt.ink, lineHeight: '1.15', margin: '10px 0 16px', letterSpacing: '-0.01em',
+        }}>
+          Have an idea? Find the right person to <span style={{ color: lt.accent }}>build it.</span>
+        </h2>
+        <p style={{ fontSize: '16px', color: lt.inkSoft, lineHeight: '1.5', marginBottom: '26px', maxWidth: '440px' }}>
+          Connect with people who have the skills your idea needs.
+        </p>
+
+        <Link href="/login" style={{
+          display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none',
+          background: lt.accent, color: '#FFFFFF', fontWeight: '700', fontSize: '15.5px',
+          padding: '15px 26px', borderRadius: '999px', marginBottom: '30px',
+          boxShadow: '0 8px 20px rgba(179,55,42,0.25)',
+        }}>
+          Find Your Person <ArrowRight size={18} />
+        </Link>
+
+        {/* Search */}
+        <form onSubmit={goSearch} style={{ position: 'relative', marginBottom: '16px' }}>
+          <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: lt.inkSoft, display: 'flex' }}>
+            <Search size={18} />
+          </span>
+          <input
+            type="text" value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="What are you looking for?"
+            style={{
+              width: '100%', boxSizing: 'border-box', border: `1px solid ${lt.line}`, borderRadius: '16px',
+              padding: '16px 18px 16px 48px', fontSize: '15px', fontFamily: theme.fontBody,
+              background: lt.card, color: lt.ink, boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            }}
+          />
+        </form>
+
+        {/* Quick role chips */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '52px' }}>
+          {ROLE_CHIPS.map(({ label, Icon }) => (
+            <Link
+              key={label} href="/login"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '7px', textDecoration: 'none',
+                background: lt.chipBg, color: lt.accent, fontWeight: '600', fontSize: '13.5px',
+                padding: '10px 16px', borderRadius: '999px',
+              }}
+            >
+              <Icon size={15} /> {label}
+            </Link>
+          ))}
+        </div>
+
+        {/* How it works */}
+        <h3 style={{
+          fontFamily: theme.fontDisplay, fontWeight: '700', fontSize: 'clamp(22px,5vw,26px)',
+          color: lt.ink, textAlign: 'center', marginBottom: '22px',
+        }}>How CotLever Works</h3>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px,1fr))', gap: '14px', marginBottom: '46px' }}>
+          {STEPS.map(({ n, Icon, title, body }) => (
+            <div key={n} style={{
+              position: 'relative', background: lt.chipBg, borderRadius: '18px',
+              padding: '22px 16px 20px', textAlign: 'center',
+            }}>
+              <span style={{
+                position: 'absolute', top: '10px', left: '10px', width: '26px', height: '26px', borderRadius: '50%',
+                background: lt.accent, color: '#FFFFFF', fontSize: '11px', fontWeight: '700',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>{n}</span>
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '50%', background: lt.card, margin: '6px auto 14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon size={24} color={lt.accent} strokeWidth={1.8} />
+              </div>
+              <div style={{ fontFamily: theme.fontDisplay, fontWeight: '700', fontSize: '15px', color: lt.ink, marginBottom: '6px' }}>{title}</div>
+              <div style={{ fontSize: '12.5px', color: lt.inkSoft, lineHeight: '1.5' }}>{body}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom CTA banner */}
+        <div style={{
+          background: lt.chipBg, borderRadius: '22px', padding: '30px 22px', textAlign: 'center', marginBottom: '34px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '18px' }}>
+            <div style={{
+              width: '52px', height: '52px', borderRadius: '14px', background: lt.card,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(-6deg)',
+            }}><Puzzle size={24} color={lt.accent} /></div>
+            <div style={{
+              width: '52px', height: '52px', borderRadius: '14px', background: lt.card,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(6deg)',
+            }}><User size={24} color={lt.accent} /></div>
+          </div>
+          <h3 style={{
+            fontFamily: theme.fontDisplay, fontWeight: '700', fontSize: 'clamp(19px,4.5vw,22px)',
+            color: lt.ink, marginBottom: '18px', lineHeight: '1.3',
+          }}>Your idea is waiting for the right person.</h3>
+          <Link href="/login" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none',
+            background: lt.accent, color: '#FFFFFF', fontWeight: '700', fontSize: '15px',
+            padding: '14px 24px', borderRadius: '999px',
+          }}>
+            Find People <ArrowRight size={17} />
+          </Link>
+        </div>
+
+        {/* Footer tagline */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', color: lt.ink, fontWeight: '600', fontSize: '13.5px', marginBottom: '4px' }}>
+            <Heart size={15} color={lt.accent} fill={lt.accent} /> Built for dreamers and doers.
+          </div>
+          <div style={{ fontSize: '13px', color: lt.inkSoft }}>Let&apos;s build something amazing, together.</div>
+        </div>
       </div>
-
-      {/* How It Works — full scroll-reveal deck, mobile only: slides up and covers the hero on scroll */}
-      <HowItWorksMobileSection />
-
-      {/* Ideas. People. Together. — desktop only: slides up to cover the hero on scroll. Hidden on mobile. */}
-      <div className="banner-sticky-2 ideas-banner-desktop-only">
-        <IdeasPeopleTogetherBanner />
-      </div>
-
-      {/* Tell Us About You / Find Your Match / Start a Conversation — desktop only, sits after the sticky-stack. */}
-      <div className="tell-match-banner-desktop-only" style={{
-        paddingBottom: 'clamp(32px,5vw,56px)',
-      }}>
-        <TellMatchConversationBanner />
-      </div>
-
-      <style jsx global>{`
-        @keyframes bannerFadeUp {
-          from { opacity: 0; transform: translateY(28px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .banner-anim {
-          opacity: 0;
-          animation: bannerFadeUp 0.9s ease-out forwards;
-        }
-        .banner-sticky-1 {
-          position: sticky;
-          top: var(--nav-h, 0px);
-          z-index: 1;
-        }
-        .banner-sticky-2 {
-          position: static;
-          background: ${theme.paper};
-        }
-        .hero-mobile-only { display: block; }
-        .hero-desktop-only { display: none; }
-        .ideas-banner-desktop-only { display: none; }
-        .tell-match-banner-desktop-only { display: none; }
-        .how-it-works-mobile {
-          display: block;
-          position: relative;
-          z-index: 2;
-        }
-        @media (min-width: 768px) {
-          .how-it-works-mobile { display: none; }
-          .banner-sticky-2 {
-            position: sticky;
-            top: var(--nav-h, 0px);
-            z-index: 2;
-          }
-          .hero-mobile-only { display: none; }
-          .hero-desktop-only { display: block; }
-          .ideas-banner-desktop-only { display: block; }
-          .tell-match-banner-desktop-only { display: block; }
-        }
-      `}</style>
     </div>
   )
 }
-
