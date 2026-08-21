@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabaseFetch, getSession } from '@/lib/supabase'
@@ -215,6 +215,20 @@ export default function MembersBrowsePage({ embedded = false }) {
   const pagedMembers = sortedMembers.slice(pageStart, pageStart + pageSize)
 
   const toggleDropdown = (key) => setOpenDropdown(prev => prev === key ? null : key)
+  const filterDropdownRef = useRef(null)
+  const sortDropdownRef = useRef(null)
+
+  useEffect(() => {
+    if (!openDropdown) return
+    const handleClickOutside = (e) => {
+      const ref = openDropdown === 'filters' ? filterDropdownRef : openDropdown === 'sort' ? sortDropdownRef : null
+      if (ref && ref.current && !ref.current.contains(e.target)) {
+        setOpenDropdown(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [openDropdown])
   const myInitial = (myProfile?.display_name || '?').trim().charAt(0).toUpperCase()
 
   // ---------- Card ----------
@@ -414,7 +428,7 @@ export default function MembersBrowsePage({ embedded = false }) {
   // ---------- Filter bar (shared) ----------
   const filterBar = (
     <div className="members-filterbar" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '24px' }}>
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative' }} ref={filterDropdownRef}>
         <button
           type="button"
           onClick={() => toggleDropdown('filters')}
@@ -442,6 +456,16 @@ export default function MembersBrowsePage({ embedded = false }) {
             background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadowHover,
             border: `1px solid ${sc.line}`, padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px',
           }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13.5px', fontWeight: '700', color: sc.text }}>Filters</span>
+              <button
+                type="button" onClick={() => setOpenDropdown(null)} aria-label="Close filters"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px',
+                  border: 'none', borderRadius: '999px', background: sc.chipBg, color: sc.textSoft, cursor: 'pointer', fontSize: '13px',
+                }}
+              >✕</button>
+            </div>
             <div>
               <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Role</div>
               <input
@@ -501,7 +525,7 @@ export default function MembersBrowsePage({ embedded = false }) {
         )}
       </div>
 
-      <div className="members-sort" style={{ marginLeft: 'auto', position: 'relative' }}>
+      <div className="members-sort" style={{ marginLeft: 'auto', position: 'relative' }} ref={sortDropdownRef}>
         <button
           type="button"
           onClick={() => toggleDropdown('sort')}
