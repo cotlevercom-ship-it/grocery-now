@@ -29,6 +29,11 @@ const sc = {
 
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const PAGE_SIZE_OPTIONS = [6, 12, 24]
+const SORT_OPTIONS = [
+  { key: 'relevant', label: 'Most Relevant' },
+  { key: 'newest', label: 'Newest' },
+  { key: 'az', label: 'Name A-Z' },
+]
 
 const NAV_ITEMS = [
   { key: 'discover', label: 'Discover', icon: '🧭', href: '/members', active: true },
@@ -97,13 +102,14 @@ export default function MembersBrowsePage({ embedded = false }) {
 
   const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
-  const [openDropdown, setOpenDropdown] = useState(null) // 'role' | 'skills' | 'interests' | 'location' | 'availability' | null
+  const [openDropdown, setOpenDropdown] = useState(null) // 'role' | 'skills' | 'interests' | 'location' | 'availability' | 'sort' | null
 
   const [roleFilter, setRoleFilter] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
   const [skillFilter, setSkillFilter] = useState([])
   const [industryFilter, setIndustryFilter] = useState([])
   const [availabilityFilter, setAvailabilityFilter] = useState('')
+  const [sortBy, setSortBy] = useState('relevant')
 
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(6)
@@ -171,11 +177,38 @@ export default function MembersBrowsePage({ embedded = false }) {
     })
   }, [members, search, roleFilter, locationFilter, skillFilter, industryFilter, availabilityFilter])
 
-  useEffect(() => { setPage(1) }, [search, roleFilter, locationFilter, skillFilter, industryFilter, availabilityFilter, pageSize])
+  // "Most Relevant" scores members by how many of the active skill/interest
+  // filters they match (plus a small bonus for role/location text matches).
+  // With no filters active it's identical to "Newest" (members already come
+  // from Supabase ordered by updated_at desc, so relative order is preserved).
+  const relevanceScore = (m) => {
+    let score = 0
+    score += skillFilter.filter(s => (m.skills || []).includes(s)).length
+    score += industryFilter.filter(i => (m.interested_industry || []).includes(i)).length
+    if (roleFilter.trim() && (m.role_title || '').toLowerCase().includes(roleFilter.trim().toLowerCase())) score += 1
+    if (locationFilter.trim() && (m.location || '').toLowerCase().includes(locationFilter.trim().toLowerCase())) score += 1
+    return score
+  }
 
-  const totalPages = Math.max(1, Math.ceil(filteredMembers.length / pageSize))
+  const sortedMembers = useMemo(() => {
+    const list = [...filteredMembers]
+    if (sortBy === 'az') {
+      list.sort((a, b) => (a.display_name || '').localeCompare(b.display_name || ''))
+    } else if (sortBy === 'newest') {
+      // already in updated_at desc order from the fetch — no-op
+    } else {
+      // relevant: stable-sort by score desc, ties keep the existing (newest) order
+      list.sort((a, b) => relevanceScore(b) - relevanceScore(a))
+    }
+    return list
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredMembers, sortBy, skillFilter, industryFilter, roleFilter, locationFilter])
+
+  useEffect(() => { setPage(1) }, [search, roleFilter, locationFilter, skillFilter, industryFilter, availabilityFilter, pageSize, sortBy])
+
+  const totalPages = Math.max(1, Math.ceil(sortedMembers.length / pageSize))
   const pageStart = (page - 1) * pageSize
-  const pagedMembers = filteredMembers.slice(pageStart, pageStart + pageSize)
+  const pagedMembers = sortedMembers.slice(pageStart, pageStart + pageSize)
 
   const toggleDropdown = (key) => setOpenDropdown(prev => prev === key ? null : key)
   const myInitial = (myProfile?.display_name || '?').trim().charAt(0).toUpperCase()
@@ -435,11 +468,40 @@ export default function MembersBrowsePage({ embedded = false }) {
         ><span>✕</span> Clear all</button>
       )}
 
-      <div className="members-sort" style={{ marginLeft: 'auto' }}>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600',
-          color: sc.text, border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '9px 14px',
-        }}>Most Relevant <span style={{ fontSize: '10px' }}>▾</span></div>
+      <div className="members-sort" style={{ marginLeft: 'auto', position: 'relative' }}>
+        <button
+          type="button"
+          onClick={() => toggleDropdown('sort')}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600',
+            color: sc.text, border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '9px 14px',
+            background: sc.cardBg, cursor: 'pointer', fontFamily: theme.fontBody, whiteSpace: 'nowrap',
+          }}
+        >
+          {SORT_OPTIONS.find(o => o.key === sortBy)?.label}
+          <span style={{ fontSize: '10px', transform: openDropdown === 'sort' ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', display: 'inline-block' }}>▾</span>
+        </button>
+        {openDropdown === 'sort' && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 20, minWidth: '170px',
+            background: sc.cardBg, borderRadius: '12px', boxShadow: sc.shadowHover,
+            border: `1px solid ${sc.line}`, padding: '6px',
+          }}>
+            {SORT_OPTIONS.map(o => (
+              <button
+                key={o.key} type="button"
+                onClick={() => { setSortBy(o.key); setOpenDropdown(null) }}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left', padding: '9px 10px', borderRadius: '8px',
+                  border: 'none', cursor: 'pointer', fontSize: '13.5px', fontFamily: theme.fontBody,
+                  fontWeight: sortBy === o.key ? '700' : '500',
+                  background: sortBy === o.key ? sc.industryChipBg : 'transparent',
+                  color: sortBy === o.key ? theme.brass : sc.text,
+                }}
+              >{o.label}</button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
