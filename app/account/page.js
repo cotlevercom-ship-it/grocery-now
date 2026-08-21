@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { getSession, supabaseFetch, signOut, uploadImage } from '@/lib/supabase'
 import { accountLightTheme as theme } from '@/lib/accountLightTheme'
 import { SKILL_OPTIONS, INDUSTRY_OPTIONS, STARTUP_STAGE_OPTIONS } from '@/lib/memberOptions'
-import VerificationSection from '@/components/VerificationSection'
+
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer not to say']
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
@@ -535,10 +535,6 @@ export default function AccountPage() {
 
             <SectionSaveButton sectionKey="contact" />
           </div>
-        </div>
-
-        <div style={{ marginTop: '18px' }}>
-          <VerificationSection />
         </div>
 
         <button onClick={handleLogout} style={{
