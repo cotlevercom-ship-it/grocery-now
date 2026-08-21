@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import VerifiedBadge from '@/components/VerifiedBadge'
-import { SKILL_OPTIONS, INDUSTRY_OPTIONS } from '@/lib/memberOptions'
+import { SKILL_OPTIONS } from '@/lib/memberOptions'
 
 function FilterIcon({ size = 16, color = 'currentColor' }) {
   return (
@@ -35,7 +35,6 @@ const sc = {
   shadowHover: '0 6px 20px rgba(16,24,40,0.10)',
 }
 
-const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const PAGE_SIZE_OPTIONS = [6, 12, 24]
 const SORT_OPTIONS = [
   { key: 'relevant', label: 'Most Relevant' },
@@ -111,8 +110,6 @@ export default function MembersBrowsePage({ embedded = false }) {
   const [roleFilter, setRoleFilter] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
   const [skillFilter, setSkillFilter] = useState([])
-  const [industryFilter, setIndustryFilter] = useState([])
-  const [availabilityFilter, setAvailabilityFilter] = useState('')
   const [sortBy, setSortBy] = useState('relevant')
 
   const [page, setPage] = useState(1)
@@ -155,12 +152,12 @@ export default function MembersBrowsePage({ embedded = false }) {
   const toggleFilter = (setFn, value) => setFn(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value])
 
   const activeFilterCount = [
-    roleFilter.trim(), locationFilter.trim(), availabilityFilter,
-    ...skillFilter, ...industryFilter,
+    roleFilter.trim(), locationFilter.trim(),
+    ...skillFilter,
   ].filter(Boolean).length
 
   const clearAll = () => {
-    setRoleFilter(''); setLocationFilter(''); setSkillFilter([]); setIndustryFilter([]); setAvailabilityFilter('')
+    setRoleFilter(''); setLocationFilter(''); setSkillFilter([])
     setSearch('')
     setPage(1)
   }
@@ -171,24 +168,21 @@ export default function MembersBrowsePage({ embedded = false }) {
       const roleMatch = !roleFilter.trim() || (m.role_title || '').toLowerCase().includes(roleFilter.trim().toLowerCase())
       const locationMatch = !locationFilter.trim() || (m.location || '').toLowerCase().includes(locationFilter.trim().toLowerCase())
       const skillMatch = skillFilter.length === 0 || skillFilter.some(s => (m.skills || []).includes(s))
-      const industryMatch = industryFilter.length === 0 || industryFilter.some(i => (m.interested_industry || []).includes(i))
-      const availabilityMatch = !availabilityFilter || m.commitment === availabilityFilter
       const searchMatch = !q || [
         m.display_name, m.role_title, m.location, m.bio,
-        ...(m.skills || []), ...(m.interested_industry || []),
+        ...(m.skills || []),
       ].filter(Boolean).some(v => v.toLowerCase().includes(q))
-      return roleMatch && locationMatch && skillMatch && industryMatch && availabilityMatch && searchMatch
+      return roleMatch && locationMatch && skillMatch && searchMatch
     })
-  }, [members, search, roleFilter, locationFilter, skillFilter, industryFilter, availabilityFilter])
+  }, [members, search, roleFilter, locationFilter, skillFilter])
 
-  // "Most Relevant" scores members by how many of the active skill/interest
-  // filters they match (plus a small bonus for role/location text matches).
-  // With no filters active it's identical to "Newest" (members already come
-  // from Supabase ordered by updated_at desc, so relative order is preserved).
+  // "Most Relevant" scores members by how many of the active skill filters
+  // they match (plus a small bonus for role/location text matches). With no
+  // filters active it's identical to "Newest" (members already come from
+  // Supabase ordered by updated_at desc, so relative order is preserved).
   const relevanceScore = (m) => {
     let score = 0
     score += skillFilter.filter(s => (m.skills || []).includes(s)).length
-    score += industryFilter.filter(i => (m.interested_industry || []).includes(i)).length
     if (roleFilter.trim() && (m.role_title || '').toLowerCase().includes(roleFilter.trim().toLowerCase())) score += 1
     if (locationFilter.trim() && (m.location || '').toLowerCase().includes(locationFilter.trim().toLowerCase())) score += 1
     return score
@@ -206,9 +200,9 @@ export default function MembersBrowsePage({ embedded = false }) {
     }
     return list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredMembers, sortBy, skillFilter, industryFilter, roleFilter, locationFilter])
+  }, [filteredMembers, sortBy, skillFilter, roleFilter, locationFilter])
 
-  useEffect(() => { setPage(1) }, [search, roleFilter, locationFilter, skillFilter, industryFilter, availabilityFilter, pageSize, sortBy])
+  useEffect(() => { setPage(1) }, [search, roleFilter, locationFilter, skillFilter, pageSize, sortBy])
 
   const totalPages = Math.max(1, Math.ceil(sortedMembers.length / pageSize))
   const pageStart = (page - 1) * pageSize
@@ -307,30 +301,9 @@ export default function MembersBrowsePage({ embedded = false }) {
 
                 <div style={{ marginTop: '10px' }}>
                   {m.skills && m.skills.length > 0 && (
-                    <div style={{ fontSize: '11.5px', color: sc.text, marginBottom: '4px', lineHeight: '1.4' }}>
+                    <div style={{ fontSize: '11.5px', color: sc.text, marginBottom: '10px', lineHeight: '1.4' }}>
                       <span style={{ fontWeight: '600', color: sc.textSoft }}>Skills: </span>
                       {m.skills.join(', ')}
-                    </div>
-                  )}
-                  {m.interested_industry && m.interested_industry.length > 0 && (
-                    <div style={{ fontSize: '11.5px', color: sc.text, lineHeight: '1.4', marginBottom: '10px' }}>
-                      <span style={{ fontWeight: '600', color: sc.industryChipText }}>Interest: </span>
-                      {m.interested_industry.join(', ')}
-                    </div>
-                  )}
-                  {m.startup_stage && (
-                    <div style={{ fontSize: '11.5px', color: sc.text, lineHeight: '1.4', marginBottom: '10px' }}>
-                      <span style={{ fontWeight: '600', color: sc.textSoft }}>Stage: </span>
-                      {m.startup_stage}
-                    </div>
-                  )}
-                  {m.looking_for && (
-                    <div style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '5px',
-                      background: sc.industryChipBg, color: theme.brass, fontSize: '11.5px', fontWeight: '700',
-                      padding: '5px 11px', borderRadius: '999px', marginBottom: '4px',
-                    }}>
-                      🎯 Looking for: {m.looking_for}
                     </div>
                   )}
                 </div>
@@ -481,34 +454,12 @@ export default function MembersBrowsePage({ embedded = false }) {
             </div>
 
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>🎯 Interests</div>
-              <ChipToggle options={INDUSTRY_OPTIONS} selected={industryFilter} onToggle={v => toggleFilter(setIndustryFilter, v)} />
-            </div>
-
-            <div>
               <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>📍 Location</div>
               <input
                 type="text" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}
                 placeholder="e.g. Dhaka"
                 style={{ width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '9px 12px', fontSize: '13.5px', fontFamily: theme.fontBody }}
               />
-            </div>
-
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>⏰ Availability</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {COMMITMENT_OPTIONS.map(o => (
-                  <button
-                    key={o} type="button" onClick={() => setAvailabilityFilter(prev => prev === o ? '' : o)}
-                    style={{
-                      textAlign: 'left', padding: '9px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                      fontSize: '13.5px', fontWeight: '600', fontFamily: theme.fontBody,
-                      background: availabilityFilter === o ? theme.brass : sc.chipBg,
-                      color: availabilityFilter === o ? '#FFFFFF' : sc.chipText,
-                    }}
-                  >{o}</button>
-                ))}
-              </div>
             </div>
 
             {activeFilterCount > 0 && (

@@ -4,17 +4,10 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch, signOut, uploadImage } from '@/lib/supabase'
 import { accountLightTheme as theme } from '@/lib/accountLightTheme'
-import { SKILL_OPTIONS, INDUSTRY_OPTIONS, STARTUP_STAGE_OPTIONS } from '@/lib/memberOptions'
+import { SKILL_OPTIONS } from '@/lib/memberOptions'
 
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer not to say']
-const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
-const LOOKING_FOR_OPTIONS = ['Technical co-founder', 'Business co-founder', 'Marketing co-founder', 'Any co-founder']
-const YEARS_EXPERIENCE_OPTIONS = ['0-1 years', '1-3 years', '3-5 years', '5-10 years', '10+ years']
-const FOUNDER_TYPE_OPTIONS = [
-  { value: 'first_time', label: 'First-time founder' },
-  { value: 'serial', label: 'Serial founder' },
-]
 
 function ZigzagEdge({ fill }) {
   return (
@@ -93,27 +86,6 @@ function TagInput({ label, values, onChange, placeholder }) {
   )
 }
 
-function ChipPicker({ options, selected, onToggle }) {
-  return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
-      {options.map(o => {
-        const isSel = selected.includes(o)
-        return (
-          <button
-            key={o} type="button" onClick={() => onToggle(o)}
-            style={{
-              fontSize: '12.5px', fontWeight: '600', padding: '7px 13px', borderRadius: '20px',
-              cursor: 'pointer', fontFamily: theme.fontBody,
-              background: isSel ? theme.brass : theme.lineSoft,
-              color: isSel ? '#FFFFFF' : theme.ink, border: 'none',
-            }}
-          >{o}</button>
-        )
-      })}
-    </div>
-  )
-}
-
 export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
@@ -129,8 +101,6 @@ export default function AccountPage() {
 
   const [form, setForm] = useState({
     display_name: '', contact_email: '', linkedin_url: '',
-    industry: '', years_experience: '', founder_type: '', education: '',
-    looking_for: '', commitment: '', startup_stage: '', interested_industry: [],
     phone: '', location: '', gender: '', age: '',
     role_title: '', experience: '', interests: [], skills: [], languages: [],
   })
@@ -140,7 +110,6 @@ export default function AccountPage() {
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
   const toggleSkill = (s) => setForm(prev => ({ ...prev, skills: prev.skills.includes(s) ? prev.skills.filter(v => v !== s) : [...prev.skills, s] }))
-  const toggleIndustry = (v) => setForm(prev => ({ ...prev, interested_industry: prev.interested_industry.includes(v) ? prev.interested_industry.filter(x => x !== v) : [...prev.interested_industry, v] }))
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0]
@@ -178,10 +147,6 @@ export default function AccountPage() {
             ...prev,
             display_name: p.display_name || '',
             contact_email: p.contact_email || session.user.email || '', linkedin_url: p.linkedin_url || '',
-            industry: p.industry || '', years_experience: p.years_experience || '',
-            founder_type: p.founder_type || '', education: p.education || '',
-            looking_for: p.looking_for || '', commitment: p.commitment || '',
-            startup_stage: p.startup_stage || '', interested_industry: p.interested_industry || [],
             location: p.location || '', gender: p.gender || '', age: p.age != null ? String(p.age) : '',
             role_title: p.role_title || '', experience: p.experience || '',
             interests: p.interests || [], skills: p.skills || [], languages: p.languages || [],
@@ -233,14 +198,6 @@ export default function AccountPage() {
             display_name: form.display_name.trim(),
             contact_email: form.contact_email.trim(),
             linkedin_url: form.linkedin_url.trim() || null,
-            industry: form.industry.trim() || null,
-            years_experience: form.years_experience || null,
-            founder_type: form.founder_type || null,
-            education: form.education.trim() || null,
-            looking_for: form.looking_for || null,
-            commitment: form.commitment || null,
-            startup_stage: form.startup_stage || null,
-            interested_industry: form.interested_industry,
             location: form.location.trim() || null,
             gender: form.gender || null,
             age: ageValue,
@@ -280,8 +237,6 @@ export default function AccountPage() {
     form.phone, form.location, form.gender, form.age,
     form.role_title, form.experience, form.interests, form.skills, form.languages,
     form.display_name, form.contact_email, form.linkedin_url,
-    form.industry, form.years_experience, form.founder_type, form.education,
-    form.looking_for, form.commitment, form.startup_stage, form.interested_industry,
   ]
   const totalFields = allFields.length
   const totalFilled = allFields.filter(isFilled).length
@@ -457,67 +412,6 @@ export default function AccountPage() {
             <TagInput label="Language" values={form.languages} onChange={v => handleChange('languages', v)} placeholder="e.g. Bangla, English" />
 
             <SectionSaveButton sectionKey="profession" />
-          </div>
-
-          <div style={sectionBoxStyle}>
-            <SectionLabel>Co-founder Details</SectionLabel>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Industry</FieldLabel>
-              <input type="text" value={form.industry} onChange={e => handleChange('industry', e.target.value)} placeholder="e.g. Fintech, E-commerce" className="ledger-input" />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Years of Experience</FieldLabel>
-              <select value={form.years_experience} onChange={e => handleChange('years_experience', e.target.value)} className="ledger-input ledger-select">
-                <option value="">Select</option>
-                {YEARS_EXPERIENCE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Founder Type</FieldLabel>
-              <select value={form.founder_type} onChange={e => handleChange('founder_type', e.target.value)} className="ledger-input ledger-select">
-                <option value="">Select</option>
-                {FOUNDER_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Education</FieldLabel>
-              <input type="text" value={form.education} onChange={e => handleChange('education', e.target.value)} placeholder="e.g. BSc CSE, BUET" className="ledger-input" />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Looking For</FieldLabel>
-              <select value={form.looking_for} onChange={e => handleChange('looking_for', e.target.value)} className="ledger-input ledger-select">
-                <option value="">Select</option>
-                {LOOKING_FOR_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Commitment</FieldLabel>
-              <select value={form.commitment} onChange={e => handleChange('commitment', e.target.value)} className="ledger-input ledger-select">
-                <option value="">Select</option>
-                {COMMITMENT_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Startup Stage</FieldLabel>
-              <select value={form.startup_stage} onChange={e => handleChange('startup_stage', e.target.value)} className="ledger-input ledger-select">
-                <option value="">Select</option>
-                {STARTUP_STAGE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Interested In (Industry)</FieldLabel>
-              <ChipPicker options={INDUSTRY_OPTIONS} selected={form.interested_industry} onToggle={toggleIndustry} />
-            </div>
-
-            <SectionSaveButton sectionKey="cofounder" />
           </div>
 
           <div style={sectionBoxStyle}>
