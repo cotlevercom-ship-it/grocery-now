@@ -170,7 +170,7 @@ export default function MembersBrowsePage({ embedded = false }) {
             {members.length === 0 ? (
               <>
                 <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: sc.text, marginBottom: '8px' }}>No profiles yet</p>
-                <p style={{ fontSize: '13.5px' }}>Be the first — <Link href="/members/new" style={{ color: theme.brass, fontWeight: '600' }}>create your profile</Link>.</p>
+                <p style={{ fontSize: '13.5px' }}>Be the first — <Link href="/account/profile" style={{ color: theme.brass, fontWeight: '600' }}>create your profile</Link>.</p>
               </>
             ) : (
               <p style={{ fontFamily: theme.fontDisplay, fontSize: '18px', color: sc.text }}>No profiles match these filters</p>

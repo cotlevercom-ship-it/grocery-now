@@ -51,7 +51,7 @@ export default function AccountPage() {
 
       try {
         const members = await supabaseFetch(
-          `member_profiles?select=role_title,experience,location,gender,age,interests,skills,languages&user_id=eq.${session.user.id}`
+          `member_profiles?select=role_title,experience,location,gender,age,interests,skills,languages,display_name,bio,contact_email,linkedin_url,industry,years_experience,founder_type,education,looking_for,commitment,startup_stage,interested_industry&user_id=eq.${session.user.id}`
         )
         setMemberProfile(members?.[0] || {})
       } catch (e) {
@@ -77,13 +77,28 @@ export default function AccountPage() {
   const mp = memberProfile || {}
   const basicFields = [profile?.phone, mp.location, mp.gender, mp.age]
   const professionFields = [mp.role_title, mp.experience, mp.interests, mp.skills, mp.languages]
+  const cofounderProfileFields = [
+    mp.display_name, mp.bio, mp.contact_email, mp.linkedin_url, mp.industry,
+    mp.years_experience, mp.founder_type, mp.education, mp.looking_for, mp.commitment,
+    mp.startup_stage, mp.interested_industry,
+  ]
   const basicFilled = basicFields.filter(isFilled).length
   const professionFilled = professionFields.filter(isFilled).length
-  const totalFields = basicFields.length + professionFields.length
-  const totalFilled = basicFilled + professionFilled
+  const cofounderProfileFilled = cofounderProfileFields.filter(isFilled).length
+  const totalFields = basicFields.length + professionFields.length + cofounderProfileFields.length
+  const totalFilled = basicFilled + professionFilled + cofounderProfileFilled
   const completionPct = Math.round((totalFilled / totalFields) * 100)
 
   const rows = [
+    {
+      href: '/account/profile',
+      icon: '🚀',
+      title: 'Co-founder Profile',
+      subtitle: 'Photo, bio, industry, looking for, contact info',
+      tag: null,
+      filled: cofounderProfileFilled,
+      total: cofounderProfileFields.length,
+    },
     {
       href: '/account/basic-info',
       icon: '🧾',
