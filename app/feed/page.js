@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { sc } from '@/lib/memberTheme'
@@ -215,11 +216,15 @@ export default function FeedPage() {
                 return (
                   <div key={post.id} style={{ background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow, padding: '16px' }}>
                     <div style={{ display: 'flex', gap: '12px' }}>
-                      <Avatar profile={profile} size={44} />
+                      <Link href={`/members/${post.user_id}`} style={{ flexShrink: 0 }}>
+                        <Avatar profile={profile} size={44} />
+                      </Link>
                       <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontSize: '14.5px', fontWeight: '700', color: sc.text }}>
-                          {profile?.display_name || 'Cot Lever member'}
-                        </div>
+                        <Link href={`/members/${post.user_id}`} style={{ textDecoration: 'none' }}>
+                          <div style={{ fontSize: '14.5px', fontWeight: '700', color: sc.text }}>
+                            {profile?.display_name || 'Cot Lever member'}
+                          </div>
+                        </Link>
                         <div style={{ fontSize: '12px', color: sc.textSoft }}>
                           {profile?.role_title || ''}{profile?.role_title && profile?.location ? ' · ' : ''}{profile?.location || ''}
                         </div>
@@ -243,12 +248,6 @@ export default function FeedPage() {
                       >
                         <span>{liked ? '👍' : '🤍'}</span> Like{count > 0 ? ` · ${count}` : ''}
                       </button>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', color: sc.textFaint }}>
-                        💬 Comment
-                      </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', color: sc.textFaint }}>
-                        🔁 Repost
-                      </span>
                     </div>
                   </div>
                 )
