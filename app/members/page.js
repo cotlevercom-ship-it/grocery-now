@@ -7,6 +7,14 @@ import { theme } from '@/lib/theme'
 import VerifiedBadge from '@/components/VerifiedBadge'
 import { SKILL_OPTIONS, INDUSTRY_OPTIONS } from '@/lib/memberOptions'
 
+function FilterIcon({ size = 16, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+    </svg>
+  )
+}
+
 // Clean, minimal SaaS-app palette — scoped to the /members browse page only.
 // Rest of the site keeps its dark red/black theme; this page opts into a
 // light neutral surface with the brand's brass accent reserved for
@@ -422,7 +430,7 @@ export default function MembersBrowsePage({ embedded = false }) {
           }}
           aria-label="Filters"
         >
-          🎚️
+          <FilterIcon size={16} color={sc.text} />
           {activeFilterCount > 0 && (
             <span style={{
               position: 'absolute', top: '-3px', right: '-3px', minWidth: '15px', height: '15px', borderRadius: '999px',
@@ -550,7 +558,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 boxShadow: sc.shadow,
               }}
             />
-            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🎚️</span>
+            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: sc.textFaint, display: 'flex' }}><FilterIcon size={15} color={sc.textFaint} /></span>
           </div>
           {filterBar}
           {cardGrid}
@@ -654,7 +662,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 boxShadow: sc.shadow,
               }}
             />
-            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🎚️</span>
+            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: sc.textFaint, display: 'flex' }}><FilterIcon size={15} color={sc.textFaint} /></span>
           </div>
 
           {filterBar}
