@@ -256,6 +256,7 @@ export default function AccountPage() {
       setSaved(true)
       setExistingPhotoUrl(photo_url || '')
       setPhotoFile(null)
+      window.dispatchEvent(new Event('member-profile-updated'))
     } catch (err) {
       console.error(err)
       setError('Failed to save, please try again')

@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { getSession } from '@/lib/supabase'
+import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 
 const MENU_LINKS = [
@@ -68,6 +68,7 @@ function NavMenu() {
 
 export default function Navbar() {
   const [session, setSession] = useState(null)
+  const [displayName, setDisplayName] = useState('')
   const pathname = usePathname()
   const isAdminArea = pathname?.startsWith('/admin')
   const navRef = useRef(null)
@@ -104,6 +105,20 @@ export default function Navbar() {
   }, [isAdminArea])
 
   const customerName = session?.user?.email ? session.user.email.split('@')[0] : ''
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadDisplayName() {
+      if (!session?.user?.id) { setDisplayName(''); return }
+      try {
+        const rows = await supabaseFetch(`member_profiles?select=display_name&user_id=eq.${session.user.id}`)
+        if (!cancelled) setDisplayName(rows?.[0]?.display_name || '')
+      } catch (e) { console.error(e) }
+    }
+    loadDisplayName()
+    window.addEventListener('member-profile-updated', loadDisplayName)
+    return () => { cancelled = true; window.removeEventListener('member-profile-updated', loadDisplayName) }
+  }, [session?.user?.id])
 
   if (isAdminArea) return null
 
@@ -149,7 +164,7 @@ export default function Navbar() {
                 <circle cx="12" cy="7" r="4" />
               </svg>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {customerName || 'Account'}
+                {displayName || customerName || 'Account'}
               </span>
             </Link>
           ) : (
