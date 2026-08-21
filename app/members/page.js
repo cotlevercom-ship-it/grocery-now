@@ -1,11 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import {
-  Search, Bell, SlidersHorizontal, ChevronDown, X,
-  Compass, Heart, MessageSquare, Bookmark, User, Settings,
-  ChevronLeft, ChevronRight, Mail, Link2, Target,
-} from 'lucide-react'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import VerifiedBadge from '@/components/VerifiedBadge'
@@ -35,12 +30,12 @@ const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const PAGE_SIZE_OPTIONS = [6, 12, 24]
 
 const NAV_ITEMS = [
-  { key: 'discover', label: 'Discover', icon: Compass, href: '/members', active: true },
-  { key: 'matches', label: 'Matches', icon: Heart },
-  { key: 'messages', label: 'Messages', icon: MessageSquare },
-  { key: 'saved', label: 'Saved', icon: Bookmark },
-  { key: 'profile', label: 'My Profile', icon: User, href: '/account' },
-  { key: 'settings', label: 'Settings', icon: Settings },
+  { key: 'discover', label: 'Discover', icon: '🧭', href: '/members', active: true },
+  { key: 'matches', label: 'Matches', icon: '❤️' },
+  { key: 'messages', label: 'Messages', icon: '💬' },
+  { key: 'saved', label: 'Saved', icon: '🔖' },
+  { key: 'profile', label: 'My Profile', icon: '👤', href: '/account' },
+  { key: 'settings', label: 'Settings', icon: '⚙️' },
 ]
 
 function FilterDropdown({ label, count, children, isOpen, onToggle }) {
@@ -58,7 +53,7 @@ function FilterDropdown({ label, count, children, isOpen, onToggle }) {
         }}
       >
         {label}{count > 0 ? ` (${count})` : ''}
-        <ChevronDown size={14} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+        <span style={{ fontSize: '10px', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', display: 'inline-block' }}>▾</span>
       </button>
       {isOpen && (
         <div style={{
@@ -251,7 +246,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                       background: sc.industryChipBg, color: theme.brass, fontSize: '11.5px', fontWeight: '700',
                       padding: '5px 11px', borderRadius: '999px', marginBottom: '4px',
                     }}>
-                      <Target size={12} /> Looking for: {m.looking_for}
+                      🎯 Looking for: {m.looking_for}
                     </div>
                   )}
                 </div>
@@ -267,7 +262,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                           borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
                           whiteSpace: 'nowrap', textDecoration: 'none',
                         }}
-                      ><Mail size={13} /> Email</a>
+                      >📧 Email</a>
                     )}
                     {m.linkedin_url && (
                       <a
@@ -280,7 +275,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                           border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
                           whiteSpace: 'nowrap', textDecoration: 'none',
                         }}
-                      ><Link2 size={13} /> LinkedIn</a>
+                      >🔗 LinkedIn</a>
                     )}
                   </div>
                 ) : null}
@@ -306,7 +301,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 background: sc.cardBg, color: page === 1 ? sc.textFaint : sc.text, cursor: page === 1 ? 'default' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
-            ><ChevronLeft size={16} /></button>
+            ><span style={{ fontSize: '15px' }}>‹</span></button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).slice(0, 6).map(n => (
               <button
                 key={n}
@@ -326,7 +321,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 background: sc.cardBg, color: page === totalPages ? sc.textFaint : sc.text, cursor: page === totalPages ? 'default' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
-            ><ChevronRight size={16} /></button>
+            ><span style={{ fontSize: '15px' }}>›</span></button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: sc.textSoft }}>
             Show
@@ -353,7 +348,7 @@ export default function MembersBrowsePage({ embedded = false }) {
         display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600',
         color: sc.textSoft, padding: '9px 4px',
       }}>
-        <SlidersHorizontal size={15} /> Filters
+        🎚️ Filters
         {activeFilterCount > 0 && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: theme.brass, display: 'inline-block' }} />}
       </div>
 
@@ -404,14 +399,14 @@ export default function MembersBrowsePage({ embedded = false }) {
             display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none',
             color: sc.textSoft, fontSize: '13px', fontWeight: '600', cursor: 'pointer', padding: '9px 4px', fontFamily: theme.fontBody,
           }}
-        ><X size={13} /> Clear all</button>
+        ><span>✕</span> Clear all</button>
       )}
 
       <div style={{ marginLeft: 'auto' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600',
           color: sc.text, border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '9px 14px',
-        }}>Most Relevant <ChevronDown size={14} /></div>
+        }}>Most Relevant <span style={{ fontSize: '10px' }}>▾</span></div>
       </div>
     </div>
   )
@@ -448,7 +443,6 @@ export default function MembersBrowsePage({ embedded = false }) {
         </div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           {NAV_ITEMS.map(item => {
-            const Icon = item.icon
             const inner = (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '9px',
@@ -457,7 +451,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 color: item.active ? theme.brass : item.href ? sc.text : sc.textFaint,
                 cursor: item.href ? 'pointer' : 'default',
               }}>
-                <Icon size={18} />
+                <span style={{ fontSize: '16px', lineHeight: 1 }}>{item.icon}</span>
                 {item.label}
                 {!item.href && (
                   <span style={{
@@ -480,7 +474,7 @@ export default function MembersBrowsePage({ embedded = false }) {
           borderBottom: `1px solid ${sc.line}`, background: sc.sidebarBg,
         }}>
           <div style={{ position: 'relative', flex: 1, maxWidth: '440px' }}>
-            <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: sc.textFaint }} />
+            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: sc.textFaint }}>🔍</span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by skills, roles, or keywords…"
@@ -491,7 +485,7 @@ export default function MembersBrowsePage({ embedded = false }) {
             />
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Bell size={19} color={sc.textSoft} />
+            <span style={{ fontSize: '18px', color: sc.textSoft }}>🔔</span>
             <Link href="/account" style={{
               width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
               background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center',
