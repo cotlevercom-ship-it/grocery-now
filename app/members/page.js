@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import VerifiedBadge from '@/components/VerifiedBadge'
@@ -94,6 +95,7 @@ export default function MembersBrowsePage({ embedded = false }) {
   const [myUserId, setMyUserId] = useState(null)
   const [myProfile, setMyProfile] = useState(null)
 
+  const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
   const [openDropdown, setOpenDropdown] = useState(null) // 'role' | 'skills' | 'interests' | 'location' | 'availability' | null
 
@@ -105,6 +107,16 @@ export default function MembersBrowsePage({ embedded = false }) {
 
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(6)
+
+  // Pick up ?q= and ?skill= from links elsewhere on the site (e.g. the
+  // homepage hero search box and quick-role chips) as initial filter state.
+  useEffect(() => {
+    const q = searchParams.get('q')
+    const skill = searchParams.get('skill')
+    if (q) setSearch(q)
+    if (skill) setSkillFilter(prev => prev.includes(skill) ? prev : [...prev, skill])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     async function load() {
