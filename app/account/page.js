@@ -11,6 +11,7 @@ const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer not to say']
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const LOOKING_FOR_OPTIONS = ['Technical co-founder', 'Business co-founder', 'Marketing co-founder', 'Any co-founder']
 const YEARS_EXPERIENCE_OPTIONS = ['0-1 years', '1-3 years', '3-5 years', '5-10 years', '10+ years']
+const ROLE_OPTIONS = ['Founder', 'Co-founder', 'Investor', 'Mentor', 'Advisor', 'Freelancer', 'Other']
 const FOUNDER_TYPE_OPTIONS = [
   { value: 'first_time', label: 'First-time founder' },
   { value: 'serial', label: 'Serial founder' },
@@ -125,6 +126,7 @@ export default function AccountPage() {
     looking_for: '', commitment: '', startup_stage: '', interested_industry: [],
     phone: '', location: '', gender: '', age: '',
     role_title: '', experience: '', interests: [], skills: [], languages: [],
+    platform_role: '',
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -177,6 +179,7 @@ export default function AccountPage() {
             location: p.location || '', gender: p.gender || '', age: p.age != null ? String(p.age) : '',
             role_title: p.role_title || '', experience: p.experience || '',
             interests: p.interests || [], skills: p.skills || [], languages: p.languages || [],
+            platform_role: p.platform_role || '',
           }))
           setExistingPhotoUrl(p.photo_url || '')
         } else {
@@ -242,6 +245,7 @@ export default function AccountPage() {
             interests: form.interests,
             skills: form.skills,
             languages: form.languages,
+            platform_role: form.platform_role || null,
             photo_url,
             updated_at: new Date().toISOString(),
           }),
@@ -320,7 +324,7 @@ export default function AccountPage() {
             background: theme.surface, borderRadius: '4px', border: `1px solid ${theme.line}`,
             padding: '6px 18px 6px', marginTop: '10px'
           }}>
-            <SectionLabel>Co-founder Profile</SectionLabel>
+            <SectionLabel>Profile</SectionLabel>
 
             <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div style={{
@@ -347,6 +351,14 @@ export default function AccountPage() {
             <div style={{ marginBottom: '24px' }}>
               <FieldLabel>Your Name *</FieldLabel>
               <input type="text" value={form.display_name} onChange={e => handleChange('display_name', e.target.value)} placeholder="Full name" className="ledger-input" />
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <FieldLabel>Your Role</FieldLabel>
+              <select value={form.platform_role} onChange={e => handleChange('platform_role', e.target.value)} className="ledger-input ledger-select">
+                <option value="">Select</option>
+                {ROLE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
             </div>
 
             <div style={{ marginBottom: '24px' }}>
