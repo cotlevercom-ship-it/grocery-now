@@ -125,6 +125,7 @@ export default function AccountPage() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
+  const [activeSection, setActiveSection] = useState(null)
 
   const [form, setForm] = useState({
     display_name: '', contact_email: '', linkedin_url: '',
@@ -196,11 +197,11 @@ export default function AccountPage() {
     init()
   }, [router])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (sectionKey) => {
     setError('')
     setSaved(false)
-    if (!form.display_name.trim()) { setError('Enter your name'); return }
+    setActiveSection(sectionKey)
+    if (!form.display_name.trim()) { setError('Enter your name (top of the page)'); return }
     if (!form.contact_email.trim()) { setError('Provide a contact email'); return }
 
     let ageValue = null
@@ -286,6 +287,34 @@ export default function AccountPage() {
   const totalFilled = allFields.filter(isFilled).length
   const completionPct = Math.round((totalFilled / totalFields) * 100)
 
+  const saveButtonLabel = (key) => {
+    if (activeSection !== key) return 'Save'
+    if (uploading) return 'Uploading photo...'
+    if (submitting) return 'Saving...'
+    return 'Save'
+  }
+
+  const SectionSaveButton = ({ sectionKey }) => (
+    <div style={{ marginTop: '4px' }}>
+      <button
+        type="button"
+        onClick={() => handleSubmit(sectionKey)}
+        disabled={submitting}
+        style={{
+          display: 'inline-block', background: (submitting && activeSection === sectionKey) ? theme.line : theme.brass,
+          color: '#FFFFFF', padding: '10px 20px', borderRadius: '4px', fontSize: '13px', fontWeight: '700',
+          border: 'none', letterSpacing: '0.02em', cursor: 'pointer',
+        }}
+      >{saveButtonLabel(sectionKey)}</button>
+      {activeSection === sectionKey && error && (
+        <div style={{ marginTop: '10px', padding: '9px 12px', background: theme.dangerSoft, color: theme.danger, borderRadius: '4px', fontSize: '12.5px', borderLeft: `3px solid ${theme.danger}` }}>{error}</div>
+      )}
+      {activeSection === sectionKey && saved && (
+        <div style={{ marginTop: '10px', padding: '9px 12px', background: theme.signalSoft, color: theme.signal, borderRadius: '4px', fontSize: '12.5px', borderLeft: `3px solid ${theme.signal}` }}>✓ Saved</div>
+      )}
+    </div>
+  )
+
   return (
     <div style={{ minHeight: '100vh', background: theme.paper, paddingBottom: '48px' }}>
       {/* Passbook cover */}
@@ -358,7 +387,7 @@ export default function AccountPage() {
       </div>
 
       <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '4px 16px 0' }}>
-        <form onSubmit={handleSubmit}>
+        <div>
           <div style={{ ...sectionBoxStyle, marginTop: '10px' }}>
             <SectionLabel>Basic Info</SectionLabel>
 
@@ -384,6 +413,8 @@ export default function AccountPage() {
               <FieldLabel>Age</FieldLabel>
               <input type="number" inputMode="numeric" min="16" max="100" value={form.age} onChange={e => handleChange('age', e.target.value)} placeholder="25" className="ledger-input" />
             </div>
+
+            <SectionSaveButton sectionKey="basic" />
           </div>
 
           <div style={sectionBoxStyle}>
@@ -424,6 +455,8 @@ export default function AccountPage() {
             </div>
 
             <TagInput label="Language" values={form.languages} onChange={v => handleChange('languages', v)} placeholder="e.g. Bangla, English" />
+
+            <SectionSaveButton sectionKey="profession" />
           </div>
 
           <div style={sectionBoxStyle}>
@@ -483,6 +516,8 @@ export default function AccountPage() {
               <FieldLabel>Interested In (Industry)</FieldLabel>
               <ChipPicker options={INDUSTRY_OPTIONS} selected={form.interested_industry} onToggle={toggleIndustry} />
             </div>
+
+            <SectionSaveButton sectionKey="cofounder" />
           </div>
 
           <div style={sectionBoxStyle}>
@@ -497,23 +532,10 @@ export default function AccountPage() {
               <FieldLabel>LinkedIn / Portfolio Link</FieldLabel>
               <input type="text" value={form.linkedin_url} onChange={e => handleChange('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/yourname" className="ledger-input" />
             </div>
+
+            <SectionSaveButton sectionKey="contact" />
           </div>
-
-          {error && (
-            <div style={{ margin: '14px 0', padding: '11px 13px', background: theme.dangerSoft, color: theme.danger, borderRadius: '4px', fontSize: '13px', borderLeft: `3px solid ${theme.danger}` }}>{error}</div>
-          )}
-          {saved && (
-            <div style={{ margin: '14px 0', padding: '11px 13px', background: theme.signalSoft, color: theme.signal, borderRadius: '4px', fontSize: '13px', borderLeft: `3px solid ${theme.signal}` }}>✓ Saved — visible to other founders now.</div>
-          )}
-
-          <button type="submit" disabled={submitting} style={{
-            display: 'block', width: '100%', textAlign: 'center', background: submitting ? theme.line : theme.brass,
-            color: '#FFFFFF', padding: '14px', borderRadius: '4px', fontSize: '14.5px', fontWeight: '700',
-            border: 'none', letterSpacing: '0.02em', marginTop: '4px'
-          }}>
-            {uploading ? 'Uploading photo...' : submitting ? 'Saving...' : 'Save All'}
-          </button>
-        </form>
+        </div>
 
         <div style={{ marginTop: '18px' }}>
           <VerificationSection />
