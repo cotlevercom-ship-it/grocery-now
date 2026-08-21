@@ -631,7 +631,7 @@ export default function MembersBrowsePage({ embedded = false }) {
 
       <style jsx>{`
         @media (max-width: 860px) {
-          .members-sidebar { display: none; }
+          .members-sidebar { display: none !important; }
           .members-hamburger { display: block !important; }
           .members-mobile-logo { display: block !important; }
           .members-bottom-nav { display: block !important; }
