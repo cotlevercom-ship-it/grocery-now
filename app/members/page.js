@@ -435,7 +435,7 @@ export default function MembersBrowsePage({ embedded = false }) {
         ><span>✕</span> Clear all</button>
       )}
 
-      <div style={{ marginLeft: 'auto' }}>
+      <div className="members-sort" style={{ marginLeft: 'auto' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600',
           color: sc.text, border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '9px 14px',
@@ -475,6 +475,7 @@ export default function MembersBrowsePage({ embedded = false }) {
             }
             .members-filterbar::-webkit-scrollbar { display: none; }
             .members-filterbar > * { flex-shrink: 0; }
+            .members-sort { margin-left: 0 !important; }
           }
         `}</style>
         <style jsx global>{`
@@ -635,6 +636,7 @@ export default function MembersBrowsePage({ embedded = false }) {
           .members-filterbar > * { flex-shrink: 0; }
           .members-search { display: none !important; }
           .members-mobile-search { display: block !important; }
+          .members-sort { margin-left: 0 !important; }
         }
       `}</style>
       <style jsx global>{`
