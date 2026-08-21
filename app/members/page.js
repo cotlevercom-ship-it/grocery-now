@@ -102,7 +102,7 @@ export default function MembersBrowsePage({ embedded = false }) {
 
   const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
-  const [openDropdown, setOpenDropdown] = useState(null) // 'role' | 'skills' | 'interests' | 'location' | 'availability' | 'sort' | null
+  const [openDropdown, setOpenDropdown] = useState(null) // 'filters' | 'sort' | null
 
   const [roleFilter, setRoleFilter] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
@@ -410,63 +410,92 @@ export default function MembersBrowsePage({ embedded = false }) {
   // ---------- Filter bar (shared) ----------
   const filterBar = (
     <div className="members-filterbar" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '24px' }}>
-      <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600',
-        color: sc.textSoft, padding: '9px 4px',
-      }}>
-        🎚️ Filters
-        {activeFilterCount > 0 && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: theme.brass, display: 'inline-block' }} />}
-      </div>
-
-      <FilterDropdown label="Role" count={roleFilter.trim() ? 1 : 0} isOpen={openDropdown === 'role'} onToggle={() => toggleDropdown('role')}>
-        <input
-          type="text" value={roleFilter} onChange={e => setRoleFilter(e.target.value)}
-          placeholder="e.g. Software Engineer"
-          style={{ width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '9px 12px', fontSize: '13.5px', fontFamily: theme.fontBody }}
-        />
-      </FilterDropdown>
-
-      <FilterDropdown label="Skills" count={skillFilter.length} isOpen={openDropdown === 'skills'} onToggle={() => toggleDropdown('skills')}>
-        <ChipToggle options={SKILL_OPTIONS} selected={skillFilter} onToggle={v => toggleFilter(setSkillFilter, v)} />
-      </FilterDropdown>
-
-      <FilterDropdown label="Interests" count={industryFilter.length} isOpen={openDropdown === 'interests'} onToggle={() => toggleDropdown('interests')}>
-        <ChipToggle options={INDUSTRY_OPTIONS} selected={industryFilter} onToggle={v => toggleFilter(setIndustryFilter, v)} />
-      </FilterDropdown>
-
-      <FilterDropdown label="Location" count={locationFilter.trim() ? 1 : 0} isOpen={openDropdown === 'location'} onToggle={() => toggleDropdown('location')}>
-        <input
-          type="text" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}
-          placeholder="e.g. Dhaka"
-          style={{ width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '9px 12px', fontSize: '13.5px', fontFamily: theme.fontBody }}
-        />
-      </FilterDropdown>
-
-      <FilterDropdown label="Availability" count={availabilityFilter ? 1 : 0} isOpen={openDropdown === 'availability'} onToggle={() => toggleDropdown('availability')}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          {COMMITMENT_OPTIONS.map(o => (
-            <button
-              key={o} type="button" onClick={() => setAvailabilityFilter(prev => prev === o ? '' : o)}
-              style={{
-                textAlign: 'left', padding: '9px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                fontSize: '13.5px', fontWeight: '600', fontFamily: theme.fontBody,
-                background: availabilityFilter === o ? theme.brass : sc.chipBg,
-                color: availabilityFilter === o ? '#FFFFFF' : sc.chipText,
-              }}
-            >{o}</button>
-          ))}
-        </div>
-      </FilterDropdown>
-
-      {activeFilterCount > 0 && (
+      <div style={{ position: 'relative' }}>
         <button
-          type="button" onClick={clearAll}
+          type="button"
+          onClick={() => toggleDropdown('filters')}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none',
-            color: sc.textSoft, fontSize: '13px', fontWeight: '600', cursor: 'pointer', padding: '9px 4px', fontFamily: theme.fontBody,
+            position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '38px', height: '38px', background: sc.cardBg,
+            border: `1px solid ${activeFilterCount > 0 ? theme.brass : sc.line}`, borderRadius: '999px',
+            fontSize: '16px', cursor: 'pointer',
           }}
-        ><span>✕</span> Clear all</button>
-      )}
+          aria-label="Filters"
+        >
+          🎚️
+          {activeFilterCount > 0 && (
+            <span style={{
+              position: 'absolute', top: '-3px', right: '-3px', minWidth: '15px', height: '15px', borderRadius: '999px',
+              background: theme.brass, color: '#FFFFFF', fontSize: '9px', fontWeight: '700',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px',
+            }}>{activeFilterCount}</span>
+          )}
+        </button>
+
+        {openDropdown === 'filters' && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 8px)', left: 0, zIndex: 20, width: '280px',
+            background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadowHover,
+            border: `1px solid ${sc.line}`, padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px',
+          }}>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Role</div>
+              <input
+                type="text" value={roleFilter} onChange={e => setRoleFilter(e.target.value)}
+                placeholder="e.g. Software Engineer"
+                style={{ width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '9px 12px', fontSize: '13.5px', fontFamily: theme.fontBody }}
+              />
+            </div>
+
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>🛠️ Skills</div>
+              <ChipToggle options={SKILL_OPTIONS} selected={skillFilter} onToggle={v => toggleFilter(setSkillFilter, v)} />
+            </div>
+
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>🎯 Interests</div>
+              <ChipToggle options={INDUSTRY_OPTIONS} selected={industryFilter} onToggle={v => toggleFilter(setIndustryFilter, v)} />
+            </div>
+
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>📍 Location</div>
+              <input
+                type="text" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}
+                placeholder="e.g. Dhaka"
+                style={{ width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '9px 12px', fontSize: '13.5px', fontFamily: theme.fontBody }}
+              />
+            </div>
+
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>⏰ Availability</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {COMMITMENT_OPTIONS.map(o => (
+                  <button
+                    key={o} type="button" onClick={() => setAvailabilityFilter(prev => prev === o ? '' : o)}
+                    style={{
+                      textAlign: 'left', padding: '9px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                      fontSize: '13.5px', fontWeight: '600', fontFamily: theme.fontBody,
+                      background: availabilityFilter === o ? theme.brass : sc.chipBg,
+                      color: availabilityFilter === o ? '#FFFFFF' : sc.chipText,
+                    }}
+                  >{o}</button>
+                ))}
+              </div>
+            </div>
+
+            {activeFilterCount > 0 && (
+              <button
+                type="button" onClick={clearAll}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none',
+                  color: sc.textSoft, fontSize: '13px', fontWeight: '600', cursor: 'pointer', padding: '4px', fontFamily: theme.fontBody,
+                  alignSelf: 'flex-start',
+                }}
+              ><span>✕</span> Clear all</button>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="members-sort" style={{ marginLeft: 'auto', position: 'relative' }}>
         <button
