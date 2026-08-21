@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, supabaseFetch, signOut, uploadImage } from '@/lib/supabase'
@@ -11,7 +11,6 @@ const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer not to say']
 const COMMITMENT_OPTIONS = ['Full-time', 'Part-time', 'Still exploring']
 const LOOKING_FOR_OPTIONS = ['Technical co-founder', 'Business co-founder', 'Marketing co-founder', 'Any co-founder']
 const YEARS_EXPERIENCE_OPTIONS = ['0-1 years', '1-3 years', '3-5 years', '5-10 years', '10+ years']
-const ROLE_OPTIONS = ['Founder', 'Co-founder', 'Investor', 'Mentor', 'Advisor', 'Freelancer', 'Other']
 const FOUNDER_TYPE_OPTIONS = [
   { value: 'first_time', label: 'First-time founder' },
   { value: 'serial', label: 'Serial founder' },
@@ -118,6 +117,7 @@ function ChipPicker({ options, selected, onToggle }) {
 export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
+  const nameInputRef = useRef(null)
   const [userId, setUserId] = useState(null)
   const [fullName, setFullName] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -126,12 +126,11 @@ export default function AccountPage() {
   const [saved, setSaved] = useState(false)
 
   const [form, setForm] = useState({
-    display_name: '', bio: '', contact_email: '', linkedin_url: '',
+    display_name: '', contact_email: '', linkedin_url: '',
     industry: '', years_experience: '', founder_type: '', education: '',
     looking_for: '', commitment: '', startup_stage: '', interested_industry: [],
     phone: '', location: '', gender: '', age: '',
     role_title: '', experience: '', interests: [], skills: [], languages: [],
-    platform_role: '',
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -175,7 +174,7 @@ export default function AccountPage() {
         if (p) {
           setForm(prev => ({
             ...prev,
-            display_name: p.display_name || '', bio: p.bio || '',
+            display_name: p.display_name || '',
             contact_email: p.contact_email || session.user.email || '', linkedin_url: p.linkedin_url || '',
             industry: p.industry || '', years_experience: p.years_experience || '',
             founder_type: p.founder_type || '', education: p.education || '',
@@ -184,7 +183,6 @@ export default function AccountPage() {
             location: p.location || '', gender: p.gender || '', age: p.age != null ? String(p.age) : '',
             role_title: p.role_title || '', experience: p.experience || '',
             interests: p.interests || [], skills: p.skills || [], languages: p.languages || [],
-            platform_role: p.platform_role || '',
           }))
           setExistingPhotoUrl(p.photo_url || '')
         } else {
@@ -231,7 +229,6 @@ export default function AccountPage() {
           body: JSON.stringify({
             user_id: userId,
             display_name: form.display_name.trim(),
-            bio: form.bio.trim() || null,
             contact_email: form.contact_email.trim(),
             linkedin_url: form.linkedin_url.trim() || null,
             industry: form.industry.trim() || null,
@@ -250,7 +247,6 @@ export default function AccountPage() {
             interests: form.interests,
             skills: form.skills,
             languages: form.languages,
-            platform_role: form.platform_role || null,
             photo_url,
             updated_at: new Date().toISOString(),
           }),
@@ -280,7 +276,7 @@ export default function AccountPage() {
   const allFields = [
     form.phone, form.location, form.gender, form.age,
     form.role_title, form.experience, form.interests, form.skills, form.languages,
-    form.display_name, form.bio, form.contact_email, form.linkedin_url,
+    form.display_name, form.contact_email, form.linkedin_url,
     form.industry, form.years_experience, form.founder_type, form.education,
     form.looking_for, form.commitment, form.startup_stage, form.interested_industry,
   ]
@@ -300,13 +296,23 @@ export default function AccountPage() {
               fontSize: '22px', fontWeight: '700', color: '#FFFFFF', flexShrink: 0,
               border: '2px solid rgba(255,255,255,0.25)'
             }}>{initial}</div>
-            <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ minWidth: 0, flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
                 color: theme.ink, fontSize: '18px', fontWeight: '700', overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap'
               }}>
                 {fullName || 'Guest User'}
               </div>
+              <button
+                type="button"
+                onClick={() => { nameInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); nameInputRef.current?.focus() }}
+                aria-label="Edit name"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px',
+                  borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.14)', color: theme.ink,
+                  fontSize: '11px', cursor: 'pointer', flexShrink: 0,
+                }}
+              >✏️</button>
             </div>
           </div>
 
@@ -329,43 +335,32 @@ export default function AccountPage() {
             <SectionLabel>Profile</SectionLabel>
 
             <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div style={{
-                width: '68px', height: '68px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
-                background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                {displayedPhoto ? (
-                  <img src={displayedPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <span style={{ fontFamily: theme.fontDisplay, fontSize: '24px', fontWeight: '600', color: '#FFFFFF' }}>
-                    {(form.display_name || '?').trim().charAt(0).toUpperCase()}
-                  </span>
-                )}
-              </div>
-              <label style={{
-                display: 'inline-block', background: theme.paper, color: theme.ink, border: `1px solid ${theme.line}`,
-                borderRadius: '6px', padding: '9px 14px', fontSize: '12.5px', fontWeight: '600', cursor: 'pointer'
-              }}>
-                {displayedPhoto ? 'Change photo' : 'Upload photo'}
+              <label style={{ position: 'relative', display: 'block', cursor: 'pointer', flexShrink: 0 }}>
+                <div style={{
+                  width: '68px', height: '68px', borderRadius: '50%', overflow: 'hidden',
+                  background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  {displayedPhoto ? (
+                    <img src={displayedPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ fontFamily: theme.fontDisplay, fontSize: '24px', fontWeight: '600', color: '#FFFFFF' }}>
+                      {(form.display_name || '?').trim().charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <span style={{
+                  position: 'absolute', bottom: '-2px', right: '-2px', width: '24px', height: '24px', borderRadius: '50%',
+                  background: theme.paper, border: `2px solid ${theme.surface}`, display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', fontSize: '11px',
+                }}>✏️</span>
                 <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
               </label>
+              <span style={{ fontSize: '12px', color: theme.inkSoft }}>Tap photo to {displayedPhoto ? 'change' : 'add'}</span>
             </div>
 
             <div style={{ marginBottom: '24px' }}>
               <FieldLabel>Your Name *</FieldLabel>
-              <input type="text" value={form.display_name} onChange={e => handleChange('display_name', e.target.value)} placeholder="Full name" className="ledger-input" />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Your Role</FieldLabel>
-              <select value={form.platform_role} onChange={e => handleChange('platform_role', e.target.value)} className="ledger-input ledger-select">
-                <option value="">Select</option>
-                {ROLE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Bio / Pitch</FieldLabel>
-              <textarea value={form.bio} onChange={e => handleChange('bio', e.target.value)} placeholder="A couple lines about yourself and what you're building" className="ledger-input" style={{ minHeight: '80px', resize: 'vertical', paddingTop: '6px' }} />
+              <input ref={nameInputRef} type="text" value={form.display_name} onChange={e => handleChange('display_name', e.target.value)} placeholder="Full name" className="ledger-input" />
             </div>
           </div>
 

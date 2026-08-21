@@ -283,12 +283,6 @@ export default function MembersBrowsePage({ embedded = false }) {
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
                       {m.verified && <VerifiedBadge />}
                     </div>
-                    {m.platform_role && (
-                      <span style={{
-                        display: 'inline-block', marginTop: '3px', fontSize: '10.5px', fontWeight: '700',
-                        color: theme.brass, background: sc.industryChipBg, borderRadius: '999px', padding: '2px 9px',
-                      }}>{m.platform_role}</span>
-                    )}
                     <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
                       {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
                     </div>
