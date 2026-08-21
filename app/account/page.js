@@ -118,6 +118,7 @@ export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const nameInputRef = useRef(null)
+  const [editingName, setEditingName] = useState(false)
   const [userId, setUserId] = useState(null)
   const [fullName, setFullName] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -270,7 +271,7 @@ export default function AccountPage() {
     )
   }
 
-  const initial = (fullName || '?').trim().charAt(0).toUpperCase()
+  const initial = (form.display_name || fullName || '?').trim().charAt(0).toUpperCase()
   const displayedPhoto = photoPreview || existingPhotoUrl
 
   const allFields = [
@@ -290,22 +291,48 @@ export default function AccountPage() {
       <div style={{ background: `linear-gradient(155deg, ${theme.paper} 0%, ${theme.surface} 60%, ${theme.lineSoft} 100%)` }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{
-              width: '54px', height: '54px', borderRadius: '50%', background: theme.brass,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '22px', fontWeight: '700', color: '#FFFFFF', flexShrink: 0,
-              border: '2px solid rgba(255,255,255,0.25)'
-            }}>{initial}</div>
-            <div style={{ minWidth: 0, flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label style={{ position: 'relative', display: 'block', cursor: 'pointer', flexShrink: 0 }}>
               <div style={{
-                color: theme.ink, fontSize: '18px', fontWeight: '700', overflow: 'hidden',
-                textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                width: '54px', height: '54px', borderRadius: '50%', background: theme.brass,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+                fontSize: '22px', fontWeight: '700', color: '#FFFFFF',
+                border: '2px solid rgba(255,255,255,0.25)'
               }}>
-                {fullName || 'Guest User'}
+                {displayedPhoto ? (
+                  <img src={displayedPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : initial}
               </div>
+              <span style={{
+                position: 'absolute', bottom: '-2px', right: '-2px', width: '20px', height: '20px', borderRadius: '50%',
+                background: theme.paper, border: `2px solid ${theme.surface}`, display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontSize: '9px',
+              }}>✏️</span>
+              <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+            </label>
+            <div style={{ minWidth: 0, flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {editingName ? (
+                <input
+                  ref={nameInputRef}
+                  type="text" value={form.display_name} onChange={e => handleChange('display_name', e.target.value)}
+                  onBlur={() => setEditingName(false)}
+                  placeholder="Full name"
+                  style={{
+                    color: theme.ink, fontSize: '18px', fontWeight: '700', background: 'transparent',
+                    border: 'none', borderBottom: `1px solid ${theme.brass}`, outline: 'none', minWidth: 0, flex: 1,
+                    fontFamily: 'inherit', padding: '0 0 2px',
+                  }}
+                />
+              ) : (
+                <div style={{
+                  color: theme.ink, fontSize: '18px', fontWeight: '700', overflow: 'hidden',
+                  textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                }}>
+                  {form.display_name || 'Add your name'}
+                </div>
+              )}
               <button
                 type="button"
-                onClick={() => { nameInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); nameInputRef.current?.focus() }}
+                onClick={() => { setEditingName(true); setTimeout(() => nameInputRef.current?.focus(), 0) }}
                 aria-label="Edit name"
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px',
@@ -332,39 +359,6 @@ export default function AccountPage() {
       <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '4px 16px 0' }}>
         <form onSubmit={handleSubmit}>
           <div style={{ ...sectionBoxStyle, marginTop: '10px' }}>
-            <SectionLabel>Profile</SectionLabel>
-
-            <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <label style={{ position: 'relative', display: 'block', cursor: 'pointer', flexShrink: 0 }}>
-                <div style={{
-                  width: '68px', height: '68px', borderRadius: '50%', overflow: 'hidden',
-                  background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  {displayedPhoto ? (
-                    <img src={displayedPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <span style={{ fontFamily: theme.fontDisplay, fontSize: '24px', fontWeight: '600', color: '#FFFFFF' }}>
-                      {(form.display_name || '?').trim().charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <span style={{
-                  position: 'absolute', bottom: '-2px', right: '-2px', width: '24px', height: '24px', borderRadius: '50%',
-                  background: theme.paper, border: `2px solid ${theme.surface}`, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: '11px',
-                }}>✏️</span>
-                <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
-              </label>
-              <span style={{ fontSize: '12px', color: theme.inkSoft }}>Tap photo to {displayedPhoto ? 'change' : 'add'}</span>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Your Name *</FieldLabel>
-              <input ref={nameInputRef} type="text" value={form.display_name} onChange={e => handleChange('display_name', e.target.value)} placeholder="Full name" className="ledger-input" />
-            </div>
-          </div>
-
-          <div style={sectionBoxStyle}>
             <SectionLabel>Basic Info</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
