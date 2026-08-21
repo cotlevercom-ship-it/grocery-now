@@ -132,7 +132,7 @@ export default function WhyUseCotleverPage() {
                         onTouchStart={(e) => e.stopPropagation()}
                         onTouchEnd={(e) => e.stopPropagation()}
                       >
-                        <Link href="/account/profile" style={{
+                        <Link href="/account" style={{
                           display: 'inline-block', background: theme.brass, color: 'white',
                           borderRadius: '8px', padding: '14px 26px', fontSize: '14px', fontWeight: '600',
                           textDecoration: 'none', whiteSpace: 'nowrap',

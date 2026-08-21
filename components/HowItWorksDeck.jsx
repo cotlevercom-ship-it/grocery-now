@@ -161,7 +161,7 @@ function ClosingSlide() {
         }}>Let&apos;s build the future together.</p>
       </Reveal>
       <Reveal i={4}>
-        <Link href="/account/profile" style={{
+        <Link href="/account" style={{
           display: 'inline-block', background: card.accent, color: '#F3E6D5',
           borderRadius: '8px', padding: '13px 26px', fontSize: '14px', fontWeight: '600', textDecoration: 'none',
         }}>Create Your Profile</Link>

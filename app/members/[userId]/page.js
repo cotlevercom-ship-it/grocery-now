@@ -55,7 +55,7 @@ function SectionHeading({ children, isOwnProfile }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
       <h2 style={{ fontSize: '17px', fontWeight: '700', color: theme.ink, margin: 0 }}>{children}</h2>
       {isOwnProfile && (
-        <Link href="/account/profile" aria-label={`Edit ${children}`} style={{
+        <Link href="/account" aria-label={`Edit ${children}`} style={{
           width: '32px', height: '32px', borderRadius: '50%', background: theme.paper,
           border: `1px solid ${theme.line}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
           textDecoration: 'none', fontSize: '14px', flexShrink: 0,
@@ -69,7 +69,7 @@ function EmptyState({ isOwnProfile, label }) {
   return (
     <div style={{ fontSize: '14px', color: theme.inkSoft }}>
       {label} not added yet{isOwnProfile && (
-        <> — <Link href="/account/profile" style={{ color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>add it</Link></>
+        <> — <Link href="/account" style={{ color: theme.brassDark, fontWeight: '600', textDecoration: 'none' }}>add it</Link></>
       )}
     </div>
   )
@@ -298,7 +298,7 @@ export default function MemberDetailPage() {
       return (
         <div style={{ padding: '60px 20px', textAlign: 'center', color: theme.inkSoft }}>
           <p style={{ marginBottom: '16px' }}>You haven&apos;t created your co-founder profile yet.</p>
-          <Link href="/account/profile" style={{
+          <Link href="/account" style={{
             display: 'inline-block', background: theme.brass, color: 'white',
             borderRadius: '8px', padding: '12px 24px', fontSize: '14.5px', fontWeight: '600', textDecoration: 'none'
           }}>Create Your Profile</Link>
@@ -343,7 +343,7 @@ export default function MemberDetailPage() {
               {member.role_title || 'Role not specified'}{member.location ? ` · ${member.location}` : ''}
             </div>
             {isOwnProfile && (
-              <Link href="/account/profile" style={{
+              <Link href="/account" style={{
                 display: 'inline-block', marginTop: '14px', fontSize: '13px', fontWeight: '600', color: theme.brass,
                 textDecoration: 'none', border: `1.5px solid ${theme.brass}`, borderRadius: '999px', padding: '8px 18px',
               }}>Edit Profile</Link>

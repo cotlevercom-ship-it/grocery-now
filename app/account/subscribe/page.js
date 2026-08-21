@@ -99,7 +99,7 @@ export default function SubscribePage() {
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
               Your subscription is already active or being reviewed. You can create your profile now.
             </p>
-            <Link href="/account/profile" style={{
+            <Link href="/account" style={{
               display: 'inline-block', background: theme.brass, color: 'white',
               borderRadius: '8px', padding: '12px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'
             }}>Create Your Profile</Link>
