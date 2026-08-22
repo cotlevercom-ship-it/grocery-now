@@ -177,8 +177,8 @@ export default function MessageThreadPage() {
               onClick={handleSend}
               disabled={sending || !draft.trim()}
               style={{
-                background: (sending || !draft.trim()) ? sc.chipBg : theme.brass,
-                color: (sending || !draft.trim()) ? sc.textFaint : '#FFFFFF',
+                background: (sending || !draft.trim()) ? '#E5E7EB' : theme.brass,
+                color: (sending || !draft.trim()) ? '#6B7280' : '#FFFFFF',
                 border: 'none', borderRadius: '999px', padding: '10px 20px', fontSize: '13.5px', fontWeight: '700',
                 cursor: (sending || !draft.trim()) ? 'default' : 'pointer', flexShrink: 0,
               }}
