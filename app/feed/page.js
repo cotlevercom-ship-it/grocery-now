@@ -276,6 +276,13 @@ export default function FeedPage() {
           headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
           body: JSON.stringify({ post_id: postId, user_id: myUserId }),
         })
+        const post = posts.find(p => p.id === postId)
+        if (post && post.user_id !== myUserId) {
+          supabaseFetch('notifications', {
+            method: 'POST',
+            body: JSON.stringify({ recipient_id: post.user_id, actor_id: myUserId, type: 'like', post_id: postId }),
+          }).catch(e => console.error(e))
+        }
       }
     } catch (e) {
       console.error(e)
@@ -324,6 +331,13 @@ export default function FeedPage() {
       })
       setNewCommentDrafts(prev => ({ ...prev, [postId]: '' }))
       setCommentCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }))
+      const post = posts.find(p => p.id === postId)
+      if (post && post.user_id !== myUserId) {
+        supabaseFetch('notifications', {
+          method: 'POST',
+          body: JSON.stringify({ recipient_id: post.user_id, actor_id: myUserId, type: 'comment', post_id: postId }),
+        }).catch(e => console.error(e))
+      }
       await loadComments(postId)
     } catch (e) {
       console.error(e)
@@ -352,6 +366,13 @@ export default function FeedPage() {
       setReplyDrafts(prev => ({ ...prev, [parentCommentId]: '' }))
       setOpenReplyIds(prev => { const next = new Set(prev); next.delete(parentCommentId); return next })
       setCommentCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }))
+      const parentComment = (commentsByPost[postId] || []).find(c => c.id === parentCommentId)
+      if (parentComment && parentComment.user_id !== myUserId) {
+        supabaseFetch('notifications', {
+          method: 'POST',
+          body: JSON.stringify({ recipient_id: parentComment.user_id, actor_id: myUserId, type: 'reply', post_id: postId, comment_id: parentCommentId }),
+        }).catch(e => console.error(e))
+      }
       await loadComments(postId)
     } catch (e) {
       console.error(e)

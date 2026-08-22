@@ -48,7 +48,7 @@ export default function SiteAuthGate({ children }) {
     // closing the tab right after signup, before the redirect completes).
     const skipSubscriptionCheck = pathname === '/account/subscribe'
     if (!skipSubscriptionCheck) {
-      supabaseFetch(`member_subscriptions?select=id&user_id=eq.${session.user.id}&limit=1`)
+      supabaseFetch(`member_subscriptions?select=id&user_id=eq.${session.user.id}&status=eq.active&limit=1`)
         .then(subs => {
           if (!subs || subs.length === 0) {
             router.replace('/account/subscribe')

@@ -11,6 +11,7 @@ const PLAN = {
   features: [
     'Create your co-founder profile — skills, experience, and what you\u2019re looking for',
     'Your profile shown in the public directory, searchable by anyone browsing',
+    'Post to the community Feed — share ideas and say what you\u2019re looking for (investor, co-founder, team member, and more)',
     'Interested people contact you directly using the details you provide',
     'Profile stays active for the full plan period, then renews',
   ],

@@ -136,7 +136,8 @@ export default function MembersBrowsePage({ embedded = false }) {
     return members.filter(m => {
       const locationMatch = !locationFilter.trim() || (m.location || '').toLowerCase().includes(locationFilter.trim().toLowerCase())
       const searchMatch = !q || [
-        m.display_name, m.location, m.bio,
+        m.display_name, m.location, m.bio, m.role_title,
+        ...(Array.isArray(m.skills) ? m.skills : []),
       ].filter(Boolean).some(v => v.toLowerCase().includes(q))
       return locationMatch && searchMatch
     })
@@ -214,16 +215,13 @@ export default function MembersBrowsePage({ embedded = false }) {
         }}>
           {pagedMembers.map(m => {
             const initial = (m.display_name || '?').trim().charAt(0).toUpperCase()
+            const skillsList = Array.isArray(m.skills) ? m.skills.filter(Boolean) : []
             return (
-              <div key={m.user_id} className="member-card" style={{
+              <Link key={m.user_id} href={`/members/${m.user_id}`} className="member-card" style={{
                 background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow,
                 display: 'flex', flexDirection: 'column', padding: '20px 20px 18px', position: 'relative',
+                textDecoration: 'none', cursor: 'pointer',
               }}>
-                <span style={{
-                  position: 'absolute', top: '14px', right: '16px', fontSize: '18px', color: sc.textFaint,
-                  lineHeight: 1, letterSpacing: '1px', userSelect: 'none',
-                }}>⋮</span>
-
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '4px' }}>
                   <div style={{
                     width: '96px', height: '96px', borderRadius: '16px', flexShrink: 0, overflow: 'hidden',
@@ -235,16 +233,35 @@ export default function MembersBrowsePage({ embedded = false }) {
                       <span style={{ fontFamily: theme.fontDisplay, fontSize: '34px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
                     )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0, paddingTop: '2px', paddingRight: '18px' }}>
+                  <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: sc.text, lineHeight: '1.25' }}>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
                       {m.verified && <VerifiedBadge />}
                     </div>
+                    {m.role_title && (
+                      <div style={{ fontSize: '12.5px', color: theme.brass, fontWeight: '600', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {m.role_title}
+                      </div>
+                    )}
                     <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
                       {m.location || 'Location not specified'}
                     </div>
                   </div>
                 </div>
+
+                {skillsList.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '10px' }}>
+                    {skillsList.slice(0, 4).map(s => (
+                      <span key={s} style={{
+                        fontSize: '11px', fontWeight: '600', color: sc.chipText, background: sc.chipBg,
+                        borderRadius: '999px', padding: '3px 9px',
+                      }}>{s}</span>
+                    ))}
+                    {skillsList.length > 4 && (
+                      <span style={{ fontSize: '11px', color: sc.textFaint, padding: '3px 2px' }}>+{skillsList.length - 4}</span>
+                    )}
+                  </div>
+                )}
 
                 <div style={{ marginTop: '10px' }}>
                   {m.bio && (
@@ -256,7 +273,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 </div>
 
                 {myUserId === m.user_id ? null : (m.contact_email || m.linkedin_url) ? (
-                  <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
+                  <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }} onClick={e => e.stopPropagation()}>
                     {m.contact_email && (
                       <a
                         href={`mailto:${m.contact_email}`}
@@ -283,7 +300,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                     )}
                   </div>
                 ) : null}
-              </div>
+              </Link>
             )
           })}
         </div>

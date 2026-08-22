@@ -17,8 +17,8 @@ const REASONS = [
   },
   {
     n: '03',
-    heading: <>Made for co-founder <em>matching</em></>,
-    body: 'Every profile tells others what you bring and what you\u2019re looking for — skills, experience, and commitment level — so the right match is easy to spot.',
+    heading: <>Post what you&apos;re <em>looking for</em></>,
+    body: 'Share an idea on the community Feed and say exactly what you need — investor, co-founder, team member, mentor, or something else — so the right person can spot it and respond.',
   },
   {
     n: '04',

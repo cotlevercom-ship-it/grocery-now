@@ -18,6 +18,7 @@ export default function SubscribePage() {
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
   const [alreadyHasSub, setAlreadyHasSub] = useState(false)
+  const [existingStatus, setExistingStatus] = useState('')
 
   const handleLogout = () => {
     signOut()
@@ -43,9 +44,12 @@ export default function SubscribePage() {
         })
 
         const existing = await supabaseFetch(
-          `member_subscriptions?select=id&user_id=eq.${s.user.id}&status=in.(active,pending)&order=created_at.desc&limit=1`
+          `member_subscriptions?select=id,status&user_id=eq.${s.user.id}&status=in.(active,pending)&order=created_at.desc&limit=1`
         )
-        if (existing && existing.length) setAlreadyHasSub(true)
+        if (existing && existing.length) {
+          setAlreadyHasSub(true)
+          setExistingStatus(existing[0].status)
+        }
       } catch (e) {
         console.error(e)
       }
@@ -90,19 +94,31 @@ export default function SubscribePage() {
   if (loading) return <div style={{ padding: '60px', textAlign: 'center', color: theme.inkSoft }}>Loading…</div>
 
   if (alreadyHasSub && !done) {
+    const isActive = existingStatus === 'active'
     return (
       <div style={{ background: theme.paper, minHeight: '70vh' }}>
         <div style={{ maxWidth: '500px', margin: '0 auto', padding: 'clamp(20px,4vw,48px) clamp(16px,3vw,24px)', textAlign: 'center' }}>
           <div style={{ background: theme.surface, borderRadius: '14px', border: `1px solid ${theme.line}`, padding: '44px 28px', marginTop: '30px' }}>
-            <div style={{ fontSize: '44px', marginBottom: '16px' }}>✅</div>
-            <h1 style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: theme.ink, marginBottom: '10px' }}>You&apos;re All Set</h1>
+            <div style={{ fontSize: '44px', marginBottom: '16px' }}>{isActive ? '✅' : '⏳'}</div>
+            <h1 style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: theme.ink, marginBottom: '10px' }}>
+              {isActive ? "You're All Set" : 'Payment Under Review'}
+            </h1>
             <p style={{ fontSize: '14px', color: theme.inkSoft, marginBottom: '22px', lineHeight: '1.6' }}>
-              Your subscription is already active or being reviewed. You can create your profile now.
+              {isActive
+                ? 'Your subscription is active. You can create your profile now.'
+                : "We're verifying your bKash payment — this usually takes a few hours. You'll get full access as soon as it's confirmed."}
             </p>
-            <Link href="/account" style={{
-              display: 'inline-block', background: theme.brass, color: 'white',
-              borderRadius: '8px', padding: '12px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'
-            }}>Create Your Profile</Link>
+            {isActive ? (
+              <Link href="/account" style={{
+                display: 'inline-block', background: theme.brass, color: 'white',
+                borderRadius: '8px', padding: '12px 24px', fontSize: '14px', fontWeight: '600', textDecoration: 'none'
+              }}>Create Your Profile</Link>
+            ) : (
+              <button onClick={handleLogout} style={{
+                background: 'none', border: `1px solid ${theme.line}`, borderRadius: '8px', padding: '11px 22px',
+                fontSize: '13.5px', color: theme.inkSoft, cursor: 'pointer', fontFamily: theme.fontBody,
+              }}>Log Out</button>
+            )}
           </div>
         </div>
       </div>

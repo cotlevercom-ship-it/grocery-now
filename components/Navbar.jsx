@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
+import NotificationBell from '@/components/NotificationBell'
 
 const MENU_LINKS = [
   { href: '/why-use-cotlever', label: 'Why Use Cot Lever' },
@@ -207,6 +208,7 @@ export default function Navbar() {
         <div style={{ flex: 1 }} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {session && <NotificationBell />}
           {session ? (
             <AccountMenu displayName={displayName} customerName={customerName} />
           ) : (
