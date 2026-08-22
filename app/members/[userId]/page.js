@@ -438,16 +438,25 @@ export default function MemberProfileViewPage() {
                   </div>
                 )}
 
-                {myUserId !== profile.user_id && (profile.contact_email || profile.linkedin_url) && (
-                  <div style={{ marginTop: '28px', display: 'flex', gap: '10px' }}>
+                {myUserId && myUserId !== profile.user_id && (
+                  <div style={{ marginTop: '28px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <Link
+                      href={`/messages/${profile.user_id}`}
+                      style={{
+                        flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        background: accent, color: '#FFFFFF', fontFamily: theme.fontBody,
+                        borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                        textDecoration: 'none', minWidth: '110px',
+                      }}
+                    >💬 Message</Link>
                     {profile.contact_email && (
                       <a
                         href={`mailto:${profile.contact_email}`}
                         style={{
                           flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: accent, color: '#FFFFFF', fontFamily: theme.fontBody,
-                          borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
-                          textDecoration: 'none',
+                          background: 'transparent', color: '#111827', fontFamily: theme.fontBody,
+                          border: '1px solid #E5E7EB', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                          textDecoration: 'none', minWidth: '110px',
                         }}
                       >📧 Email</a>
                     )}
@@ -460,7 +469,7 @@ export default function MemberProfileViewPage() {
                           flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                           background: 'transparent', color: '#111827', fontFamily: theme.fontBody,
                           border: '1px solid #E5E7EB', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
-                          textDecoration: 'none',
+                          textDecoration: 'none', minWidth: '110px',
                         }}
                       >🔗 LinkedIn</a>
                     )}

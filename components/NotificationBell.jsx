@@ -20,7 +20,12 @@ function messageFor(n, actorName) {
   if (n.type === 'like') return `${name} liked your post`
   if (n.type === 'comment') return `${name} commented on your post`
   if (n.type === 'reply') return `${name} replied to your comment`
+  if (n.type === 'message') return `${name} sent you a message`
   return `${name} interacted with your post`
+}
+
+function linkFor(n) {
+  return n.type === 'message' ? `/messages/${n.actor_id}` : '/feed'
 }
 
 export default function NotificationBell() {
@@ -142,7 +147,7 @@ export default function NotificationBell() {
             notifications.map(n => (
               <Link
                 key={n.id}
-                href="/feed"
+                href={linkFor(n)}
                 onClick={() => setOpen(false)}
                 style={{
                   display: 'block', padding: '11px 14px', borderBottom: `1px solid ${theme.line}`,

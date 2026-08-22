@@ -272,16 +272,25 @@ export default function MembersBrowsePage({ embedded = false }) {
                   )}
                 </div>
 
-                {myUserId === m.user_id ? null : (m.contact_email || m.linkedin_url) ? (
-                  <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }} onClick={e => e.stopPropagation()}>
+                {myUserId === m.user_id ? null : (
+                  <div style={{ marginTop: '14px', display: 'flex', gap: '8px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
+                    <Link
+                      href={`/messages/${m.user_id}`}
+                      style={{
+                        flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
+                        borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                        whiteSpace: 'nowrap', textDecoration: 'none', minWidth: '90px',
+                      }}
+                    >💬 Message</Link>
                     {m.contact_email && (
                       <a
                         href={`mailto:${m.contact_email}`}
                         style={{
                           flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
-                          borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                          whiteSpace: 'nowrap', textDecoration: 'none',
+                          background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
+                          border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                          whiteSpace: 'nowrap', textDecoration: 'none', minWidth: '90px',
                         }}
                       >📧 Email</a>
                     )}
@@ -294,12 +303,12 @@ export default function MembersBrowsePage({ embedded = false }) {
                           flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                           background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
                           border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                          whiteSpace: 'nowrap', textDecoration: 'none',
+                          whiteSpace: 'nowrap', textDecoration: 'none', minWidth: '90px',
                         }}
                       >🔗 LinkedIn</a>
                     )}
                   </div>
-                ) : null}
+                )}
               </Link>
             )
           })}
