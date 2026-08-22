@@ -86,6 +86,55 @@ function TagInput({ label, values, onChange, placeholder }) {
   )
 }
 
+function ListEditor({ label, items, onChange, fields, addLabel }) {
+  // items: array of objects; fields: [{key,placeholder,type}]
+  const emptyItem = () => Object.fromEntries(fields.map(f => [f.key, '']))
+  const [draft, setDraft] = useState(emptyItem())
+
+  const addItem = () => {
+    if (!fields.some(f => draft[f.key]?.trim())) return
+    onChange([...items, draft])
+    setDraft(emptyItem())
+  }
+  const removeItem = (idx) => onChange(items.filter((_, i) => i !== idx))
+
+  return (
+    <div style={{ marginBottom: '24px' }}>
+      <FieldLabel>{label}</FieldLabel>
+      {items.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+          {items.map((it, idx) => (
+            <div key={idx} style={{
+              border: `1px solid ${theme.line}`, borderRadius: '6px', padding: '10px 12px',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px'
+            }}>
+              <div style={{ fontSize: '13px', color: theme.ink, lineHeight: 1.5 }}>
+                {fields.map(f => it[f.key]).filter(Boolean).join(' — ')}
+              </div>
+              <button type="button" onClick={() => removeItem(idx)} style={{
+                background: 'none', border: 'none', color: theme.inkSoft, cursor: 'pointer', fontSize: '14px', lineHeight: 1, padding: 0, flexShrink: 0
+              }}>×</button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', border: `1px dashed ${theme.line}`, borderRadius: '6px', padding: '10px' }}>
+        {fields.map(f => (
+          <input
+            key={f.key} type="text" value={draft[f.key]}
+            onChange={e => setDraft(prev => ({ ...prev, [f.key]: e.target.value }))}
+            placeholder={f.placeholder} className="ledger-input"
+          />
+        ))}
+        <button type="button" onClick={addItem} style={{
+          alignSelf: 'flex-start', background: 'transparent', color: theme.brass, border: `1px solid ${theme.brass}`,
+          borderRadius: '6px', padding: '6px 14px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer'
+        }}>{addLabel}</button>
+      </div>
+    </div>
+  )
+}
+
 export default function AccountPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
@@ -100,9 +149,10 @@ export default function AccountPage() {
   const [activeSection, setActiveSection] = useState(null)
 
   const [form, setForm] = useState({
-    display_name: '', contact_email: '', linkedin_url: '',
-    phone: '', location: '', gender: '', age: '',
+    display_name: '', contact_email: '', linkedin_url: '', github_url: '',
+    phone: '', location: '', gender: '', age: '', bio: '',
     role_title: '', experience: '', interests: [], skills: [], languages: [],
+    education: [], projects: [], achievements: [],
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -147,9 +197,11 @@ export default function AccountPage() {
             ...prev,
             display_name: p.display_name || '',
             contact_email: p.contact_email || session.user.email || '', linkedin_url: p.linkedin_url || '',
+            github_url: p.github_url || '', bio: p.bio || '',
             location: p.location || '', gender: p.gender || '', age: p.age != null ? String(p.age) : '',
             role_title: p.role_title || '', experience: p.experience || '',
             interests: p.interests || [], skills: p.skills || [], languages: p.languages || [],
+            education: p.education || [], projects: p.projects || [], achievements: p.achievements || [],
           }))
           setExistingPhotoUrl(p.photo_url || '')
         } else {
@@ -198,6 +250,8 @@ export default function AccountPage() {
             display_name: form.display_name.trim(),
             contact_email: form.contact_email.trim(),
             linkedin_url: form.linkedin_url.trim() || null,
+            github_url: form.github_url.trim() || null,
+            bio: form.bio.trim() || null,
             location: form.location.trim() || null,
             gender: form.gender || null,
             age: ageValue,
@@ -206,6 +260,9 @@ export default function AccountPage() {
             interests: form.interests,
             skills: form.skills,
             languages: form.languages,
+            education: form.education,
+            projects: form.projects,
+            achievements: form.achievements,
             photo_url,
             updated_at: new Date().toISOString(),
           }),
@@ -234,9 +291,10 @@ export default function AccountPage() {
   const displayedPhoto = photoPreview || existingPhotoUrl
 
   const allFields = [
-    form.phone, form.location, form.gender, form.age,
+    form.phone, form.location, form.gender, form.age, form.bio,
     form.role_title, form.experience, form.interests, form.skills, form.languages,
-    form.display_name, form.contact_email, form.linkedin_url,
+    form.display_name, form.contact_email, form.linkedin_url, form.github_url,
+    form.education, form.projects, form.achievements,
   ]
   const totalFields = allFields.length
   const totalFilled = allFields.filter(isFilled).length
@@ -369,6 +427,11 @@ export default function AccountPage() {
               <input type="number" inputMode="numeric" min="16" max="100" value={form.age} onChange={e => handleChange('age', e.target.value)} placeholder="25" className="ledger-input" />
             </div>
 
+            <div style={{ marginBottom: '24px' }}>
+              <FieldLabel>About Me</FieldLabel>
+              <textarea rows={3} value={form.bio} onChange={e => handleChange('bio', e.target.value)} placeholder="A short intro about yourself" className="ledger-input" style={{ resize: 'vertical', fontFamily: 'inherit' }} />
+            </div>
+
             <SectionSaveButton sectionKey="basic" />
           </div>
 
@@ -427,7 +490,50 @@ export default function AccountPage() {
               <input type="text" value={form.linkedin_url} onChange={e => handleChange('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/yourname" className="ledger-input" />
             </div>
 
+            <div style={{ marginBottom: '24px' }}>
+              <FieldLabel>GitHub Link</FieldLabel>
+              <input type="text" value={form.github_url} onChange={e => handleChange('github_url', e.target.value)} placeholder="https://github.com/yourname" className="ledger-input" />
+            </div>
+
             <SectionSaveButton sectionKey="contact" />
+          </div>
+
+          <div style={sectionBoxStyle}>
+            <SectionLabel>Education</SectionLabel>
+            <ListEditor
+              label="Degrees"
+              items={form.education}
+              onChange={v => handleChange('education', v)}
+              addLabel="Add Education"
+              fields={[
+                { key: 'degree', placeholder: 'e.g. B.Sc. in Computer Science' },
+                { key: 'institution', placeholder: 'e.g. Daffodil International University' },
+                { key: 'years', placeholder: 'e.g. 2018 – 2022' },
+              ]}
+            />
+            <SectionSaveButton sectionKey="education" />
+          </div>
+
+          <div style={sectionBoxStyle}>
+            <SectionLabel>Projects</SectionLabel>
+            <ListEditor
+              label="Projects"
+              items={form.projects}
+              onChange={v => handleChange('projects', v)}
+              addLabel="Add Project"
+              fields={[
+                { key: 'title', placeholder: 'e.g. Task Management App' },
+                { key: 'description', placeholder: 'Short description' },
+                { key: 'tech', placeholder: 'e.g. React.js, Node.js, MongoDB' },
+              ]}
+            />
+            <SectionSaveButton sectionKey="projects" />
+          </div>
+
+          <div style={sectionBoxStyle}>
+            <SectionLabel>Achievements</SectionLabel>
+            <TagInput label="Achievement" values={form.achievements} onChange={v => handleChange('achievements', v)} placeholder="e.g. Top Performer 2024" />
+            <SectionSaveButton sectionKey="achievements" />
           </div>
         </div>
 
