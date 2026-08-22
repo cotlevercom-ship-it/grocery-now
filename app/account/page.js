@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { getSession, supabaseFetch, signOut, uploadImage } from '@/lib/supabase'
 import { accountLightTheme as theme } from '@/lib/accountLightTheme'
 import { SKILL_OPTIONS } from '@/lib/memberOptions'
-import { IconUser, IconBriefcase, IconGrad, IconFolder, IconTrophy, IconMail } from '@/components/ResumeIcons'
+import { IconUser, IconBriefcase, IconGrad, IconTrophy, IconMail, IconGear, IconGlobe } from '@/components/ResumeIcons'
 
 const accent = '#2563EB'
 
@@ -362,16 +362,16 @@ export default function AccountPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: theme.paper, paddingBottom: '48px' }}>
-      {/* Passbook cover */}
+      {/* Resume-style header: photo, name, role — mirrors the reference resume's sidebar top */}
       <div style={{ background: `linear-gradient(155deg, ${theme.paper} 0%, ${theme.surface} 60%, ${theme.lineSoft} 100%)` }}>
-        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '18px 18px 26px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{ width: '100%', maxWidth: '900px', margin: '0 auto', padding: '24px 18px 26px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <label style={{ position: 'relative', display: 'block', cursor: 'pointer', flexShrink: 0 }}>
               <div style={{
-                width: '54px', height: '54px', borderRadius: '50%', background: accent,
+                width: '68px', height: '68px', borderRadius: '50%', background: accent,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-                fontSize: '22px', fontWeight: '700', color: '#FFFFFF',
-                border: '2px solid rgba(255,255,255,0.25)'
+                fontSize: '26px', fontWeight: '700', color: '#FFFFFF',
+                border: '3px solid rgba(255,255,255,0.6)'
               }}>
                 {displayedPhoto ? (
                   <img src={displayedPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -384,41 +384,46 @@ export default function AccountPage() {
               }}>✏️</span>
               <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
             </label>
-            <div style={{ minWidth: 0, flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {editingName ? (
-                <input
-                  ref={nameInputRef}
-                  type="text" value={form.display_name} onChange={e => handleChange('display_name', e.target.value)}
-                  onBlur={() => setEditingName(false)}
-                  placeholder="Full name"
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {editingName ? (
+                  <input
+                    ref={nameInputRef}
+                    type="text" value={form.display_name} onChange={e => handleChange('display_name', e.target.value)}
+                    onBlur={() => setEditingName(false)}
+                    placeholder="Full name"
+                    style={{
+                      color: theme.ink, fontSize: '21px', fontWeight: '700', background: 'transparent',
+                      border: 'none', borderBottom: `1px solid ${accent}`, outline: 'none', minWidth: 0, flex: 1,
+                      fontFamily: 'inherit', padding: '0 0 2px',
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    color: theme.ink, fontSize: '21px', fontWeight: '700', overflow: 'hidden',
+                    textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                  }}>
+                    {form.display_name || 'Add your name'}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { setEditingName(true); setTimeout(() => nameInputRef.current?.focus(), 0) }}
+                  aria-label="Edit name"
                   style={{
-                    color: theme.ink, fontSize: '18px', fontWeight: '700', background: 'transparent',
-                    border: 'none', borderBottom: `1px solid ${accent}`, outline: 'none', minWidth: 0, flex: 1,
-                    fontFamily: 'inherit', padding: '0 0 2px',
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px',
+                    borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.14)', color: theme.ink,
+                    fontSize: '11px', cursor: 'pointer', flexShrink: 0,
                   }}
-                />
-              ) : (
-                <div style={{
-                  color: theme.ink, fontSize: '18px', fontWeight: '700', overflow: 'hidden',
-                  textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                }}>
-                  {form.display_name || 'Add your name'}
-                </div>
+                >✏️</button>
+              </div>
+              {form.role_title && (
+                <div style={{ fontSize: '13.5px', fontWeight: '600', color: accent, marginTop: '2px' }}>{form.role_title}</div>
               )}
-              <button
-                type="button"
-                onClick={() => { setEditingName(true); setTimeout(() => nameInputRef.current?.focus(), 0) }}
-                aria-label="Edit name"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px',
-                  borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.14)', color: theme.ink,
-                  fontSize: '11px', cursor: 'pointer', flexShrink: 0,
-                }}
-              >✏️</button>
             </div>
           </div>
 
-          <div style={{ marginTop: '16px' }}>
+          <div style={{ marginTop: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
               <span style={{ fontSize: '11.5px', fontWeight: '700', color: theme.inkSoft, letterSpacing: '0.03em', textTransform: 'uppercase' }}>Profile Completion</span>
               <span style={{ fontSize: '13px', fontWeight: '700', color: accent }}>{completionPct}%</span>
@@ -431,59 +436,57 @@ export default function AccountPage() {
         <ZigzagEdge fill={theme.paper} />
       </div>
 
-      <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '4px 16px 0' }}>
-        <div>
-          <div style={{ ...sectionBoxStyle, marginTop: '10px' }}>
-            <SectionLabel icon={<IconUser />}>Basic Info</SectionLabel>
+      <div style={{ width: '100%', maxWidth: '900px', margin: '0 auto', padding: '4px 16px 0' }}>
+        {/* Two-column resume layout: left = sidebar-style fields (contact/skills/languages/education), right = main content (about/experience/projects/achievements) */}
+        <div className="resume-edit-cols" style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', marginTop: '10px' }}>
+          <div className="resume-edit-left" style={{ width: '300px', flexShrink: 0 }}>
 
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Mobile Number</FieldLabel>
-              <input type="tel" value={form.phone} onChange={e => handleChange('phone', e.target.value)} placeholder="01XXXXXXXXX" className="ledger-input" style={{ fontFamily: theme.fontMono }} />
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconMail />}>Contact & Basic Info</SectionLabel>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>Contact Email *</FieldLabel>
+                <input type="email" value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" className="ledger-input" />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>Mobile Number</FieldLabel>
+                <input type="tel" value={form.phone} onChange={e => handleChange('phone', e.target.value)} placeholder="01XXXXXXXXX" className="ledger-input" style={{ fontFamily: theme.fontMono }} />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>Location</FieldLabel>
+                <input type="text" value={form.location} onChange={e => handleChange('location', e.target.value)} placeholder="Dhaka" className="ledger-input" />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>LinkedIn / Portfolio Link</FieldLabel>
+                <input type="text" value={form.linkedin_url} onChange={e => handleChange('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/yourname" className="ledger-input" />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>GitHub Link</FieldLabel>
+                <input type="text" value={form.github_url} onChange={e => handleChange('github_url', e.target.value)} placeholder="https://github.com/yourname" className="ledger-input" />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>Gender</FieldLabel>
+                <select value={form.gender} onChange={e => handleChange('gender', e.target.value)} className="ledger-input ledger-select">
+                  <option value="">Select</option>
+                  {GENDER_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>Age</FieldLabel>
+                <input type="number" inputMode="numeric" min="16" max="100" value={form.age} onChange={e => handleChange('age', e.target.value)} placeholder="25" className="ledger-input" />
+              </div>
+
+              <SectionSaveButton sectionKey="basic" />
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Location</FieldLabel>
-              <input type="text" value={form.location} onChange={e => handleChange('location', e.target.value)} placeholder="Dhaka" className="ledger-input" />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Gender</FieldLabel>
-              <select value={form.gender} onChange={e => handleChange('gender', e.target.value)} className="ledger-input ledger-select">
-                <option value="">Select</option>
-                {GENDER_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Age</FieldLabel>
-              <input type="number" inputMode="numeric" min="16" max="100" value={form.age} onChange={e => handleChange('age', e.target.value)} placeholder="25" className="ledger-input" />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>About Me</FieldLabel>
-              <textarea rows={3} value={form.bio} onChange={e => handleChange('bio', e.target.value)} placeholder="A short intro about yourself" className="ledger-input" style={{ resize: 'vertical', fontFamily: 'inherit' }} />
-            </div>
-
-            <SectionSaveButton sectionKey="basic" />
-          </div>
-
-          <div style={sectionBoxStyle}>
-            <SectionLabel icon={<IconBriefcase />}>Profession</SectionLabel>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Current Job / Role</FieldLabel>
-              <input type="text" value={form.role_title} onChange={e => handleChange('role_title', e.target.value)} placeholder="e.g. Software Engineer at X" className="ledger-input" />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Experience</FieldLabel>
-              <input type="text" value={form.experience} onChange={e => handleChange('experience', e.target.value)} placeholder="e.g. 5 years in fintech product management" className="ledger-input" />
-            </div>
-
-            <TagInput label="Interest" values={form.interests} onChange={v => handleChange('interests', v)} placeholder="e.g. Photography" />
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Skill</FieldLabel>
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconGear />}>Skills</SectionLabel>
               {form.skills.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginBottom: '10px' }}>
                   {form.skills.map(s => (
@@ -502,87 +505,97 @@ export default function AccountPage() {
                 <option value="">Select a skill to add</option>
                 {SKILL_OPTIONS.filter(s => !form.skills.includes(s)).map(s => <option key={s} value={s}>{s}</option>)}
               </select>
+              <div style={{ marginTop: '4px' }}>
+                <SectionSaveButton sectionKey="skills" />
+              </div>
             </div>
 
-            <TagInput label="Language" values={form.languages} onChange={v => handleChange('languages', v)} placeholder="e.g. Bangla, English" />
-
-            <SectionSaveButton sectionKey="profession" />
-          </div>
-
-          <div style={sectionBoxStyle}>
-            <SectionLabel icon={<IconBriefcase />}>Work Experience</SectionLabel>
-            <ListEditor
-              label="Positions"
-              items={form.experience_entries}
-              onChange={v => handleChange('experience_entries', v)}
-              addLabel="Add Position"
-              fields={[
-                { key: 'title', placeholder: 'e.g. Full Stack Developer' },
-                { key: 'company', placeholder: 'e.g. Tech Solutions Ltd.' },
-                { key: 'dates', placeholder: 'e.g. Jan 2023 – Present' },
-                { key: 'bullets', type: 'textarea', placeholder: 'One line per bullet point' },
-              ]}
-            />
-            <SectionSaveButton sectionKey="experience_entries" />
-          </div>
-
-          <div style={sectionBoxStyle}>
-            <SectionLabel icon={<IconMail />}>Contact</SectionLabel>
-
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>Contact Email *</FieldLabel>
-              <input type="email" value={form.contact_email} onChange={e => handleChange('contact_email', e.target.value)} placeholder="you@example.com" className="ledger-input" />
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconGlobe />}>Languages</SectionLabel>
+              <TagInput label="Language" values={form.languages} onChange={v => handleChange('languages', v)} placeholder="e.g. Bangla, English" />
+              <SectionSaveButton sectionKey="languages" />
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>LinkedIn / Portfolio Link</FieldLabel>
-              <input type="text" value={form.linkedin_url} onChange={e => handleChange('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/yourname" className="ledger-input" />
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconGrad />}>Education</SectionLabel>
+              <ListEditor
+                label="Degrees"
+                items={form.education_entries}
+                onChange={v => handleChange('education_entries', v)}
+                addLabel="Add Education"
+                fields={[
+                  { key: 'degree', placeholder: 'e.g. B.Sc. in Computer Science' },
+                  { key: 'institution', placeholder: 'e.g. Daffodil International University' },
+                  { key: 'years', placeholder: 'e.g. 2018 – 2022' },
+                ]}
+              />
+              <SectionSaveButton sectionKey="education_entries" />
+            </div>
+          </div>
+
+          <div className="resume-edit-right" style={{ flex: 1, minWidth: 0 }}>
+
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconUser />}>About Me</SectionLabel>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>Current Job / Role</FieldLabel>
+                <input type="text" value={form.role_title} onChange={e => handleChange('role_title', e.target.value)} placeholder="e.g. Full Stack Developer" className="ledger-input" />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>Short Headline</FieldLabel>
+                <input type="text" value={form.experience} onChange={e => handleChange('experience', e.target.value)} placeholder="e.g. 5 years in fintech product management" className="ledger-input" />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <FieldLabel>About Me</FieldLabel>
+                <textarea rows={3} value={form.bio} onChange={e => handleChange('bio', e.target.value)} placeholder="A short intro about yourself" className="ledger-input" style={{ resize: 'vertical', fontFamily: 'inherit' }} />
+              </div>
+
+              <TagInput label="Interest" values={form.interests} onChange={v => handleChange('interests', v)} placeholder="e.g. Photography" />
+
+              <SectionSaveButton sectionKey="about" />
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <FieldLabel>GitHub Link</FieldLabel>
-              <input type="text" value={form.github_url} onChange={e => handleChange('github_url', e.target.value)} placeholder="https://github.com/yourname" className="ledger-input" />
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconBriefcase />}>Work Experience</SectionLabel>
+              <ListEditor
+                label="Positions"
+                items={form.experience_entries}
+                onChange={v => handleChange('experience_entries', v)}
+                addLabel="Add Position"
+                fields={[
+                  { key: 'title', placeholder: 'e.g. Full Stack Developer' },
+                  { key: 'company', placeholder: 'e.g. Tech Solutions Ltd.' },
+                  { key: 'dates', placeholder: 'e.g. Jan 2023 – Present' },
+                  { key: 'bullets', type: 'textarea', placeholder: 'One line per bullet point' },
+                ]}
+              />
+              <SectionSaveButton sectionKey="experience_entries" />
             </div>
 
-            <SectionSaveButton sectionKey="contact" />
-          </div>
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconBriefcase />}>Projects</SectionLabel>
+              <ListEditor
+                label="Projects"
+                items={form.projects}
+                onChange={v => handleChange('projects', v)}
+                addLabel="Add Project"
+                fields={[
+                  { key: 'title', placeholder: 'e.g. Task Management App' },
+                  { key: 'description', placeholder: 'Short description' },
+                  { key: 'tech', placeholder: 'e.g. React.js, Node.js, MongoDB' },
+                ]}
+              />
+              <SectionSaveButton sectionKey="projects" />
+            </div>
 
-          <div style={sectionBoxStyle}>
-            <SectionLabel icon={<IconGrad />}>Education</SectionLabel>
-            <ListEditor
-              label="Degrees"
-              items={form.education_entries}
-              onChange={v => handleChange('education_entries', v)}
-              addLabel="Add Education"
-              fields={[
-                { key: 'degree', placeholder: 'e.g. B.Sc. in Computer Science' },
-                { key: 'institution', placeholder: 'e.g. Daffodil International University' },
-                { key: 'years', placeholder: 'e.g. 2018 – 2022' },
-              ]}
-            />
-            <SectionSaveButton sectionKey="education_entries" />
-          </div>
-
-          <div style={sectionBoxStyle}>
-            <SectionLabel icon={<IconFolder />}>Projects</SectionLabel>
-            <ListEditor
-              label="Projects"
-              items={form.projects}
-              onChange={v => handleChange('projects', v)}
-              addLabel="Add Project"
-              fields={[
-                { key: 'title', placeholder: 'e.g. Task Management App' },
-                { key: 'description', placeholder: 'Short description' },
-                { key: 'tech', placeholder: 'e.g. React.js, Node.js, MongoDB' },
-              ]}
-            />
-            <SectionSaveButton sectionKey="projects" />
-          </div>
-
-          <div style={sectionBoxStyle}>
-            <SectionLabel icon={<IconTrophy />}>Achievements</SectionLabel>
-            <TagInput label="Achievement" values={form.achievements} onChange={v => handleChange('achievements', v)} placeholder="e.g. Top Performer 2024" />
-            <SectionSaveButton sectionKey="achievements" />
+            <div style={sectionBoxStyle}>
+              <SectionLabel icon={<IconTrophy />}>Achievements</SectionLabel>
+              <TagInput label="Achievement" values={form.achievements} onChange={v => handleChange('achievements', v)} placeholder="e.g. Top Performer 2024" />
+              <SectionSaveButton sectionKey="achievements" />
+            </div>
           </div>
         </div>
 
@@ -594,6 +607,12 @@ export default function AccountPage() {
         }}>Log Out</button>
       </div>
 
+      <style jsx>{`
+        @media (max-width: 760px) {
+          .resume-edit-cols { flex-direction: column; }
+          .resume-edit-left { width: 100% !important; }
+        }
+      `}</style>
       <style jsx global>{`
         .ledger-input {
           width: 100%;
