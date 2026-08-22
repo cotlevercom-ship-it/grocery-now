@@ -32,6 +32,7 @@ function Avatar({ profile, size = 40 }) {
 export default function MessageThreadPage() {
   const { userId: otherId } = useParams()
   const [myUserId, setMyUserId] = useState(null)
+  const [myPremium, setMyPremium] = useState(false)
   const [otherProfile, setOtherProfile] = useState(null)
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
@@ -72,6 +73,10 @@ export default function MessageThreadPage() {
         const rows = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=eq.${otherId}`)
         setOtherProfile(rows?.[0] || null)
       } catch (e) { console.error(e) }
+      try {
+        const mine = await supabaseFetch(`member_profiles?select=is_premium&user_id=eq.${uid}`)
+        setMyPremium(!!mine?.[0]?.is_premium)
+      } catch (e) { console.error(e) }
       await loadThread(uid)
       setLoading(false)
     }
@@ -85,10 +90,14 @@ export default function MessageThreadPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages.length])
 
+  const myOutboundCount = messages.filter(m => m.sender_id === myUserId).length
+  const needsPremiumToReply = myOutboundCount >= 1 && !myPremium
+
   const handleSend = async () => {
     const content = draft.trim()
     if (!content) return
     if (!myUserId) { setError('Please log in to send messages.'); return }
+    if (needsPremiumToReply) { setError('Replying is a Premium feature — upgrade from My Profile to keep the conversation going.'); return }
     setError('')
     setSending(true)
     try {
@@ -160,6 +169,15 @@ export default function MessageThreadPage() {
             <div style={{ marginBottom: '8px', fontSize: '12.5px', color: theme.brass }}>{error}</div>
           )}
 
+          {needsPremiumToReply ? (
+            <Link href="/account" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              padding: '13px 16px', borderRadius: '999px', background: sc.chipBg,
+              fontSize: '13.5px', color: sc.textSoft, textDecoration: 'none', marginTop: '4px',
+            }}>
+              🔒 Replying is a <b style={{ color: theme.brass }}>Premium</b> feature — tap to upgrade
+            </Link>
+          ) : (
           <div style={{ display: 'flex', gap: '8px', paddingTop: '8px', borderTop: `1px solid ${sc.line}` }}>
             <input
               type="text"
@@ -184,6 +202,7 @@ export default function MessageThreadPage() {
               }}
             >Send</button>
           </div>
+          )}
         </div>
       </div>
 

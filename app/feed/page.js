@@ -218,7 +218,7 @@ export default function FeedPage() {
     const uid = session?.user?.id || null
     setMyUserId(uid)
     if (uid) {
-      supabaseFetch(`member_profiles?select=display_name,photo_url&user_id=eq.${uid}`)
+      supabaseFetch(`member_profiles?select=display_name,photo_url,is_premium&user_id=eq.${uid}`)
         .then(rows => setMyProfile(rows?.[0] || null))
         .catch(e => console.error(e))
     }
@@ -324,6 +324,7 @@ export default function FeedPage() {
     const content = (newCommentDrafts[postId] || '').trim()
     if (!content) return
     if (!myUserId) { setError('Please log in to comment.'); return }
+    if (!myProfile?.is_premium) { setError('Commenting is a Premium feature — upgrade from My Profile to join the conversation.'); return }
     try {
       await supabaseFetch('post_comments', {
         method: 'POST',
@@ -357,6 +358,7 @@ export default function FeedPage() {
     const content = (replyDrafts[parentCommentId] || '').trim()
     if (!content) return
     if (!myUserId) { setError('Please log in to reply.'); return }
+    if (!myProfile?.is_premium) { setError('Commenting is a Premium feature — upgrade from My Profile to join the conversation.'); return }
     setSubmittingReplyId(parentCommentId)
     try {
       await supabaseFetch('post_comments', {
@@ -570,6 +572,15 @@ export default function FeedPage() {
                           ))
                         )}
 
+                        {myUserId && !myProfile?.is_premium ? (
+                          <Link href="/account" style={{
+                            display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px',
+                            padding: '9px 14px', borderRadius: '10px', background: sc.chipBg,
+                            fontSize: '12.5px', color: sc.textSoft, textDecoration: 'none',
+                          }}>
+                            🔒 Commenting is a <b style={{ color: theme.brass }}>Premium</b> feature — tap to upgrade
+                          </Link>
+                        ) : (
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                           <Avatar profile={myProfile} size={28} />
                           <input
@@ -594,6 +605,7 @@ export default function FeedPage() {
                             }}
                           >Send</button>
                         </div>
+                        )}
                       </div>
                     )}
                   </div>

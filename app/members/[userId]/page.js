@@ -192,7 +192,7 @@ export default function MemberProfileViewPage() {
     const uid = session?.user?.id || null
     setMyUserId(uid)
     if (uid) {
-      supabaseFetch(`member_profiles?select=display_name,photo_url&user_id=eq.${uid}`)
+      supabaseFetch(`member_profiles?select=display_name,photo_url,is_premium&user_id=eq.${uid}`)
         .then(rows => setMyProfile(rows?.[0] || null))
         .catch(e => console.error(e))
     }
@@ -385,6 +385,22 @@ export default function MemberProfileViewPage() {
           ) : !profile ? (
             <div style={{ textAlign: 'center', padding: '60px 0', color: sc.textSoft, fontSize: '14px' }}>
               Profile not found or not currently visible.
+            </div>
+          ) : (myUserId !== profile.user_id && !myProfile?.is_premium) ? (
+            <div style={{
+              background: '#FFFFFF', borderRadius: '14px', padding: '48px 24px', textAlign: 'center',
+              boxShadow: '0 1px 3px rgba(16,24,40,0.06), 0 8px 28px rgba(16,24,40,0.06)',
+            }}>
+              <PostAvatar profile={profile} size={72} />
+              <div style={{ marginTop: '14px', fontSize: '18px', fontWeight: '700', color: '#111827' }}>{profile.display_name}</div>
+              {profile.role_title && <div style={{ fontSize: '13.5px', color: accent, fontWeight: '600', marginTop: '2px' }}>{profile.role_title}</div>}
+              <div style={{ fontSize: '14px', color: sc.textSoft, margin: '18px auto 20px', maxWidth: '360px', lineHeight: '1.6' }}>
+                🔒 Viewing full profiles is a <b style={{ color: theme.brass }}>Premium</b> feature. Upgrade to see experience, education, projects, and contact details.
+              </div>
+              <Link href="/account" style={{
+                display: 'inline-block', background: theme.brass, color: '#FFFFFF', textDecoration: 'none',
+                padding: '12px 26px', borderRadius: '999px', fontSize: '14px', fontWeight: '700',
+              }}>Upgrade to Premium</Link>
             </div>
           ) : (
             <div className="resume-sheet" style={{
