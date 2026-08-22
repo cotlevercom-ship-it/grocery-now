@@ -367,33 +367,33 @@ export default function FeedPage() {
 
           {/* Composer */}
           <div style={{
-            background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow, padding: '16px', marginBottom: '20px',
+            background: sc.cardBg, borderRadius: '12px', boxShadow: sc.shadow, padding: '10px', marginBottom: '16px',
           }}>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <Avatar profile={myProfile} size={40} />
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Avatar profile={myProfile} size={32} />
               <textarea
                 value={draft}
                 onChange={e => setDraft(e.target.value)}
-                placeholder="Share your idea with the community…"
-                rows={2}
+                placeholder="Share your idea…"
+                rows={1}
                 style={{
-                  flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '10px',
-                  padding: '10px 12px', fontSize: '14px', fontFamily: theme.fontBody, color: sc.text,
-                  background: sc.bg, resize: 'vertical', minHeight: '44px',
+                  flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px',
+                  padding: '7px 10px', fontSize: '13.5px', fontFamily: theme.fontBody, color: sc.text,
+                  background: sc.bg, resize: 'vertical', minHeight: '32px',
                 }}
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', marginTop: '10px', marginLeft: '52px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '6px', marginTop: '6px', marginLeft: '40px', flexWrap: 'wrap', alignItems: 'center' }}>
               <select
                 value={lookingForType}
                 onChange={e => setLookingForType(e.target.value)}
                 style={{
-                  border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '7px 10px', fontSize: '13px',
-                  fontFamily: theme.fontBody, color: sc.text, background: sc.bg,
+                  border: `1px solid ${sc.line}`, borderRadius: '7px', padding: '5px 6px', fontSize: '12px',
+                  fontFamily: theme.fontBody, color: sc.text, background: sc.bg, maxWidth: '100%',
                 }}
               >
-                <option value="">Not looking for anything specific</option>
+                <option value="">Not looking for anything</option>
                 {LOOKING_FOR_OPTIONS.map(opt => <option key={opt} value={opt}>Looking for a {opt}</option>)}
               </select>
               {lookingForType && (
@@ -401,29 +401,26 @@ export default function FeedPage() {
                   type="text"
                   value={lookingForLocation}
                   onChange={e => setLookingForLocation(e.target.value)}
-                  placeholder="Location (e.g. Dhaka, Bangladesh)"
+                  placeholder="Location"
                   style={{
-                    border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '7px 10px', fontSize: '13px',
-                    fontFamily: theme.fontBody, color: sc.text, background: sc.bg, flex: 1, minWidth: '160px',
+                    border: `1px solid ${sc.line}`, borderRadius: '7px', padding: '5px 8px', fontSize: '12px',
+                    fontFamily: theme.fontBody, color: sc.text, background: sc.bg, flex: 1, minWidth: '90px',
                   }}
                 />
               )}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
               <button
                 type="button"
                 onClick={handlePost}
                 disabled={posting || !draft.trim()}
                 style={{
                   background: (posting || !draft.trim()) ? sc.line : theme.brass, color: '#FFFFFF',
-                  border: 'none', borderRadius: '999px', padding: '9px 20px', fontSize: '13px', fontWeight: '700',
-                  cursor: (posting || !draft.trim()) ? 'default' : 'pointer',
+                  border: 'none', borderRadius: '999px', padding: '6px 14px', fontSize: '12px', fontWeight: '700',
+                  cursor: (posting || !draft.trim()) ? 'default' : 'pointer', marginLeft: 'auto',
                 }}
               >{posting ? 'Posting…' : 'Post'}</button>
             </div>
             {error && (
-              <div style={{ marginTop: '10px', fontSize: '12.5px', color: theme.brass }}>{error}</div>
+              <div style={{ marginTop: '6px', fontSize: '11.5px', color: theme.brass }}>{error}</div>
             )}
           </div>
 
