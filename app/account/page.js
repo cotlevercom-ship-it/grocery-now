@@ -5,7 +5,9 @@ import Link from 'next/link'
 import { getSession, supabaseFetch, signOut, uploadImage } from '@/lib/supabase'
 import { accountLightTheme as theme } from '@/lib/accountLightTheme'
 import { SKILL_OPTIONS } from '@/lib/memberOptions'
+import { IconUser, IconBriefcase, IconGrad, IconFolder, IconTrophy, IconMail } from '@/components/ResumeIcons'
 
+const accent = '#2563EB'
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer not to say']
 
@@ -26,18 +28,26 @@ function isFilled(v) {
   return String(v).trim().length > 0
 }
 
-function SectionLabel({ children }) {
+function SectionLabel({ icon, children }) {
   return (
-    <div style={{
-      fontSize: '11px', fontWeight: '700', letterSpacing: '0.06em', textTransform: 'uppercase',
-      color: theme.brass, margin: '0 0 14px'
-    }}>{children}</div>
+    <div style={{ margin: '0 0 16px' }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '9px',
+        fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase',
+        color: '#111827',
+      }}>
+        {icon && <span style={{ color: accent, display: 'flex' }}>{icon}</span>}
+        {children}
+      </div>
+      <div style={{ height: '1px', background: '#E5E7EB', marginTop: '9px' }} />
+    </div>
   )
 }
 
 const sectionBoxStyle = {
-  background: theme.surface, borderRadius: '4px', border: `1px solid ${theme.line}`,
-  padding: '18px 18px 22px', marginTop: '14px',
+  background: '#FFFFFF', borderRadius: '14px', border: '1px solid #ECEDF0',
+  boxShadow: '0 1px 2px rgba(16,24,40,0.04), 0 4px 14px rgba(16,24,40,0.05)',
+  padding: '20px 20px 24px', marginTop: '16px',
 }
 
 function FieldLabel({ children }) {
@@ -78,7 +88,7 @@ function TagInput({ label, values, onChange, placeholder }) {
       <div style={{ display: 'flex', gap: '8px' }}>
         <input type="text" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={handleKeyDown} placeholder={placeholder} className="ledger-input" style={{ flex: 1 }} />
         <button type="button" onClick={addTag} style={{
-          background: 'transparent', color: theme.brass, border: `1px solid ${theme.brass}`,
+          background: 'transparent', color: accent, border: `1px solid ${accent}`,
           borderRadius: '6px', padding: '0 14px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer'
         }}>Add</button>
       </div>
@@ -147,7 +157,7 @@ function ListEditor({ label, items, onChange, fields, addLabel }) {
           )
         ))}
         <button type="button" onClick={addItem} style={{
-          alignSelf: 'flex-start', background: 'transparent', color: theme.brass, border: `1px solid ${theme.brass}`,
+          alignSelf: 'flex-start', background: 'transparent', color: accent, border: `1px solid ${accent}`,
           borderRadius: '6px', padding: '6px 14px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer'
         }}>{addLabel}</button>
       </div>
@@ -336,7 +346,7 @@ export default function AccountPage() {
         onClick={() => handleSubmit(sectionKey)}
         disabled={submitting}
         style={{
-          display: 'inline-block', background: (submitting && activeSection === sectionKey) ? theme.line : theme.brass,
+          display: 'inline-block', background: (submitting && activeSection === sectionKey) ? theme.line : accent,
           color: '#FFFFFF', padding: '10px 20px', borderRadius: '4px', fontSize: '13px', fontWeight: '700',
           border: 'none', letterSpacing: '0.02em', cursor: 'pointer',
         }}
@@ -358,7 +368,7 @@ export default function AccountPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <label style={{ position: 'relative', display: 'block', cursor: 'pointer', flexShrink: 0 }}>
               <div style={{
-                width: '54px', height: '54px', borderRadius: '50%', background: theme.brass,
+                width: '54px', height: '54px', borderRadius: '50%', background: accent,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
                 fontSize: '22px', fontWeight: '700', color: '#FFFFFF',
                 border: '2px solid rgba(255,255,255,0.25)'
@@ -383,7 +393,7 @@ export default function AccountPage() {
                   placeholder="Full name"
                   style={{
                     color: theme.ink, fontSize: '18px', fontWeight: '700', background: 'transparent',
-                    border: 'none', borderBottom: `1px solid ${theme.brass}`, outline: 'none', minWidth: 0, flex: 1,
+                    border: 'none', borderBottom: `1px solid ${accent}`, outline: 'none', minWidth: 0, flex: 1,
                     fontFamily: 'inherit', padding: '0 0 2px',
                   }}
                 />
@@ -411,10 +421,10 @@ export default function AccountPage() {
           <div style={{ marginTop: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
               <span style={{ fontSize: '11.5px', fontWeight: '700', color: theme.inkSoft, letterSpacing: '0.03em', textTransform: 'uppercase' }}>Profile Completion</span>
-              <span style={{ fontSize: '13px', fontWeight: '700', color: theme.brass }}>{completionPct}%</span>
+              <span style={{ fontSize: '13px', fontWeight: '700', color: accent }}>{completionPct}%</span>
             </div>
             <div style={{ width: '100%', height: '7px', borderRadius: '20px', background: 'rgba(255,255,255,0.18)', overflow: 'hidden' }}>
-              <div style={{ width: `${completionPct}%`, height: '100%', borderRadius: '20px', background: theme.brass, transition: 'width 0.4s ease' }} />
+              <div style={{ width: `${completionPct}%`, height: '100%', borderRadius: '20px', background: accent, transition: 'width 0.4s ease' }} />
             </div>
           </div>
         </div>
@@ -424,7 +434,7 @@ export default function AccountPage() {
       <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '4px 16px 0' }}>
         <div>
           <div style={{ ...sectionBoxStyle, marginTop: '10px' }}>
-            <SectionLabel>Basic Info</SectionLabel>
+            <SectionLabel icon={<IconUser />}>Basic Info</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
               <FieldLabel>Mobile Number</FieldLabel>
@@ -458,7 +468,7 @@ export default function AccountPage() {
           </div>
 
           <div style={sectionBoxStyle}>
-            <SectionLabel>Profession</SectionLabel>
+            <SectionLabel icon={<IconBriefcase />}>Profession</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
               <FieldLabel>Current Job / Role</FieldLabel>
@@ -500,7 +510,7 @@ export default function AccountPage() {
           </div>
 
           <div style={sectionBoxStyle}>
-            <SectionLabel>Work Experience</SectionLabel>
+            <SectionLabel icon={<IconBriefcase />}>Work Experience</SectionLabel>
             <ListEditor
               label="Positions"
               items={form.experience_entries}
@@ -517,7 +527,7 @@ export default function AccountPage() {
           </div>
 
           <div style={sectionBoxStyle}>
-            <SectionLabel>Contact</SectionLabel>
+            <SectionLabel icon={<IconMail />}>Contact</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
               <FieldLabel>Contact Email *</FieldLabel>
@@ -538,7 +548,7 @@ export default function AccountPage() {
           </div>
 
           <div style={sectionBoxStyle}>
-            <SectionLabel>Education</SectionLabel>
+            <SectionLabel icon={<IconGrad />}>Education</SectionLabel>
             <ListEditor
               label="Degrees"
               items={form.education_entries}
@@ -554,7 +564,7 @@ export default function AccountPage() {
           </div>
 
           <div style={sectionBoxStyle}>
-            <SectionLabel>Projects</SectionLabel>
+            <SectionLabel icon={<IconFolder />}>Projects</SectionLabel>
             <ListEditor
               label="Projects"
               items={form.projects}
@@ -570,7 +580,7 @@ export default function AccountPage() {
           </div>
 
           <div style={sectionBoxStyle}>
-            <SectionLabel>Achievements</SectionLabel>
+            <SectionLabel icon={<IconTrophy />}>Achievements</SectionLabel>
             <TagInput label="Achievement" values={form.achievements} onChange={v => handleChange('achievements', v)} placeholder="e.g. Top Performer 2024" />
             <SectionSaveButton sectionKey="achievements" />
           </div>
@@ -598,7 +608,7 @@ export default function AccountPage() {
           font-family: inherit;
         }
         .ledger-select { padding-bottom: 6px; }
-        .ledger-input:focus { outline: none; border-bottom: 1.5px solid ${theme.brass}; }
+        .ledger-input:focus { outline: none; border-bottom: 1.5px solid ${accent}; }
         .ledger-input::placeholder { color: ${theme.inkSoft}; }
       `}</style>
     </div>
