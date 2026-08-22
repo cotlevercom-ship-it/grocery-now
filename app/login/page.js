@@ -165,9 +165,9 @@ function LoginForm() {
             console.error('profile save failed', profileErr)
           }
         }
-        // Email was already verified inline above — go straight to the
-        // one-time subscription payment step.
-        router.push('/account/subscribe')
+        // Email was already verified inline above — account is free to use
+        // right away, no payment step.
+        router.push('/members')
       } else {
         await signIn(email.trim(), password)
         router.push(nextUrl)

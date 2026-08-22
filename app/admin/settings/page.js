@@ -8,9 +8,6 @@ const FIELD_META = {
   contact_email: { label: 'Support Email', placeholder: 'support@example.com' },
   whatsapp_number: { label: 'WhatsApp Number (without country code, e.g. 01XXXXXXXXX)', placeholder: '01XXXXXXXXX' },
   facebook_url: { label: 'Facebook Page Link', placeholder: 'https://facebook.com/yourpage' },
-  listing_price_yearly_regular: { label: 'Membership Price — Yearly, Regular (৳)', placeholder: '6000' },
-  listing_price_yearly: { label: 'Membership Price — Yearly, Discount (৳, actually charged)', placeholder: '2500' },
-  bkash_payment_number: { label: 'bKash Payment Number (for subscriptions)', placeholder: '01XXXXXXXXX' },
 }
 
 export default function AdminSettingsPage() {
