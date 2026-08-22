@@ -24,11 +24,34 @@ function SectionHeading({ icon, children }) {
   )
 }
 
+function timeAgo(iso) {
+  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (seconds < 60) return 'just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days}d`
+  const months = Math.floor(days / 30)
+  if (months < 12) return `${months}mo`
+  return `${Math.floor(months / 12)}y`
+}
+
+function lookingForSentence(post, name) {
+  if (!post.looking_for_type) return null
+  const loc = post.looking_for_location ? ` at ${post.looking_for_location}` : ''
+  const article = /^[aeiou]/i.test(post.looking_for_type) ? 'an' : 'a'
+  return `${name || 'Someone'} is looking for ${article} ${post.looking_for_type}${loc}.`
+}
+
 export default function MemberProfileViewPage() {
   const { userId } = useParams()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [myUserId, setMyUserId] = useState(null)
+  const [posts, setPosts] = useState([])
+  const [postsLoading, setPostsLoading] = useState(true)
 
   useEffect(() => {
     const session = getSession()
@@ -44,7 +67,17 @@ export default function MemberProfileViewPage() {
       }
       setLoading(false)
     }
-    if (userId) load()
+    async function loadPosts() {
+      setPostsLoading(true)
+      try {
+        const rows = await supabaseFetch(`posts?select=*&user_id=eq.${userId}&order=created_at.desc&limit=50`)
+        setPosts(rows || [])
+      } catch (e) {
+        console.error(e)
+      }
+      setPostsLoading(false)
+    }
+    if (userId) { load(); loadPosts() }
   }, [userId])
 
   const initial = (profile?.display_name || '?').trim().charAt(0).toUpperCase()
@@ -146,6 +179,43 @@ export default function MemberProfileViewPage() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {!loading && profile && (
+            <div style={{ marginTop: '24px' }}>
+              <h2 style={{
+                fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: '17px',
+                color: sc.text, marginBottom: '12px',
+              }}>Posts</h2>
+
+              {postsLoading ? (
+                <div style={{ textAlign: 'center', padding: '24px 0', color: sc.textSoft, fontSize: '13.5px' }}>Loading…</div>
+              ) : posts.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 0', color: sc.textSoft, fontSize: '13.5px' }}>
+                  No posts yet.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {posts.map(post => {
+                    const sentence = lookingForSentence(post, profile.display_name)
+                    return (
+                      <div key={post.id} style={{ background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow, padding: '16px' }}>
+                        <div style={{ fontSize: '11.5px', color: sc.textFaint, marginBottom: '8px' }}>{timeAgo(post.created_at)}</div>
+                        {sentence && (
+                          <div style={{
+                            fontSize: '13.5px', fontWeight: '700', color: theme.brass, marginBottom: '10px',
+                            background: 'rgba(179,55,42,0.07)', borderRadius: '8px', padding: '8px 12px',
+                          }}>{sentence}</div>
+                        )}
+                        <div style={{ fontSize: '14px', color: sc.text, lineHeight: '1.55', whiteSpace: 'pre-wrap' }}>
+                          {post.content}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>
