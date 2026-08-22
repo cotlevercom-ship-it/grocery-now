@@ -7,7 +7,8 @@ import { sc } from '@/lib/memberTheme'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
 
-const LOOKING_FOR_OPTIONS = ['Investor', 'Co-founder', 'Team Member', 'Mentor', 'Advisor', 'Other']
+const LOOKING_FOR_OPTIONS = ['Investor', 'Co-founder', 'Team Member', 'Mentor', 'Advisor', 'Partner']
+const CUSTOM_LOOKING_FOR = '__custom__'
 
 function timeAgo(iso) {
   const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
@@ -140,6 +141,7 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true)
   const [draft, setDraft] = useState('')
   const [lookingForType, setLookingForType] = useState('')
+  const [lookingForCustomText, setLookingForCustomText] = useState('')
   const [lookingForLocation, setLookingForLocation] = useState('')
   const [posting, setPosting] = useState(false)
   const [error, setError] = useState('')
@@ -227,6 +229,9 @@ export default function FeedPage() {
     const content = draft.trim()
     if (!content) return
     if (!myUserId) { setError('Please log in to post.'); return }
+    const resolvedLookingFor = lookingForType === CUSTOM_LOOKING_FOR
+      ? lookingForCustomText.trim()
+      : lookingForType
     setError('')
     setPosting(true)
     try {
@@ -235,12 +240,13 @@ export default function FeedPage() {
         body: JSON.stringify({
           user_id: myUserId,
           content,
-          looking_for_type: lookingForType || null,
-          looking_for_location: lookingForType ? (lookingForLocation.trim() || null) : null,
+          looking_for_type: resolvedLookingFor || null,
+          looking_for_location: resolvedLookingFor ? (lookingForLocation.trim() || null) : null,
         }),
       })
       setDraft('')
       setLookingForType('')
+      setLookingForCustomText('')
       setLookingForLocation('')
       await loadFeed(myUserId)
     } catch (e) {
@@ -395,7 +401,20 @@ export default function FeedPage() {
               >
                 <option value="">Not looking for anything</option>
                 {LOOKING_FOR_OPTIONS.map(opt => <option key={opt} value={opt}>Looking for a {opt}</option>)}
+                <option value={CUSTOM_LOOKING_FOR}>Custom…</option>
               </select>
+              {lookingForType === CUSTOM_LOOKING_FOR && (
+                <input
+                  type="text"
+                  value={lookingForCustomText}
+                  onChange={e => setLookingForCustomText(e.target.value)}
+                  placeholder="What are you looking for?"
+                  style={{
+                    border: `1px solid ${sc.line}`, borderRadius: '7px', padding: '5px 8px', fontSize: '12px',
+                    fontFamily: theme.fontBody, color: sc.text, background: sc.bg, flex: 1, minWidth: '110px',
+                  }}
+                />
+              )}
               {lookingForType && (
                 <input
                   type="text"
