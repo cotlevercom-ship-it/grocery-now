@@ -66,6 +66,62 @@ function NavMenu() {
   )
 }
 
+function AccountMenu({ displayName, customerName }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '4px',
+          background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
+          borderRadius: '7px', padding: '8px 12px', cursor: 'pointer',
+          fontSize: '13px', whiteSpace: 'nowrap',
+          maxWidth: '120px', overflow: 'hidden'
+        }}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {displayName || customerName || 'Account'}
+        </span>
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: '160px',
+          background: theme.surface, borderRadius: '8px',
+          boxShadow: '0 4px 16px rgba(20,33,61,0.08)', overflow: 'hidden', zIndex: 50,
+          padding: '6px',
+        }}>
+          <Link
+            href="/account"
+            onClick={() => setOpen(false)}
+            style={{ display: 'block', padding: '9px 10px', borderRadius: '6px', fontSize: '13px', color: theme.inkSoft, textDecoration: 'none' }}
+          >My Profile</Link>
+          <Link
+            href="/settings"
+            onClick={() => setOpen(false)}
+            style={{ display: 'block', padding: '9px 10px', borderRadius: '6px', fontSize: '13px', color: theme.inkSoft, textDecoration: 'none' }}
+          >Settings</Link>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Navbar() {
   const [session, setSession] = useState(null)
   const [displayName, setDisplayName] = useState('')
@@ -152,21 +208,7 @@ export default function Navbar() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
           {session ? (
-            <Link href="/account" style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              background: theme.surface, color: theme.ink, border: `1px solid ${theme.line}`,
-              borderRadius: '7px', padding: '8px 12px',
-              fontSize: '13px', whiteSpace: 'nowrap', textDecoration: 'none',
-              maxWidth: '120px', overflow: 'hidden'
-            }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {displayName || customerName || 'Account'}
-              </span>
-            </Link>
+            <AccountMenu displayName={displayName} customerName={customerName} />
           ) : (
             <Link href="/login" style={{
               display: 'flex', alignItems: 'center', gap: '4px',
