@@ -8,7 +8,7 @@ import { sc } from '@/lib/memberTheme'
 import VerifiedBadge from '@/components/VerifiedBadge'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
-import { IconUser, IconBriefcase, IconGrad, IconFolder, IconTrophy, IconMail, IconPin, IconLink, IconGithub } from '@/components/ResumeIcons'
+import { IconUser, IconBriefcase, IconGrad, IconTrophy, IconMail, IconPin, IconGithub, IconGlobe, IconGear } from '@/components/ResumeIcons'
 
 const accent = '#2563EB'
 
@@ -114,7 +114,7 @@ export default function MemberProfileViewPage() {
                   )}
                   {profile.linkedin_url && (
                     <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '9px', fontSize: '12.5px', color: accent, textDecoration: 'none', wordBreak: 'break-all' }}>
-                      <IconLink color={accent} /> LinkedIn
+                      <IconGlobe color={accent} /> LinkedIn
                     </a>
                   )}
                   {profile.github_url && (
@@ -124,9 +124,24 @@ export default function MemberProfileViewPage() {
                   )}
                 </div>
 
+                {profile.education_entries && profile.education_entries.length > 0 && (
+                  <div style={{ marginTop: '24px' }}>
+                    <SideHeading icon={<IconGrad size={14} />}>Education</SideHeading>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {profile.education_entries.map((ed, i) => (
+                        <div key={i}>
+                          <div style={{ fontSize: '13px', fontWeight: '700', color: '#111827' }}>{ed.degree}</div>
+                          <div style={{ fontSize: '12px', color: '#6B7280', marginTop: '1px' }}>{ed.institution}</div>
+                          {ed.years && <div style={{ fontSize: '12px', color: '#6B7280' }}>{ed.years}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {profile.skills && profile.skills.length > 0 && (
-                  <div style={{ marginTop: '28px' }}>
-                    <SideHeading icon={<IconGrad size={14} />}>Skills</SideHeading>
+                  <div style={{ marginTop: '24px' }}>
+                    <SideHeading icon={<IconGear size={14} />}>Skills</SideHeading>
                     <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#374151', lineHeight: 1.9 }}>
                       {profile.skills.map(s => <li key={s}>{s}</li>)}
                     </ul>
@@ -135,7 +150,7 @@ export default function MemberProfileViewPage() {
 
                 {profile.languages && profile.languages.length > 0 && (
                   <div style={{ marginTop: '24px' }}>
-                    <SideHeading icon={<IconLink size={14} />}>Languages</SideHeading>
+                    <SideHeading icon={<IconGlobe size={14} />}>Languages</SideHeading>
                     <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#374151', lineHeight: 1.9 }}>
                       {profile.languages.map(l => <li key={l}>{l}</li>)}
                     </ul>
@@ -188,25 +203,9 @@ export default function MemberProfileViewPage() {
                   </div>
                 )}
 
-                {profile.education_entries && profile.education_entries.length > 0 && (
-                  <div style={{ marginBottom: '26px' }}>
-                    <SectionHeading icon={<IconGrad />}>Education</SectionHeading>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      {profile.education_entries.map((ed, i) => (
-                        <div key={i}>
-                          <div style={{ fontSize: '14.5px', fontWeight: '700', color: '#111827' }}>{ed.degree}</div>
-                          <div style={{ fontSize: '13px', color: '#6B7280', marginTop: '1px' }}>
-                            {[ed.institution, ed.years].filter(Boolean).join(' · ')}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {profile.projects && profile.projects.length > 0 && (
                   <div style={{ marginBottom: '26px' }}>
-                    <SectionHeading icon={<IconFolder />}>Projects</SectionHeading>
+                    <SectionHeading icon={<IconBriefcase />}>Projects</SectionHeading>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       {profile.projects.map((p, i) => (
                         <div key={i}>
