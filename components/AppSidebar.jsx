@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { key: 'discover', label: 'Discover', icon: '🧭', href: '/members' },
   { key: 'feed', label: 'Feed', icon: '📰', href: '/feed' },
   { key: 'profile', label: 'My Profile', icon: '👤', href: '/account' },
+  { key: 'premium', label: 'Premium Membership', icon: '⭐', href: '/account#premium' },
 ]
 
 export default function AppSidebar({ active }) {

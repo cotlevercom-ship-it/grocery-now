@@ -336,7 +336,7 @@ export default function AccountPage() {
           </div>
         </div>
 
-        <div style={sectionBoxStyle}>
+        <div id="premium" style={sectionBoxStyle}>
           <SectionLabel icon={<span>⭐</span>}>Premium Membership</SectionLabel>
 
           {premiumStatus === 'active' ? (
