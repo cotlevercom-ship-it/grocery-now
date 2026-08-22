@@ -2,26 +2,33 @@
 import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
-const PLAN = {
-  name: 'Join Cot Lever',
-  tagline: 'Create your co-founder profile and get discovered by partners, co-founders, and share holders.',
-  options: [
-    { label: 'Yearly', regular: '৳6000', discount: '৳2500' },
-  ],
-  features: [
-    'Create your co-founder profile — skills, experience, and what you\u2019re looking for',
-    'Your profile shown in the public directory, searchable by anyone browsing',
-    'Post to the community Feed — share ideas and say what you\u2019re looking for (investor, co-founder, team member, and more)',
-    'Interested people contact you directly using the details you provide',
-    'Profile stays active for the full plan period, then renews',
-  ],
-  cta: { label: 'Get Started', href: '/login' },
+const FREE_FEATURES = [
+  'Create your co-founder profile — skills, experience, and what you\u2019re looking for',
+  'Browse the member directory and see basic info on everyone',
+  'Post to the community Feed',
+  'Send one message to start a conversation with anyone',
+]
+
+const PREMIUM_FEATURES = [
+  'Everything in Free',
+  'Reply in message threads — keep the conversation going',
+  'Comment on Feed posts',
+  'View full member profiles — experience, education, projects, contact details',
+]
+
+function Check({ color }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+      style={{ flexShrink: 0, marginTop: '3px' }}>
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  )
 }
 
 export default function PricingPage() {
   return (
     <div style={{ background: theme.paper, minHeight: '70vh' }}>
-      <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(28px,4vw,56px) clamp(16px,3vw,24px)' }}>
+      <div style={{ maxWidth: '840px', margin: '0 auto', padding: 'clamp(28px,4vw,56px) clamp(16px,3vw,24px)' }}>
         <div style={{
           fontFamily: theme.fontMono, fontSize: '11.5px', letterSpacing: '0.1em', textTransform: 'uppercase',
           color: theme.brassDark, marginBottom: '10px', fontWeight: '600'
@@ -30,61 +37,69 @@ export default function PricingPage() {
         <h1 style={{
           fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(28px,3.6vw,40px)',
           color: theme.ink, marginBottom: '16px', lineHeight: '1.15'
-        }}>Simple, transparent pricing</h1>
+        }}>Free to join. Upgrade when you&apos;re ready.</h1>
 
-        <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '44px', maxWidth: '520px' }}>
-          One simple profile, pay via bKash. Your profile goes live in the directory as soon as you save it.
+        <p style={{ fontSize: '15px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '44px', maxWidth: '560px' }}>
+          Create your profile and start browsing for free — no card required. Premium unlocks full conversations and full profile access, paid via bKash.
         </p>
 
-        <div style={{
-          padding: 'clamp(22px,3.5vw,32px)', background: theme.surface,
-          borderRadius: '12px', border: `1px solid ${theme.line}`,
-        }}>
-          <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '20px', fontWeight: '600', color: theme.ink, marginBottom: '6px' }}>
-            {PLAN.name}
-          </h2>
-          <p style={{ fontSize: '13.5px', color: theme.inkSoft, marginBottom: '18px' }}>{PLAN.tagline}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px,1fr))', gap: '20px' }}>
+          {/* Free plan */}
+          <div style={{
+            padding: 'clamp(22px,3.5vw,28px)', background: theme.surface,
+            borderRadius: '12px', border: `1px solid ${theme.line}`,
+          }}>
+            <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '19px', fontWeight: '600', color: theme.ink, marginBottom: '4px' }}>
+              Free
+            </h2>
+            <div style={{ fontFamily: theme.fontDisplay, fontSize: '26px', fontWeight: '700', color: theme.ink, marginBottom: '18px' }}>৳0</div>
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
-            {PLAN.options.map((opt) => (
-              <div key={opt.label} style={{
-                flex: '1 1 160px', border: `1px solid ${theme.line}`, borderRadius: '10px',
-                padding: '14px 16px',
-              }}>
-                <div style={{ fontSize: '12px', color: theme.inkSoft, marginBottom: '4px' }}>{opt.label}</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                  <span style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '700', color: theme.ink }}>
-                    {opt.discount || opt.regular}
-                  </span>
-                  {opt.discount && (
-                    <span style={{ fontSize: '13px', color: theme.inkSoft, textDecoration: 'line-through' }}>{opt.regular}</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginBottom: '22px' }}>
-            <div style={{ fontFamily: theme.fontMono, fontSize: '10.5px', letterSpacing: '0.06em', textTransform: 'uppercase', color: theme.inkSoft, marginBottom: '10px', fontWeight: '600' }}>
-              What you get
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
-              {PLAN.features.map((f) => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '22px' }}>
+              {FREE_FEATURES.map((f) => (
                 <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.signal} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-                    style={{ flexShrink: 0, marginTop: '3px' }}>
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
+                  <Check color={theme.inkSoft} />
                   <span style={{ fontSize: '13.5px', color: theme.ink, lineHeight: '1.5' }}>{f}</span>
                 </div>
               ))}
             </div>
+
+            <Link href="/login" style={{
+              display: 'inline-block', background: 'transparent', color: theme.brass,
+              border: `1.5px solid ${theme.brass}`, borderRadius: '8px', padding: '10px 20px',
+              fontSize: '13.5px', fontWeight: '600', textDecoration: 'none',
+            }}>Create Free Account</Link>
           </div>
 
-          <Link href={PLAN.cta.href} style={{
-            display: 'inline-block', background: theme.brass, color: 'white',
-            borderRadius: '8px', padding: '11px 20px', fontSize: '13.5px', fontWeight: '600', textDecoration: 'none',
-          }}>{PLAN.cta.label}</Link>
+          {/* Premium plan */}
+          <div style={{
+            padding: 'clamp(22px,3.5vw,28px)', background: theme.surface,
+            borderRadius: '12px', border: `1.5px solid ${theme.brass}`, position: 'relative',
+          }}>
+            <div style={{
+              position: 'absolute', top: '-11px', left: '20px', background: theme.brass, color: '#FFFFFF',
+              fontSize: '10.5px', fontWeight: '700', letterSpacing: '0.04em', textTransform: 'uppercase',
+              padding: '4px 10px', borderRadius: '999px',
+            }}>⭐ Premium</div>
+
+            <h2 style={{ fontFamily: theme.fontDisplay, fontSize: '19px', fontWeight: '600', color: theme.ink, marginTop: '6px', marginBottom: '4px' }}>
+              Premium
+            </h2>
+            <div style={{ fontSize: '13px', color: theme.inkSoft, marginBottom: '18px' }}>Pay via bKash from your account</div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '22px' }}>
+              {PREMIUM_FEATURES.map((f) => (
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+                  <Check color={theme.signal} />
+                  <span style={{ fontSize: '13.5px', color: theme.ink, lineHeight: '1.5', fontWeight: f === 'Everything in Free' ? '600' : '400' }}>{f}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link href="/premium" style={{
+              display: 'inline-block', background: theme.brass, color: '#FFFFFF',
+              borderRadius: '8px', padding: '11px 20px', fontSize: '13.5px', fontWeight: '600', textDecoration: 'none',
+            }}>Upgrade to Premium</Link>
+          </div>
         </div>
 
         <p style={{ fontSize: '13px', color: theme.inkSoft, marginTop: '28px', lineHeight: '1.6' }}>
