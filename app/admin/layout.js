@@ -4,12 +4,36 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
 
+// Each admin_users row has a `role`. 'super_admin' sees everything below.
+// A department role (its key matches the nav href's last segment) is
+// restricted to just that one section — enforced both by hiding the nav
+// links AND by redirecting away from a URL typed/bookmarked directly.
+const ALL_NAV_ITEMS = [
+  { href: '/admin', label: 'Dashboard', icon: '📊', roles: 'all' },
+  { href: '/admin/members', label: 'Members', icon: '👤', roles: ['members'] },
+  { href: '/admin/feed', label: 'Feed', icon: '📰', roles: ['feed'] },
+  { href: '/admin/resources', label: 'Resources', icon: '📰', roles: ['resources'] },
+  { href: '/admin/resource-categories', label: 'Article Categories', icon: '🗂️', roles: ['resources'] },
+  { href: '/admin/banners', label: 'Banners', icon: '🖼️', roles: ['banners'] },
+  { href: '/admin/pages', label: 'Page Management', icon: '📄', roles: ['pages'] },
+  { href: '/admin/agreements', label: 'Agreements', icon: '📜', roles: ['agreements'] },
+  { href: '/admin/help', label: 'Help Center', icon: '❓', roles: ['help'] },
+  { href: '/admin/settings', label: 'Settings', icon: '⚙️', roles: ['settings'] },
+  { href: '/admin/admin-users', label: 'Admin Users', icon: '🔑', roles: [] }, // super_admin only
+]
+
+function itemsForRole(role) {
+  if (role === 'super_admin') return ALL_NAV_ITEMS
+  return ALL_NAV_ITEMS.filter(item => item.roles === 'all' || item.roles.includes(role))
+}
+
 export default function AdminLayout({ children }) {
   const router = useRouter()
   const pathname = usePathname()
   const [checking, setChecking] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [adminEmail, setAdminEmail] = useState('')
+  const [adminRole, setAdminRole] = useState('')
   const [navOpen, setNavOpen] = useState(false)
 
   const publicPaths = ['/admin/login', '/admin/forgot-password']
@@ -27,10 +51,21 @@ export default function AdminLayout({ children }) {
         return
       }
       try {
-        const rows = await supabaseFetch(`admin_users?select=id&user_id=eq.${session.user.id}`)
+        const rows = await supabaseFetch(`admin_users?select=id,role&user_id=eq.${session.user.id}`)
         if (rows && rows.length > 0) {
+          const role = rows[0].role || 'super_admin'
           setIsAdmin(true)
           setAdminEmail(session.user.email)
+          setAdminRole(role)
+
+          // Route-level enforcement: bounce away from a section this
+          // role isn't allowed into, even if they typed/bookmarked the URL.
+          const allowed = itemsForRole(role).some(item => item.href === pathname)
+          if (!allowed) {
+            router.replace('/admin')
+            setChecking(false)
+            return
+          }
         } else {
           router.replace('/admin/login')
         }
@@ -62,18 +97,7 @@ export default function AdminLayout({ children }) {
 
   if (!isAdmin) return null
 
-  const navItems = [
-    { href: '/admin', label: 'Dashboard', icon: '📊' },
-    { href: '/admin/members', label: 'Members', icon: '👤' },
-    { href: '/admin/feed', label: 'Feed', icon: '📰' },
-    { href: '/admin/resources', label: 'Resources', icon: '📰' },
-    { href: '/admin/resource-categories', label: 'Article Categories', icon: '🗂️' },
-    { href: '/admin/banners', label: 'Banners', icon: '🖼️' },
-    { href: '/admin/pages', label: 'Page Management', icon: '📄' },
-    { href: '/admin/agreements', label: 'Agreements', icon: '📜' },
-    { href: '/admin/help', label: 'Help Center', icon: '❓' },
-    { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
-  ]
+  const navItems = itemsForRole(adminRole)
 
   const handleLogout = () => {
     signOut()
@@ -127,7 +151,7 @@ export default function AdminLayout({ children }) {
           <div style={{
             fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-          }}>{adminEmail}</div>
+          }}>{adminEmail}{adminRole !== 'super_admin' && ` · ${adminRole}`}</div>
           <button onClick={handleLogout} style={{
             width: '100%', background: 'rgba(255,255,255,0.1)', color: 'white',
             border: 'none', borderRadius: '8px', padding: '8px', fontSize: '13px', cursor: 'pointer'
