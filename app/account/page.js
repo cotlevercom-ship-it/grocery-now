@@ -69,6 +69,12 @@ export default function AccountPage() {
   const [photoPreview, setPhotoPreview] = useState('')
   const [existingPhotoUrl, setExistingPhotoUrl] = useState('')
 
+  const [premiumStatus, setPremiumStatus] = useState('none') // 'none' | 'pending' | 'active'
+  const [bkashNumber, setBkashNumber] = useState('')
+  const [txnNote, setTxnNote] = useState('')
+  const [requestingPremium, setRequestingPremium] = useState(false)
+  const [premiumError, setPremiumError] = useState('')
+
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }))
 
   const handlePhotoChange = (e) => {
@@ -112,9 +118,15 @@ export default function AccountPage() {
             location: p.location || '',
           }))
           setExistingPhotoUrl(p.photo_url || '')
+          setPremiumStatus(p.premium_status || 'none')
         } else {
           setForm(prev => ({ ...prev, contact_email: session.user.email || '' }))
         }
+      } catch (e) { console.error(e) }
+
+      try {
+        const settings = await supabaseFetch(`app_settings?select=key,value&key=eq.bkash_payment_number`)
+        setBkashNumber(settings?.[0]?.value || '')
       } catch (e) { console.error(e) }
 
       setLoaded(true)
@@ -166,6 +178,28 @@ export default function AccountPage() {
       setError('Failed to save, please try again')
     }
     setSubmitting(false)
+  }
+
+  const handleRequestPremium = async () => {
+    setPremiumError('')
+    setRequestingPremium(true)
+    try {
+      await supabaseFetch('member_profiles', {
+        method: 'POST',
+        headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+        body: JSON.stringify({
+          user_id: userId,
+          premium_status: 'pending',
+          premium_requested_at: new Date().toISOString(),
+          premium_transaction_note: txnNote.trim() || null,
+        }),
+      })
+      setPremiumStatus('pending')
+    } catch (e) {
+      console.error(e)
+      setPremiumError('Could not submit your request, please try again.')
+    }
+    setRequestingPremium(false)
   }
 
   if (!loaded) {
@@ -300,6 +334,55 @@ export default function AccountPage() {
             <FieldLabel>Bio</FieldLabel>
             <textarea rows={4} value={form.bio} onChange={e => handleChange('bio', e.target.value)} placeholder="A short intro about yourself" className="ledger-input" style={{ resize: 'vertical', fontFamily: 'inherit' }} />
           </div>
+        </div>
+
+        <div style={sectionBoxStyle}>
+          <SectionLabel icon={<span>⭐</span>}>Premium Membership</SectionLabel>
+
+          {premiumStatus === 'active' ? (
+            <div style={{ padding: '12px 14px', background: theme.signalSoft, borderRadius: '8px', borderLeft: `3px solid ${theme.signal}` }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: theme.signal }}>✓ You&apos;re a Premium Member</div>
+              <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginTop: '4px' }}>
+                You can reply to messages, comment on posts, and view full member profiles.
+              </div>
+            </div>
+          ) : premiumStatus === 'pending' ? (
+            <div style={{ padding: '12px 14px', background: theme.lineSoft, borderRadius: '8px', borderLeft: `3px solid ${accent}` }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: theme.ink }}>Request submitted</div>
+              <div style={{ fontSize: '12.5px', color: theme.inkSoft, marginTop: '4px' }}>
+                Your payment is under review. We&apos;ll activate Premium once it&apos;s confirmed.
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: '13px', color: theme.inkSoft, lineHeight: '1.6', marginBottom: '14px' }}>
+                Premium unlocks: replying in message threads, commenting on feed posts, and viewing other members&apos; full profiles.
+              </div>
+              {bkashNumber && (
+                <div style={{ padding: '12px 14px', background: theme.lineSoft, borderRadius: '8px', marginBottom: '14px' }}>
+                  <div style={{ fontSize: '11.5px', color: theme.inkSoft, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Send bKash payment to</div>
+                  <div style={{ fontSize: '17px', fontWeight: '700', color: theme.ink, fontFamily: theme.fontMono, marginTop: '3px' }}>{bkashNumber}</div>
+                </div>
+              )}
+              <div style={{ marginBottom: '14px' }}>
+                <FieldLabel>bKash Transaction ID (optional)</FieldLabel>
+                <input type="text" value={txnNote} onChange={e => setTxnNote(e.target.value)} placeholder="e.g. 8N7A6XYZ12" className="ledger-input" />
+              </div>
+              <button
+                type="button"
+                onClick={handleRequestPremium}
+                disabled={requestingPremium}
+                style={{
+                  display: 'block', width: '100%', background: requestingPremium ? theme.line : accent,
+                  color: '#FFFFFF', padding: '12px', borderRadius: '8px', fontSize: '13.5px', fontWeight: '700',
+                  border: 'none', cursor: requestingPremium ? 'default' : 'pointer',
+                }}
+              >{requestingPremium ? 'Submitting...' : "I've Paid — Request Activation"}</button>
+              {premiumError && (
+                <div style={{ marginTop: '10px', padding: '9px 12px', background: theme.dangerSoft, color: theme.danger, borderRadius: '4px', fontSize: '12.5px', borderLeft: `3px solid ${theme.danger}` }}>{premiumError}</div>
+              )}
+            </>
+          )}
         </div>
 
         <div style={{ marginTop: '20px' }}>

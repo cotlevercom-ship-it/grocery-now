@@ -11,6 +11,7 @@ import { getSession, signOut, supabaseFetch } from '@/lib/supabase'
 const ALL_NAV_ITEMS = [
   { href: '/admin', label: 'Dashboard', icon: '📊', roles: 'all' },
   { href: '/admin/members', label: 'Members', icon: '👤', roles: ['members'] },
+  { href: '/admin/premium-requests', label: 'Premium Requests', icon: '⭐', roles: ['members'] },
   { href: '/admin/feed', label: 'Feed', icon: '📰', roles: ['feed'] },
   { href: '/admin/resources', label: 'Resources', icon: '📰', roles: ['resources'] },
   { href: '/admin/resource-categories', label: 'Article Categories', icon: '🗂️', roles: ['resources'] },
