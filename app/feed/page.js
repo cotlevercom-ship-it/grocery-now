@@ -7,6 +7,8 @@ import { sc } from '@/lib/memberTheme'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
 
+const LOOKING_FOR_OPTIONS = ['Investor', 'Co-founder', 'Team Member', 'Mentor', 'Advisor', 'Other']
+
 function timeAgo(iso) {
   const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
   if (seconds < 60) return 'just now'
@@ -37,6 +39,97 @@ function Avatar({ profile, size = 44 }) {
   )
 }
 
+function lookingForSentence(post, profile) {
+  if (!post.looking_for_type) return null
+  const name = profile?.display_name || 'Someone'
+  const loc = post.looking_for_location ? ` at ${post.looking_for_location}` : ''
+  const article = /^[aeiou]/i.test(post.looking_for_type) ? 'an' : 'a'
+  return `${name} is looking for ${article} ${post.looking_for_type}${loc}.`
+}
+
+// Recursive comment node — renders one comment plus its children, with a reply box.
+function CommentNode({
+  comment, childrenById, depth, profilesById, myUserId,
+  openReplyIds, replyDrafts, onToggleReply, onReplyDraftChange, onSubmitReply, submittingReplyId,
+}) {
+  const profile = profilesById[comment.user_id]
+  const kids = childrenById[comment.id] || []
+  const isOpen = openReplyIds.has(comment.id)
+  const indent = Math.min(depth, 6) * 20
+
+  return (
+    <div style={{ marginLeft: `${indent}px`, marginTop: '10px' }}>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <Link href={`/members/${comment.user_id}`} style={{ flexShrink: 0 }}>
+          <Avatar profile={profile} size={28} />
+        </Link>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ background: sc.bg, borderRadius: '12px', padding: '7px 12px', display: 'inline-block', maxWidth: '100%' }}>
+            <Link href={`/members/${comment.user_id}`} style={{ textDecoration: 'none' }}>
+              <span style={{ fontSize: '13px', fontWeight: '700', color: sc.text }}>
+                {profile?.display_name || 'Cot Lever member'}
+              </span>
+            </Link>
+            <div style={{ fontSize: '13.5px', color: sc.text, whiteSpace: 'pre-wrap', marginTop: '1px' }}>{comment.content}</div>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '3px', paddingLeft: '4px' }}>
+            <span style={{ fontSize: '11px', color: sc.textFaint }}>{timeAgo(comment.created_at)}</span>
+            {myUserId && (
+              <button
+                type="button"
+                onClick={() => onToggleReply(comment.id)}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '11.5px', fontWeight: '700', color: sc.textSoft }}
+              >Reply</button>
+            )}
+          </div>
+
+          {isOpen && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+              <input
+                type="text"
+                value={replyDrafts[comment.id] || ''}
+                onChange={e => onReplyDraftChange(comment.id, e.target.value)}
+                placeholder="Write a reply…"
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSubmitReply(comment.post_id, comment.id) } }}
+                style={{
+                  flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '999px',
+                  padding: '6px 12px', fontSize: '13px', fontFamily: theme.fontBody, color: sc.text, background: sc.cardBg,
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => onSubmitReply(comment.post_id, comment.id)}
+                disabled={submittingReplyId === comment.id || !(replyDrafts[comment.id] || '').trim()}
+                style={{
+                  background: theme.brass, color: '#FFFFFF', border: 'none', borderRadius: '999px',
+                  padding: '6px 14px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', flexShrink: 0,
+                }}
+              >Send</button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {kids.map(child => (
+        <CommentNode
+          key={child.id}
+          comment={child}
+          childrenById={childrenById}
+          depth={depth + 1}
+          profilesById={profilesById}
+          myUserId={myUserId}
+          openReplyIds={openReplyIds}
+          replyDrafts={replyDrafts}
+          onToggleReply={onToggleReply}
+          onReplyDraftChange={onReplyDraftChange}
+          onSubmitReply={onSubmitReply}
+          submittingReplyId={submittingReplyId}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function FeedPage() {
   const [myUserId, setMyUserId] = useState(null)
   const [myProfile, setMyProfile] = useState(null)
@@ -46,8 +139,32 @@ export default function FeedPage() {
   const [myLikes, setMyLikes] = useState(new Set())
   const [loading, setLoading] = useState(true)
   const [draft, setDraft] = useState('')
+  const [lookingForType, setLookingForType] = useState('')
+  const [lookingForLocation, setLookingForLocation] = useState('')
   const [posting, setPosting] = useState(false)
   const [error, setError] = useState('')
+
+  // Comments
+  const [commentsByPost, setCommentsByPost] = useState({})
+  const [commentCounts, setCommentCounts] = useState({})
+  const [openComments, setOpenComments] = useState(new Set())
+  const [loadingComments, setLoadingComments] = useState(new Set())
+  const [newCommentDrafts, setNewCommentDrafts] = useState({})
+  const [openReplyIds, setOpenReplyIds] = useState(new Set())
+  const [replyDrafts, setReplyDrafts] = useState({})
+  const [submittingReplyId, setSubmittingReplyId] = useState(null)
+
+  const mergeProfiles = useCallback(async (userIds) => {
+    const missing = [...new Set(userIds)].filter(id => id && !profilesById[id])
+    if (missing.length === 0) return
+    const inList = missing.map(id => `"${id}"`).join(',')
+    const rows = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
+    setProfilesById(prev => {
+      const next = { ...prev }
+      for (const p of (rows || [])) next[p.user_id] = p
+      return next
+    })
+  }, [profilesById])
 
   const loadFeed = useCallback(async (uid) => {
     setLoading(true)
@@ -78,9 +195,15 @@ export default function FeedPage() {
         }
         setLikeCounts(counts)
         setMyLikes(mine)
+
+        const commentRows = await supabaseFetch(`post_comments?select=post_id&post_id=in.(${inList})`)
+        const cCounts = {}
+        for (const c of (commentRows || [])) cCounts[c.post_id] = (cCounts[c.post_id] || 0) + 1
+        setCommentCounts(cCounts)
       } else {
         setLikeCounts({})
         setMyLikes(new Set())
+        setCommentCounts({})
       }
     } catch (e) {
       console.error(e)
@@ -109,9 +232,16 @@ export default function FeedPage() {
     try {
       await supabaseFetch('posts', {
         method: 'POST',
-        body: JSON.stringify({ user_id: myUserId, content }),
+        body: JSON.stringify({
+          user_id: myUserId,
+          content,
+          looking_for_type: lookingForType || null,
+          looking_for_location: lookingForType ? (lookingForLocation.trim() || null) : null,
+        }),
       })
       setDraft('')
+      setLookingForType('')
+      setLookingForLocation('')
       await loadFeed(myUserId)
     } catch (e) {
       console.error(e)
@@ -124,7 +254,6 @@ export default function FeedPage() {
     if (!myUserId) { setError('Please log in to like posts.'); return }
     const alreadyLiked = myLikes.has(postId)
 
-    // Optimistic update
     setMyLikes(prev => {
       const next = new Set(prev)
       alreadyLiked ? next.delete(postId) : next.add(postId)
@@ -144,7 +273,6 @@ export default function FeedPage() {
       }
     } catch (e) {
       console.error(e)
-      // Revert on failure
       setMyLikes(prev => {
         const next = new Set(prev)
         alreadyLiked ? next.add(postId) : next.delete(postId)
@@ -152,6 +280,78 @@ export default function FeedPage() {
       })
       setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + (alreadyLiked ? 1 : -1) }))
     }
+  }
+
+  const loadComments = useCallback(async (postId) => {
+    setLoadingComments(prev => new Set(prev).add(postId))
+    try {
+      const rows = await supabaseFetch(`post_comments?select=*&post_id=eq.${postId}&order=created_at.asc`)
+      setCommentsByPost(prev => ({ ...prev, [postId]: rows || [] }))
+      await mergeProfiles((rows || []).map(r => r.user_id))
+    } catch (e) {
+      console.error(e)
+    }
+    setLoadingComments(prev => { const next = new Set(prev); next.delete(postId); return next })
+  }, [mergeProfiles])
+
+  const toggleComments = (postId) => {
+    setOpenComments(prev => {
+      const next = new Set(prev)
+      if (next.has(postId)) {
+        next.delete(postId)
+      } else {
+        next.add(postId)
+        if (!commentsByPost[postId]) loadComments(postId)
+      }
+      return next
+    })
+  }
+
+  const submitNewComment = async (postId) => {
+    const content = (newCommentDrafts[postId] || '').trim()
+    if (!content) return
+    if (!myUserId) { setError('Please log in to comment.'); return }
+    try {
+      await supabaseFetch('post_comments', {
+        method: 'POST',
+        body: JSON.stringify({ post_id: postId, user_id: myUserId, parent_comment_id: null, content }),
+      })
+      setNewCommentDrafts(prev => ({ ...prev, [postId]: '' }))
+      setCommentCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }))
+      await loadComments(postId)
+    } catch (e) {
+      console.error(e)
+      setError('Could not post comment, please try again.')
+    }
+  }
+
+  const toggleReply = (commentId) => {
+    setOpenReplyIds(prev => {
+      const next = new Set(prev)
+      next.has(commentId) ? next.delete(commentId) : next.add(commentId)
+      return next
+    })
+  }
+
+  const submitReply = async (postId, parentCommentId) => {
+    const content = (replyDrafts[parentCommentId] || '').trim()
+    if (!content) return
+    if (!myUserId) { setError('Please log in to reply.'); return }
+    setSubmittingReplyId(parentCommentId)
+    try {
+      await supabaseFetch('post_comments', {
+        method: 'POST',
+        body: JSON.stringify({ post_id: postId, user_id: myUserId, parent_comment_id: parentCommentId, content }),
+      })
+      setReplyDrafts(prev => ({ ...prev, [parentCommentId]: '' }))
+      setOpenReplyIds(prev => { const next = new Set(prev); next.delete(parentCommentId); return next })
+      setCommentCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }))
+      await loadComments(postId)
+    } catch (e) {
+      console.error(e)
+      setError('Could not post reply, please try again.')
+    }
+    setSubmittingReplyId(null)
   }
 
   return (
@@ -174,7 +374,7 @@ export default function FeedPage() {
               <textarea
                 value={draft}
                 onChange={e => setDraft(e.target.value)}
-                placeholder="Share something with the community…"
+                placeholder="Share your idea with the community…"
                 rows={2}
                 style={{
                   flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '10px',
@@ -183,6 +383,33 @@ export default function FeedPage() {
                 }}
               />
             </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px', marginLeft: '52px', flexWrap: 'wrap' }}>
+              <select
+                value={lookingForType}
+                onChange={e => setLookingForType(e.target.value)}
+                style={{
+                  border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '7px 10px', fontSize: '13px',
+                  fontFamily: theme.fontBody, color: sc.text, background: sc.bg,
+                }}
+              >
+                <option value="">Not looking for anything specific</option>
+                {LOOKING_FOR_OPTIONS.map(opt => <option key={opt} value={opt}>Looking for a {opt}</option>)}
+              </select>
+              {lookingForType && (
+                <input
+                  type="text"
+                  value={lookingForLocation}
+                  onChange={e => setLookingForLocation(e.target.value)}
+                  placeholder="Location (e.g. Dhaka, Bangladesh)"
+                  style={{
+                    border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '7px 10px', fontSize: '13px',
+                    fontFamily: theme.fontBody, color: sc.text, background: sc.bg, flex: 1, minWidth: '160px',
+                  }}
+                />
+              )}
+            </div>
+
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
               <button
                 type="button"
@@ -213,6 +440,22 @@ export default function FeedPage() {
                 const profile = profilesById[post.user_id]
                 const liked = myLikes.has(post.id)
                 const count = likeCounts[post.id] || 0
+                const cCount = commentCounts[post.id] || 0
+                const commentsOpen = openComments.has(post.id)
+                const sentence = lookingForSentence(post, profile)
+
+                const flatComments = commentsByPost[post.id] || []
+                const childrenById = {}
+                const topLevel = []
+                for (const c of flatComments) {
+                  if (c.parent_comment_id) {
+                    if (!childrenById[c.parent_comment_id]) childrenById[c.parent_comment_id] = []
+                    childrenById[c.parent_comment_id].push(c)
+                  } else {
+                    topLevel.push(c)
+                  }
+                }
+
                 return (
                   <div key={post.id} style={{ background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow, padding: '16px' }}>
                     <div style={{ display: 'flex', gap: '12px' }}>
@@ -232,7 +475,14 @@ export default function FeedPage() {
                       </div>
                     </div>
 
-                    <div style={{ fontSize: '14px', color: sc.text, lineHeight: '1.55', marginTop: '12px', whiteSpace: 'pre-wrap' }}>
+                    {sentence && (
+                      <div style={{
+                        fontSize: '13.5px', fontWeight: '700', color: theme.brass, marginTop: '12px',
+                        background: 'rgba(179,55,42,0.07)', borderRadius: '8px', padding: '8px 12px',
+                      }}>{sentence}</div>
+                    )}
+
+                    <div style={{ fontSize: '14px', color: sc.text, lineHeight: '1.55', marginTop: '10px', whiteSpace: 'pre-wrap' }}>
                       {post.content}
                     </div>
 
@@ -248,7 +498,67 @@ export default function FeedPage() {
                       >
                         <span>{liked ? '👍' : '🤍'}</span> Like{count > 0 ? ` · ${count}` : ''}
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => toggleComments(post.id)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none',
+                          cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: sc.textSoft,
+                        }}
+                      >
+                        <span>💬</span> Comment{cCount > 0 ? ` · ${cCount}` : ''}
+                      </button>
                     </div>
+
+                    {commentsOpen && (
+                      <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: `1px solid ${sc.line}` }}>
+                        {loadingComments.has(post.id) && !commentsByPost[post.id] ? (
+                          <div style={{ fontSize: '13px', color: sc.textSoft, padding: '8px 0' }}>Loading comments…</div>
+                        ) : (
+                          topLevel.map(c => (
+                            <CommentNode
+                              key={c.id}
+                              comment={c}
+                              childrenById={childrenById}
+                              depth={0}
+                              profilesById={profilesById}
+                              myUserId={myUserId}
+                              openReplyIds={openReplyIds}
+                              replyDrafts={replyDrafts}
+                              onToggleReply={toggleReply}
+                              onReplyDraftChange={(id, val) => setReplyDrafts(prev => ({ ...prev, [id]: val }))}
+                              onSubmitReply={submitReply}
+                              submittingReplyId={submittingReplyId}
+                            />
+                          ))
+                        )}
+
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                          <Avatar profile={myProfile} size={28} />
+                          <input
+                            type="text"
+                            value={newCommentDrafts[post.id] || ''}
+                            onChange={e => setNewCommentDrafts(prev => ({ ...prev, [post.id]: e.target.value }))}
+                            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNewComment(post.id) } }}
+                            placeholder={myUserId ? 'Write a comment…' : 'Log in to comment'}
+                            disabled={!myUserId}
+                            style={{
+                              flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '999px',
+                              padding: '7px 14px', fontSize: '13px', fontFamily: theme.fontBody, color: sc.text, background: sc.bg,
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => submitNewComment(post.id)}
+                            disabled={!myUserId || !(newCommentDrafts[post.id] || '').trim()}
+                            style={{
+                              background: theme.brass, color: '#FFFFFF', border: 'none', borderRadius: '999px',
+                              padding: '7px 16px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', flexShrink: 0,
+                            }}
+                          >Send</button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )
               })}
