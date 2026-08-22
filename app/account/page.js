@@ -88,12 +88,17 @@ function TagInput({ label, values, onChange, placeholder }) {
 
 function ListEditor({ label, items, onChange, fields, addLabel }) {
   // items: array of objects; fields: [{key,placeholder,type}]
-  const emptyItem = () => Object.fromEntries(fields.map(f => [f.key, '']))
+  const emptyItem = () => Object.fromEntries(fields.map(f => [f.key, f.type === 'textarea' ? '' : '']))
   const [draft, setDraft] = useState(emptyItem())
 
   const addItem = () => {
     if (!fields.some(f => draft[f.key]?.trim())) return
-    onChange([...items, draft])
+    const item = { ...draft }
+    // Textarea fields (e.g. bullet points) are stored as an array split by newline.
+    fields.filter(f => f.type === 'textarea').forEach(f => {
+      item[f.key] = (draft[f.key] || '').split('\n').map(s => s.trim()).filter(Boolean)
+    })
+    onChange([...items, item])
     setDraft(emptyItem())
   }
   const removeItem = (idx) => onChange(items.filter((_, i) => i !== idx))
@@ -109,7 +114,14 @@ function ListEditor({ label, items, onChange, fields, addLabel }) {
               display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px'
             }}>
               <div style={{ fontSize: '13px', color: theme.ink, lineHeight: 1.5 }}>
-                {fields.map(f => it[f.key]).filter(Boolean).join(' — ')}
+                {fields.filter(f => f.type !== 'textarea').map(f => it[f.key]).filter(Boolean).join(' — ')}
+                {fields.filter(f => f.type === 'textarea').map(f => (
+                  Array.isArray(it[f.key]) && it[f.key].length > 0 && (
+                    <ul key={f.key} style={{ margin: '6px 0 0', paddingLeft: '16px' }}>
+                      {it[f.key].map((line, i) => <li key={i}>{line}</li>)}
+                    </ul>
+                  )
+                ))}
               </div>
               <button type="button" onClick={() => removeItem(idx)} style={{
                 background: 'none', border: 'none', color: theme.inkSoft, cursor: 'pointer', fontSize: '14px', lineHeight: 1, padding: 0, flexShrink: 0
@@ -120,11 +132,19 @@ function ListEditor({ label, items, onChange, fields, addLabel }) {
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', border: `1px dashed ${theme.line}`, borderRadius: '6px', padding: '10px' }}>
         {fields.map(f => (
-          <input
-            key={f.key} type="text" value={draft[f.key]}
-            onChange={e => setDraft(prev => ({ ...prev, [f.key]: e.target.value }))}
-            placeholder={f.placeholder} className="ledger-input"
-          />
+          f.type === 'textarea' ? (
+            <textarea
+              key={f.key} rows={3} value={draft[f.key]}
+              onChange={e => setDraft(prev => ({ ...prev, [f.key]: e.target.value }))}
+              placeholder={f.placeholder} className="ledger-input" style={{ resize: 'vertical', fontFamily: 'inherit' }}
+            />
+          ) : (
+            <input
+              key={f.key} type="text" value={draft[f.key]}
+              onChange={e => setDraft(prev => ({ ...prev, [f.key]: e.target.value }))}
+              placeholder={f.placeholder} className="ledger-input"
+            />
+          )
         ))}
         <button type="button" onClick={addItem} style={{
           alignSelf: 'flex-start', background: 'transparent', color: theme.brass, border: `1px solid ${theme.brass}`,
@@ -152,7 +172,7 @@ export default function AccountPage() {
     display_name: '', contact_email: '', linkedin_url: '', github_url: '',
     phone: '', location: '', gender: '', age: '', bio: '',
     role_title: '', experience: '', interests: [], skills: [], languages: [],
-    education: [], projects: [], achievements: [],
+    experience_entries: [], education_entries: [], projects: [], achievements: [],
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -201,7 +221,8 @@ export default function AccountPage() {
             location: p.location || '', gender: p.gender || '', age: p.age != null ? String(p.age) : '',
             role_title: p.role_title || '', experience: p.experience || '',
             interests: p.interests || [], skills: p.skills || [], languages: p.languages || [],
-            education: p.education || [], projects: p.projects || [], achievements: p.achievements || [],
+            experience_entries: p.experience_entries || [], education_entries: p.education_entries || [],
+            projects: p.projects || [], achievements: p.achievements || [],
           }))
           setExistingPhotoUrl(p.photo_url || '')
         } else {
@@ -260,7 +281,8 @@ export default function AccountPage() {
             interests: form.interests,
             skills: form.skills,
             languages: form.languages,
-            education: form.education,
+            experience_entries: form.experience_entries,
+            education_entries: form.education_entries,
             projects: form.projects,
             achievements: form.achievements,
             photo_url,
@@ -294,7 +316,7 @@ export default function AccountPage() {
     form.phone, form.location, form.gender, form.age, form.bio,
     form.role_title, form.experience, form.interests, form.skills, form.languages,
     form.display_name, form.contact_email, form.linkedin_url, form.github_url,
-    form.education, form.projects, form.achievements,
+    form.experience_entries, form.education_entries, form.projects, form.achievements,
   ]
   const totalFields = allFields.length
   const totalFilled = allFields.filter(isFilled).length
@@ -478,6 +500,23 @@ export default function AccountPage() {
           </div>
 
           <div style={sectionBoxStyle}>
+            <SectionLabel>Work Experience</SectionLabel>
+            <ListEditor
+              label="Positions"
+              items={form.experience_entries}
+              onChange={v => handleChange('experience_entries', v)}
+              addLabel="Add Position"
+              fields={[
+                { key: 'title', placeholder: 'e.g. Full Stack Developer' },
+                { key: 'company', placeholder: 'e.g. Tech Solutions Ltd.' },
+                { key: 'dates', placeholder: 'e.g. Jan 2023 – Present' },
+                { key: 'bullets', type: 'textarea', placeholder: 'One line per bullet point' },
+              ]}
+            />
+            <SectionSaveButton sectionKey="experience_entries" />
+          </div>
+
+          <div style={sectionBoxStyle}>
             <SectionLabel>Contact</SectionLabel>
 
             <div style={{ marginBottom: '24px' }}>
@@ -502,8 +541,8 @@ export default function AccountPage() {
             <SectionLabel>Education</SectionLabel>
             <ListEditor
               label="Degrees"
-              items={form.education}
-              onChange={v => handleChange('education', v)}
+              items={form.education_entries}
+              onChange={v => handleChange('education_entries', v)}
               addLabel="Add Education"
               fields={[
                 { key: 'degree', placeholder: 'e.g. B.Sc. in Computer Science' },
@@ -511,7 +550,7 @@ export default function AccountPage() {
                 { key: 'years', placeholder: 'e.g. 2018 – 2022' },
               ]}
             />
-            <SectionSaveButton sectionKey="education" />
+            <SectionSaveButton sectionKey="education_entries" />
           </div>
 
           <div style={sectionBoxStyle}>

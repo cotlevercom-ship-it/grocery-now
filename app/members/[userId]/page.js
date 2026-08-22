@@ -85,6 +85,68 @@ export default function MemberProfileViewPage() {
                 </div>
               )}
 
+              {profile.experience_entries && profile.experience_entries.length > 0 && (
+                <div style={{ marginTop: '18px' }}>
+                  <div style={{ fontSize: '11.5px', fontWeight: '700', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '8px' }}>Work Experience</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {profile.experience_entries.map((job, i) => (
+                      <div key={i}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'baseline' }}>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: sc.text }}>{job.title}</div>
+                          {job.dates && <div style={{ fontSize: '12px', color: sc.textSoft, flexShrink: 0 }}>{job.dates}</div>}
+                        </div>
+                        {job.company && <div style={{ fontSize: '13px', color: theme.brass, marginTop: '1px' }}>{job.company}</div>}
+                        {Array.isArray(job.bullets) && job.bullets.length > 0 && (
+                          <ul style={{ margin: '6px 0 0', paddingLeft: '18px', fontSize: '13.5px', color: sc.text, lineHeight: 1.6 }}>
+                            {job.bullets.map((b, bi) => <li key={bi}>{b}</li>)}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {profile.education_entries && profile.education_entries.length > 0 && (
+                <div style={{ marginTop: '18px' }}>
+                  <div style={{ fontSize: '11.5px', fontWeight: '700', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '8px' }}>Education</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {profile.education_entries.map((ed, i) => (
+                      <div key={i}>
+                        <div style={{ fontSize: '14px', fontWeight: '700', color: sc.text }}>{ed.degree}</div>
+                        <div style={{ fontSize: '13px', color: sc.textSoft, marginTop: '1px' }}>
+                          {[ed.institution, ed.years].filter(Boolean).join(' · ')}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {profile.projects && profile.projects.length > 0 && (
+                <div style={{ marginTop: '18px' }}>
+                  <div style={{ fontSize: '11.5px', fontWeight: '700', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '8px' }}>Projects</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {profile.projects.map((p, i) => (
+                      <div key={i}>
+                        <div style={{ fontSize: '14px', fontWeight: '700', color: sc.text }}>{p.title}</div>
+                        {p.description && <div style={{ fontSize: '13.5px', color: sc.text, marginTop: '2px', lineHeight: 1.5 }}>{p.description}</div>}
+                        {p.tech && <div style={{ fontSize: '12.5px', color: theme.brass, marginTop: '3px' }}>{p.tech}</div>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {profile.achievements && profile.achievements.length > 0 && (
+                <div style={{ marginTop: '18px' }}>
+                  <div style={{ fontSize: '11.5px', fontWeight: '700', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '6px' }}>Achievements</div>
+                  <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13.5px', color: sc.text, lineHeight: 1.6 }}>
+                    {profile.achievements.map((a, i) => <li key={i}>{a}</li>)}
+                  </ul>
+                </div>
+              )}
+
               {profile.skills && profile.skills.length > 0 && (
                 <div style={{ marginTop: '16px' }}>
                   <div style={{ fontSize: '11.5px', fontWeight: '700', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '6px' }}>Skills</div>
@@ -113,7 +175,7 @@ export default function MemberProfileViewPage() {
                 </div>
               )}
 
-              {myUserId !== profile.user_id && (profile.contact_email || profile.linkedin_url) && (
+              {myUserId !== profile.user_id && (profile.contact_email || profile.linkedin_url || profile.github_url) && (
                 <div style={{ marginTop: '22px', display: 'flex', gap: '10px' }}>
                   {profile.contact_email && (
                     <a
@@ -138,6 +200,19 @@ export default function MemberProfileViewPage() {
                         textDecoration: 'none',
                       }}
                     >🔗 LinkedIn</a>
+                  )}
+                  {profile.github_url && (
+                    <a
+                      href={profile.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
+                        border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                        textDecoration: 'none',
+                      }}
+                    >💻 GitHub</a>
                   )}
                 </div>
               )}
