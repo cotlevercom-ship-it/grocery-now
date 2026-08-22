@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   Search, ArrowRight,
-  Users, TrendingUp, Handshake, Rocket, Heart, Puzzle, User,
+  Users, TrendingUp, Handshake, Rocket,
 } from 'lucide-react'
 import { theme } from '@/lib/theme'
 
@@ -134,53 +134,11 @@ export default function MarketingHome() {
         </div>
       </div>
 
-      <div className="mh-rest">
-        {/* Bottom CTA banner */}
-        <div style={{
-          background: lt.chipBg, borderRadius: '22px', padding: '30px 22px', textAlign: 'center', marginBottom: '34px',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '18px' }}>
-            <div style={{
-              width: '52px', height: '52px', borderRadius: '14px', background: lt.card,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(-6deg)',
-            }}><Puzzle size={24} color={lt.accent} /></div>
-            <div style={{
-              width: '52px', height: '52px', borderRadius: '14px', background: lt.card,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(6deg)',
-            }}><User size={24} color={lt.accent} /></div>
-          </div>
-          <h3 style={{
-            fontFamily: theme.fontDisplay, fontWeight: '700', fontSize: 'clamp(19px,4.5vw,22px)',
-            color: lt.ink, marginBottom: '18px', lineHeight: '1.3',
-          }}>Your idea is waiting for the right person.</h3>
-          <Link href="/login" style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none',
-            background: lt.accent, color: '#FFFFFF', fontWeight: '700', fontSize: '15px',
-            padding: '14px 24px', borderRadius: '999px',
-          }}>
-            Find People <ArrowRight size={17} />
-          </Link>
-        </div>
-
-        {/* Footer tagline */}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', color: lt.ink, fontWeight: '600', fontSize: '13.5px', marginBottom: '4px' }}>
-            <Heart size={15} color={lt.accent} fill={lt.accent} /> Built for dreamers and doers.
-          </div>
-          <div style={{ fontSize: '13px', color: lt.inkSoft }}>Let&apos;s build something amazing, together.</div>
-        </div>
-      </div>
-
       <style jsx>{`
         .mh-hero-wrap {
           max-width: 640px;
           margin: 0 auto;
-          padding: clamp(20px,4vw,40px) clamp(16px,4vw,56px) 0;
-        }
-        .mh-rest {
-          max-width: 640px;
-          margin: 0 auto;
-          padding: 40px clamp(16px,4vw,56px) 60px;
+          padding: clamp(20px,4vw,40px) clamp(16px,4vw,56px) 60px;
         }
         .mh-hero-visual { display: none; }
         @media (min-width: 1024px) {
@@ -190,11 +148,10 @@ export default function MarketingHome() {
             align-items: center;
             gap: 56px;
             padding-top: 70px;
-            padding-bottom: 10px;
+            padding-bottom: 70px;
           }
           .mh-hero-text { flex: 1 1 0; max-width: 560px; }
           .mh-hero-visual { display: block; flex: 1 1 0; }
-          .mh-rest { max-width: 1040px; padding-top: 30px; }
         }
       `}</style>
     </div>
