@@ -8,7 +8,7 @@ import { sc } from '@/lib/memberTheme'
 import VerifiedBadge from '@/components/VerifiedBadge'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
-import { IconUser, IconBriefcase, IconGrad, IconTrophy, IconMail, IconPin, IconGithub, IconGlobe, IconGear } from '@/components/ResumeIcons'
+import { IconUser, IconMail, IconPin, IconGlobe } from '@/components/ResumeIcons'
 
 const accent = '#2563EB'
 
@@ -20,15 +20,6 @@ function SectionHeading({ icon, children }) {
         {children}
       </div>
       <div style={{ height: '1px', background: '#E5E7EB', marginTop: '8px' }} />
-    </div>
-  )
-}
-
-function SideHeading({ icon, children }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#111827', fontSize: '12px', fontWeight: '700', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '8px' }}>
-      <span style={{ color: accent, display: 'flex' }}>{icon}</span>
-      {children}
     </div>
   )
 }
@@ -96,9 +87,6 @@ export default function MemberProfileViewPage() {
                     {profile.display_name}
                     {profile.verified && <VerifiedBadge />}
                   </div>
-                  {profile.role_title && (
-                    <div style={{ fontSize: '13.5px', color: accent, fontWeight: '600', marginTop: '3px' }}>{profile.role_title}</div>
-                  )}
                 </div>
 
                 <div style={{ marginTop: '26px', display: 'flex', flexDirection: 'column', gap: '11px' }}>
@@ -117,52 +105,7 @@ export default function MemberProfileViewPage() {
                       <IconGlobe color={accent} /> LinkedIn
                     </a>
                   )}
-                  {profile.github_url && (
-                    <a href={profile.github_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '9px', fontSize: '12.5px', color: accent, textDecoration: 'none', wordBreak: 'break-all' }}>
-                      <IconGithub color={accent} /> GitHub
-                    </a>
-                  )}
                 </div>
-
-                {profile.education_entries && profile.education_entries.length > 0 && (
-                  <div style={{ marginTop: '24px' }}>
-                    <SideHeading icon={<IconGrad size={14} />}>Education</SideHeading>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {profile.education_entries.map((ed, i) => (
-                        <div key={i}>
-                          <div style={{ fontSize: '13px', fontWeight: '700', color: '#111827' }}>{ed.degree}</div>
-                          <div style={{ fontSize: '12px', color: '#6B7280', marginTop: '1px' }}>{ed.institution}</div>
-                          {ed.years && <div style={{ fontSize: '12px', color: '#6B7280' }}>{ed.years}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {profile.skills && profile.skills.length > 0 && (
-                  <div style={{ marginTop: '24px' }}>
-                    <SideHeading icon={<IconGear size={14} />}>Skills</SideHeading>
-                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#374151', lineHeight: 1.9 }}>
-                      {profile.skills.map(s => <li key={s}>{s}</li>)}
-                    </ul>
-                  </div>
-                )}
-
-                {profile.languages && profile.languages.length > 0 && (
-                  <div style={{ marginTop: '24px' }}>
-                    <SideHeading icon={<IconGlobe size={14} />}>Languages</SideHeading>
-                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#374151', lineHeight: 1.9 }}>
-                      {profile.languages.map(l => <li key={l}>{l}</li>)}
-                    </ul>
-                  </div>
-                )}
-
-                {profile.interests && profile.interests.length > 0 && (
-                  <div style={{ marginTop: '24px' }}>
-                    <SideHeading icon={<IconUser size={14} />}>Interests</SideHeading>
-                    <div style={{ fontSize: '13px', color: '#374151', lineHeight: 1.7 }}>{profile.interests.join(', ')}</div>
-                  </div>
-                )}
               </div>
 
               {/* Right column */}
@@ -174,60 +117,7 @@ export default function MemberProfileViewPage() {
                   </div>
                 )}
 
-                {profile.experience && (
-                  <div style={{ marginBottom: '26px' }}>
-                    <SectionHeading icon={<IconBriefcase />}>Experience</SectionHeading>
-                    <div style={{ fontSize: '14px', color: '#374151' }}>{profile.experience}</div>
-                  </div>
-                )}
-
-                {profile.experience_entries && profile.experience_entries.length > 0 && (
-                  <div style={{ marginBottom: '26px' }}>
-                    {!profile.experience && <SectionHeading icon={<IconBriefcase />}>Experience</SectionHeading>}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                      {profile.experience_entries.map((job, i) => (
-                        <div key={i}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                            <div style={{ fontSize: '14.5px', fontWeight: '700', color: '#111827' }}>{job.title}</div>
-                            {job.dates && <div style={{ fontSize: '12.5px', color: '#6B7280', flexShrink: 0 }}>{job.dates}</div>}
-                          </div>
-                          {job.company && <div style={{ fontSize: '13.5px', color: accent, fontWeight: '600', marginTop: '1px' }}>{job.company}</div>}
-                          {Array.isArray(job.bullets) && job.bullets.length > 0 && (
-                            <ul style={{ margin: '7px 0 0', paddingLeft: '18px', fontSize: '13.5px', color: '#374151', lineHeight: 1.7 }}>
-                              {job.bullets.map((b, bi) => <li key={bi}>{b}</li>)}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {profile.projects && profile.projects.length > 0 && (
-                  <div style={{ marginBottom: '26px' }}>
-                    <SectionHeading icon={<IconBriefcase />}>Projects</SectionHeading>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                      {profile.projects.map((p, i) => (
-                        <div key={i}>
-                          <div style={{ fontSize: '14.5px', fontWeight: '700', color: '#111827' }}>{p.title}</div>
-                          {p.description && <div style={{ fontSize: '13.5px', color: '#374151', marginTop: '3px', lineHeight: 1.6 }}>{p.description}</div>}
-                          {p.tech && <div style={{ fontSize: '12.5px', color: accent, fontWeight: '600', marginTop: '4px' }}>{p.tech}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {profile.achievements && profile.achievements.length > 0 && (
-                  <div style={{ marginBottom: '26px' }}>
-                    <SectionHeading icon={<IconTrophy />}>Achievements</SectionHeading>
-                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13.5px', color: '#374151', lineHeight: 1.8 }}>
-                      {profile.achievements.map((a, i) => <li key={i}>{a}</li>)}
-                    </ul>
-                  </div>
-                )}
-
-                {myUserId !== profile.user_id && (profile.contact_email || profile.linkedin_url || profile.github_url) && (
+                {myUserId !== profile.user_id && (profile.contact_email || profile.linkedin_url) && (
                   <div style={{ marginTop: '28px', display: 'flex', gap: '10px' }}>
                     {profile.contact_email && (
                       <a
@@ -252,19 +142,6 @@ export default function MemberProfileViewPage() {
                           textDecoration: 'none',
                         }}
                       >🔗 LinkedIn</a>
-                    )}
-                    {profile.github_url && (
-                      <a
-                        href={profile.github_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: 'transparent', color: '#111827', fontFamily: theme.fontBody,
-                          border: '1px solid #E5E7EB', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
-                          textDecoration: 'none',
-                        }}
-                      >💻 GitHub</a>
                     )}
                   </div>
                 )}

@@ -6,7 +6,6 @@ import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { sc } from '@/lib/memberTheme'
 import VerifiedBadge from '@/components/VerifiedBadge'
-import { SKILL_OPTIONS } from '@/lib/memberOptions'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
 
@@ -86,9 +85,7 @@ export default function MembersBrowsePage({ embedded = false }) {
   const [search, setSearch] = useState('')
   const [openDropdown, setOpenDropdown] = useState(null) // 'filters' | 'sort' | null
 
-  const [roleFilter, setRoleFilter] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
-  const [skillFilter, setSkillFilter] = useState([])
   const [sortBy, setSortBy] = useState('relevant')
 
   const [page, setPage] = useState(1)
@@ -98,9 +95,7 @@ export default function MembersBrowsePage({ embedded = false }) {
   // homepage hero search box and quick-role chips) as initial filter state.
   useEffect(() => {
     const q = searchParams.get('q')
-    const skill = searchParams.get('skill')
     if (q) setSearch(q)
-    if (skill) setSkillFilter(prev => prev.includes(skill) ? prev : [...prev, skill])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -128,15 +123,10 @@ export default function MembersBrowsePage({ embedded = false }) {
     load()
   }, [])
 
-  const toggleFilter = (setFn, value) => setFn(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value])
-
-  const activeFilterCount = [
-    roleFilter.trim(), locationFilter.trim(),
-    ...skillFilter,
-  ].filter(Boolean).length
+  const activeFilterCount = [locationFilter.trim()].filter(Boolean).length
 
   const clearAll = () => {
-    setRoleFilter(''); setLocationFilter(''); setSkillFilter([])
+    setLocationFilter('')
     setSearch('')
     setPage(1)
   }
@@ -144,25 +134,19 @@ export default function MembersBrowsePage({ embedded = false }) {
   const filteredMembers = useMemo(() => {
     const q = search.trim().toLowerCase()
     return members.filter(m => {
-      const roleMatch = !roleFilter.trim() || (m.role_title || '').toLowerCase().includes(roleFilter.trim().toLowerCase())
       const locationMatch = !locationFilter.trim() || (m.location || '').toLowerCase().includes(locationFilter.trim().toLowerCase())
-      const skillMatch = skillFilter.length === 0 || skillFilter.some(s => (m.skills || []).includes(s))
       const searchMatch = !q || [
-        m.display_name, m.role_title, m.location, m.bio,
-        ...(m.skills || []),
+        m.display_name, m.location, m.bio,
       ].filter(Boolean).some(v => v.toLowerCase().includes(q))
-      return roleMatch && locationMatch && skillMatch && searchMatch
+      return locationMatch && searchMatch
     })
-  }, [members, search, roleFilter, locationFilter, skillFilter])
+  }, [members, search, locationFilter])
 
-  // "Most Relevant" scores members by how many of the active skill filters
-  // they match (plus a small bonus for role/location text matches). With no
+  // "Most Relevant" gives a small bonus for a location text match. With no
   // filters active it's identical to "Newest" (members already come from
   // Supabase ordered by updated_at desc, so relative order is preserved).
   const relevanceScore = (m) => {
     let score = 0
-    score += skillFilter.filter(s => (m.skills || []).includes(s)).length
-    if (roleFilter.trim() && (m.role_title || '').toLowerCase().includes(roleFilter.trim().toLowerCase())) score += 1
     if (locationFilter.trim() && (m.location || '').toLowerCase().includes(locationFilter.trim().toLowerCase())) score += 1
     return score
   }
@@ -179,9 +163,9 @@ export default function MembersBrowsePage({ embedded = false }) {
     }
     return list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredMembers, sortBy, skillFilter, roleFilter, locationFilter])
+  }, [filteredMembers, sortBy, locationFilter])
 
-  useEffect(() => { setPage(1) }, [search, roleFilter, locationFilter, skillFilter, pageSize, sortBy])
+  useEffect(() => { setPage(1) }, [search, locationFilter, pageSize, sortBy])
 
   const totalPages = Math.max(1, Math.ceil(sortedMembers.length / pageSize))
   const pageStart = (page - 1) * pageSize
@@ -257,33 +241,17 @@ export default function MembersBrowsePage({ embedded = false }) {
                       {m.verified && <VerifiedBadge />}
                     </div>
                     <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
-                      {m.role_title || 'Role not specified'}{m.location ? ` · ${m.location}` : ''}
+                      {m.location || 'Location not specified'}
                     </div>
-                    {m.skills && m.skills.length > 0 && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '9px' }}>
-                        {m.skills.slice(0, 3).map(s => (
-                          <span key={s} style={{
-                            fontSize: '11px', fontWeight: '600', color: sc.chipText, background: sc.chipBg,
-                            borderRadius: '999px', padding: '5px 10px', whiteSpace: 'nowrap',
-                          }}>{s}</span>
-                        ))}
-                        {m.skills.length > 3 && (
-                          <span style={{
-                            fontSize: '11px', fontWeight: '600', color: sc.textSoft, background: sc.chipBg,
-                            borderRadius: '999px', padding: '5px 10px',
-                          }}>+{m.skills.length - 3}</span>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
 
                 <div style={{ marginTop: '10px' }}>
-                  {m.skills && m.skills.length > 0 && (
-                    <div style={{ fontSize: '11.5px', color: sc.text, marginBottom: '10px', lineHeight: '1.4' }}>
-                      <span style={{ fontWeight: '600', color: sc.textSoft }}>Skills: </span>
-                      {m.skills.join(', ')}
-                    </div>
+                  {m.bio && (
+                    <div style={{
+                      fontSize: '12.5px', color: sc.text, marginBottom: '10px', lineHeight: '1.5',
+                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                    }}>{m.bio}</div>
                   )}
                 </div>
 
@@ -419,20 +387,6 @@ export default function MembersBrowsePage({ embedded = false }) {
               >✕</button>
             </div>
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Role</div>
-              <input
-                type="text" value={roleFilter} onChange={e => setRoleFilter(e.target.value)}
-                placeholder="e.g. Software Engineer"
-                style={{ width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px', padding: '9px 12px', fontSize: '13.5px', fontFamily: theme.fontBody }}
-              />
-            </div>
-
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>🛠️ Skills</div>
-              <ChipToggle options={SKILL_OPTIONS} selected={skillFilter} onToggle={v => toggleFilter(setSkillFilter, v)} />
-            </div>
-
-            <div>
               <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>📍 Location</div>
               <input
                 type="text" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}
@@ -501,7 +455,7 @@ export default function MembersBrowsePage({ embedded = false }) {
             <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🔍</span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name, skills or keyword…"
+              placeholder="Search by name, location or keyword…"
               style={{
                 width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '14px',
                 padding: '13px 44px 13px 42px', fontSize: '14px', fontFamily: theme.fontBody, background: sc.cardBg, color: sc.text,
@@ -559,7 +513,7 @@ export default function MembersBrowsePage({ embedded = false }) {
             <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🔍</span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name, skills or keyword…"
+              placeholder="Search by name, location or keyword…"
               style={{
                 width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '14px',
                 padding: '13px 44px 13px 42px', fontSize: '14px', fontFamily: theme.fontBody, background: sc.cardBg, color: sc.text,

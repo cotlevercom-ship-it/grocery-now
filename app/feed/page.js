@@ -58,7 +58,7 @@ export default function FeedPage() {
       const userIds = [...new Set((postRows || []).map(p => p.user_id))]
       if (userIds.length > 0) {
         const inList = userIds.map(id => `"${id}"`).join(',')
-        const profileRows = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,role_title,location&user_id=in.(${inList})`)
+        const profileRows = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
         const byId = {}
         for (const p of (profileRows || [])) byId[p.user_id] = p
         setProfilesById(byId)
@@ -226,7 +226,7 @@ export default function FeedPage() {
                           </div>
                         </Link>
                         <div style={{ fontSize: '12px', color: sc.textSoft }}>
-                          {profile?.role_title || ''}{profile?.role_title && profile?.location ? ' · ' : ''}{profile?.location || ''}
+                          {profile?.location || ''}
                         </div>
                         <div style={{ fontSize: '11.5px', color: sc.textFaint, marginTop: '1px' }}>{timeAgo(post.created_at)}</div>
                       </div>

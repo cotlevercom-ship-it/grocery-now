@@ -97,9 +97,7 @@ export default function AdminMembersPage() {
                 </div>
               </div>
               <div style={{ fontSize: '12.5px', color: '#666', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {p.role_title && <div>💼 {p.role_title}</div>}
-                {p.skills?.length > 0 && <div>🧩 Skills: {p.skills.join(', ')}</div>}
-                {p.experience && <div>📈 {p.experience}</div>}
+
                 {p.looking_for && <div>🔎 Looking for: {p.looking_for}</div>}
                 {p.commitment && <div>⏱️ Commitment: {p.commitment}</div>}
                 {p.location && <div>📍 {p.location}</div>}
