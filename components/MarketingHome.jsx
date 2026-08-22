@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   Search, ArrowRight, Lightbulb, UserSearch, MessageSquare,
-  Code2, Palette, Megaphone, Briefcase, Heart, Puzzle, User,
+  Users, TrendingUp, Handshake, Rocket, Heart, Puzzle, User,
 } from 'lucide-react'
 import { theme } from '@/lib/theme'
 
@@ -24,10 +24,10 @@ const lt = {
 }
 
 const ROLE_CHIPS = [
-  { label: 'Developer', Icon: Code2 },
-  { label: 'Designer', Icon: Palette },
-  { label: 'Marketer', Icon: Megaphone },
-  { label: 'Product Manager', Icon: Briefcase },
+  { label: 'Co-Founder', Icon: Users },
+  { label: 'Investor', Icon: TrendingUp },
+  { label: 'Partner', Icon: Handshake },
+  { label: 'StartUp', Icon: Rocket },
 ]
 
 const STEPS = [
