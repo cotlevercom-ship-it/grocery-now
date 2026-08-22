@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabaseFetch, getSession } from '@/lib/supabase'
@@ -38,6 +38,22 @@ function timeAgo(iso) {
   return `${Math.floor(months / 12)}y`
 }
 
+function PostAvatar({ profile, size = 44 }) {
+  const initial = (profile?.display_name || '?').trim().charAt(0).toUpperCase()
+  return (
+    <div style={{
+      width: `${size}px`, height: `${size}px`, borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+      background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      {profile?.photo_url ? (
+        <img src={profile.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      ) : (
+        <span style={{ fontFamily: theme.fontDisplay, fontSize: `${Math.round(size * 0.4)}px`, fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
+      )}
+    </div>
+  )
+}
+
 function lookingForSentence(post, name) {
   if (!post.looking_for_type) return null
   const loc = post.looking_for_location ? ` at ${post.looking_for_location}` : ''
@@ -45,17 +61,141 @@ function lookingForSentence(post, name) {
   return `${name || 'Someone'} is looking for ${article} ${post.looking_for_type}${loc}.`
 }
 
+// Recursive comment node — renders one comment plus its children, with a reply box.
+function CommentNode({
+  comment, childrenById, depth, profilesById, myUserId,
+  openReplyIds, replyDrafts, onToggleReply, onReplyDraftChange, onSubmitReply, submittingReplyId,
+}) {
+  const profile = profilesById[comment.user_id]
+  const kids = childrenById[comment.id] || []
+  const isOpen = openReplyIds.has(comment.id)
+  const indent = Math.min(depth, 6) * 20
+
+  return (
+    <div style={{ marginLeft: `${indent}px`, marginTop: '10px' }}>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <Link href={`/members/${comment.user_id}`} style={{ flexShrink: 0 }}>
+          <PostAvatar profile={profile} size={28} />
+        </Link>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ background: sc.bg, borderRadius: '12px', padding: '7px 12px', display: 'inline-block', maxWidth: '100%' }}>
+            <Link href={`/members/${comment.user_id}`} style={{ textDecoration: 'none' }}>
+              <span style={{ fontSize: '13px', fontWeight: '700', color: sc.text }}>
+                {profile?.display_name || 'Cot Lever member'}
+              </span>
+            </Link>
+            <div style={{ fontSize: '13.5px', color: sc.text, whiteSpace: 'pre-wrap', marginTop: '1px' }}>{comment.content}</div>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '3px', paddingLeft: '4px' }}>
+            <span style={{ fontSize: '11px', color: sc.textFaint }}>{timeAgo(comment.created_at)}</span>
+            {myUserId && (
+              <button
+                type="button"
+                onClick={() => onToggleReply(comment.id)}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '11.5px', fontWeight: '700', color: sc.textSoft }}
+              >Reply</button>
+            )}
+          </div>
+
+          {isOpen && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+              <input
+                type="text"
+                value={replyDrafts[comment.id] || ''}
+                onChange={e => onReplyDraftChange(comment.id, e.target.value)}
+                placeholder="Write a reply…"
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSubmitReply(comment.post_id, comment.id) } }}
+                style={{
+                  flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '999px',
+                  padding: '6px 12px', fontSize: '13px', fontFamily: theme.fontBody, color: sc.text, background: sc.cardBg,
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => onSubmitReply(comment.post_id, comment.id)}
+                disabled={submittingReplyId === comment.id || !(replyDrafts[comment.id] || '').trim()}
+                style={{
+                  background: theme.brass, color: '#FFFFFF', border: 'none', borderRadius: '999px',
+                  padding: '6px 14px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', flexShrink: 0,
+                }}
+              >Send</button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {kids.map(child => (
+        <CommentNode
+          key={child.id}
+          comment={child}
+          childrenById={childrenById}
+          depth={depth + 1}
+          profilesById={profilesById}
+          myUserId={myUserId}
+          openReplyIds={openReplyIds}
+          replyDrafts={replyDrafts}
+          onToggleReply={onToggleReply}
+          onReplyDraftChange={onReplyDraftChange}
+          onSubmitReply={onSubmitReply}
+          submittingReplyId={submittingReplyId}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function MemberProfileViewPage() {
   const { userId } = useParams()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [myUserId, setMyUserId] = useState(null)
+  const [myProfile, setMyProfile] = useState(null)
+
+  // Posts + interactions
   const [posts, setPosts] = useState([])
   const [postsLoading, setPostsLoading] = useState(true)
+  const [likeCounts, setLikeCounts] = useState({})
+  const [myLikes, setMyLikes] = useState(new Set())
+  const [commentCounts, setCommentCounts] = useState({})
+  const [profilesById, setProfilesById] = useState({})
+
+  const [commentsByPost, setCommentsByPost] = useState({})
+  const [openComments, setOpenComments] = useState(new Set())
+  const [loadingComments, setLoadingComments] = useState(new Set())
+  const [newCommentDrafts, setNewCommentDrafts] = useState({})
+  const [openReplyIds, setOpenReplyIds] = useState(new Set())
+  const [replyDrafts, setReplyDrafts] = useState({})
+  const [submittingReplyId, setSubmittingReplyId] = useState(null)
+  const [error, setError] = useState('')
+
+  const mergeProfiles = useCallback(async (userIds) => {
+    setProfilesById(prevMap => {
+      const missing = [...new Set(userIds)].filter(id => id && !prevMap[id])
+      if (missing.length > 0) {
+        const inList = missing.map(id => `"${id}"`).join(',')
+        supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
+          .then(rows => {
+            setProfilesById(prev => {
+              const next = { ...prev }
+              for (const p of (rows || [])) next[p.user_id] = p
+              return next
+            })
+          })
+          .catch(e => console.error(e))
+      }
+      return prevMap
+    })
+  }, [])
 
   useEffect(() => {
     const session = getSession()
-    setMyUserId(session?.user?.id || null)
+    const uid = session?.user?.id || null
+    setMyUserId(uid)
+    if (uid) {
+      supabaseFetch(`member_profiles?select=display_name,photo_url&user_id=eq.${uid}`)
+        .then(rows => setMyProfile(rows?.[0] || null))
+        .catch(e => console.error(e))
+    }
 
     async function load() {
       setLoading(true)
@@ -67,18 +207,147 @@ export default function MemberProfileViewPage() {
       }
       setLoading(false)
     }
+
     async function loadPosts() {
       setPostsLoading(true)
       try {
-        const rows = await supabaseFetch(`posts?select=*&user_id=eq.${userId}&order=created_at.desc&limit=50`)
-        setPosts(rows || [])
+        const postRows = await supabaseFetch(`posts?select=*&user_id=eq.${userId}&order=created_at.desc&limit=50`)
+        setPosts(postRows || [])
+
+        const postIds = (postRows || []).map(p => p.id)
+        if (postIds.length > 0) {
+          const inList = postIds.map(id => `"${id}"`).join(',')
+          const likeRows = await supabaseFetch(`post_likes?select=post_id,user_id&post_id=in.(${inList})`)
+          const counts = {}
+          const mine = new Set()
+          for (const l of (likeRows || [])) {
+            counts[l.post_id] = (counts[l.post_id] || 0) + 1
+            if (uid && l.user_id === uid) mine.add(l.post_id)
+          }
+          setLikeCounts(counts)
+          setMyLikes(mine)
+
+          const commentRows = await supabaseFetch(`post_comments?select=post_id&post_id=in.(${inList})`)
+          const cCounts = {}
+          for (const c of (commentRows || [])) cCounts[c.post_id] = (cCounts[c.post_id] || 0) + 1
+          setCommentCounts(cCounts)
+        } else {
+          setLikeCounts({})
+          setMyLikes(new Set())
+          setCommentCounts({})
+        }
       } catch (e) {
         console.error(e)
       }
       setPostsLoading(false)
     }
+
     if (userId) { load(); loadPosts() }
   }, [userId])
+
+  const toggleLike = async (postId) => {
+    if (!myUserId) { setError('Please log in to like posts.'); return }
+    const alreadyLiked = myLikes.has(postId)
+
+    setMyLikes(prev => {
+      const next = new Set(prev)
+      alreadyLiked ? next.delete(postId) : next.add(postId)
+      return next
+    })
+    setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + (alreadyLiked ? -1 : 1) }))
+
+    try {
+      if (alreadyLiked) {
+        await supabaseFetch(`post_likes?post_id=eq.${postId}&user_id=eq.${myUserId}`, { method: 'DELETE' })
+      } else {
+        await supabaseFetch('post_likes', {
+          method: 'POST',
+          headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+          body: JSON.stringify({ post_id: postId, user_id: myUserId }),
+        })
+      }
+    } catch (e) {
+      console.error(e)
+      setMyLikes(prev => {
+        const next = new Set(prev)
+        alreadyLiked ? next.add(postId) : next.delete(postId)
+        return next
+      })
+      setLikeCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + (alreadyLiked ? 1 : -1) }))
+    }
+  }
+
+  const loadComments = useCallback(async (postId) => {
+    setLoadingComments(prev => new Set(prev).add(postId))
+    try {
+      const rows = await supabaseFetch(`post_comments?select=*&post_id=eq.${postId}&order=created_at.asc`)
+      setCommentsByPost(prev => ({ ...prev, [postId]: rows || [] }))
+      await mergeProfiles((rows || []).map(r => r.user_id))
+    } catch (e) {
+      console.error(e)
+    }
+    setLoadingComments(prev => { const next = new Set(prev); next.delete(postId); return next })
+  }, [mergeProfiles])
+
+  const toggleComments = (postId) => {
+    setOpenComments(prev => {
+      const next = new Set(prev)
+      if (next.has(postId)) {
+        next.delete(postId)
+      } else {
+        next.add(postId)
+        if (!commentsByPost[postId]) loadComments(postId)
+      }
+      return next
+    })
+  }
+
+  const submitNewComment = async (postId) => {
+    const content = (newCommentDrafts[postId] || '').trim()
+    if (!content) return
+    if (!myUserId) { setError('Please log in to comment.'); return }
+    try {
+      await supabaseFetch('post_comments', {
+        method: 'POST',
+        body: JSON.stringify({ post_id: postId, user_id: myUserId, parent_comment_id: null, content }),
+      })
+      setNewCommentDrafts(prev => ({ ...prev, [postId]: '' }))
+      setCommentCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }))
+      await loadComments(postId)
+    } catch (e) {
+      console.error(e)
+      setError('Could not post comment, please try again.')
+    }
+  }
+
+  const toggleReply = (commentId) => {
+    setOpenReplyIds(prev => {
+      const next = new Set(prev)
+      next.has(commentId) ? next.delete(commentId) : next.add(commentId)
+      return next
+    })
+  }
+
+  const submitReply = async (postId, parentCommentId) => {
+    const content = (replyDrafts[parentCommentId] || '').trim()
+    if (!content) return
+    if (!myUserId) { setError('Please log in to reply.'); return }
+    setSubmittingReplyId(parentCommentId)
+    try {
+      await supabaseFetch('post_comments', {
+        method: 'POST',
+        body: JSON.stringify({ post_id: postId, user_id: myUserId, parent_comment_id: parentCommentId, content }),
+      })
+      setReplyDrafts(prev => ({ ...prev, [parentCommentId]: '' }))
+      setOpenReplyIds(prev => { const next = new Set(prev); next.delete(parentCommentId); return next })
+      setCommentCounts(prev => ({ ...prev, [postId]: (prev[postId] || 0) + 1 }))
+      await loadComments(postId)
+    } catch (e) {
+      console.error(e)
+      setError('Could not post reply, please try again.')
+    }
+    setSubmittingReplyId(null)
+  }
 
   const initial = (profile?.display_name || '?').trim().charAt(0).toUpperCase()
 
@@ -189,6 +458,10 @@ export default function MemberProfileViewPage() {
                 color: sc.text, marginBottom: '12px',
               }}>Posts</h2>
 
+              {error && (
+                <div style={{ marginBottom: '10px', fontSize: '12.5px', color: theme.brass }}>{error}</div>
+              )}
+
               {postsLoading ? (
                 <div style={{ textAlign: 'center', padding: '24px 0', color: sc.textSoft, fontSize: '13.5px' }}>Loading…</div>
               ) : posts.length === 0 ? (
@@ -199,6 +472,23 @@ export default function MemberProfileViewPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {posts.map(post => {
                     const sentence = lookingForSentence(post, profile.display_name)
+                    const liked = myLikes.has(post.id)
+                    const count = likeCounts[post.id] || 0
+                    const cCount = commentCounts[post.id] || 0
+                    const commentsOpen = openComments.has(post.id)
+
+                    const flatComments = commentsByPost[post.id] || []
+                    const childrenById = {}
+                    const topLevel = []
+                    for (const c of flatComments) {
+                      if (c.parent_comment_id) {
+                        if (!childrenById[c.parent_comment_id]) childrenById[c.parent_comment_id] = []
+                        childrenById[c.parent_comment_id].push(c)
+                      } else {
+                        topLevel.push(c)
+                      }
+                    }
+
                     return (
                       <div key={post.id} style={{ background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow, padding: '16px' }}>
                         <div style={{ fontSize: '11.5px', color: sc.textFaint, marginBottom: '8px' }}>{timeAgo(post.created_at)}</div>
@@ -211,6 +501,80 @@ export default function MemberProfileViewPage() {
                         <div style={{ fontSize: '14px', color: sc.text, lineHeight: '1.55', whiteSpace: 'pre-wrap' }}>
                           {post.content}
                         </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginTop: '14px', paddingTop: '10px', borderTop: `1px solid ${sc.line}` }}>
+                          <button
+                            type="button"
+                            onClick={() => toggleLike(post.id)}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none',
+                              cursor: 'pointer', fontSize: '13px', fontWeight: '600',
+                              color: liked ? theme.brass : sc.textSoft,
+                            }}
+                          >
+                            <span>{liked ? '👍' : '🤍'}</span> Like{count > 0 ? ` · ${count}` : ''}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleComments(post.id)}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none',
+                              cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: sc.textSoft,
+                            }}
+                          >
+                            <span>💬</span> Comment{cCount > 0 ? ` · ${cCount}` : ''}
+                          </button>
+                        </div>
+
+                        {commentsOpen && (
+                          <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: `1px solid ${sc.line}` }}>
+                            {loadingComments.has(post.id) && !commentsByPost[post.id] ? (
+                              <div style={{ fontSize: '13px', color: sc.textSoft, padding: '8px 0' }}>Loading comments…</div>
+                            ) : (
+                              topLevel.map(c => (
+                                <CommentNode
+                                  key={c.id}
+                                  comment={c}
+                                  childrenById={childrenById}
+                                  depth={0}
+                                  profilesById={{ ...profilesById, [profile.user_id]: profile }}
+                                  myUserId={myUserId}
+                                  openReplyIds={openReplyIds}
+                                  replyDrafts={replyDrafts}
+                                  onToggleReply={toggleReply}
+                                  onReplyDraftChange={(id, val) => setReplyDrafts(prev => ({ ...prev, [id]: val }))}
+                                  onSubmitReply={submitReply}
+                                  submittingReplyId={submittingReplyId}
+                                />
+                              ))
+                            )}
+
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                              <PostAvatar profile={myProfile} size={28} />
+                              <input
+                                type="text"
+                                value={newCommentDrafts[post.id] || ''}
+                                onChange={e => setNewCommentDrafts(prev => ({ ...prev, [post.id]: e.target.value }))}
+                                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNewComment(post.id) } }}
+                                placeholder={myUserId ? 'Write a comment…' : 'Log in to comment'}
+                                disabled={!myUserId}
+                                style={{
+                                  flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '999px',
+                                  padding: '7px 14px', fontSize: '13px', fontFamily: theme.fontBody, color: sc.text, background: sc.bg,
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => submitNewComment(post.id)}
+                                disabled={!myUserId || !(newCommentDrafts[post.id] || '').trim()}
+                                style={{
+                                  background: theme.brass, color: '#FFFFFF', border: 'none', borderRadius: '999px',
+                                  padding: '7px 16px', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', flexShrink: 0,
+                                }}
+                              >Send</button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )
                   })}
