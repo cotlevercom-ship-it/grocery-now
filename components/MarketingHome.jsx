@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Search, ArrowRight, Lightbulb, UserSearch, MessageSquare,
+  Search, ArrowRight,
   Users, TrendingUp, Handshake, Rocket, Heart, Puzzle, User,
 } from 'lucide-react'
 import { theme } from '@/lib/theme'
@@ -30,11 +30,6 @@ const ROLE_CHIPS = [
   { label: 'StartUp', Icon: Rocket },
 ]
 
-const STEPS = [
-  { n: '01', Icon: Lightbulb, title: 'Share your idea', body: "Tell us what you're building and what you need." },
-  { n: '02', Icon: UserSearch, title: 'Find the right person', body: 'Discover talented people who match your needs.' },
-  { n: '03', Icon: MessageSquare, title: 'Build together', body: 'Connect, chat and turn your idea into something great.' },
-]
 
 export default function MarketingHome() {
   const router = useRouter()
@@ -140,35 +135,6 @@ export default function MarketingHome() {
       </div>
 
       <div className="mh-rest">
-        {/* How it works */}
-        <h3 style={{
-          fontFamily: theme.fontDisplay, fontWeight: '700', fontSize: 'clamp(22px,5vw,26px)',
-          color: lt.ink, textAlign: 'center', marginBottom: '22px',
-        }}>How CotLever Works</h3>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px,1fr))', gap: '14px', marginBottom: '46px' }}>
-          {STEPS.map(({ n, Icon, title, body }) => (
-            <div key={n} style={{
-              position: 'relative', background: lt.chipBg, borderRadius: '18px',
-              padding: '22px 16px 20px', textAlign: 'center',
-            }}>
-              <span style={{
-                position: 'absolute', top: '10px', left: '10px', width: '26px', height: '26px', borderRadius: '50%',
-                background: lt.accent, color: '#FFFFFF', fontSize: '11px', fontWeight: '700',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>{n}</span>
-              <div style={{
-                width: '56px', height: '56px', borderRadius: '50%', background: lt.card, margin: '6px auto 14px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon size={24} color={lt.accent} strokeWidth={1.8} />
-              </div>
-              <div style={{ fontFamily: theme.fontDisplay, fontWeight: '700', fontSize: '15px', color: lt.ink, marginBottom: '6px' }}>{title}</div>
-              <div style={{ fontSize: '12.5px', color: lt.inkSoft, lineHeight: '1.5' }}>{body}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Bottom CTA banner */}
         <div style={{
           background: lt.chipBg, borderRadius: '22px', padding: '30px 22px', textAlign: 'center', marginBottom: '34px',
