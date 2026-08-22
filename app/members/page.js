@@ -578,8 +578,6 @@ export default function MembersBrowsePage({ embedded = false }) {
 
       <style jsx>{`
         @media (max-width: 860px) {
-          .members-sidebar { display: none !important; }
-          .members-bottom-nav { display: block !important; }
           .members-heading { display: none; }
           .members-filterbar {
             flex-wrap: nowrap !important;

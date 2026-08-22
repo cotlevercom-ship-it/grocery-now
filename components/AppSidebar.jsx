@@ -34,6 +34,12 @@ export default function AppSidebar({ active }) {
           )
         })}
       </nav>
+
+      <style jsx>{`
+        @media (max-width: 860px) {
+          .members-sidebar { display: none !important; }
+        }
+      `}</style>
     </div>
   )
 }

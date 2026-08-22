@@ -259,12 +259,6 @@ export default function FeedPage() {
 
       <AppBottomNav active="feed" />
 
-      <style jsx>{`
-        @media (max-width: 860px) {
-          .members-sidebar { display: none !important; }
-          .members-bottom-nav { display: block !important; }
-        }
-      `}</style>
       <style jsx global>{`
         @media (max-width: 860px) {
           body { padding-bottom: 62px; }

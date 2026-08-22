@@ -25,6 +25,12 @@ export default function AppBottomNav({ active }) {
           )
         })}
       </div>
+
+      <style jsx>{`
+        @media (max-width: 860px) {
+          .members-bottom-nav { display: block !important; }
+        }
+      `}</style>
     </div>
   )
 }
