@@ -20,16 +20,10 @@ const BOTTOM_BENEFITS = [
 
 export default function PremiumPage() {
   const router = useRouter()
-  const [userId, setUserId] = useState(null)
   const [loaded, setLoaded] = useState(false)
   const [premiumStatus, setPremiumStatus] = useState('none') // 'none' | 'pending' | 'active'
-  const [bkashNumber, setBkashNumber] = useState('')
   const [contactEmail, setContactEmail] = useState('')
-  const [txnNote, setTxnNote] = useState('')
-  const [requesting, setRequesting] = useState(false)
-  const [error, setError] = useState('')
   const [billing, setBilling] = useState('yearly') // 'monthly' | 'yearly'
-  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -38,7 +32,6 @@ export default function PremiumPage() {
         router.replace('/login?next=/premium')
         return
       }
-      setUserId(session.user.id)
 
       try {
         const rows = await supabaseFetch(`member_profiles?select=premium_status&user_id=eq.${session.user.id}`)
@@ -46,39 +39,14 @@ export default function PremiumPage() {
       } catch (e) { console.error(e) }
 
       try {
-        const settings = await supabaseFetch(`app_settings?select=key,value&key=in.(bkash_payment_number,contact_email)`)
-        const map = {}
-        ;(settings || []).forEach(r => { map[r.key] = r.value })
-        setBkashNumber(map.bkash_payment_number || '')
-        setContactEmail(map.contact_email || '')
+        const settings = await supabaseFetch(`app_settings?select=key,value&key=eq.contact_email`)
+        setContactEmail(settings?.[0]?.value || '')
       } catch (e) { console.error(e) }
 
       setLoaded(true)
     }
     init()
   }, [router])
-
-  const handleRequest = async () => {
-    setError('')
-    setRequesting(true)
-    try {
-      await supabaseFetch('member_profiles', {
-        method: 'POST',
-        headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-        body: JSON.stringify({
-          user_id: userId,
-          premium_status: 'pending',
-          premium_requested_at: new Date().toISOString(),
-          premium_transaction_note: txnNote.trim() || null,
-        }),
-      })
-      setPremiumStatus('pending')
-    } catch (e) {
-      console.error(e)
-      setError('Could not submit your request, please try again.')
-    }
-    setRequesting(false)
-  }
 
   const proMonthly = 299
   const proPrice = billing === 'yearly' ? Math.round(proMonthly * 0.8) : proMonthly
@@ -211,7 +179,7 @@ export default function PremiumPage() {
                   background: sc.chipBg, border: 'none', color: sc.textSoft, cursor: 'default',
                 }}>Under review</button>
               ) : (
-                <button type="button" onClick={() => setShowForm(true)} style={{
+                <button type="button" onClick={() => router.push(`/premium/checkout?billing=${billing}`)} style={{
                   width: '100%', padding: '13px', borderRadius: '10px', fontSize: '14px', fontWeight: '700',
                   background: theme.brass, border: 'none', color: '#FFFFFF', cursor: 'pointer',
                 }}>Choose Pro</button>
@@ -240,50 +208,6 @@ export default function PremiumPage() {
               }}>Contact Us</a>
             </div>
           </div>
-
-          {/* Payment form */}
-          {showForm && premiumStatus === 'none' && (
-            <div style={{ background: sc.cardBg, borderRadius: '12px', boxShadow: sc.shadow, padding: '22px', marginTop: '28px', maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto' }}>
-              <div style={{ fontSize: '15px', fontWeight: '700', color: sc.text, marginBottom: '14px' }}>Pay for Pro</div>
-
-              <div style={{ padding: '12px 14px', background: sc.chipBg, borderRadius: '8px', marginBottom: '10px' }}>
-                <div style={{ fontSize: '11.5px', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Amount to pay ({billing === 'yearly' ? 'yearly' : 'monthly'})</div>
-                <div style={{ fontSize: '22px', fontWeight: '800', color: theme.brass, marginTop: '3px' }}>৳{payAmount.toLocaleString('en-US')}</div>
-              </div>
-
-              {bkashNumber && (
-                <div style={{ padding: '12px 14px', background: sc.chipBg, borderRadius: '8px', marginBottom: '14px' }}>
-                  <div style={{ fontSize: '11.5px', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Pay via bKash Merchant Payment to</div>
-                  <div style={{ fontSize: '18px', fontWeight: '700', color: sc.text, marginTop: '3px' }}>{bkashNumber}</div>
-                  <div style={{ fontSize: '11.5px', color: sc.textSoft, marginTop: '4px' }}>Use &quot;Merchant Payment&quot;, not &quot;Send Money&quot;</div>
-                </div>
-              )}
-
-              <label style={{ fontSize: '12px', color: sc.textSoft, display: 'block', marginBottom: '6px' }}>bKash Transaction ID (optional)</label>
-              <input
-                type="text" value={txnNote} onChange={e => setTxnNote(e.target.value)} placeholder="e.g. 8N7A6XYZ12"
-                style={{
-                  width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px',
-                  padding: '11px 14px', fontSize: '14px', color: sc.text, background: sc.bg, marginBottom: '16px',
-                }}
-              />
-
-              <button
-                type="button"
-                onClick={handleRequest}
-                disabled={requesting}
-                style={{
-                  display: 'block', width: '100%', background: requesting ? sc.line : theme.brass,
-                  color: '#FFFFFF', padding: '13px', borderRadius: '8px', fontSize: '14px', fontWeight: '700',
-                  border: 'none', cursor: requesting ? 'default' : 'pointer',
-                }}
-              >{requesting ? 'Submitting...' : "I've Paid — Request Activation"}</button>
-
-              {error && (
-                <div style={{ marginTop: '10px', padding: '9px 12px', background: '#FBEAE8', color: '#C43C2C', borderRadius: '4px', fontSize: '12.5px' }}>{error}</div>
-              )}
-            </div>
-          )}
 
           {/* Bottom benefits row */}
           <div className="benefits-grid" style={{
