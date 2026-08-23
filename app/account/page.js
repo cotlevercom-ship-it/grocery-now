@@ -82,6 +82,7 @@ export default function AccountPage() {
   const [existingPhotoUrl, setExistingPhotoUrl] = useState('')
 
   const [meta, setMeta] = useState({ createdAt: null, verified: false, isDiscoverable: true, showActive: true, notifyEmail: true, notifyPush: true, viewCount: 0 })
+  const [phone, setPhone] = useState('')
   const [premiumStatus, setPremiumStatus] = useState('none')
   const [counts, setCounts] = useState({ connections: 0, requests: 0, bookmarks: 0 })
 
@@ -120,6 +121,13 @@ export default function AccountPage() {
       setUserId(session.user.id)
       setUserEmail(session.user.email || '')
 
+      let signupFullName = ''
+      try {
+        const uRows = await supabaseFetch(`user_profiles?select=phone,full_name&id=eq.${session.user.id}`)
+        setPhone(uRows?.[0]?.phone || '')
+        signupFullName = uRows?.[0]?.full_name || ''
+      } catch (e) { console.error(e) }
+
       try {
         const rows = await supabaseFetch(`member_profiles?select=*&user_id=eq.${session.user.id}`)
         const p = rows?.[0]
@@ -147,12 +155,7 @@ export default function AccountPage() {
             viewCount: p.profile_view_count || 0,
           })
         } else {
-          let fullName = ''
-          try {
-            const uRows = await supabaseFetch(`user_profiles?select=full_name&id=eq.${session.user.id}`)
-            fullName = uRows?.[0]?.full_name || ''
-          } catch (e) { console.error(e) }
-          setForm(prev => ({ ...prev, display_name: fullName, contact_email: session.user.email || '' }))
+          setForm(prev => ({ ...prev, display_name: signupFullName || '', contact_email: session.user.email || '' }))
         }
       } catch (e) { console.error(e) }
 
@@ -304,6 +307,7 @@ export default function AccountPage() {
                 <div>📅 Member since <b style={{ color: sc.text }}>{timeLabel(meta.createdAt)}</b></div>
                 <div>🆔 User ID <b style={{ color: sc.text, fontFamily: 'monospace' }}>{shortId}</b></div>
                 <div>✉️ Email <b style={{ color: sc.text }}>{form.contact_email || userEmail}</b></div>
+                {phone && <div>📱 Phone <b style={{ color: sc.text }}>{phone}</b></div>}
               </div>
             </div>
           </Card>
