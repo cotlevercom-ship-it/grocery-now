@@ -285,7 +285,7 @@ export default function AccountPage() {
 
                 <input
                   type="text" value={form.role_title} onChange={e => handleChange('role_title', e.target.value)}
-                  placeholder="Role / headline (e.g. Builder · Product Designer)"
+                  placeholder="Profession / headline (e.g. Builder · Product Designer)"
                   style={{ fontSize: '13px', color: sc.textSoft, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'inherit', marginTop: '3px', width: '100%', padding: 0 }}
                 />
 
