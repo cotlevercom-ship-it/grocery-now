@@ -140,8 +140,9 @@ export default function PremiumPage() {
 
               {bkashNumber && (
                 <div style={{ padding: '12px 14px', background: sc.chipBg, borderRadius: '8px', marginBottom: '14px' }}>
-                  <div style={{ fontSize: '11.5px', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Send bKash payment to</div>
+                  <div style={{ fontSize: '11.5px', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Pay via bKash Merchant Payment to</div>
                   <div style={{ fontSize: '18px', fontWeight: '700', color: sc.text, marginTop: '3px' }}>{bkashNumber}</div>
+                  <div style={{ fontSize: '11.5px', color: sc.textSoft, marginTop: '4px' }}>Use "Merchant Payment", not "Send Money"</div>
                 </div>
               )}
 
