@@ -8,13 +8,23 @@ export default function AdminMembersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actingId, setActingId] = useState(null)
+  const [search, setSearch] = useState('')
 
   async function load() {
     setLoading(true)
     setError('')
     try {
       const data = await supabaseFetch('member_profiles?select=*&order=created_at.desc')
-      setProfiles(data || [])
+      let merged = data || []
+      try {
+        const ids = merged.map(p => `"${p.user_id}"`).join(',')
+        if (ids) {
+          const uRows = await supabaseFetch(`user_profiles?select=id,phone&id=in.(${ids})`)
+          const phoneById = Object.fromEntries((uRows || []).map(u => [u.id, u.phone]))
+          merged = merged.map(p => ({ ...p, phone: phoneById[p.user_id] || '' }))
+        }
+      } catch (e) { console.error(e) }
+      setProfiles(merged)
     } catch (e) {
       console.error(e)
       setError('Failed to load')
@@ -54,7 +64,12 @@ export default function AdminMembersPage() {
     setActingId(null)
   }
 
-  const filtered = profiles.filter(p => p.approval_status === tab)
+  const filtered = profiles.filter(p => {
+    if (p.approval_status !== tab) return false
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return [p.display_name, p.contact_email, p.phone].filter(Boolean).some(v => v.toLowerCase().includes(q))
+  })
 
   return (
     <div>
@@ -62,6 +77,15 @@ export default function AdminMembersPage() {
       <p style={{ fontSize: '13px', color: '#888', marginBottom: '18px' }}>
         Profiles publish instantly and are not gated by this status — this list is for reference/moderation only.
       </p>
+
+      <input
+        type="text" value={search} onChange={e => setSearch(e.target.value)}
+        placeholder="Search by name, email, or phone…"
+        style={{
+          width: '100%', maxWidth: '360px', boxSizing: 'border-box', border: '1px solid #ddd', borderRadius: '8px',
+          padding: '9px 12px', fontSize: '13px', marginBottom: '14px', display: 'block',
+        }}
+      />
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', flexWrap: 'wrap' }}>
         {['pending', 'approved', 'rejected'].map(t => (
@@ -102,6 +126,7 @@ export default function AdminMembersPage() {
                 {p.commitment && <div>⏱️ Commitment: {p.commitment}</div>}
                 {p.location && <div>📍 {p.location}</div>}
                 {p.contact_email && <div>✉️ {p.contact_email}</div>}
+                {p.phone && <div>📱 {p.phone}</div>}
               </div>
               {p.bio && <p style={{ fontSize: '13px', color: '#444', marginTop: '8px', fontStyle: 'italic' }}>{p.bio}</p>}
 
