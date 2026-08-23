@@ -82,6 +82,7 @@ export default function PremiumPage() {
 
   const proMonthly = 299
   const proPrice = billing === 'yearly' ? Math.round(proMonthly * 0.8) : proMonthly
+  const payAmount = billing === 'yearly' ? proPrice * 12 : proPrice
 
   if (!loaded) {
     return (
@@ -189,7 +190,9 @@ export default function PremiumPage() {
                 <span style={{ fontSize: '38px', fontWeight: '800', color: theme.brass, letterSpacing: '-0.02em' }}>{proPrice}</span>
                 <span style={{ fontSize: '13.5px', color: sc.textSoft }}>/ month</span>
               </div>
-              <div style={{ fontSize: '12px', color: sc.textFaint, marginBottom: '16px' }}>{billing === 'yearly' ? 'Billed yearly' : 'Billed monthly'}</div>
+              <div style={{ fontSize: '12px', color: sc.textFaint, marginBottom: '16px' }}>
+                {billing === 'yearly' ? `৳${payAmount.toLocaleString('en-US')} billed once a year` : 'Billed monthly'}
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '11px', marginBottom: '24px', flex: 1 }}>
                 {PRO_FEATURES.map(f => (
                   <div key={f} style={{ display: 'flex', gap: '9px', alignItems: 'flex-start', fontSize: '13.5px', color: sc.text }}>
@@ -242,6 +245,11 @@ export default function PremiumPage() {
           {showForm && premiumStatus === 'none' && (
             <div style={{ background: sc.cardBg, borderRadius: '12px', boxShadow: sc.shadow, padding: '22px', marginTop: '28px', maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto' }}>
               <div style={{ fontSize: '15px', fontWeight: '700', color: sc.text, marginBottom: '14px' }}>Pay for Pro</div>
+
+              <div style={{ padding: '12px 14px', background: sc.chipBg, borderRadius: '8px', marginBottom: '10px' }}>
+                <div style={{ fontSize: '11.5px', color: sc.textSoft, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Amount to pay ({billing === 'yearly' ? 'yearly' : 'monthly'})</div>
+                <div style={{ fontSize: '22px', fontWeight: '800', color: theme.brass, marginTop: '3px' }}>৳{payAmount.toLocaleString('en-US')}</div>
+              </div>
 
               {bkashNumber && (
                 <div style={{ padding: '12px 14px', background: sc.chipBg, borderRadius: '8px', marginBottom: '14px' }}>
