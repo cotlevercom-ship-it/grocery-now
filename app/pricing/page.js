@@ -6,12 +6,12 @@ const FREE_FEATURES = [
   'Create your profile — skills, experience, and what you\u2019re looking for',
   'Browse the member directory and see basic info on everyone',
   'Post to the community Feed',
-  'Send one message to start a conversation with anyone',
+  'Read messages other members send you',
 ]
 
 const PREMIUM_FEATURES = [
   'Everything in Free',
-  'Reply in message threads — keep the conversation going',
+  'Send and reply to messages — start and keep conversations going',
   'Comment on Feed posts',
   'View full member profiles — experience, education, projects, contact details',
 ]

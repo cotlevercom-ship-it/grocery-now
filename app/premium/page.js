@@ -7,8 +7,8 @@ import { sc } from '@/lib/memberTheme'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
 
-const FREE_FEATURES = ['Create your profile', 'Browse people', 'Send one message to start a conversation', 'Post & like on the Feed']
-const PRO_FEATURES = ['All Free features', 'Unlimited message replies', 'Comment on Feed posts', 'View full member profiles', 'Priority in search results']
+const FREE_FEATURES = ['Create your profile', 'Browse people', 'Read messages sent to you', 'Post & like on the Feed']
+const PRO_FEATURES = ['All Free features', 'Send & reply to messages', 'Comment on Feed posts', 'View full member profiles', 'Priority in search results']
 const TEAM_FEATURES = ['All Pro features', 'Team collaboration tools', 'Invite team members', 'Admin dashboard', 'Priority support']
 
 const BOTTOM_BENEFITS = [

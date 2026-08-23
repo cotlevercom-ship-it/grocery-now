@@ -90,14 +90,13 @@ export default function MessageThreadPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages.length])
 
-  const myOutboundCount = messages.filter(m => m.sender_id === myUserId).length
-  const needsPremiumToReply = myOutboundCount >= 1 && !myPremium
+  const needsPremiumToReply = !myPremium
 
   const handleSend = async () => {
     const content = draft.trim()
     if (!content) return
     if (!myUserId) { setError('Please log in to send messages.'); return }
-    if (needsPremiumToReply) { setError('Replying is a Premium feature — upgrade from My Profile to keep the conversation going.'); return }
+    if (needsPremiumToReply) { setError('Sending messages is a Premium feature — upgrade from My Profile to message this member.'); return }
     setError('')
     setSending(true)
     try {
@@ -141,7 +140,7 @@ export default function MessageThreadPage() {
               <div style={{ textAlign: 'center', padding: '30px 0', color: sc.textSoft, fontSize: '13.5px' }}>Loading…</div>
             ) : messages.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '30px 0', color: sc.textSoft, fontSize: '13.5px' }}>
-                No messages yet — say hello.
+                {needsPremiumToReply ? 'No messages yet.' : 'No messages yet — say hello.'}
               </div>
             ) : (
               messages.map(m => {
@@ -175,7 +174,7 @@ export default function MessageThreadPage() {
               padding: '13px 16px', borderRadius: '999px', background: sc.chipBg,
               fontSize: '13.5px', color: sc.textSoft, textDecoration: 'none', marginTop: '4px',
             }}>
-              🔒 Replying is a <b style={{ color: theme.brass }}>Premium</b> feature — tap to upgrade
+              🔒 Messaging is a <b style={{ color: theme.brass }}>Premium</b> feature — tap to upgrade
             </Link>
           ) : (
           <div style={{ display: 'flex', gap: '8px', paddingTop: '8px', borderTop: `1px solid ${sc.line}` }}>

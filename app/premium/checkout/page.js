@@ -8,7 +8,7 @@ import { sc } from '@/lib/memberTheme'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
 
-const PRO_FEATURES = ['Unlimited message replies', 'Comment on Feed posts', 'View full member profiles', 'Priority in search results']
+const PRO_FEATURES = ['Send & reply to messages', 'Comment on Feed posts', 'View full member profiles', 'Priority in search results']
 
 export default function CheckoutPage() {
   return (
