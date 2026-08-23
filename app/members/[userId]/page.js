@@ -168,6 +168,11 @@ export default function MemberProfileViewPage() {
   const [submittingReplyId, setSubmittingReplyId] = useState(null)
   const [error, setError] = useState('')
 
+  const [connection, setConnection] = useState(null) // { id, status, requester_id } | null
+  const [connBusy, setConnBusy] = useState(false)
+  const [bookmarkId, setBookmarkId] = useState(null)
+  const [bookmarkBusy, setBookmarkBusy] = useState(false)
+
   const mergeProfiles = useCallback(async (userIds) => {
     setProfilesById(prevMap => {
       const missing = [...new Set(userIds)].filter(id => id && !prevMap[id])
@@ -206,6 +211,20 @@ export default function MemberProfileViewPage() {
         console.error(e)
       }
       setLoading(false)
+
+      if (uid && uid !== userId) {
+        supabaseFetch('rpc/increment_profile_view', {
+          method: 'POST', body: JSON.stringify({ target_user_id: userId }),
+        }).catch(e => console.error(e))
+
+        supabaseFetch(`connections?select=id,status,requester_id&or=(and(requester_id.eq.${uid},addressee_id.eq.${userId}),and(requester_id.eq.${userId},addressee_id.eq.${uid}))`)
+          .then(rows => setConnection(rows?.[0] || null))
+          .catch(e => console.error(e))
+
+        supabaseFetch(`bookmarks?select=id&user_id=eq.${uid}&bookmarked_user_id=eq.${userId}`)
+          .then(rows => setBookmarkId(rows?.[0]?.id || null))
+          .catch(e => console.error(e))
+      }
     }
 
     async function loadPosts() {
@@ -244,6 +263,67 @@ export default function MemberProfileViewPage() {
 
     if (userId) { load(); loadPosts() }
   }, [userId])
+
+  const sendConnectRequest = async () => {
+    if (!myUserId) { setError('Please log in to send a connection request.'); return }
+    setConnBusy(true)
+    try {
+      const rows = await supabaseFetch('connections', {
+        method: 'POST',
+        headers: { Prefer: 'return=representation' },
+        body: JSON.stringify({ requester_id: myUserId, addressee_id: userId }),
+      })
+      setConnection(rows?.[0] || { status: 'pending', requester_id: myUserId })
+    } catch (e) { console.error(e) }
+    setConnBusy(false)
+  }
+
+  const cancelConnectRequest = async () => {
+    if (!connection?.id) return
+    setConnBusy(true)
+    try {
+      await supabaseFetch(`connections?id=eq.${connection.id}`, { method: 'DELETE' })
+      setConnection(null)
+    } catch (e) { console.error(e) }
+    setConnBusy(false)
+  }
+
+  const respondToConnectRequest = async (accept) => {
+    if (!connection?.id) return
+    setConnBusy(true)
+    try {
+      if (accept) {
+        await supabaseFetch(`connections?id=eq.${connection.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'accepted', responded_at: new Date().toISOString() }),
+        })
+        setConnection(prev => ({ ...prev, status: 'accepted' }))
+      } else {
+        await supabaseFetch(`connections?id=eq.${connection.id}`, { method: 'DELETE' })
+        setConnection(null)
+      }
+    } catch (e) { console.error(e) }
+    setConnBusy(false)
+  }
+
+  const toggleBookmark = async () => {
+    if (!myUserId) { setError('Please log in to bookmark profiles.'); return }
+    setBookmarkBusy(true)
+    try {
+      if (bookmarkId) {
+        await supabaseFetch(`bookmarks?id=eq.${bookmarkId}`, { method: 'DELETE' })
+        setBookmarkId(null)
+      } else {
+        const rows = await supabaseFetch('bookmarks', {
+          method: 'POST',
+          headers: { Prefer: 'return=representation' },
+          body: JSON.stringify({ user_id: myUserId, bookmarked_user_id: userId }),
+        })
+        setBookmarkId(rows?.[0]?.id || true)
+      }
+    } catch (e) { console.error(e) }
+    setBookmarkBusy(false)
+  }
 
   const toggleLike = async (postId) => {
     if (!myUserId) { setError('Please log in to like posts.'); return }
@@ -465,6 +545,54 @@ export default function MemberProfileViewPage() {
                         textDecoration: 'none', minWidth: '110px',
                       }}
                     >💬 Message</Link>
+
+                    {!connection && (
+                      <button type="button" onClick={sendConnectRequest} disabled={connBusy} style={{
+                        flex: 1, minWidth: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        background: 'transparent', color: '#111827', fontFamily: theme.fontBody,
+                        border: '1px solid #E5E7EB', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                        cursor: connBusy ? 'default' : 'pointer',
+                      }}>🤝 Connect</button>
+                    )}
+                    {connection?.status === 'pending' && connection.requester_id === myUserId && (
+                      <button type="button" onClick={cancelConnectRequest} disabled={connBusy} style={{
+                        flex: 1, minWidth: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        background: 'transparent', color: '#6B7280', fontFamily: theme.fontBody,
+                        border: '1px solid #E5E7EB', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                        cursor: connBusy ? 'default' : 'pointer',
+                      }}>Request Sent</button>
+                    )}
+                    {connection?.status === 'pending' && connection.requester_id !== myUserId && (
+                      <>
+                        <button type="button" onClick={() => respondToConnectRequest(true)} disabled={connBusy} style={{
+                          flex: 1, minWidth: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
+                          border: 'none', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                          cursor: connBusy ? 'default' : 'pointer',
+                        }}>Accept</button>
+                        <button type="button" onClick={() => respondToConnectRequest(false)} disabled={connBusy} style={{
+                          flex: 1, minWidth: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          background: 'transparent', color: '#6B7280', fontFamily: theme.fontBody,
+                          border: '1px solid #E5E7EB', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                          cursor: connBusy ? 'default' : 'pointer',
+                        }}>Decline</button>
+                      </>
+                    )}
+                    {connection?.status === 'accepted' && (
+                      <button type="button" disabled style={{
+                        flex: 1, minWidth: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        background: '#E9F5EE', color: '#2F7A50', fontFamily: theme.fontBody,
+                        border: 'none', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
+                      }}>✓ Connected</button>
+                    )}
+
+                    <button type="button" onClick={toggleBookmark} disabled={bookmarkBusy} aria-label="Bookmark" style={{
+                      width: '44px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: bookmarkId ? theme.brass : 'transparent', color: bookmarkId ? '#FFFFFF' : '#111827',
+                      border: `1px solid ${bookmarkId ? theme.brass : '#E5E7EB'}`, borderRadius: '10px', fontSize: '15px',
+                      cursor: bookmarkBusy ? 'default' : 'pointer',
+                    }}>{bookmarkId ? '🔖' : '📑'}</button>
+
                     {profile.contact_email && (
                       <a
                         href={`mailto:${profile.contact_email}`}

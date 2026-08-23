@@ -6,7 +6,11 @@ import { sc } from '@/lib/memberTheme'
 const NAV_ITEMS = [
   { key: 'discover', label: 'Discover', icon: '🧭', href: '/members' },
   { key: 'feed', label: 'Feed', icon: '📰', href: '/feed' },
-  { key: 'profile', label: 'My Profile', icon: '👤', href: '/account' },
+  { key: 'messages', label: 'Messages', icon: '💬', href: '/messages' },
+  { key: 'requests', label: 'Meet Requests', icon: '🤝', href: '/requests' },
+  { key: 'connections', label: 'Connections', icon: '👥', href: '/connections' },
+  { key: 'bookmarks', label: 'Bookmarks', icon: '🔖', href: '/bookmarks' },
+  { key: 'profile', label: 'My Account', icon: '👤', href: '/account' },
   { key: 'premium', label: 'Premium Membership', icon: '⭐', href: '/premium' },
 ]
 
