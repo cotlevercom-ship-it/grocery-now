@@ -123,7 +123,7 @@ export default function MessageThreadPage() {
       <AppSidebar active="messages" />
 
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ maxWidth: '640px', width: '100%', margin: '0 auto', padding: 'clamp(14px,2vw,24px)', display: 'flex', flexDirection: 'column', minHeight: '100vh', boxSizing: 'border-box' }}>
+        <div className="msg-thread-wrap" style={{ maxWidth: '640px', width: '100%', margin: '0 auto', padding: 'clamp(14px,2vw,24px)', display: 'flex', flexDirection: 'column', minHeight: '100vh', boxSizing: 'border-box' }}>
           <Link href="/messages" style={{ fontSize: '13px', color: sc.textSoft, textDecoration: 'none', display: 'inline-block', marginBottom: '12px' }}>
             ← Back to Messages
           </Link>
@@ -207,6 +207,15 @@ export default function MessageThreadPage() {
       </div>
 
       <AppBottomNav active="messages" />
+
+      <style jsx>{`
+        @media (max-width: 860px) {
+          .msg-thread-wrap {
+            min-height: calc(100vh - 78px - env(safe-area-inset-bottom));
+            padding-bottom: calc(14px + 78px + env(safe-area-inset-bottom)) !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
