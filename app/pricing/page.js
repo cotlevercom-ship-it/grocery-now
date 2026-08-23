@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { theme } from '@/lib/theme'
 
 const FREE_FEATURES = [
-  'Create your co-founder profile — skills, experience, and what you\u2019re looking for',
+  'Create your profile — skills, experience, and what you\u2019re looking for',
   'Browse the member directory and see basic info on everyone',
   'Post to the community Feed',
   'Send one message to start a conversation with anyone',
