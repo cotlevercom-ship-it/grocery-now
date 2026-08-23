@@ -516,20 +516,20 @@ export default function MembersBrowsePage({ embedded = false }) {
 
   // ---------- Filter bar (shared) ----------
   const filterBar = (
-    <div className="members-filterbar" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '24px' }}>
+    <div className="members-filterbar" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
       <div style={{ position: 'relative' }} ref={filterDropdownRef}>
         <button
           type="button"
           onClick={() => toggleDropdown('filters')}
           style={{
             position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: '38px', height: '38px', background: sc.cardBg,
+            width: '32px', height: '32px', background: sc.cardBg,
             border: `1px solid ${activeFilterCount > 0 ? theme.brass : sc.line}`, borderRadius: '999px',
-            fontSize: '16px', cursor: 'pointer',
+            fontSize: '14px', cursor: 'pointer',
           }}
           aria-label="Filters"
         >
-          <FilterIcon size={16} color={sc.text} />
+          <FilterIcon size={14} color={sc.text} />
           {activeFilterCount > 0 && (
             <span style={{
               position: 'absolute', top: '-3px', right: '-3px', minWidth: '15px', height: '15px', borderRadius: '999px',
@@ -669,27 +669,27 @@ export default function MembersBrowsePage({ embedded = false }) {
 
       {/* Main */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ padding: 'clamp(20px,3vw,40px)', paddingBottom: 'clamp(20px,3vw,40px)' }}>
+        <div style={{ padding: 'clamp(16px,2.4vw,32px)', paddingBottom: 'clamp(20px,3vw,40px)' }}>
           <h1 className="members-heading" style={{
-            fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(22px,2.6vw,30px)',
-            color: sc.text, marginBottom: '6px', letterSpacing: '-0.01em'
+            fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(18px,2vw,22px)',
+            color: sc.text, marginBottom: '3px', letterSpacing: '-0.01em'
           }}>Find a Partner</h1>
-          <p className="members-heading" style={{ fontSize: '14px', color: sc.textSoft, marginBottom: '22px' }}>
+          <p className="members-heading" style={{ fontSize: '12.5px', color: sc.textSoft, marginBottom: '14px' }}>
             Browse founders looking for a co-founder, partner, or share holder.
           </p>
 
-          <div style={{ position: 'relative', marginBottom: '14px', maxWidth: '440px' }}>
-            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🔍</span>
+          <div style={{ position: 'relative', marginBottom: '10px', maxWidth: '440px' }}>
+            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: sc.textFaint }}>🔍</span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, location or keyword…"
               style={{
-                width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '14px',
-                padding: '13px 44px 13px 42px', fontSize: '14px', fontFamily: theme.fontBody, background: sc.cardBg, color: sc.text,
+                width: '100%', boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '11px',
+                padding: '9px 38px 9px 36px', fontSize: '13px', fontFamily: theme.fontBody, background: sc.cardBg, color: sc.text,
                 boxShadow: sc.shadow,
               }}
             />
-            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: sc.textFaint, display: 'flex' }}><FilterIcon size={15} color={sc.textFaint} /></span>
+            <span style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: sc.textFaint, display: 'flex' }}><FilterIcon size={13} color={sc.textFaint} /></span>
           </div>
 
           {filterBar}
