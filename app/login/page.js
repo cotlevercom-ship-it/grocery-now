@@ -22,6 +22,7 @@ function LoginForm() {
 
   const [mode, setMode] = useState('login') // 'login' | 'signup'
   const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -133,6 +134,10 @@ function LoginForm() {
       setError('Please enter your name')
       return
     }
+    if (mode === 'signup' && !/^[0-9+\-\s]{10,15}$/.test(phone.trim())) {
+      setError('Please enter a valid mobile number')
+      return
+    }
     if (mode === 'signup' && !emailVerified) {
       setError('Please verify your email first')
       return
@@ -159,7 +164,7 @@ function LoginForm() {
             await supabaseFetch('user_profiles', {
               method: 'POST',
               headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-              body: JSON.stringify({ id: data.user.id, full_name: name.trim() }),
+              body: JSON.stringify({ id: data.user.id, full_name: name.trim(), phone: phone.trim() }),
             })
           } catch (profileErr) {
             console.error('profile save failed', profileErr)
@@ -228,6 +233,19 @@ function LoginForm() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your full name"
+                className="login-input"
+              />
+            </div>
+          )}
+
+          {mode === 'signup' && (
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '12px', color: '#4A3A35', fontWeight: '600', display: 'block', marginBottom: '6px', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>Mobile Number</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. 01XXXXXXXXX"
                 className="login-input"
               />
             </div>
