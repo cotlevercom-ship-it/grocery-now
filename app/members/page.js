@@ -80,6 +80,8 @@ export default function MembersBrowsePage({ embedded = false }) {
   const [loading, setLoading] = useState(true)
   const [myUserId, setMyUserId] = useState(null)
   const [myProfile, setMyProfile] = useState(null)
+  const [connectionsMap, setConnectionsMap] = useState({}) // otherUserId -> {id, status, requester_id}
+  const [connBusyId, setConnBusyId] = useState(null)
 
   const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
@@ -118,12 +120,72 @@ export default function MembersBrowsePage({ embedded = false }) {
           const rows = await supabaseFetch(`member_profiles?select=display_name,photo_url&user_id=eq.${uid}`)
           setMyProfile(rows?.[0] || null)
         } catch (e) { console.error(e) }
+        try {
+          const conns = await supabaseFetch(`connections?select=id,status,requester_id,addressee_id&or=(requester_id.eq.${uid},addressee_id.eq.${uid})`)
+          const map = {}
+          ;(conns || []).forEach(c => {
+            const otherId = c.requester_id === uid ? c.addressee_id : c.requester_id
+            map[otherId] = c
+          })
+          setConnectionsMap(map)
+        } catch (e) { console.error(e) }
       }
     }
     load()
   }, [])
 
   const activeFilterCount = [locationFilter.trim()].filter(Boolean).length
+
+  const sendConnect = async (targetId) => {
+    if (!myUserId) return
+    setConnBusyId(targetId)
+    try {
+      const rows = await supabaseFetch('connections', {
+        method: 'POST',
+        headers: { Prefer: 'return=representation' },
+        body: JSON.stringify({ requester_id: myUserId, addressee_id: targetId }),
+      })
+      const conn = rows?.[0] || { status: 'pending', requester_id: myUserId }
+      setConnectionsMap(prev => ({ ...prev, [targetId]: conn }))
+    } catch (e) { console.error(e) }
+    setConnBusyId(null)
+  }
+
+  const cancelConnect = async (conn, targetId) => {
+    if (!conn?.id) return
+    setConnBusyId(targetId)
+    try {
+      await supabaseFetch(`connections?id=eq.${conn.id}`, { method: 'DELETE' })
+      setConnectionsMap(prev => {
+        const next = { ...prev }
+        delete next[targetId]
+        return next
+      })
+    } catch (e) { console.error(e) }
+    setConnBusyId(null)
+  }
+
+  const respondConnect = async (conn, accept, targetId) => {
+    if (!conn?.id) return
+    setConnBusyId(targetId)
+    try {
+      if (accept) {
+        await supabaseFetch(`connections?id=eq.${conn.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'accepted', responded_at: new Date().toISOString() }),
+        })
+        setConnectionsMap(prev => ({ ...prev, [targetId]: { ...conn, status: 'accepted' } }))
+      } else {
+        await supabaseFetch(`connections?id=eq.${conn.id}`, { method: 'DELETE' })
+        setConnectionsMap(prev => {
+          const next = { ...prev }
+          delete next[targetId]
+          return next
+        })
+      }
+    } catch (e) { console.error(e) }
+    setConnBusyId(null)
+  }
 
   const clearAll = () => {
     setLocationFilter('')
@@ -216,6 +278,7 @@ export default function MembersBrowsePage({ embedded = false }) {
           {pagedMembers.map(m => {
             const initial = (m.display_name || '?').trim().charAt(0).toUpperCase()
             const skillsList = Array.isArray(m.skills) ? m.skills.filter(Boolean) : []
+            const conn = connectionsMap[m.user_id]
             return (
               <Link key={m.user_id} href={`/members/${m.user_id}`} className="member-card" style={{
                 background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow,
@@ -283,6 +346,70 @@ export default function MembersBrowsePage({ embedded = false }) {
                         whiteSpace: 'nowrap', textDecoration: 'none', minWidth: '90px',
                       }}
                     >💬 Message</Link>
+                    {!conn && (
+                      <button
+                        type="button"
+                        onClick={() => sendConnect(m.user_id)}
+                        disabled={connBusyId === m.user_id}
+                        style={{
+                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
+                          border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                          whiteSpace: 'nowrap', minWidth: '90px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                        }}
+                      >🤝 Connect</button>
+                    )}
+                    {conn?.status === 'pending' && conn.requester_id === myUserId && (
+                      <button
+                        type="button"
+                        onClick={() => cancelConnect(conn, m.user_id)}
+                        disabled={connBusyId === m.user_id}
+                        style={{
+                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          background: 'transparent', color: sc.textSoft, fontFamily: theme.fontBody,
+                          border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                          whiteSpace: 'nowrap', minWidth: '90px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                        }}
+                      >Request Sent</button>
+                    )}
+                    {conn?.status === 'pending' && conn.requester_id !== myUserId && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => respondConnect(conn, true, m.user_id)}
+                          disabled={connBusyId === m.user_id}
+                          style={{
+                            flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                            background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
+                            border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                            whiteSpace: 'nowrap', minWidth: '80px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                          }}
+                        >Accept</button>
+                        <button
+                          type="button"
+                          onClick={() => respondConnect(conn, false, m.user_id)}
+                          disabled={connBusyId === m.user_id}
+                          style={{
+                            flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                            background: 'transparent', color: sc.textSoft, fontFamily: theme.fontBody,
+                            border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                            whiteSpace: 'nowrap', minWidth: '80px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                          }}
+                        >Decline</button>
+                      </>
+                    )}
+                    {conn?.status === 'accepted' && (
+                      <button
+                        type="button"
+                        disabled
+                        style={{
+                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          background: '#E9F5EE', color: '#2F7A50', fontFamily: theme.fontBody,
+                          border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
+                          whiteSpace: 'nowrap', minWidth: '90px',
+                        }}
+                      >✓ Connected</button>
+                    )}
                     {m.contact_email && (
                       <a
                         href={`mailto:${m.contact_email}`}
