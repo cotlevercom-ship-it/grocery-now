@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { getSession, supabaseFetch } from '@/lib/supabase'
+import { getSession, getAccessToken, supabaseFetch } from '@/lib/supabase'
 
 const DEPARTMENTS = [
   { value: 'members', label: 'Members' },
@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
     try {
       const res = await fetch('/api/admin/add-admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getAccessToken() || ''}` },
         body: JSON.stringify({ email: email.trim(), role }),
       })
       const data = await res.json()
