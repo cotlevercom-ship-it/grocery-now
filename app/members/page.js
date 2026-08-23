@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { sc } from '@/lib/memberTheme'
@@ -76,12 +76,15 @@ function ChipToggle({ options, selected, onToggle }) {
 }
 
 export default function MembersBrowsePage({ embedded = false }) {
+  const router = useRouter()
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [myUserId, setMyUserId] = useState(null)
   const [myProfile, setMyProfile] = useState(null)
   const [connectionsMap, setConnectionsMap] = useState({}) // otherUserId -> {id, status, requester_id}
   const [connBusyId, setConnBusyId] = useState(null)
+  const [bookmarksMap, setBookmarksMap] = useState({}) // otherUserId -> bookmarkId
+  const [bookmarkBusyId, setBookmarkBusyId] = useState(null)
 
   const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
@@ -128,6 +131,12 @@ export default function MembersBrowsePage({ embedded = false }) {
             map[otherId] = c
           })
           setConnectionsMap(map)
+        } catch (e) { console.error(e) }
+        try {
+          const marks = await supabaseFetch(`bookmarks?select=id,bookmarked_user_id&user_id=eq.${uid}`)
+          const map = {}
+          ;(marks || []).forEach(b => { map[b.bookmarked_user_id] = b.id })
+          setBookmarksMap(map)
         } catch (e) { console.error(e) }
       }
     }
@@ -185,6 +194,30 @@ export default function MembersBrowsePage({ embedded = false }) {
       }
     } catch (e) { console.error(e) }
     setConnBusyId(null)
+  }
+
+  const toggleBookmark = async (targetId) => {
+    if (!myUserId) return
+    setBookmarkBusyId(targetId)
+    try {
+      const existingId = bookmarksMap[targetId]
+      if (existingId) {
+        await supabaseFetch(`bookmarks?id=eq.${existingId}`, { method: 'DELETE' })
+        setBookmarksMap(prev => {
+          const next = { ...prev }
+          delete next[targetId]
+          return next
+        })
+      } else {
+        const rows = await supabaseFetch('bookmarks', {
+          method: 'POST',
+          headers: { Prefer: 'return=representation' },
+          body: JSON.stringify({ user_id: myUserId, bookmarked_user_id: targetId }),
+        })
+        setBookmarksMap(prev => ({ ...prev, [targetId]: rows?.[0]?.id }))
+      }
+    } catch (e) { console.error(e) }
+    setBookmarkBusyId(null)
   }
 
   const clearAll = () => {
@@ -279,25 +312,46 @@ export default function MembersBrowsePage({ embedded = false }) {
             const initial = (m.display_name || '?').trim().charAt(0).toUpperCase()
             const skillsList = Array.isArray(m.skills) ? m.skills.filter(Boolean) : []
             const conn = connectionsMap[m.user_id]
+            const isBookmarked = !!bookmarksMap[m.user_id]
+            const incomingRequest = conn?.status === 'pending' && conn.requester_id !== myUserId
             return (
-              <Link key={m.user_id} href={`/members/${m.user_id}`} className="member-card" style={{
-                background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow,
-                display: 'flex', flexDirection: 'column', padding: '20px 20px 18px', position: 'relative',
-                textDecoration: 'none', cursor: 'pointer',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '13px', marginBottom: '4px' }}>
+              <div
+                key={m.user_id}
+                onClick={() => router.push(`/members/${m.user_id}`)}
+                className="member-card"
+                style={{
+                  background: sc.cardBg, borderRadius: '16px', border: `1px solid ${sc.line}`,
+                  display: 'flex', flexDirection: 'column', padding: '20px', position: 'relative', cursor: 'pointer',
+                }}
+              >
+                {myUserId && myUserId !== m.user_id && (
+                  <button
+                    type="button"
+                    onClick={e => { e.stopPropagation(); toggleBookmark(m.user_id) }}
+                    disabled={bookmarkBusyId === m.user_id}
+                    aria-label="Bookmark"
+                    style={{
+                      position: 'absolute', top: '16px', right: '16px', width: '30px', height: '30px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px',
+                      background: 'transparent', border: 'none', color: isBookmarked ? theme.brass : sc.textFaint,
+                      fontSize: '16px', cursor: bookmarkBusyId === m.user_id ? 'default' : 'pointer',
+                    }}
+                  >{isBookmarked ? '🔖' : '📑'}</button>
+                )}
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '4px', paddingRight: '30px' }}>
                   <div style={{
-                    width: '96px', height: '96px', borderRadius: '16px', flexShrink: 0, overflow: 'hidden',
+                    width: '60px', height: '60px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
                     background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
                     {m.photo_url ? (
                       <img src={m.photo_url} alt={m.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '34px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
+                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
                     )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '600', color: sc.text, lineHeight: '1.25' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: theme.fontDisplay, fontSize: '16px', fontWeight: '700', color: sc.text, lineHeight: '1.25' }}>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.display_name}</span>
                       {m.verified && <VerifiedBadge />}
                     </div>
@@ -307,136 +361,98 @@ export default function MembersBrowsePage({ embedded = false }) {
                       </div>
                     )}
                     <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
-                      {m.location || 'Location not specified'}
+                      📍 {m.location || 'Location not specified'}
                     </div>
                   </div>
                 </div>
 
                 {skillsList.length > 0 && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '10px' }}>
-                    {skillsList.slice(0, 4).map(s => (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '12px' }}>
+                    {skillsList.slice(0, 3).map(s => (
                       <span key={s} style={{
                         fontSize: '11px', fontWeight: '600', color: sc.chipText, background: sc.chipBg,
                         borderRadius: '999px', padding: '3px 9px',
                       }}>{s}</span>
                     ))}
-                    {skillsList.length > 4 && (
-                      <span style={{ fontSize: '11px', color: sc.textFaint, padding: '3px 2px' }}>+{skillsList.length - 4}</span>
+                    {skillsList.length > 3 && (
+                      <span style={{ fontSize: '11px', color: sc.textFaint, padding: '3px 2px' }}>+{skillsList.length - 3}</span>
                     )}
                   </div>
                 )}
 
-                <div style={{ marginTop: '10px' }}>
-                  {m.bio && (
-                    <div style={{
-                      fontSize: '12.5px', color: sc.text, marginBottom: '10px', lineHeight: '1.5',
-                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                    }}>{m.bio}</div>
-                  )}
-                </div>
+                {m.bio && (
+                  <div style={{
+                    fontSize: '12.5px', color: sc.text, marginTop: '10px', lineHeight: '1.5',
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}>{m.bio}</div>
+                )}
 
-                {myUserId === m.user_id ? null : (
-                  <div style={{ marginTop: '14px', display: 'flex', gap: '8px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
-                    <Link
-                      href={`/messages/${m.user_id}`}
-                      style={{
-                        flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                        background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
-                        borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                        whiteSpace: 'nowrap', textDecoration: 'none', minWidth: '90px',
-                      }}
-                    >💬 Message</Link>
-                    {!conn && (
-                      <button
-                        type="button"
-                        onClick={() => sendConnect(m.user_id)}
-                        disabled={connBusyId === m.user_id}
-                        style={{
-                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
-                          border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                          whiteSpace: 'nowrap', minWidth: '90px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
-                        }}
-                      >🤝 Connect</button>
-                    )}
-                    {conn?.status === 'pending' && conn.requester_id === myUserId && (
-                      <button
-                        type="button"
-                        onClick={() => cancelConnect(conn, m.user_id)}
-                        disabled={connBusyId === m.user_id}
-                        style={{
-                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: 'transparent', color: sc.textSoft, fontFamily: theme.fontBody,
-                          border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                          whiteSpace: 'nowrap', minWidth: '90px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
-                        }}
-                      >Request Sent</button>
-                    )}
-                    {conn?.status === 'pending' && conn.requester_id !== myUserId && (
+                {myUserId !== m.user_id && (
+                  <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }} onClick={e => e.stopPropagation()}>
+                    {incomingRequest ? (
                       <>
                         <button
-                          type="button"
-                          onClick={() => respondConnect(conn, true, m.user_id)}
-                          disabled={connBusyId === m.user_id}
+                          type="button" onClick={() => respondConnect(conn, true, m.user_id)} disabled={connBusyId === m.user_id}
                           style={{
-                            flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                            background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
-                            border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                            whiteSpace: 'nowrap', minWidth: '80px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                            flex: 1.3, textAlign: 'center', background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
+                            border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
+                            cursor: connBusyId === m.user_id ? 'default' : 'pointer',
                           }}
                         >Accept</button>
                         <button
-                          type="button"
-                          onClick={() => respondConnect(conn, false, m.user_id)}
-                          disabled={connBusyId === m.user_id}
+                          type="button" onClick={() => respondConnect(conn, false, m.user_id)} disabled={connBusyId === m.user_id}
                           style={{
-                            flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                            background: 'transparent', color: sc.textSoft, fontFamily: theme.fontBody,
-                            border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                            whiteSpace: 'nowrap', minWidth: '80px', cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                            flex: 1, textAlign: 'center', background: 'transparent', color: sc.textSoft, fontFamily: theme.fontBody,
+                            border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
+                            cursor: connBusyId === m.user_id ? 'default' : 'pointer',
                           }}
                         >Decline</button>
                       </>
-                    )}
-                    {conn?.status === 'accepted' && (
-                      <button
-                        type="button"
-                        disabled
-                        style={{
-                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: '#E9F5EE', color: '#2F7A50', fontFamily: theme.fontBody,
-                          border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                          whiteSpace: 'nowrap', minWidth: '90px',
-                        }}
-                      >✓ Connected</button>
-                    )}
-                    {m.contact_email && (
-                      <a
-                        href={`mailto:${m.contact_email}`}
-                        style={{
-                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
-                          border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                          whiteSpace: 'nowrap', textDecoration: 'none', minWidth: '90px',
-                        }}
-                      >📧 Email</a>
-                    )}
-                    {m.linkedin_url && (
-                      <a
-                        href={m.linkedin_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                          background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
-                          border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '12.5px', fontWeight: '700',
-                          whiteSpace: 'nowrap', textDecoration: 'none', minWidth: '90px',
-                        }}
-                      >🔗 LinkedIn</a>
+                    ) : (
+                      <>
+                        {!conn && (
+                          <button
+                            type="button" onClick={() => sendConnect(m.user_id)} disabled={connBusyId === m.user_id}
+                            style={{
+                              flex: 1.3, textAlign: 'center', background: theme.brass, color: '#FFFFFF', fontFamily: theme.fontBody,
+                              border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
+                              cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                            }}
+                          >Connect</button>
+                        )}
+                        {conn?.status === 'pending' && conn.requester_id === myUserId && (
+                          <button
+                            type="button" onClick={() => cancelConnect(conn, m.user_id)} disabled={connBusyId === m.user_id}
+                            style={{
+                              flex: 1.3, textAlign: 'center', background: 'transparent', color: sc.textSoft, fontFamily: theme.fontBody,
+                              border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
+                              cursor: connBusyId === m.user_id ? 'default' : 'pointer',
+                            }}
+                          >Request Sent</button>
+                        )}
+                        {conn?.status === 'accepted' && (
+                          <button
+                            type="button" disabled
+                            style={{
+                              flex: 1.3, textAlign: 'center', background: '#E9F5EE', color: '#2F7A50', fontFamily: theme.fontBody,
+                              border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
+                            }}
+                          >✓ Connected</button>
+                        )}
+                        <Link
+                          href={`/members/${m.user_id}`}
+                          style={{
+                            flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: 'transparent', color: sc.text, fontFamily: theme.fontBody,
+                            border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
+                            textDecoration: 'none',
+                          }}
+                        >View Profile</Link>
+                      </>
                     )}
                   </div>
                 )}
-              </Link>
+              </div>
             )
           })}
         </div>
