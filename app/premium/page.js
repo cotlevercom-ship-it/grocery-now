@@ -157,9 +157,12 @@ export default function PremiumPage() {
                 <span style={{ fontSize: '20px', fontWeight: '700', color: theme.brass }}>৳</span>
                 <span style={{ fontSize: '38px', fontWeight: '800', color: theme.brass, letterSpacing: '-0.02em' }}>{proPrice}</span>
                 <span style={{ fontSize: '13.5px', color: sc.textSoft }}>/ month</span>
+                {billing === 'yearly' && (
+                  <span style={{ fontSize: '15px', color: sc.textFaint, textDecoration: 'line-through', marginLeft: '2px' }}>৳{proMonthly}</span>
+                )}
               </div>
               <div style={{ fontSize: '12px', color: sc.textFaint, marginBottom: '16px' }}>
-                {billing === 'yearly' ? `৳${payAmount.toLocaleString('en-US')} billed once a year` : 'Billed monthly'}
+                {billing === 'yearly' ? `৳${payAmount.toLocaleString('en-US')} billed once a year — save ৳${(proMonthly * 12 - payAmount).toLocaleString('en-US')} vs monthly` : 'Billed monthly'}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '11px', marginBottom: '24px', flex: 1 }}>
                 {PRO_FEATURES.map(f => (
