@@ -147,7 +147,12 @@ export default function AccountPage() {
             viewCount: p.profile_view_count || 0,
           })
         } else {
-          setForm(prev => ({ ...prev, contact_email: session.user.email || '' }))
+          let fullName = ''
+          try {
+            const uRows = await supabaseFetch(`user_profiles?select=full_name&id=eq.${session.user.id}`)
+            fullName = uRows?.[0]?.full_name || ''
+          } catch (e) { console.error(e) }
+          setForm(prev => ({ ...prev, display_name: fullName, contact_email: session.user.email || '' }))
         }
       } catch (e) { console.error(e) }
 
