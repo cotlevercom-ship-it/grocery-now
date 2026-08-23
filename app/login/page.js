@@ -134,8 +134,8 @@ function LoginForm() {
       setError('Please enter your name')
       return
     }
-    if (mode === 'signup' && !/^[0-9+\-\s]{10,15}$/.test(phone.trim())) {
-      setError('Please enter a valid mobile number')
+    if (mode === 'signup' && !/^01[3-9][0-9]{8}$/.test(phone.trim())) {
+      setError('Please enter a valid Bangladeshi mobile number (e.g. 01712345678)')
       return
     }
     if (mode === 'signup' && !emailVerified) {
@@ -243,9 +243,11 @@ function LoginForm() {
               <label style={{ fontSize: '12px', color: '#4A3A35', fontWeight: '600', display: 'block', marginBottom: '6px', textShadow: '0 1px 4px rgba(255,255,255,0.55)' }}>Mobile Number</label>
               <input
                 type="tel"
+                inputMode="numeric"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="e.g. 01XXXXXXXXX"
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
+                placeholder="01712345678"
+                maxLength={11}
                 className="login-input"
               />
             </div>
