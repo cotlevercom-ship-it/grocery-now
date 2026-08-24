@@ -6,6 +6,7 @@ import { sc } from '@/lib/memberTheme'
 const NAV_ITEMS = [
   { key: 'discover', label: 'Discover', icon: '🧭', href: '/members' },
   { key: 'feed', label: 'Feed', icon: '📰', href: '/feed' },
+  { key: 'businesses', label: 'Businesses', icon: '🏢', href: '/businesses' },
   { key: 'messages', label: 'Messages', icon: '💬', href: '/messages' },
   { key: 'requests', label: 'Meet Requests', icon: '🤝', href: '/requests' },
   { key: 'connections', label: 'Connections', icon: '👥', href: '/connections' },
