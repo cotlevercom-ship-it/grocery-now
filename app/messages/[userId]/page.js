@@ -70,7 +70,7 @@ export default function MessageThreadPage() {
     async function init() {
       setLoading(true)
       try {
-        const rows = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=eq.${otherId}`)
+        const rows = await supabaseFetch(`member_profiles_public?select=user_id,display_name,photo_url,location&user_id=eq.${otherId}`)
         setOtherProfile(rows?.[0] || null)
       } catch (e) { console.error(e) }
       try {

@@ -80,7 +80,7 @@ export default function NotificationBell() {
       const actorIds = [...new Set((rows || []).map(n => n.actor_id))]
       if (actorIds.length > 0) {
         const inList = actorIds.map(id => `"${id}"`).join(',')
-        const profiles = await supabaseFetch(`member_profiles?select=user_id,display_name&user_id=in.(${inList})`)
+        const profiles = await supabaseFetch(`member_profiles_public?select=user_id,display_name&user_id=in.(${inList})`)
         const map = {}
         for (const p of (profiles || [])) map[p.user_id] = p
         setProfilesById(map)

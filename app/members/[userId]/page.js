@@ -178,7 +178,7 @@ export default function MemberProfileViewPage() {
       const missing = [...new Set(userIds)].filter(id => id && !prevMap[id])
       if (missing.length > 0) {
         const inList = missing.map(id => `"${id}"`).join(',')
-        supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
+        supabaseFetch(`member_profiles_public?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
           .then(rows => {
             setProfilesById(prev => {
               const next = { ...prev }
@@ -205,7 +205,7 @@ export default function MemberProfileViewPage() {
     async function load() {
       setLoading(true)
       try {
-        const rows = await supabaseFetch(`member_profiles?select=*&user_id=eq.${userId}`)
+        const rows = await supabaseFetch(`member_profiles_public?select=*&user_id=eq.${userId}`)
         setProfile(rows?.[0] || null)
       } catch (e) {
         console.error(e)

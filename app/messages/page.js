@@ -63,7 +63,7 @@ export default function MessagesInboxPage() {
       const otherIds = list.map(c => c.otherId)
       if (otherIds.length > 0) {
         const inList = otherIds.map(id => `"${id}"`).join(',')
-        const profiles = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url&user_id=in.(${inList})`)
+        const profiles = await supabaseFetch(`member_profiles_public?select=user_id,display_name,photo_url&user_id=in.(${inList})`)
         const map = {}
         for (const p of (profiles || [])) map[p.user_id] = p
         setProfilesById(map)

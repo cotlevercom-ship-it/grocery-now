@@ -108,7 +108,7 @@ export default function MembersBrowsePage({ embedded = false }) {
     async function load() {
       setLoading(true)
       try {
-        const data = await supabaseFetch('member_profiles?select=*&is_discoverable=eq.true&approval_status=eq.approved&order=updated_at.desc')
+        const data = await supabaseFetch('member_profiles_public?select=*&approval_status=eq.approved&order=updated_at.desc')
         setMembers(data || [])
       } catch (e) {
         console.error(e)

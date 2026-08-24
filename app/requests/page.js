@@ -47,7 +47,7 @@ export default function RequestsPage() {
       let profilesById = {}
       if (otherIds.length > 0) {
         const inList = otherIds.map(id => `"${id}"`).join(',')
-        const profiles = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,role_title,location,verified&user_id=in.(${inList})`)
+        const profiles = await supabaseFetch(`member_profiles_public?select=user_id,display_name,photo_url,role_title,location,verified&user_id=in.(${inList})`)
         profilesById = Object.fromEntries((profiles || []).map(p => [p.user_id, p]))
       }
 

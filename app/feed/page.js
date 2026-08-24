@@ -160,7 +160,7 @@ export default function FeedPage() {
     const missing = [...new Set(userIds)].filter(id => id && !profilesById[id])
     if (missing.length === 0) return
     const inList = missing.map(id => `"${id}"`).join(',')
-    const rows = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
+    const rows = await supabaseFetch(`member_profiles_public?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
     setProfilesById(prev => {
       const next = { ...prev }
       for (const p of (rows || [])) next[p.user_id] = p
@@ -177,7 +177,7 @@ export default function FeedPage() {
       const userIds = [...new Set((postRows || []).map(p => p.user_id))]
       if (userIds.length > 0) {
         const inList = userIds.map(id => `"${id}"`).join(',')
-        const profileRows = await supabaseFetch(`member_profiles?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
+        const profileRows = await supabaseFetch(`member_profiles_public?select=user_id,display_name,photo_url,location&user_id=in.(${inList})`)
         const byId = {}
         for (const p of (profileRows || [])) byId[p.user_id] = p
         setProfilesById(byId)
