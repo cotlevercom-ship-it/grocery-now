@@ -323,7 +323,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 style={{
                   background: sc.cardBg, borderRadius: '16px', border: `1px solid ${sc.line}`,
                   display: 'flex', flexDirection: 'column', padding: '20px', position: 'relative', cursor: 'pointer',
-                  minHeight: '320px', height: '100%',
+                  minHeight: '336px', height: '100%',
                 }}
               >
                 {myUserId && myUserId !== m.user_id && (
@@ -343,13 +343,13 @@ export default function MembersBrowsePage({ embedded = false }) {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '4px', paddingRight: '30px' }}>
                   <div style={{
-                    width: '60px', height: '60px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+                    width: '80px', height: '80px', borderRadius: '12px', flexShrink: 0, overflow: 'hidden',
                     background: theme.brass, display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
                     {m.photo_url ? (
                       <img src={m.photo_url} alt={m.display_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '22px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
+                      <span style={{ fontFamily: theme.fontDisplay, fontSize: '28px', fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
                     )}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
