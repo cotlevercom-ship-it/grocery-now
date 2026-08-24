@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { theme } from '@/lib/theme'
 import { sc } from '@/lib/memberTheme'
+import { INDUSTRY_OPTIONS } from '@/lib/memberOptions'
 
 const STAGE_OPTIONS = [
   { value: '', label: 'Select stage…' },
@@ -63,7 +64,10 @@ export default function BusinessForm({ initial, onSubmit, submitting, submitLabe
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
         <div>
           <label style={labelStyle}>Industry</label>
-          <input style={inputStyle} value={form.industry} onChange={set('industry')} placeholder="e.g. Fintech, E-commerce" />
+          <select style={inputStyle} value={form.industry} onChange={set('industry')}>
+            <option value="">Select industry…</option>
+            {INDUSTRY_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+          </select>
         </div>
         <div>
           <label style={labelStyle}>Stage</label>
