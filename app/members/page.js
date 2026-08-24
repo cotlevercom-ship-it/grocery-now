@@ -229,6 +229,7 @@ export default function MembersBrowsePage({ embedded = false }) {
   const filteredMembers = useMemo(() => {
     const q = search.trim().toLowerCase()
     return members.filter(m => {
+      if (myUserId && m.user_id === myUserId) return false
       const locationMatch = !locationFilter.trim() || (m.location || '').toLowerCase().includes(locationFilter.trim().toLowerCase())
       const searchMatch = !q || [
         m.display_name, m.location, m.bio, m.role_title,
@@ -236,7 +237,7 @@ export default function MembersBrowsePage({ embedded = false }) {
       ].filter(Boolean).some(v => v.toLowerCase().includes(q))
       return locationMatch && searchMatch
     })
-  }, [members, search, locationFilter])
+  }, [members, search, locationFilter, myUserId])
 
   // "Most Relevant" gives a small bonus for a location text match. With no
   // filters active it's identical to "Newest" (members already come from
