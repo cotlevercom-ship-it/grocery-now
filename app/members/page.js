@@ -400,8 +400,14 @@ export default function MembersBrowsePage({ embedded = false }) {
                       {m.verified && <VerifiedBadge />}
                     </div>
                     {m.role_title && (
-                      <div style={{ fontSize: '12.5px', color: theme.brass, fontWeight: '600', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {m.role_title}
+                      <div style={{ marginTop: '3px' }}>
+                        <div style={{
+                          fontSize: '10px', fontWeight: '700', color: sc.textFaint,
+                          textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '1px',
+                        }}>Profession</div>
+                        <div style={{ fontSize: '12.5px', color: theme.brass, fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {m.role_title}
+                        </div>
                       </div>
                     )}
                     <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
