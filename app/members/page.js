@@ -323,7 +323,6 @@ export default function MembersBrowsePage({ embedded = false }) {
                 style={{
                   background: sc.cardBg, borderRadius: '16px', border: `1px solid ${sc.line}`,
                   display: 'flex', flexDirection: 'column', padding: '20px', position: 'relative', cursor: 'pointer',
-                  minHeight: '336px', height: '100%',
                 }}
               >
                 {myUserId && myUserId !== m.user_id && (
@@ -390,7 +389,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                 )}
 
                 {myUserId !== m.user_id && (
-                  <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '8px' }} onClick={e => e.stopPropagation()}>
+                  <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }} onClick={e => e.stopPropagation()}>
                     {incomingRequest ? (
                       <>
                         <button
