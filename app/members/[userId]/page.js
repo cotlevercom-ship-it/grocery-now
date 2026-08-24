@@ -560,7 +560,7 @@ export default function MemberProfileViewPage() {
                         background: 'transparent', color: '#6B7280', fontFamily: theme.fontBody,
                         border: '1px solid #E5E7EB', borderRadius: '10px', padding: '11px 12px', fontSize: '13px', fontWeight: '700',
                         cursor: connBusy ? 'default' : 'pointer',
-                      }}>Request Sent</button>
+                      }}>Cancel Request</button>
                     )}
                     {connection?.status === 'pending' && connection.requester_id !== myUserId && (
                       <>

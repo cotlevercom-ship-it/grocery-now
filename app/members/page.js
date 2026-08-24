@@ -428,7 +428,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                               border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
                               cursor: connBusyId === m.user_id ? 'default' : 'pointer',
                             }}
-                          >Request Sent</button>
+                          >Cancel Request</button>
                         )}
                         {conn?.status === 'accepted' && (
                           <button
