@@ -1,8 +1,8 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { theme } from '@/lib/theme'
 import { sc } from '@/lib/memberTheme'
-import { INDUSTRY_OPTIONS } from '@/lib/memberOptions'
+import { supabaseFetch } from '@/lib/supabase'
 
 const STAGE_OPTIONS = [
   { value: '', label: 'Select stage…' },
@@ -32,6 +32,13 @@ export default function BusinessForm({ initial, onSubmit, submitting, submitLabe
     is_active: initial?.is_active ?? true,
   })
   const [error, setError] = useState('')
+  const [industries, setIndustries] = useState([])
+
+  useEffect(() => {
+    supabaseFetch('business_industries?select=id,name&is_active=eq.true&order=sort_order.asc')
+      .then(rows => setIndustries(rows || []))
+      .catch(e => console.error(e))
+  }, [])
 
   const set = (key) => (e) => setForm(prev => ({ ...prev, [key]: e.target.value }))
 
@@ -66,7 +73,10 @@ export default function BusinessForm({ initial, onSubmit, submitting, submitLabe
           <label style={labelStyle}>Industry</label>
           <select style={inputStyle} value={form.industry} onChange={set('industry')}>
             <option value="">Select industry…</option>
-            {INDUSTRY_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            {industries.map(opt => <option key={opt.id} value={opt.name}>{opt.name}</option>)}
+            {form.industry && !industries.some(o => o.name === form.industry) && (
+              <option value={form.industry}>{form.industry}</option>
+            )}
           </select>
         </div>
         <div>
