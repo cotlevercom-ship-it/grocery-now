@@ -411,7 +411,12 @@ export default function MembersBrowsePage({ embedded = false }) {
                 </div>
 
                 {skillsList.length > 0 && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '12px' }}>
+                  <div style={{ marginTop: '12px' }}>
+                    <div style={{
+                      fontSize: '10px', fontWeight: '700', color: sc.textFaint,
+                      textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '5px',
+                    }}>Skills</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                     {skillsList.slice(0, 3).map(s => (
                       <span key={s} style={{
                         fontSize: '11px', fontWeight: '600', color: sc.chipText, background: sc.chipBg,
@@ -421,6 +426,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                     {skillsList.length > 3 && (
                       <span style={{ fontSize: '11px', color: sc.textFaint, padding: '3px 2px' }}>+{skillsList.length - 3}</span>
                     )}
+                  </div>
                   </div>
                 )}
 
