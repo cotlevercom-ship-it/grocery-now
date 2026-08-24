@@ -174,7 +174,34 @@ function LoginForm() {
         // right away, no payment step.
         router.push('/members')
       } else {
-        await signIn(email.trim(), password)
+        const checkRes = await fetch('/api/login-attempts/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim() }),
+        })
+        const checkData = await checkRes.json()
+        if (checkData?.locked) {
+          const mins = Math.ceil((checkData.retryAfterSeconds || 0) / 60)
+          setError(`Too many failed attempts. Please try again in ${mins} minute${mins === 1 ? '' : 's'}.`)
+          setSubmitting(false)
+          return
+        }
+
+        try {
+          await signIn(email.trim(), password)
+        } catch (signInErr) {
+          fetch('/api/login-attempts/record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), success: false }),
+          }).catch(() => {})
+          throw signInErr
+        }
+        fetch('/api/login-attempts/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), success: true }),
+        }).catch(() => {})
         router.push(nextUrl)
       }
     } catch (err) {

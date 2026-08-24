@@ -23,6 +23,27 @@ export async function POST(req) {
       }
     }
 
+    // Server-side rate limit: at most 1 code every 30s, and 5 per hour per
+    // email — the old 30s cooldown was client-side only and trivially
+    // bypassed by calling this endpoint directly, allowing unlimited email
+    // spam to any address.
+    const recentRows = await adminFetch(
+      `otp_codes?select=created_at&email=eq.${encodeURIComponent(normalizedEmail)}&purpose=eq.${purpose}&order=created_at.desc&limit=5`
+    )
+    if (recentRows && recentRows.length > 0) {
+      const lastSentAt = new Date(recentRows[0].created_at)
+      const secondsSinceLast = (Date.now() - lastSentAt.getTime()) / 1000
+      if (secondsSinceLast < 30) {
+        return NextResponse.json({ error: 'Please wait before requesting another code' }, { status: 429 })
+      }
+    }
+    if (recentRows && recentRows.length >= 5) {
+      const oldestOfFive = new Date(recentRows[recentRows.length - 1].created_at)
+      if (Date.now() - oldestOfFive.getTime() < 60 * 60 * 1000) {
+        return NextResponse.json({ error: 'Too many codes requested, please try again later' }, { status: 429 })
+      }
+    }
+
     const code = generateCode()
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
 

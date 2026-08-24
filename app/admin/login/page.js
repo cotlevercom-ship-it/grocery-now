@@ -19,13 +19,42 @@ export default function AdminLoginPage() {
     }
     setSubmitting(true)
     try {
-      const data = await signIn(email.trim(), password)
+      const checkRes = await fetch('/api/login-attempts/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      const checkData = await checkRes.json()
+      if (checkData?.locked) {
+        const mins = Math.ceil((checkData.retryAfterSeconds || 0) / 60)
+        setError(`Too many failed attempts. Please try again in ${mins} minute${mins === 1 ? '' : 's'}.`)
+        setSubmitting(false)
+        return
+      }
+
+      let data
+      try {
+        data = await signIn(email.trim(), password)
+      } catch (signInErr) {
+        fetch('/api/login-attempts/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), success: false }),
+        }).catch(() => {})
+        throw signInErr
+      }
+
       const rows = await supabaseFetch(`admin_users?select=id&user_id=eq.${data.user.id}`)
       if (!rows || rows.length === 0) {
         setError('This account does not have admin access')
         setSubmitting(false)
         return
       }
+      fetch('/api/login-attempts/record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), success: true }),
+      }).catch(() => {})
       router.replace('/admin')
     } catch (err) {
       setError(err.message || 'Login failed')
