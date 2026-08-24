@@ -274,6 +274,10 @@ export default function MemberProfileViewPage() {
         body: JSON.stringify({ requester_id: myUserId, addressee_id: userId }),
       })
       setConnection(rows?.[0] || { status: 'pending', requester_id: myUserId })
+      supabaseFetch('notifications', {
+        method: 'POST',
+        body: JSON.stringify({ recipient_id: userId, actor_id: myUserId, type: 'connect_request' }),
+      }).catch(e => console.error(e))
     } catch (e) { console.error(e) }
     setConnBusy(false)
   }

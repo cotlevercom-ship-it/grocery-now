@@ -21,11 +21,14 @@ function messageFor(n, actorName) {
   if (n.type === 'comment') return `${name} commented on your post`
   if (n.type === 'reply') return `${name} replied to your comment`
   if (n.type === 'message') return `${name} sent you a message`
+  if (n.type === 'connect_request') return `${name} sent you a connect request`
   return `${name} interacted with your post`
 }
 
 function linkFor(n) {
-  return n.type === 'message' ? `/messages/${n.actor_id}` : '/feed'
+  if (n.type === 'message') return `/messages/${n.actor_id}`
+  if (n.type === 'connect_request') return '/requests'
+  return '/feed'
 }
 
 export default function NotificationBell() {

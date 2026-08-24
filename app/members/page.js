@@ -199,6 +199,10 @@ export default function MembersBrowsePage({ embedded = false }) {
       })
       const conn = rows?.[0] || { status: 'pending', requester_id: myUserId }
       setConnectionsMap(prev => ({ ...prev, [targetId]: conn }))
+      supabaseFetch('notifications', {
+        method: 'POST',
+        body: JSON.stringify({ recipient_id: targetId, actor_id: myUserId, type: 'connect_request' }),
+      }).catch(e => console.error(e))
     } catch (e) { console.error(e) }
     setConnBusyId(null)
   }
