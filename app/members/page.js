@@ -17,6 +17,49 @@ function FilterIcon({ size = 16, color = 'currentColor' }) {
   )
 }
 
+function BookmarkIcon({ size = 16, color = 'currentColor', filled = false }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : 'none'} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+    </svg>
+  )
+}
+
+function PinIcon({ size = 12, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
+  )
+}
+
+function SearchIcon({ size = 15, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  )
+}
+
+function CheckIcon({ size = 13, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  )
+}
+
+function CloseIcon({ size = 11, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  )
+}
+
 
 const PAGE_SIZE_OPTIONS = [6, 12, 24]
 const SORT_OPTIONS = [
@@ -337,7 +380,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                       background: 'transparent', border: 'none', color: isBookmarked ? theme.brass : sc.textFaint,
                       fontSize: '16px', cursor: bookmarkBusyId === m.user_id ? 'default' : 'pointer',
                     }}
-                  >{isBookmarked ? '🔖' : '📑'}</button>
+                  >{isBookmarked ? <BookmarkIcon size={16} filled /> : <BookmarkIcon size={16} />}</button>
                 )}
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '4px', paddingRight: '30px' }}>
@@ -361,8 +404,8 @@ export default function MembersBrowsePage({ embedded = false }) {
                         {m.role_title}
                       </div>
                     )}
-                    <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px' }}>
-                      📍 {m.location || 'Location not specified'}
+                    <div style={{ fontSize: '12px', color: sc.textSoft, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <PinIcon size={11} color={sc.textSoft} /> {m.location || 'Location not specified'}
                     </div>
                   </div>
                 </div>
@@ -437,8 +480,9 @@ export default function MembersBrowsePage({ embedded = false }) {
                             style={{
                               flex: 1.3, textAlign: 'center', background: '#E9F5EE', color: '#2F7A50', fontFamily: theme.fontBody,
                               border: 'none', borderRadius: '999px', padding: '10px 12px', fontSize: '13px', fontWeight: '700',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
                             }}
-                          >✓ Connected</button>
+                          ><CheckIcon size={13} color="#2F7A50" /> Connected</button>
                         )}
                         <Link
                           href={`/members/${m.user_id}`}
@@ -554,10 +598,10 @@ export default function MembersBrowsePage({ embedded = false }) {
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px',
                   border: 'none', borderRadius: '999px', background: sc.chipBg, color: sc.textSoft, cursor: 'pointer', fontSize: '13px',
                 }}
-              >✕</button>
+              ><CloseIcon size={11} color={sc.textSoft} /></button>
             </div>
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>📍 Location</div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: sc.textSoft, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}><PinIcon size={12} color={sc.textSoft} /> Location</div>
               <input
                 type="text" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}
                 placeholder="e.g. Dhaka"
@@ -573,7 +617,7 @@ export default function MembersBrowsePage({ embedded = false }) {
                   color: sc.textSoft, fontSize: '13px', fontWeight: '600', cursor: 'pointer', padding: '4px', fontFamily: theme.fontBody,
                   alignSelf: 'flex-start',
                 }}
-              ><span>✕</span> Clear all</button>
+              ><CloseIcon size={11} color={sc.textSoft} /> Clear all</button>
             )}
           </div>
         )}
@@ -622,7 +666,7 @@ export default function MembersBrowsePage({ embedded = false }) {
       <div style={{ background: sc.bg, minHeight: '70vh' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,48px) clamp(16px,3vw,56px)' }}>
           <div className="members-mobile-search" style={{ display: 'none', position: 'relative', marginBottom: '14px' }}>
-            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '15px', color: sc.textFaint }}>🔍</span>
+            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', display: 'flex', color: sc.textFaint }}><SearchIcon size={15} color={sc.textFaint} /></span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, location or keyword…"
@@ -680,7 +724,7 @@ export default function MembersBrowsePage({ embedded = false }) {
           </p>
 
           <div style={{ position: 'relative', marginBottom: '10px', maxWidth: '440px' }}>
-            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: sc.textFaint }}>🔍</span>
+            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', color: sc.textFaint }}><SearchIcon size={13} color={sc.textFaint} /></span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, location or keyword…"
