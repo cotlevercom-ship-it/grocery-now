@@ -1,11 +1,44 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { Search } from 'lucide-react'
 import { getSession, supabaseFetch } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import NotificationBell from '@/components/NotificationBell'
 import MessageIcon from '@/components/MessageIcon'
+
+function NavSearch() {
+  const router = useRouter()
+  const [q, setQ] = useState('')
+
+  const submit = (e) => {
+    e.preventDefault()
+    router.push(`/members${q.trim() ? `?q=${encodeURIComponent(q.trim())}` : ''}`)
+  }
+
+  return (
+    <form onSubmit={submit} style={{ flex: 1, maxWidth: '440px', position: 'relative' }} className="nav-search">
+      <Search size={15} color={theme.inkSoft} style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
+      <input
+        type="text"
+        value={q}
+        onChange={e => setQ(e.target.value)}
+        placeholder="Search people, ideas, skills…"
+        style={{
+          width: '100%', boxSizing: 'border-box', background: theme.surface, border: `1px solid ${theme.line}`,
+          borderRadius: '999px', padding: '9px 14px 9px 36px', fontSize: '13px', fontFamily: theme.fontBody,
+          color: theme.ink, outline: 'none',
+        }}
+      />
+      <style jsx>{`
+        @media (max-width: 640px) {
+          .nav-search { display: none; }
+        }
+      `}</style>
+    </form>
+  )
+}
 
 const MENU_LINKS = [
   { href: '/why-use-cotlever', label: 'Why Use Cot Lever' },
@@ -206,7 +239,7 @@ export default function Navbar() {
           Cot<span style={{ color: theme.brass }}>Lever</span>
         </Link>
 
-        <div style={{ flex: 1 }} />
+        {session ? <NavSearch /> : <div style={{ flex: 1 }} />}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
           {session && <MessageIcon />}
