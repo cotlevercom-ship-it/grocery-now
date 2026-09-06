@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { theme } from '@/lib/theme'
 import { sc } from '@/lib/memberTheme'
-import { NAV_ITEMS } from '@/components/AppSidebar'
+import { NAV_ITEMS, useNavBadges } from '@/components/AppSidebar'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 
 // Bottom nav has its own order/labels, independent of the desktop sidebar.
@@ -12,6 +12,7 @@ const BOTTOM_NAV_LABELS = { discover: 'People' }
 
 export default function AppBottomNav({ active }) {
   const [myPhoto, setMyPhoto] = useState(null)
+  const { badges } = useNavBadges()
 
   useEffect(() => {
     const session = getSession()
@@ -53,12 +54,23 @@ export default function AppBottomNav({ active }) {
             )
           }
 
+          const Icon = item.icon
+          const badgeCount = item.badgeKey ? badges[item.badgeKey] : 0
           return (
             <Link key={item.key} href={item.href} style={{
               textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-              color: isActive ? theme.brass : sc.textFaint,
+              color: isActive ? theme.brass : sc.textFaint, position: 'relative',
             }}>
-              <span style={{ fontSize: '18px', lineHeight: 1 }}>{item.icon}</span>
+              <span style={{ position: 'relative' }}>
+                <Icon size={18} strokeWidth={2} />
+                {badgeCount > 0 && (
+                  <span style={{
+                    position: 'absolute', top: '-5px', right: '-7px', minWidth: '14px', height: '14px',
+                    borderRadius: '999px', background: theme.brass, color: '#FFFFFF', fontSize: '9px', fontWeight: '700',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2px',
+                  }}>{badgeCount > 9 ? '9+' : badgeCount}</span>
+                )}
+              </span>
               <span style={{ fontSize: '10.5px', fontWeight: isActive ? '700' : '600' }}>{BOTTOM_NAV_LABELS[item.key] || item.label}</span>
             </Link>
           )
