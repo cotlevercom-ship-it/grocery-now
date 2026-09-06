@@ -8,7 +8,7 @@ import MarketingHome from '@/components/MarketingHome'
 // Logged-out visitors see the marketing hero (MarketingHome). Logged-in
 // users don't need a second copy of that same hero (it used to live in
 // components/HomeTabs.jsx, since removed) — they're sent straight to
-// /members, which is where browsing actually happens.
+// /feed, which is now the default landing view.
 export default function HomeGate() {
   const router = useRouter()
   const [checking, setChecking] = useState(true)
@@ -20,7 +20,7 @@ export default function HomeGate() {
       setLoggedIn(isLoggedIn)
       setChecking(false)
       if (isLoggedIn) {
-        router.replace('/members')
+        router.replace('/feed')
       }
     }
     check()
