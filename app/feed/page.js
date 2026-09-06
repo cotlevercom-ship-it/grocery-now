@@ -1,11 +1,13 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link'
+import { MoreHorizontal, Trash2, ChevronDown, Send, ThumbsUp, MessageSquare } from 'lucide-react'
 import { supabaseFetch, getSession } from '@/lib/supabase'
 import { theme } from '@/lib/theme'
 import { sc } from '@/lib/memberTheme'
 import AppSidebar from '@/components/AppSidebar'
 import AppBottomNav from '@/components/AppBottomNav'
+import FeedSidebar from '@/components/FeedSidebar'
 
 const LOOKING_FOR_OPTIONS = ['Investor', 'Co-founder', 'Team Member', 'Mentor', 'Advisor', 'Partner']
 const CUSTOM_LOOKING_FOR = '__custom__'
@@ -35,6 +37,52 @@ function Avatar({ profile, size = 44 }) {
         <img src={profile.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
         <span style={{ fontFamily: theme.fontDisplay, fontSize: `${Math.round(size * 0.4)}px`, fontWeight: '600', color: '#FFFFFF' }}>{initial}</span>
+      )}
+    </div>
+  )
+}
+
+function PostMenu({ canDelete, onDelete }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  if (!canDelete) return null
+
+  return (
+    <div ref={ref} style={{ position: 'relative', marginLeft: 'auto' }}>
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        aria-label="Post options"
+        style={{
+          background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
+          borderRadius: '6px', display: 'flex', color: sc.textFaint,
+        }}
+      ><MoreHorizontal size={17} /></button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 4px)', right: 0, minWidth: '140px',
+          background: sc.cardBg, borderRadius: '8px', boxShadow: sc.shadowHover, overflow: 'hidden', zIndex: 20,
+        }}>
+          <button
+            type="button"
+            onClick={() => { setOpen(false); onDelete() }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px', width: '100%', boxSizing: 'border-box',
+              padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '13px', fontWeight: '600', color: theme.danger, textAlign: 'left',
+            }}
+          ><Trash2 size={14} /> Delete post</button>
+        </div>
       )}
     </div>
   )
@@ -155,6 +203,19 @@ export default function FeedPage() {
   const [openReplyIds, setOpenReplyIds] = useState(new Set())
   const [replyDrafts, setReplyDrafts] = useState({})
   const [submittingReplyId, setSubmittingReplyId] = useState(null)
+  const [requestsBadge, setRequestsBadge] = useState(0)
+
+  const trendingTopics = useMemo(() => {
+    const counts = {}
+    for (const p of posts) {
+      if (!p.looking_for_type) continue
+      counts[p.looking_for_type] = (counts[p.looking_for_type] || 0) + 1
+    }
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([label, count]) => ({ label, count }))
+  }, [posts])
 
   const mergeProfiles = useCallback(async (userIds) => {
     const missing = [...new Set(userIds)].filter(id => id && !profilesById[id])
@@ -221,6 +282,9 @@ export default function FeedPage() {
       supabaseFetch(`member_profiles?select=display_name,photo_url,is_premium&user_id=eq.${uid}`)
         .then(rows => setMyProfile(rows?.[0] || null))
         .catch(e => console.error(e))
+      supabaseFetch(`connections?select=id&status=eq.pending&addressee_id=eq.${uid}`)
+        .then(rows => setRequestsBadge((rows || []).length))
+        .catch(e => console.error(e))
     }
     loadFeed(uid)
   }, [loadFeed])
@@ -254,6 +318,18 @@ export default function FeedPage() {
       setError('Could not post, please try again.')
     }
     setPosting(false)
+  }
+
+  const handleDeletePost = async (postId) => {
+    const prevPosts = posts
+    setPosts(prev => prev.filter(p => p.id !== postId))
+    try {
+      await supabaseFetch(`posts?id=eq.${postId}`, { method: 'DELETE' })
+    } catch (e) {
+      console.error(e)
+      setError('Could not delete post, please try again.')
+      setPosts(prevPosts)
+    }
   }
 
   const toggleLike = async (postId) => {
@@ -387,45 +463,51 @@ export default function FeedPage() {
     <div style={{ display: 'flex', minHeight: '100vh', background: sc.bg }}>
       <AppSidebar active="feed" />
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto', padding: 'clamp(20px,3vw,40px) clamp(16px,3vw,24px)' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center', gap: '24px', padding: 'clamp(20px,3vw,40px) clamp(16px,3vw,24px)' }}>
+        <div style={{ width: '100%', maxWidth: '640px' }}>
           <h1 style={{
             fontFamily: theme.fontDisplay, fontWeight: '600', fontSize: 'clamp(22px,2.6vw,28px)',
-            color: sc.text, marginBottom: '18px', letterSpacing: '-0.01em'
+            color: sc.text, marginBottom: '4px', letterSpacing: '-0.01em'
           }}>Feed</h1>
+          <div style={{ fontSize: '13.5px', color: sc.textSoft, marginBottom: '18px' }}>
+            Discover ideas, people and opportunities
+          </div>
 
           {/* Composer */}
           <div style={{
-            background: sc.cardBg, borderRadius: '12px', boxShadow: sc.shadow, padding: '10px', marginBottom: '16px',
+            background: sc.cardBg, borderRadius: '14px', boxShadow: sc.shadow, padding: '14px', marginBottom: '18px',
           }}>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <Avatar profile={myProfile} size={32} />
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <Avatar profile={myProfile} size={36} />
               <textarea
                 value={draft}
                 onChange={e => setDraft(e.target.value)}
                 placeholder="Share your idea…"
                 rows={1}
                 style={{
-                  flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '8px',
-                  padding: '7px 10px', fontSize: '13.5px', fontFamily: theme.fontBody, color: sc.text,
-                  background: sc.bg, resize: 'vertical', minHeight: '32px',
+                  flex: 1, boxSizing: 'border-box', border: `1px solid ${sc.line}`, borderRadius: '999px',
+                  padding: '10px 16px', fontSize: '13.5px', fontFamily: theme.fontBody, color: sc.text,
+                  background: sc.bg, resize: 'none', minHeight: '20px', lineHeight: '1.3',
                 }}
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '6px', marginTop: '6px', marginLeft: '40px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <select
-                value={lookingForType}
-                onChange={e => setLookingForType(e.target.value)}
-                style={{
-                  border: `1px solid ${sc.line}`, borderRadius: '7px', padding: '5px 6px', fontSize: '12px',
-                  fontFamily: theme.fontBody, color: sc.text, background: sc.bg, maxWidth: '100%',
-                }}
-              >
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px', marginLeft: '46px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <select
+                  value={lookingForType}
+                  onChange={e => setLookingForType(e.target.value)}
+                  style={{
+                    appearance: 'none', border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '7px 30px 7px 12px',
+                    fontSize: '12.5px', fontWeight: '600', fontFamily: theme.fontBody, color: sc.text, background: sc.cardBg, maxWidth: '100%',
+                  }}
+                >
                 <option value="">Not looking for anything</option>
                 {LOOKING_FOR_OPTIONS.map(opt => <option key={opt} value={opt}>Looking for a {opt}</option>)}
                 <option value={CUSTOM_LOOKING_FOR}>Custom…</option>
               </select>
+                <ChevronDown size={13} color={sc.textFaint} style={{ position: 'absolute', right: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+              </div>
               {lookingForType === CUSTOM_LOOKING_FOR && (
                 <input
                   type="text"
@@ -433,8 +515,8 @@ export default function FeedPage() {
                   onChange={e => setLookingForCustomText(e.target.value)}
                   placeholder="What are you looking for?"
                   style={{
-                    border: `1px solid ${sc.line}`, borderRadius: '7px', padding: '5px 8px', fontSize: '12px',
-                    fontFamily: theme.fontBody, color: sc.text, background: sc.bg, flex: 1, minWidth: '110px',
+                    border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '7px 12px', fontSize: '12.5px',
+                    fontFamily: theme.fontBody, color: sc.text, background: sc.cardBg, flex: 1, minWidth: '110px',
                   }}
                 />
               )}
@@ -445,8 +527,8 @@ export default function FeedPage() {
                   onChange={e => setLookingForLocation(e.target.value)}
                   placeholder="Location"
                   style={{
-                    border: `1px solid ${sc.line}`, borderRadius: '7px', padding: '5px 8px', fontSize: '12px',
-                    fontFamily: theme.fontBody, color: sc.text, background: sc.bg, flex: 1, minWidth: '90px',
+                    border: `1px solid ${sc.line}`, borderRadius: '999px', padding: '7px 12px', fontSize: '12.5px',
+                    fontFamily: theme.fontBody, color: sc.text, background: sc.cardBg, flex: 1, minWidth: '90px',
                   }}
                 />
               )}
@@ -455,11 +537,12 @@ export default function FeedPage() {
                 onClick={handlePost}
                 disabled={posting || !draft.trim()}
                 style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
                   background: (posting || !draft.trim()) ? sc.line : theme.brass, color: '#FFFFFF',
-                  border: 'none', borderRadius: '999px', padding: '6px 14px', fontSize: '12px', fontWeight: '700',
+                  border: 'none', borderRadius: '999px', padding: '8px 18px', fontSize: '12.5px', fontWeight: '700',
                   cursor: (posting || !draft.trim()) ? 'default' : 'pointer', marginLeft: 'auto',
                 }}
-              >{posting ? 'Posting…' : 'Post'}</button>
+              >{posting ? 'Posting…' : (<><Send size={13} />Post</>)}</button>
             </div>
             {error && (
               <div style={{ marginTop: '6px', fontSize: '11.5px', color: theme.brass }}>{error}</div>
@@ -512,6 +595,7 @@ export default function FeedPage() {
                         </div>
                         <div style={{ fontSize: '11.5px', color: sc.textFaint, marginTop: '1px' }}>{timeAgo(post.created_at)}</div>
                       </div>
+                      <PostMenu canDelete={myUserId === post.user_id} onDelete={() => handleDeletePost(post.id)} />
                     </div>
 
                     {sentence && (
@@ -535,7 +619,7 @@ export default function FeedPage() {
                           color: liked ? theme.brass : sc.textSoft,
                         }}
                       >
-                        <span>{liked ? '👍' : '🤍'}</span> Like{count > 0 ? ` · ${count}` : ''}
+                        <ThumbsUp size={15} fill={liked ? theme.brass : 'none'} /> Like{count > 0 ? ` · ${count}` : ''}
                       </button>
                       <button
                         type="button"
@@ -545,7 +629,7 @@ export default function FeedPage() {
                           cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: sc.textSoft,
                         }}
                       >
-                        <span>💬</span> Comment{cCount > 0 ? ` · ${cCount}` : ''}
+                        <MessageSquare size={15} /> Comment{cCount > 0 ? ` · ${cCount}` : ''}
                       </button>
                     </div>
 
@@ -614,6 +698,8 @@ export default function FeedPage() {
             </div>
           )}
         </div>
+
+        <FeedSidebar trendingTopics={trendingTopics} requestsBadge={requestsBadge} />
       </div>
 
       <AppBottomNav active="feed" />
