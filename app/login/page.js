@@ -172,7 +172,7 @@ function LoginForm() {
         }
         // Email was already verified inline above — account is free to use
         // right away, no payment step.
-        router.push('/members')
+        router.push('/feed')
       } else {
         const checkRes = await fetch('/api/login-attempts/check', {
           method: 'POST',
@@ -520,5 +520,3 @@ function LoginForm() {
     </div>
   )
 }
-
-
